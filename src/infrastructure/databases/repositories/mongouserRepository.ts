@@ -17,6 +17,11 @@ export class MongoUserRepository implements UserRepository {
   }
 
   public async findUserByEmail(data: FindEmailDTO): Promise<User | null> {
-    return await userModel.findOne({ email: data.email });
+    const {email} = data
+    return await userModel.findOne({ email});
+  }
+  public async updateUserVerificationStatus(data:FindEmailDTO):Promise<User | null>{
+    const {email} = data
+    return await userModel.findOneAndUpdate({email},{otpVerified:true})
   }
 }

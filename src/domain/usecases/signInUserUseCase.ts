@@ -1,10 +1,10 @@
-import { UserRepository } from "../../interfaces/userRepository";
-import { User } from "../../entities/userEntity";
-import { comparePassword } from "../../../shared/utils/hashPassword";
-import { HttpStatusMessages } from "../../../shared/constants/httpResponseStructure";
-import { SignInDTO } from "../../../application/dtos";
+import { UserRepository } from "../interfaces/userRepository";
+import { User } from "../entities/userEntity";
+import { comparePassword } from "../../shared/utils/hashPassword";
+import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { SignInDTO } from "../../application/dtos";
 
-export class signinUserUseCase {
+export class SigninUserUseCase {
   constructor(private userRepository: UserRepository) {}
 
   public async execute(data:SignInDTO):Promise<User> {
@@ -21,8 +21,11 @@ export class signinUserUseCase {
         throw new Error(HttpStatusMessages.IncorrectPassword)
      }
 
-     if(!userData.isVerified){
+     if(userData.isBlocked){
         throw new Error(HttpStatusMessages.AccountBlocked)
+     }
+     if(!userData.otpVerified){
+      throw new Error(HttpStatusMessages.InvalidOtp)
      }
 
      return userData

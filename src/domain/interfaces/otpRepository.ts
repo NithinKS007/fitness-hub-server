@@ -3,5 +3,6 @@ import { Otp } from "../entities/otpEntity";
 
 export interface OtpRepository {
   createOtp(data: OtpDTO): Promise<Otp>;
-  findOtpByEmail(data: OtpDTO): Promise<Otp | null>;
+  verifyOtpByEmail(data: OtpDTO): Promise<Otp | null>;
+  deleteOtp(data:OtpDTO):Promise<Otp | null>
 }

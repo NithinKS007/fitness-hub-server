@@ -2,14 +2,16 @@ import { Request, Response } from "express";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import { HttpStatusCodes, HttpStatusMessages} from "../../shared/constants/httpResponseStructure";
 import { MongoUserRepository } from "../../infrastructure/databases/repositories/mongouserRepository";
-import { MongoOtpRepository } from "../../infrastructure/databases/repositories/mongootpRepository";
-import { createUserUseCase } from "../../domain/usecases/user/createUserUseCase";
-import { signinUserUseCase } from "../../domain/usecases/user/signInUserUseCase";
+import { MongoOtpRepository } from "../../infrastructure/databases/repositories/mongoOtpRepository";
+import { CreateUserUseCase } from "../../domain/usecases/createUserUseCase";
+import { SigninUserUseCase } from "../../domain/usecases/signInUserUseCase";
+import { OtpUseCase } from "../../domain/usecases/otpUseCase";
 
 const mongouserRepository = new MongoUserRepository();
 const mongoOtpRepository = new MongoOtpRepository()
-const createUser = new createUserUseCase(mongouserRepository,mongoOtpRepository);
-const signinUser = new signinUserUseCase(mongouserRepository)
+const createUser = new CreateUserUseCase(mongouserRepository,mongoOtpRepository);
+const signinUser = new SigninUserUseCase(mongouserRepository)
+const otp = new OtpUseCase(mongoOtpRepository,mongouserRepository)
 
 export class AuthController {
   static async signup(req: Request, res: Response): Promise<void> {
@@ -30,7 +32,6 @@ export class AuthController {
 
   static async signin(req: Request, res: Response): Promise<void> {
     try {
-      
        const userData = await signinUser.execute(req.body)
        sendResponse(res,HttpStatusCodes.OK,userData,HttpStatusMessages.LoginSuccessful)
     } catch (error:any) {
@@ -42,11 +43,36 @@ export class AuthController {
         sendResponse(res,HttpStatusCodes.BadRequest,null,HttpStatusMessages.IncorrectPassword)
       }else if(error.message===HttpStatusMessages.AccountBlocked){
         sendResponse(res,HttpStatusCodes.Forbidden,null,HttpStatusMessages.AccountBlocked)
+      }else if (error.message===HttpStatusMessages.InvalidOtp){
+        sendResponse(res,HttpStatusCodes.Forbidden,null,HttpStatusMessages.InvalidOtp)
       }else{
         sendResponse(res,HttpStatusCodes.InternalServerError,null,HttpStatusMessages.FailedToSignin)
       }
     }
   }
-
-
+  static async verifyOtp (req:Request,res:Response):Promise<void> {
+    try {
+       await otp.verifyOtpByEmail(req.body)
+       sendResponse(res,HttpStatusCodes.OK,null,HttpStatusMessages.RegistrationSuccessful)
+    } catch (error:any) {
+      if(error.message===HttpStatusMessages.InvalidOtp){
+        sendResponse(res,HttpStatusCodes.BadRequest,null,HttpStatusMessages.InvalidOtp)
+      } else {
+        sendResponse(res,HttpStatusCodes.InternalServerError,null,HttpStatusMessages.InternalServerError)
+      }
+    }
+  }
+  static async ResendOtp(req:Request,res:Response):Promise<void> {
+    try {
+    await otp.resendOtp(req.body)
+    sendResponse(res,HttpStatusCodes.OK,null,HttpStatusMessages.OtpSendSuccessful)
+    } catch (error:any) {
+      if(error.message===HttpStatusMessages.AlreadyUserVerifiedByOtp){
+        sendResponse(res,HttpStatusCodes.BadRequest,null,HttpStatusMessages.AlreadyUserVerifiedByOtp)
+      }else {
+        sendResponse(res,HttpStatusCodes.InternalServerError,null,HttpStatusMessages.InternalServerError)
+      }
+     
+    }
+  }
 }

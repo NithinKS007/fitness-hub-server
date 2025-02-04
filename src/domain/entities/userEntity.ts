@@ -5,7 +5,8 @@ export interface User {
   email: string;
   password: string;
   role: "user" | "admin" | "trainer";
-  isVerified: boolean;
+  isBlocked:boolean;
+  otpVerified?: boolean;
   phone?: string;
   profilePic?: string;
 }

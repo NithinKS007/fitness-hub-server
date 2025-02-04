@@ -7,14 +7,22 @@ export class MongoOtpRepository implements OtpRepository {
   public async createOtp(data: OtpDTO): Promise<Otp> {
     const { email, otp } = data;
 
-    const otpData = await otpModel.create({
-      email,
-      otp,
-    });
+    const otpData = await otpModel.findOneAndUpdate(
+      { email },
+      { otp },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
     return otpData.toObject();
   }
-  public async findOtpByEmail(data: OtpDTO): Promise<Otp | null> {
-    const { email } = data;
-    return await otpModel.findOne({ email: email });
+  public async verifyOtpByEmail(data: OtpDTO): Promise<Otp | null> {
+    const { email,otp } = data;
+    return await otpModel.findOne({ email: email,otp:otp });
+  }
+  public async deleteOtp(data:OtpDTO):Promise<Otp | null> {
+     const {email} = data
+     return await otpModel.findOneAndDelete({email})
   }
 }

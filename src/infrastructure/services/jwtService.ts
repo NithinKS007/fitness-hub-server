@@ -1,21 +1,18 @@
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
-const JWT_EXPIRATION = process.env.JWT_EXPIRATION!;
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
-const JWT_REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXPIRATION!;
+const JWT_SECRET = process.env.JWT_SECRET as any;
+const JWT_EXPIRATION = process.env.JWT_EXPIRATION as any ;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as any;
+const JWT_REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXPIRATION as any;
 
 export const generateAccessToken = (id: string, role: string):string=> {
   const payload = { id: id, role: role,}
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
 
-  const options:jwt.SignOptions = { expiresIn: Number(JWT_EXPIRATION) }
-  return jwt.sign(payload, JWT_SECRET, options)
 };
-
 export const generateRefreshToken = (id: string, role: string): string => {
   const payload = { id: id, role: role}
-  const options:jwt.SignOptions = { expiresIn: Number(JWT_REFRESH_EXPIRATION) }
-  return jwt.sign(payload, JWT_REFRESH_SECRET, options);
+  return jwt.sign(payload, JWT_REFRESH_SECRET, {expiresIn: JWT_REFRESH_EXPIRATION});
 };
 
 export const authenticateAccessToken = (token: string) => {

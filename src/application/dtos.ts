@@ -1,3 +1,4 @@
+import { User } from "../domain/entities/userEntity";
 export interface CreateUserDTO {
   fname: string;
   lname: string;
@@ -14,7 +15,14 @@ export interface SignInDTO {
   password: string;
 }
 
+export interface UserAuthResponseDTO {
+  userData: User;               
+  accessToken: string;      
+  refreshToken: string;      
+}
+
 export interface OtpDTO {
   email: string;
   otp: string;
 }
+
