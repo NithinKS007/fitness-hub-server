@@ -1,4 +1,4 @@
-import { CreateUserDTO, FindEmailDTO } from "../../../application/dtos";
+import { CreateGoogleUserDTO, CreateUserDTO, FindEmailDTO ,UpdatePassword} from "../../../application/dtos";
 import { User } from "../../../domain/entities/userEntity";
 import { UserRepository } from "../../../domain/interfaces/userRepository";
 import userModel from "../models/userModel";
@@ -23,5 +23,12 @@ export class MongoUserRepository implements UserRepository {
   public async updateUserVerificationStatus(data:FindEmailDTO):Promise<User | null>{
     const {email} = data
     return await userModel.findOneAndUpdate({email},{otpVerified:true})
+  }
+  public async resetPassword(data:UpdatePassword):Promise<User | null> {
+    const {email,password} = data
+    return await userModel.findOneAndUpdate({email},{password:password})
+  }
+  public async createGoogleUser(data:CreateGoogleUserDTO):Promise<User | null> {
+    return await userModel.create(data)
   }
 }

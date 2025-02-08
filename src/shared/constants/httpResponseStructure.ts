@@ -9,18 +9,24 @@ export enum HttpStatusCodes {
 }
 
 export enum HttpStatusMessages {
-  EmailConflict = "Email already exists",
-  IncorrectPassword = "Invalid password for user",
-  FailedToCreateUser = "Failed to create user. Please try again",
-  UserCreatedSuccessfully = "User created successfully",
-  AccountBlocked = "Your account has been blocked",
-  EmailNotFound = "Email not found",
-  LoginSuccessful = "Login successful",
-  FailedToSignin = "Failed to sign in. Please try again",
-  FailedToSendEmail = "Failed to send email",
-  InvalidOtp = "Invalid otp or otp expired",
-  InternalServerError = "InternalServerError",
-  RegistrationSuccessful = "Your Registration successful",
-  OtpSendSuccessful = "Otp send your email successfully",
-  AlreadyUserVerifiedByOtp = "User already verified cannot resend otp"
+  EmailConflict = "The email address you entered already exists in our system.",
+  IncorrectPassword = "The password you entered is incorrect for this user.",
+  FailedToCreateUser = "We were unable to create the user. Please try again later.",
+  UserCreatedSuccessfully = "The user has been created successfully. An OTP has been sent to your email for verification.",
+  AccountBlocked = "Your account has been blocked due to security or policy reasons.",
+  EmailNotFound = "We could not find an account associated with the provided email address.",
+  LoginSuccessful = "You have logged in successfully.",
+  FailedToSignin = "We were unable to sign you in. Please try again later.",
+  FailedToSendEmail = "There was an error sending the email. Please try again.",
+  InvalidOtp = "The OTP you entered is either invalid or has expired.",
+  InternalServerError = "An internal server error occurred. Please try again later.",
+  RegistrationSuccessful = "Your registration was successful. You may now log in.",
+  OtpSendSuccessful = "The OTP has been resent to your email successfully.",
+  AlreadyUserVerifiedByOtp = "This user has already been verified and cannot receive a new OTP.",
+  LinkSentToEmail = "A link has been sent to your email",
+  AccountNotVerified = "Your account is not verified,Please complete the signup Process",
+  LinkExpired = "Link expired.",
+  PassWordResetSuccess = "Your password has been successfully reset. You can now log in with your new password",
+  GoogleAuthFailed = "Google authentication Failed",
+  DifferentLoginMethod = "Please try a different signin method"
 }

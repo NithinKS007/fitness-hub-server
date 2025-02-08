@@ -7,6 +7,7 @@ export interface User {
   role: "user" | "admin" | "trainer";
   isBlocked:boolean;
   otpVerified?: boolean;
+  googleVerified?:boolean
   phone?: string;
   profilePic?: string;
 }

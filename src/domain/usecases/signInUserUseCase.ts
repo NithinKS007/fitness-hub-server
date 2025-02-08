@@ -11,23 +11,22 @@ export class SigninUserUseCase {
     
      const {email,password} = data
      const userData = await this.userRepository.findUserByEmail({email:email})
-
      if(!userData){
-        throw new Error(HttpStatusMessages.EmailNotFound)
+      throw new Error(HttpStatusMessages.EmailNotFound)
+     }
+     if(userData && userData.googleVerified){
+      throw new Error(HttpStatusMessages.DifferentLoginMethod)
      }
      const isValidPassword = await comparePassword(password,userData.password)
-
+     if(!userData.otpVerified){
+      throw new Error(HttpStatusMessages.AccountNotVerified)
+     }
+     if(userData.isBlocked){
+      throw new Error(HttpStatusMessages.AccountBlocked)
+   }
      if(!isValidPassword){
         throw new Error(HttpStatusMessages.IncorrectPassword)
      }
-
-     if(userData.isBlocked){
-        throw new Error(HttpStatusMessages.AccountBlocked)
-     }
-     if(!userData.otpVerified){
-      throw new Error(HttpStatusMessages.InvalidOtp)
-     }
-
      return userData
   }
 }

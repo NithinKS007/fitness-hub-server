@@ -3,11 +3,13 @@ import { AuthController } from "../../application/controllers/authController"
 
 
 const authRoutes = express.Router()
-authRoutes.post("/signup",AuthController.signup)
-authRoutes.get("/signin",AuthController.signin)
-authRoutes.get("/verifyOtp",AuthController.verifyOtp)
-authRoutes.get("/resendOtp",AuthController.ResendOtp)
-
+authRoutes.post("/sign-up", AuthController.signup);  
+authRoutes.post("/sign-in", AuthController.signin); 
+authRoutes.post("/verify-otp", AuthController.verifyOtp); 
+authRoutes.post("/resend-otp",AuthController.resendOtp)
+authRoutes.post("/forgot-password", AuthController.generatePassResetLink)
+authRoutes.patch("/forgot-password/:token", AuthController.forgotPassword);
+authRoutes.post("/google",AuthController.createGoogleUser)
 
 export default authRoutes
 

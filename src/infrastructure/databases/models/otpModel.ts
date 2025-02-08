@@ -4,7 +4,6 @@ interface IOtp extends Document {
   email: string;
   otp: string;
 }
-
 const otpSchema: Schema = new Schema(
   {
     email: { type: String, required: true },

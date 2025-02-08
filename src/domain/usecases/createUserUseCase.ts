@@ -15,22 +15,22 @@ export class CreateUserUseCase {
     const existinguser = await this.userRepository.findUserByEmail({email:email})
     if(existinguser && existinguser.otpVerified) {
       throw new Error(HttpStatusMessages.EmailConflict)
-    } 
-
+    }
+    if(existinguser&&!existinguser.otpVerified && existinguser.googleVerified){
+      throw new Error(HttpStatusMessages.DifferentLoginMethod)
+    }
     if(existinguser && !existinguser.otpVerified){
-
       const otp = generateOtp(6)
       await this.otpRepository.createOtp({ email, otp });
       await sendEmail(email, "OTP for Registration",`Your OTP is ${otp}. Please do not share this OTP with anyone.`);
       return existinguser;
     }
+  
     const hashedPassword = await hashPassword(password)
     const userData = await this.userRepository.createUser({...data,password:hashedPassword});
-
     const otp = generateOtp(6)
     await this.otpRepository.createOtp({email,otp})
     await sendEmail(email,"OTP for Registration",`Your OTP is ${otp}. Please do not share this OTP with anyone.`)
-    
     return userData
   }
 }
