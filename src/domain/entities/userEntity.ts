@@ -1,5 +1,5 @@
 export interface User {
-  id: string;
+  _id: string | unknown
   fname: string;
   lname: string;
   email: string;
@@ -10,4 +10,9 @@ export interface User {
   googleVerified?:boolean
   phone?: string;
   profilePic?: string;
+  trainerData?: {
+    yearsOfExperience?: string;
+    specializations?: string[];
+    certifications?: string[]; 
+  };
 }

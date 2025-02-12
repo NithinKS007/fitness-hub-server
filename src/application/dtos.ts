@@ -1,9 +1,17 @@
 export interface CreateUserDTO {
-  fname: string 
-  lname: string 
+  fname: string;
+  lname: string;
   email: string;
-  password : string
+  password: string;
+  phone?: string;
+  dateOfBirth?: string | Date;
+  trainerData?: {
+    yearsOfExperience?: string | number;
+    specializations?: string[];
+    certifications?: string[];
+  };
 }
+
 export interface FindEmailDTO {
   email: string;
 }
@@ -16,24 +24,48 @@ export interface OtpDTO {
   otp: string;
 }
 export interface PasswordResetDTO {
-  password ?:string
-  resetToken :string,
+  password?: string;
+  resetToken: string;
 }
 export interface PassResetTokenDTO {
-  email:string
-  resetToken :string,
+  email: string;
+  resetToken: string;
 }
 export interface UpdatePassword {
-  email:string
-  password :string,
-  newPassword ? :string
+  email: string;
+  password: string;
+  newPassword?: string;
 }
 export interface googleTokenDTO {
-  token:string
+  token: string;
 }
 export interface CreateGoogleUserDTO {
-  fname?: string 
-  lname?: string 
+  fname?: string;
+  lname?: string;
   email?: string;
-  profilePic?:string
+  profilePic?: string;
+}
+export interface UserDTO {
+  id: string;
+  fname: string;
+  lname: string;
+  email: string;
+  password: string;
+  role: Role;
+  isBlocked: boolean;
+  otpVerified?: boolean;
+  googleVerified?: boolean;
+  phone?: string;
+  profilePic?: string;
+}
+
+export interface updateBlockStatus {
+  _id: string;
+  isBlocked: boolean;
+}
+export type Role = "user" | "admin" | "trainer";
+
+export interface trainerVerification {
+  _id: string;
+  action: "approved" | "rejected";
 }

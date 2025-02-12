@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 interface IUser extends Document {
-  id: string;
   fname: string;
   lname: string;
   email: string;
@@ -9,9 +8,16 @@ interface IUser extends Document {
   isBlocked:boolean
   role: "user" | "trainer" | "admin";
   otpVerified?: boolean;
+  googleVerified?:boolean
   phone?: string;
   dateOfBirth?: Date;
   profilePic?: string;
+  trainerData?: {
+    yearsOfExperience?: string;
+    specializations?: string[];
+    certifications?: string [];
+    isApproved?: boolean; 
+  };
 }
 
 const userSchema: Schema = new Schema(
@@ -32,6 +38,12 @@ const userSchema: Schema = new Schema(
     phone: { type: String },
     dateOfBirth: { type: Date },
     profilePic: { type: String },
+    trainerData: {
+      yearsOfExperience: { type: String },
+      specializations: [{ type: String }],
+      certifications: [{ type: String }],
+      isApproved:{type: Boolean, default: false }
+    },
   },
   { timestamps: true }
 );

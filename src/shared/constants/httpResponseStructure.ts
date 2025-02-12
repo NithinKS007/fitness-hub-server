@@ -28,5 +28,17 @@ export enum HttpStatusMessages {
   LinkExpired = "Link expired.",
   PassWordResetSuccess = "Your password has been successfully reset. You can now log in with your new password",
   GoogleAuthFailed = "Google authentication Failed",
-  DifferentLoginMethod = "Please try a different signin method"
+  DifferentLoginMethod = "Please try a different signin method",
+  UserList = "Users list retrieved successfully",
+  failedToRetrieveUsersList = "Failed to retrieve user list",
+  TrainersList = "Trainers list retrieved successfully",
+  FailedToRetrieveTrainersList = "Failed to retrieve trainers list",
+  BlockStatusUpdated = "Block status Updated successfully",
+  FailedToUpdateBlockStatus = "Failed to update block status",
+  UserIdRequired = "User id required",
+  AllFieldsAreRequired = "All fields are required",
+  InvalidRole = "Invalid role",
+  TrainerApproved = "Trainer approved",
+  TrainerRejected = "Trainer rejected"
+  
 }

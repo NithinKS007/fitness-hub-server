@@ -24,13 +24,15 @@ export class AuthController {
     try {
 
       console.log("req.body",req.body)
-      const createdUser = await createUser.execute(req.body)
+      const createdUser = await createUser.createUser(req.body)
       sendResponse(res, HttpStatusCodes.OK, createdUser, HttpStatusMessages.UserCreatedSuccessfully);
     } catch (error:any) {
       console.log(`Error in  signup : ${error}`)
       if(error.message === HttpStatusMessages.EmailConflict){
         sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.EmailConflict);
-      } else if (error.message=== HttpStatusMessages.FailedToSendEmail){
+      }if(error.message===HttpStatusMessages.AllFieldsAreRequired){
+        sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.AllFieldsAreRequired);
+      }  else if (error.message=== HttpStatusMessages.FailedToSendEmail){
         sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.FailedToSendEmail);
       }  else if (error.message=== HttpStatusMessages.DifferentLoginMethod){
         sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.DifferentLoginMethod)
@@ -139,9 +141,28 @@ export class AuthController {
     } else {
       sendResponse(res, HttpStatusCodes.InternalServerError, null, HttpStatusMessages.InternalServerError)
     }
-  }
-}
+   }
+ }
 
+ static async createTrainer(req:Request,res:Response):Promise<void> {
+    try {
+      console.log("req.body",req.body)
+      const createdTrainer = await createUser.createTrainer(req.body)
+      sendResponse(res, HttpStatusCodes.OK, createdTrainer, HttpStatusMessages.UserCreatedSuccessfully);
+    } catch (error:any) {
+      if(error.message===HttpStatusMessages.AllFieldsAreRequired){
+        sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.AllFieldsAreRequired);
+      } else if(error.message === HttpStatusMessages.EmailConflict){
+        sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.EmailConflict);
+      } else if (error.message=== HttpStatusMessages.FailedToSendEmail){
+        sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.FailedToSendEmail);
+      }  else if (error.message=== HttpStatusMessages.DifferentLoginMethod){
+        sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.DifferentLoginMethod)
+      }  else  {
+        sendResponse(res, HttpStatusCodes.InternalServerError, null, HttpStatusMessages.FailedToCreateUser);
+      }
+    }
+ }
 
 
 }
