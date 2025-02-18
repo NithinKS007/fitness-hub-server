@@ -5,11 +5,7 @@ export interface CreateUserDTO {
   password: string;
   phone?: string;
   dateOfBirth?: string | Date;
-  trainerData?: {
-    yearsOfExperience?: string | number;
-    specializations?: string[];
-    certifications?: string[];
-  };
+  yearsOfExperience?: string | number;
 }
 
 export interface FindEmailDTO {
@@ -46,19 +42,57 @@ export interface CreateGoogleUserDTO {
   profilePic?: string;
 }
 export interface UserDTO {
-  id: string;
+  _id: string;
   fname: string;
   lname: string;
   email: string;
-  password: string;
   role: Role;
   isBlocked: boolean;
   otpVerified?: boolean;
   googleVerified?: boolean;
   phone?: string;
   profilePic?: string;
+  dateOfBirth?: string;
+  yearsOfExperience?: string;
+  specifications?: string[];
+  certifications?: string[];
+  aboutMe?: string;
+  gender: "male" | "female";
+  age: string;
+  height: string;
+  weight: string;
+  bloodGroup: string;
+  medicalConditions: string;
+  otherConcerns: string;
 }
 
+export interface UpdateUserDetails {
+  _id: string;
+  fname: string;
+  lname: string;
+  phone?: string;
+  profilePic?: string;
+  dateOfBirth?: string;
+  yearsOfExperience?: string;
+  certifications?: { url: string; fileName: string }[];
+  specifications?: string[];
+  aboutMe?: string;
+  gender: "male" | "female";
+  age: string;
+  height: string;
+  weight: string;
+  bloodGroup: string;
+  medicalConditions: string;
+  otherConcerns: string;
+}
+export interface CertificationsDTO {
+  _id: string;
+  certifications: { url: string; fileName: string }[];
+}
+export interface SpecializationsDTO {
+  _id: string;
+  specifications: string[];
+}
 export interface updateBlockStatus {
   _id: string;
   isBlocked: boolean;
@@ -68,4 +102,12 @@ export type Role = "user" | "admin" | "trainer";
 export interface trainerVerification {
   _id: string;
   action: "approved" | "rejected";
+}
+
+export type IdDTO = string;
+
+export interface changePasswordDTO {
+  _id:string
+  password: string;
+  newPassword:string
 }

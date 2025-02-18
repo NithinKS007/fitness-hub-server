@@ -56,10 +56,9 @@ export class CreateUserUseCase {
       password,
       dateOfBirth,
       phone,
-      trainerData
+      yearsOfExperience
     } = data;
-    
-    const yearsOfExperience = trainerData?.yearsOfExperience;
+
 
     if (
       !fname ||
@@ -70,8 +69,10 @@ export class CreateUserUseCase {
       !dateOfBirth||
       !phone
     ) {
-      // throw new Error(HttpStatusMessages.AllFieldsAreRequired);
+      throw new Error(HttpStatusMessages.AllFieldsAreRequired);
     }
+
+    console.log("exp",yearsOfExperience)
 
     const existinguser = await this.userRepository.findUserByEmail({email:email})
     if(existinguser && existinguser.otpVerified) {

@@ -7,7 +7,7 @@ import { UserUseCase } from "../../domain/usecases/userUseCase";
 const mongouserRepository = new MongoUserRepository()
 const user = new UserUseCase(mongouserRepository)
 
-export class adminController {
+export class AdminController {
   static async getUsers(req: Request, res: Response): Promise<void> {
     try {
       const usersData = await user.getUsers(req?.query?.role as string)
@@ -37,15 +37,6 @@ export class adminController {
     }
 
   }
-  // static async getTrainersApprovalRejectionList(req:Request,res:Response):Promise<void> {
-  //   try {
-  //     const trainersData = await user.getTrainersApprovalRejectionList()
-  //     sendResponse(res, HttpStatusCodes.OK,trainersData, HttpStatusMessages.TrainersList);
-  //   } catch (error:any) {
-  //     console.log(`Error in  failed to fetch trainers details : ${error}`)
-  //     sendResponse(res, HttpStatusCodes.InternalServerError,null, HttpStatusMessages.InternalServerError);
-  //   }
-  // }
   static async trainerVerification(req:Request,res:Response):Promise<void> {
     try {
        const { _id } = req.params
@@ -63,6 +54,23 @@ export class adminController {
       } else{
         sendResponse(res, HttpStatusCodes.InternalServerError, null, HttpStatusMessages.InternalServerError);
       }
+    }
+  }
+  static async getUserDetails(req:Request,res:Response):Promise<void> {
+    try {
+
+       console.log("req.params",req.params._id)
+       const userData = await user.getUserDetails(req.params._id)
+       sendResponse(res, HttpStatusCodes.OK,userData, HttpStatusMessages.UserDataRetrieved);
+    } catch (error:any) {
+
+       if(error.message=== HttpStatusMessages.FailedToRetrieveUserDetails){
+        sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.FailedToRetrieveUserDetails);
+       } else if(error.message=== HttpStatusMessages.IdRequired){
+        sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.IdRequired);
+       } else {
+        sendResponse(res, HttpStatusCodes.InternalServerError, null, HttpStatusMessages.InternalServerError);
+       }
     }
   }
 

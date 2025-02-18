@@ -9,6 +9,9 @@ import { OtpUseCase } from "../../domain/usecases/otpUseCase";
 import { ForgotPasswordUseCase } from "../../domain/usecases/forgotPasswordUseCase";
 import { GoogleAuthUseCase } from "../../domain/usecases/googleAuthUseCase";
 import { MonogPasswordResetRepository } from "../../infrastructure/databases/repositories/monogPasswordResetRepository";
+import { UserUseCase } from "../../domain/usecases/userUseCase";
+import { authenticateRefreshToken, generateAccessToken } from "../../infrastructure/services/jwtService";
+import { JwtPayload } from "jsonwebtoken";
 
 const mongouserRepository = new MongoUserRepository();
 const mongoOtpRepository = new MongoOtpRepository()
@@ -18,12 +21,11 @@ const signinUser = new SigninUserUseCase(mongouserRepository)
 const otp = new OtpUseCase(mongoOtpRepository,mongouserRepository)
 const passwordReset = new ForgotPasswordUseCase(mongouserRepository,monogPasswordResetRepository)
 const googleAuth = new GoogleAuthUseCase(mongouserRepository)
+const user = new UserUseCase(mongouserRepository)
 
 export class AuthController {
   static async signup(req: Request, res: Response): Promise<void> {
     try {
-
-      console.log("req.body",req.body)
       const createdUser = await createUser.createUser(req.body)
       sendResponse(res, HttpStatusCodes.OK, createdUser, HttpStatusMessages.UserCreatedSuccessfully);
     } catch (error:any) {
@@ -44,8 +46,15 @@ export class AuthController {
 
   static async signin(req: Request, res: Response): Promise<void> {
     try {
-       const userData = await signinUser.execute(req.body)
-       sendResponse(res,HttpStatusCodes.OK,userData,HttpStatusMessages.LoginSuccessful)
+       const {userData,accessToken,refreshToken} = await signinUser.execute(req.body)
+
+       res.cookie("refreshToken",refreshToken,{
+        httpOnly: true,
+        sameSite:"strict",
+        secure: process.env.NODE_ENV === "production", 
+        maxAge: 7 * 24 * 60 * 60 * 1000 
+      });
+      sendResponse(res,HttpStatusCodes.OK,{ userData, accessToken },HttpStatusMessages.LoginSuccessful)
     } catch (error:any) {
       console.log(`Error in  signin : ${error}`)
 
@@ -94,7 +103,6 @@ export class AuthController {
   }
   static async generatePassResetLink(req:Request,res:Response):Promise<void> {
     try {
-      console.log("email received for sending the otp link",req.body)
       const tokenData =  await passwordReset.generatePassResetLink(req.body)
       sendResponse(res,HttpStatusCodes.OK,tokenData.email,HttpStatusMessages.LinkSentToEmail)
     } catch (error:any) {
@@ -129,7 +137,6 @@ export class AuthController {
   static async createGoogleUser(req:Request,res:Response):Promise <void> {
     try {
       const userData =  await googleAuth.createGoogleUser(req.body)
-      console.log("userdata",userData)
       sendResponse(res,HttpStatusCodes.OK,userData,HttpStatusMessages.LoginSuccessful)
   } catch (error:any) {
     if(error.message===HttpStatusMessages.EmailNotFound){
@@ -146,7 +153,6 @@ export class AuthController {
 
  static async createTrainer(req:Request,res:Response):Promise<void> {
     try {
-      console.log("req.body",req.body)
       const createdTrainer = await createUser.createTrainer(req.body)
       sendResponse(res, HttpStatusCodes.OK, createdTrainer, HttpStatusMessages.UserCreatedSuccessfully);
     } catch (error:any) {
@@ -159,10 +165,71 @@ export class AuthController {
       }  else if (error.message=== HttpStatusMessages.DifferentLoginMethod){
         sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.DifferentLoginMethod)
       }  else  {
-        sendResponse(res, HttpStatusCodes.InternalServerError, null, HttpStatusMessages.FailedToCreateUser);
+        sendResponse(res, HttpStatusCodes.InternalServerError, null, HttpStatusMessages.InternalServerError);
       }
     }
  }
+ static async updateUserProfile(req:Request,res:Response):Promise<void> {
+  try {
 
+    console.log("req.body",req.body)
+    const updatedUserData = await user.updateUserProfile(req.body)
+    sendResponse(res, HttpStatusCodes.OK, updatedUserData, HttpStatusMessages.UserDetailsUpdated);
+  } catch (error:any) {
+    if(error.message===HttpStatusMessages.FailedToUpdateUserDetails){
+      sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.FailedToUpdateUserDetails);
+    } else {
+      sendResponse(res, HttpStatusCodes.InternalServerError, null, HttpStatusMessages.InternalServerError);
+    }
+  }
+}
+
+static async changePassword (req:Request,res:Response):Promise<void> {
+  try {
+    await user.changePassword(req.body)
+    sendResponse(res, HttpStatusCodes.OK,null,HttpStatusMessages.UserDetailsUpdated);
+  } catch (error:any) {
+    if(error.message===HttpStatusMessages.AllFieldsAreRequired){
+      sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.AllFieldsAreRequired);
+    }  else if (error.message=== HttpStatusMessages.InvalidId){
+      sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.InvalidId);
+    }  else if (error.message=== HttpStatusMessages.IncorrectPassword){
+      sendResponse(res, HttpStatusCodes.BadRequest, null, HttpStatusMessages.IncorrectPassword)
+    }  else  {
+      sendResponse(res, HttpStatusCodes.InternalServerError, null, HttpStatusMessages.InternalServerError);
+    }
+  }
+}
+
+static async signOut (req:Request,res:Response) :Promise<void> {
+  try {
+    res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite:"strict" })
+    sendResponse(res,HttpStatusCodes.OK,null,HttpStatusMessages.LogoutSuccessful)
+  } catch (error) {
+    sendResponse(res, HttpStatusCodes.InternalServerError, null, HttpStatusMessages.InternalServerError);
+  }
+
+}
+
+static async refreshAccessToken  (req:Request,res:Response) :Promise<void> {
+
+    const refreshToken = req?.cookies?.refreshToken;
+    
+    console.log("refresh token",refreshToken)
+    if(!refreshToken){
+      sendResponse(res,HttpStatusCodes.Forbidden,null,HttpStatusMessages.NoRefreshToken)
+      return
+    }
+      const decoded = authenticateRefreshToken(refreshToken) as JwtPayload
+
+      if (!decoded) {
+        sendResponse(res, HttpStatusCodes.Forbidden, null, HttpStatusMessages.InvalidRefreshToken);
+        return;
+      }
+      const newAccessToken = generateAccessToken(decoded._id ,decoded.role) 
+      console.log("new token sended",newAccessToken)
+      sendResponse(res,HttpStatusCodes.OK,{newAccessToken},HttpStatusMessages.AccessTokenRefreshedSuccessFully)
+    
+  }
 
 }

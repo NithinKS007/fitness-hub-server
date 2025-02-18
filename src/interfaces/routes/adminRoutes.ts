@@ -1,12 +1,13 @@
 import express from "express"
-import { adminController } from "../../application/controllers/adminController"
+import { AdminController } from "../../application/controllers/adminController"
+import { authenticate } from "../middlewares/authenticate";
 
 const adminRoutes = express.Router()
 
-adminRoutes.get("/users",adminController.getUsers)
-adminRoutes.patch("/users/:_id",adminController.updateBlockStatus)
-// adminRoutes.get("/trainers",adminController.getTrainersApprovalRejectionList)
-adminRoutes.patch("/trainers/:_id", adminController.trainerVerification);
+adminRoutes.get("/users",AdminController.getUsers)
+adminRoutes.get("/users/:_id",AdminController.getUserDetails)
+adminRoutes.patch("/users/:_id",AdminController.updateBlockStatus)
+adminRoutes.patch("/trainers/:_id", AdminController.trainerVerification)
 
 
 export default adminRoutes

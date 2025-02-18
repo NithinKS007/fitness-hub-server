@@ -52,7 +52,7 @@ export class ForgotPasswordUseCase {
       throw new Error(HttpStatusMessages.EmailNotFound)
     }
     const hashedPassword = await hashPassword(password as string)
-    await this.userRepository.resetPassword({email,password:hashedPassword})
+    await this.userRepository.forgotPassword({email,password:hashedPassword})
   }
   
 }

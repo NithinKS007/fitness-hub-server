@@ -3,11 +3,12 @@ import { User } from "../entities/userEntity";
 import { comparePassword } from "../../shared/utils/hashPassword";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { SignInDTO } from "../../application/dtos";
+import { generateAccessToken, generateRefreshToken } from "../../infrastructure/services/jwtService";
 
 export class SigninUserUseCase {
   constructor(private userRepository: UserRepository) {}
 
-  public async execute(data:SignInDTO):Promise<User> {
+  public async execute(data:SignInDTO):Promise<{ accessToken: string; refreshToken: string; userData: User }> {
     
      const {email,password} = data
      const userData = await this.userRepository.findUserByEmail({email:email})
@@ -27,6 +28,10 @@ export class SigninUserUseCase {
      if(!isValidPassword){
         throw new Error(HttpStatusMessages.IncorrectPassword)
      }
-     return userData
+
+     const accessToken = generateAccessToken(userData._id,userData.role)
+     const refreshToken = generateRefreshToken(userData._id,userData.role)
+
+   return {accessToken,refreshToken,userData}
   }
 }

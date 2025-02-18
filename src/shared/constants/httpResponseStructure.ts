@@ -39,6 +39,19 @@ export enum HttpStatusMessages {
   AllFieldsAreRequired = "All fields are required",
   InvalidRole = "Invalid role",
   TrainerApproved = "Trainer approved",
-  TrainerRejected = "Trainer rejected"
-  
+  TrainerRejected = "Trainer rejected",
+  UserDetailsUpdated = "Profile updated successfully",
+  FailedToUpdateUserDetails = "Failed to update user details",
+  UserDataRetrieved = "User Details retrieved successfully",
+  FailedToRetrieveUserDetails = "Failed to retrieve user details",
+  IdRequired = "Id Required",
+  InvalidId = "Invalid id",
+  LogoutSuccessful = "Logged out successfully",
+  NoRefreshToken = "No refresh token",
+  InvalidRefreshToken = "Invalid refresh token",
+  AccessTokenRefreshedSuccessFully = "Access Token refreshed successfully",
+  InvalidAccessToken = "Invalid access token",
+  NoAccessToken = "No access Token",
+  FailedToHashPassword = "Failed to hash password",
+  FailedToComparePassword = "Failed to compare password"
 }
