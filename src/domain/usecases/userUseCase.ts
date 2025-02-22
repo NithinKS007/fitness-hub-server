@@ -89,6 +89,7 @@ export class UserUseCase {
 
  public async changePassword(data:changePasswordDTO):Promise<User| null> {
 
+   console.log("passsword coming",data)
     if(!data){
       throw new Error(HttpStatusMessages.AllFieldsAreRequired)
     }
