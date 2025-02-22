@@ -19,7 +19,7 @@ import userModel from "../models/userModel";
 export class MongoUserRepository implements UserRepository {
   public async createUser(data: CreateUserDTO): Promise<User> {
     const userData = await userModel.create(data);
-    return userData.toObject();
+    return userData.toObject()
   }
 
   public async findUserByEmail(data: FindEmailDTO): Promise<User | null> {
@@ -38,7 +38,7 @@ export class MongoUserRepository implements UserRepository {
   }
   public async createGoogleUser(
     data: CreateGoogleUserDTO
-  ): Promise<User | null> {
+  ): Promise<User > {
     return await userModel.create(data);
   }
   public async getUsers(data: Role): Promise<User[]> {

@@ -13,10 +13,12 @@ authRoutes.patch("/forgot-password/:token", AuthController.forgotPassword);
 authRoutes.post("/google",AuthController.createGoogleUser)
 authRoutes.post("/trainer-entroll",AuthController.createTrainer)
 
-authRoutes.put("/update-profile",AuthController.updateUserProfile)
-authRoutes.patch("/update-password",AuthController.changePassword)
+authRoutes.get("/check-blockStatus",authenticate,AuthController.checkBlockStatus)
+authRoutes.put("/update-profile",authenticate,AuthController.updateUserProfile)
+authRoutes.patch("/update-password",authenticate,AuthController.changePassword)
 authRoutes.post("/refresh-token",AuthController.refreshAccessToken)
 authRoutes.post("/sign-out",AuthController.signOut)
+
 
 export default authRoutes
 

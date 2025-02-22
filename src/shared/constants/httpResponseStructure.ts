@@ -53,5 +53,6 @@ export enum HttpStatusMessages {
   InvalidAccessToken = "Invalid access token",
   NoAccessToken = "No access Token",
   FailedToHashPassword = "Failed to hash password",
-  FailedToComparePassword = "Failed to compare password"
+  FailedToComparePassword = "Failed to compare password",
+  PasswordUpdated = "Password updated successfully"
 }
