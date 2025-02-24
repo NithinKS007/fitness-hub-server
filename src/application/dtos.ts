@@ -1,3 +1,8 @@
+import {
+  PlanType,
+  SubPeriod,
+} from "../infrastructure/databases/models/subscriptionModel";
+
 export interface CreateUserDTO {
   fname: string;
   lname: string;
@@ -107,7 +112,23 @@ export interface trainerVerification {
 export type IdDTO = string;
 
 export interface changePasswordDTO {
-  _id:string
+  _id: string;
   password: string;
-  newPassword:string
+  newPassword: string;
+}
+
+export interface CreateSubscriptionDTO {
+  trainerId: string;
+  subPeriod: SubPeriod;
+  planType: PlanType;
+  price: number;
+  durationInWeeks: number;
+  sessionsPerWeek: number;
+  totalSessions: number;
+}
+
+export interface findExistingSubscriptionDTO {
+  trainerId: string;
+  subPeriod:SubPeriod
+  planType:PlanType
 }

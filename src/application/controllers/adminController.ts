@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import {
   HttpStatusCodes,
@@ -11,7 +11,7 @@ const mongouserRepository = new MongoUserRepository();
 const user = new UserUseCase(mongouserRepository);
 
 export class AdminController {
-  static async getUsers(req: Request, res: Response): Promise<void> {
+  static async getUsers(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const usersData = await user.getUsers(req?.query?.role as string);
       sendResponse(
@@ -22,21 +22,14 @@ export class AdminController {
       );
     } catch (error: any) {
       console.log(`Error in  getUsers : ${error}`);
-      sendResponse(
-        res,
-        HttpStatusCodes.InternalServerError,
-        null,
-        HttpStatusMessages.failedToRetrieveUsersList
-      );
+      next(error)
     }
   }
-  static async updateBlockStatus(req: Request, res: Response): Promise<void> {
+  static async updateBlockStatus(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      const { _id } = req.params;
+      let { _id } = req.params;
       const { isBlocked } = req.body;
-      console.log(isBlocked);
       const userData = await user.updateBlockStatus({ _id, isBlocked });
-      console.log("mani", userData);
       sendResponse(
         res,
         HttpStatusCodes.OK,
@@ -45,31 +38,10 @@ export class AdminController {
       );
     } catch (error: any) {
       console.log(`Error in  failed to update block status : ${error}`);
-      if (error.message === HttpStatusMessages.FailedToUpdateBlockStatus) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.FailedToUpdateBlockStatus
-        );
-      } else if (error.message === HttpStatusMessages.AllFieldsAreRequired) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.AllFieldsAreRequired
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.FailedToUpdateBlockStatus
-        );
-      }
+       next(error)
     }
   }
-  static async trainerVerification(req: Request, res: Response): Promise<void> {
+  static async trainerVerification(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const { _id } = req.params;
       const { action } = req.body;
@@ -94,26 +66,11 @@ export class AdminController {
       }
     } catch (error: any) {
       console.log(`Error to verify trainer : ${error}`);
-      if (error.message === HttpStatusMessages.AllFieldsAreRequired) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.AllFieldsAreRequired
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.InternalServerError
-        );
-      }
+      next(error)
     }
   }
-  static async getUserDetails(req: Request, res: Response): Promise<void> {
+  static async getUserDetails(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      console.log("req.params", req.params._id);
       const userData = await user.getUserDetails(req.params._id);
       sendResponse(
         res,
@@ -122,28 +79,8 @@ export class AdminController {
         HttpStatusMessages.UserDataRetrieved
       );
     } catch (error: any) {
-      if (error.message === HttpStatusMessages.FailedToRetrieveUserDetails) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.FailedToRetrieveUserDetails
-        );
-      } else if (error.message === HttpStatusMessages.IdRequired) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.IdRequired
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.InternalServerError
-        );
-      }
+      console.log(`Failed to get user details: ${error}`);
+      next(error)
     }
   }
 }

@@ -4,6 +4,7 @@ import { comparePassword } from "../../shared/utils/hashPassword";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { SignInDTO } from "../../application/dtos";
 import { generateAccessToken, generateRefreshToken } from "../../infrastructure/services/jwtService";
+import { ForbiddenError, validationError } from "../../interfaces/middlewares/errorMiddleWare";
 
 export class SigninUserUseCase {
   constructor(private userRepository: UserRepository) {}
@@ -13,20 +14,20 @@ export class SigninUserUseCase {
      const {email,password} = data
      const userData = await this.userRepository.findUserByEmail({email:email})
      if(!userData){
-      throw new Error(HttpStatusMessages.EmailNotFound)
+      throw new validationError(HttpStatusMessages.EmailNotFound)
      }
      if(userData && userData.googleVerified){
-      throw new Error(HttpStatusMessages.DifferentLoginMethod)
+      throw new validationError(HttpStatusMessages.DifferentLoginMethod)
      }
      const isValidPassword = await comparePassword(password,userData.password)
      if(!userData.otpVerified){
-      throw new Error(HttpStatusMessages.AccountNotVerified)
+      throw new ForbiddenError(HttpStatusMessages.AccountNotVerified)
      }
      if(userData.isBlocked){
-      throw new Error(HttpStatusMessages.AccountBlocked)
+      throw new ForbiddenError(HttpStatusMessages.AccountBlocked)
    }
      if(!isValidPassword){
-        throw new Error(HttpStatusMessages.IncorrectPassword)
+        throw new validationError(HttpStatusMessages.IncorrectPassword)
      }
 
      const accessToken = generateAccessToken(userData._id,userData.role)

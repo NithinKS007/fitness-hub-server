@@ -19,7 +19,7 @@ import userModel from "../models/userModel";
 export class MongoUserRepository implements UserRepository {
   public async createUser(data: CreateUserDTO): Promise<User> {
     const userData = await userModel.create(data);
-    return userData.toObject()
+    return userData.toObject();
   }
 
   public async findUserByEmail(data: FindEmailDTO): Promise<User | null> {
@@ -36,9 +36,7 @@ export class MongoUserRepository implements UserRepository {
     const { email, password } = data;
     return await userModel.findOneAndUpdate({ email }, { password: password });
   }
-  public async createGoogleUser(
-    data: CreateGoogleUserDTO
-  ): Promise<User > {
+  public async createGoogleUser(data: CreateGoogleUserDTO): Promise<User> {
     return await userModel.create(data);
   }
   public async getUsers(data: Role): Promise<User[]> {
@@ -61,7 +59,7 @@ export class MongoUserRepository implements UserRepository {
     if (action === "approved") {
       return await userModel.findByIdAndUpdate(
         _id,
-        { "trainerData.isApproved": true },
+        { isApproved: true },
         { new: true }
       );
     }
@@ -91,8 +89,6 @@ export class MongoUserRepository implements UserRepository {
       otherConcerns,
     } = data;
 
-    console.log("database data", data);
-
     return await userModel.findByIdAndUpdate(
       _id,
       {
@@ -106,11 +102,11 @@ export class MongoUserRepository implements UserRepository {
           age,
           height,
           weight,
-          "medicalDetails.bloodGroup": bloodGroup,
-          "medicalDetails.medicalConditions": medicalConditions,
-          "medicalDetails.otherConcerns": otherConcerns,
-          "trainerData.yearsOfExperience": yearsOfExperience,
-          "trainerData.aboutMe": aboutMe,
+          bloodGroup,
+          medicalConditions,
+          otherConcerns,
+          yearsOfExperience,
+          aboutMe,
         },
       },
       { new: true }
@@ -122,7 +118,7 @@ export class MongoUserRepository implements UserRepository {
     const { _id, certifications } = data;
     return await userModel.findByIdAndUpdate(
       _id,
-      { $push: { "trainerData.certifications": { $each: certifications } } },
+      { $push: { certifications: { $each: certifications } } },
       { new: true }
     );
   }
@@ -132,7 +128,7 @@ export class MongoUserRepository implements UserRepository {
     const { _id, specifications } = data;
     return await userModel.findByIdAndUpdate(
       _id,
-      { $push: { "trainerData.specializations": { $each: specifications } } },
+      { $push: { specializations: { $each: specifications } } },
       { new: true }
     );
   }
@@ -140,7 +136,7 @@ export class MongoUserRepository implements UserRepository {
     return await userModel.findById(data);
   }
   public async changePassword(data: changePasswordDTO): Promise<User | null> {
-    const {_id,newPassword} = data
-    return await userModel.findByIdAndUpdate(_id,{password:newPassword})
+    const { _id, newPassword } = data;
+    return await userModel.findByIdAndUpdate(_id, { password: newPassword });
   }
 }
