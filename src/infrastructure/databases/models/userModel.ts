@@ -16,19 +16,17 @@ interface IUser extends Document {
   age?: string;
   height?: string;
   weight?: string;
-  gender: "male" | "female" 
-  trainerData?: {
-    yearsOfExperience?: string;
-    specializations?: string[];
-    certifications?: { fileName: string; url: string }[];
-    isApproved?: boolean;
-    aboutMe?: string;
-  };
-  medicalDetails?: {
-    bloodGroup?: string;
-    medicalConditions?: string;
-    otherConcerns?: string;
-  };
+  gender: "male" | "female";
+
+  yearsOfExperience?: string;
+  specializations?: string[];
+  certifications?: { fileName: string; url: string }[];
+  isApproved?: boolean;
+  aboutMe?: string;
+
+  bloodGroup?: string;
+  medicalConditions?: string;
+  otherConcerns?: string;
 }
 
 const userSchema: Schema = new Schema(
@@ -53,18 +51,16 @@ const userSchema: Schema = new Schema(
     height: { type: String },
     weight: { type: String },
     gender: { type: String },
-    trainerData: {
-      yearsOfExperience: { type: String },
-      specializations: [{ type: String }],
-      certifications: [{ fileName: String, url: String }],
-      isApproved: { type: Boolean, default: false },
-      aboutMe: { type: String },
-    },
-    medicalDetails: {
-      bloodGroup: { type: String },
-      medicalConditions: { type: String },
-      otherConcerns: { type: String },
-    },
+    
+    yearsOfExperience: { type: String },
+    specializations: [{ type: String }],
+    certifications: [{ fileName: String, url: String }],
+    isApproved: { type: Boolean, default: false },
+    aboutMe: { type: String },
+
+    bloodGroup: { type: String },
+    medicalConditions: { type: String },
+    otherConcerns: { type: String },
   },
   { timestamps: true }
 );

@@ -1,6 +1,7 @@
 import { googleTokenDTO } from "../../application/dtos";
 import { verifyGoogleToken } from "../../infrastructure/services/googleAuthService";
 import { generateAccessToken, generateRefreshToken } from "../../infrastructure/services/jwtService";
+import { ForbiddenError, validationError } from "../../interfaces/middlewares/errorMiddleWare";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { User } from "../entities/userEntity";
 import { UserRepository } from "../interfaces/userRepository";
@@ -12,16 +13,16 @@ export class GoogleAuthUseCase {
     const { token } = data;
     const googleUserInfo = await verifyGoogleToken(token)
     if (!googleUserInfo || !googleUserInfo.email) {
-      throw new Error(HttpStatusMessages.EmailNotFound);
+      throw new validationError(HttpStatusMessages.EmailNotFound);
     }
     const { email,sub } = googleUserInfo;
     
     const userData = await this.userRepository.findUserByEmail({email})
     if(userData&&userData.isBlocked){
-      throw new Error(HttpStatusMessages.AccountBlocked)
+      throw new ForbiddenError(HttpStatusMessages.AccountBlocked)
     }
     if(userData&&userData.otpVerified){
-      throw new Error(HttpStatusMessages.DifferentLoginMethod)
+      throw new validationError(HttpStatusMessages.DifferentLoginMethod)
     }
     if(!userData){
       const {email,given_name,family_name,picture} = googleUserInfo
@@ -29,12 +30,12 @@ export class GoogleAuthUseCase {
       const userData = await this.userRepository.createGoogleUser(userObj)
       return {
          userData,
-        accessToken: generateAccessToken(sub, email),
-        refreshToken: generateRefreshToken(sub, email),
+        accessToken: generateAccessToken(userData._id, email),
+        refreshToken: generateRefreshToken(userData._id, email),
       };
     }
-    const accessToken = generateAccessToken(sub, email);
-    const refreshToken = generateRefreshToken(sub, email);
+    const accessToken = generateAccessToken(userData._id, email);
+    const refreshToken = generateRefreshToken(userData._id, email);
     return {
        userData,
       accessToken,

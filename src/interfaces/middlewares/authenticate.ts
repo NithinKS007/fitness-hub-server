@@ -5,6 +5,7 @@ import { HttpStatusCodes, HttpStatusMessages } from "../../shared/constants/http
 import { JwtPayload } from "jsonwebtoken";
 import { CheckBlockStatus } from "../../domain/usecases/checkBlockStatus";
 import { MongoUserRepository } from "../../infrastructure/databases/repositories/mongouserRepository";
+import { ForbiddenError, UnauthorizedError } from "./errorMiddleWare";
 
 const mongouserRepository = new MongoUserRepository()
 const user = new CheckBlockStatus(mongouserRepository)
@@ -12,29 +13,29 @@ const user = new CheckBlockStatus(mongouserRepository)
 export const authenticate = async(req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
-    sendResponse(res, HttpStatusCodes.Unauthorized, null, "authentication header is missing");
-    return;
+    next(new UnauthorizedError(HttpStatusMessages.AuthenticationHeaderIsMissing));
+    return
   }
   const accessToken = authHeader.split(' ')[1]; 
   console.log("token middle",accessToken)
   if (!accessToken) {
-    sendResponse(res, HttpStatusCodes.Unauthorized, null, HttpStatusMessages.NoAccessToken);
-    return;
+    next(new UnauthorizedError(HttpStatusMessages.NoAccessToken));
+    return
   }
   try {
     const decoded = authenticateAccessToken(accessToken);
     req.user = decoded as JwtPayload;
-
     const {_id} = req.user
      const isBlocked = await user.checkBlockStatus(_id)
      if (isBlocked) {
-      sendResponse(res, HttpStatusCodes.Forbidden, null, HttpStatusMessages.AccountBlocked);
+      next(new ForbiddenError(HttpStatusMessages.AccountBlocked));
       return
     }
 
     next();
   } catch (error:any) {
-    console.log("Error in authentication middleware:", error);
-    sendResponse(res, HttpStatusCodes.Unauthorized, null, HttpStatusMessages.NoAccessToken);
+    console.log(`Error in authentication middleware${error} `);
+   next(new UnauthorizedError(HttpStatusMessages.NoAccessToken));
+   return
   }
 };

@@ -5,6 +5,7 @@ import { OtpDTO } from "../../application/dtos";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { sendEmail } from "../../infrastructure/services/emailService";
 import generateOtp from "../../shared/utils/otpGenerator";
+import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 
 
 export class OtpUseCase {
@@ -17,7 +18,7 @@ export class OtpUseCase {
     const otpData = await this.otpRepository.verifyOtpByEmail(data);
 
     if(!otpData){
-       throw new Error(HttpStatusMessages.InvalidOtp)
+       throw new  validationError(HttpStatusMessages.InvalidOtp)
     }
     const {email} = otpData
     await this.userRepository.updateUserVerificationStatus({email})
@@ -29,7 +30,7 @@ export class OtpUseCase {
      const userData = await this.userRepository.findUserByEmail({email})
 
      if(userData?.otpVerified) {
-       throw new Error(HttpStatusMessages.AlreadyUserVerifiedByOtp)
+       throw new validationError(HttpStatusMessages.AlreadyUserVerifiedByOtp)
      }
      const otp = generateOtp(6)
      await this.otpRepository.createOtp({email,otp})

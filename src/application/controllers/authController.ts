@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import {
   HttpStatusCodes,
@@ -18,7 +18,6 @@ import {
   generateAccessToken,
 } from "../../infrastructure/services/jwtService";
 import { JwtPayload } from "jsonwebtoken";
-import { CheckBlockStatus } from "../../domain/usecases/checkBlockStatus";
 
 const mongouserRepository = new MongoUserRepository();
 const mongoOtpRepository = new MongoOtpRepository();
@@ -35,10 +34,9 @@ const passwordReset = new ForgotPasswordUseCase(
 );
 const googleAuth = new GoogleAuthUseCase(mongouserRepository);
 const user = new UserUseCase(mongouserRepository);
-const checkBlockStatus = new CheckBlockStatus(mongouserRepository);
 
 export class AuthController {
-  static async signup(req: Request, res: Response): Promise<void> {
+  static async signup(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const createdUser = await createUser.createUser(req.body);
       sendResponse(
@@ -49,47 +47,11 @@ export class AuthController {
       );
     } catch (error: any) {
       console.log(`Error in  signup : ${error}`);
-      if (error.message === HttpStatusMessages.EmailConflict) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.EmailConflict
-        );
-      }
-      if (error.message === HttpStatusMessages.AllFieldsAreRequired) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.AllFieldsAreRequired
-        );
-      } else if (error.message === HttpStatusMessages.FailedToSendEmail) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.FailedToSendEmail
-        );
-      } else if (error.message === HttpStatusMessages.DifferentLoginMethod) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.DifferentLoginMethod
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.FailedToCreateUser
-        );
-      }
+      next(error)
     }
   }
 
-  static async signin(req: Request, res: Response): Promise<void> {
+  static async signin(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const { userData, accessToken, refreshToken } = await signinUser.execute(
         req.body
@@ -109,53 +71,10 @@ export class AuthController {
       );
     } catch (error: any) {
       console.log(`Error in  signin : ${error}`);
-
-      if (error.message === HttpStatusMessages.EmailNotFound) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.EmailNotFound
-        );
-      } else if (error.message === HttpStatusMessages.DifferentLoginMethod) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.DifferentLoginMethod
-        );
-      } else if (error.message === HttpStatusMessages.IncorrectPassword) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.IncorrectPassword
-        );
-      } else if (error.message === HttpStatusMessages.AccountBlocked) {
-        sendResponse(
-          res,
-          HttpStatusCodes.Forbidden,
-          null,
-          HttpStatusMessages.AccountBlocked
-        );
-      } else if (error.message === HttpStatusMessages.InvalidOtp) {
-        sendResponse(
-          res,
-          HttpStatusCodes.Forbidden,
-          null,
-          HttpStatusMessages.InvalidOtp
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.FailedToSignin
-        );
-      }
+      next(error)
     }
   }
-  static async verifyOtp(req: Request, res: Response): Promise<void> {
+  static async verifyOtp(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       await otp.verifyOtpByEmail(req.body);
       sendResponse(
@@ -166,24 +85,10 @@ export class AuthController {
       );
     } catch (error: any) {
       console.log(`Error in  verifyotp : ${error}`);
-      if (error.message === HttpStatusMessages.InvalidOtp) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.InvalidOtp
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.InternalServerError
-        );
-      }
+      next(error)
     }
   }
-  static async resendOtp(req: Request, res: Response): Promise<void> {
+  static async resendOtp(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       console.log("body", req.body);
       await otp.resendOtp(req.body);
@@ -195,26 +100,13 @@ export class AuthController {
       );
     } catch (error: any) {
       console.log(`Error in  resendotp : ${error}`);
-      if (error.message === HttpStatusMessages.AlreadyUserVerifiedByOtp) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.AlreadyUserVerifiedByOtp
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.InternalServerError
-        );
-      }
+      next(error)
     }
   }
   static async generatePassResetLink(
     req: Request,
-    res: Response
+    res: Response,
+    next:NextFunction
   ): Promise<void> {
     try {
       const tokenData = await passwordReset.generatePassResetLink(req.body);
@@ -226,38 +118,10 @@ export class AuthController {
       );
     } catch (error: any) {
       console.log(`Error in  sending link to reset password : ${error}`);
-      if (error.message === HttpStatusMessages.EmailNotFound) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.EmailNotFound
-        );
-      } else if (error.message === HttpStatusMessages.DifferentLoginMethod) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.DifferentLoginMethod
-        );
-      } else if (error.message === HttpStatusMessages.AccountNotVerified) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.AccountNotVerified
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.FailedToSendEmail
-        );
-      }
+      next(error)
     }
   }
-  static async forgotPassword(req: Request, res: Response): Promise<void> {
+  static async forgotPassword(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const { token } = req.params;
       const { password } = req.body;
@@ -272,31 +136,11 @@ export class AuthController {
         HttpStatusMessages.PassWordResetSuccess
       );
     } catch (error: any) {
-      if (error.message === HttpStatusMessages.LinkExpired) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.LinkExpired
-        );
-      } else if (error.message === HttpStatusMessages.EmailNotFound) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.EmailNotFound
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.InternalServerError
-        );
-      }
+      console.log(`Error in forgotpassword: ${error}`);
+      next(error)
     }
   }
-  static async createGoogleUser(req: Request, res: Response): Promise<void> {
+  static async createGoogleUser(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const { userData, accessToken, refreshToken } =
         await googleAuth.createGoogleUser(req.body);
@@ -313,39 +157,12 @@ export class AuthController {
         HttpStatusMessages.LoginSuccessful
       );
     } catch (error: any) {
-      if (error.message === HttpStatusMessages.EmailNotFound) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.EmailNotFound
-        );
-      } else if (error.message === HttpStatusMessages.AccountBlocked) {
-        sendResponse(
-          res,
-          HttpStatusCodes.Forbidden,
-          null,
-          HttpStatusMessages.AccountBlocked
-        );
-      } else if (error.message === HttpStatusMessages.DifferentLoginMethod) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.DifferentLoginMethod
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.InternalServerError
-        );
-      }
+      console.log(`Error to create google user: ${error}`);
+      next(error)
     }
   }
 
-  static async createTrainer(req: Request, res: Response): Promise<void> {
+  static async createTrainer(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const createdTrainer = await createUser.createTrainer(req.body);
       sendResponse(
@@ -355,47 +172,13 @@ export class AuthController {
         HttpStatusMessages.UserCreatedSuccessfully
       );
     } catch (error: any) {
-      if (error.message === HttpStatusMessages.AllFieldsAreRequired) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.AllFieldsAreRequired
-        );
-      } else if (error.message === HttpStatusMessages.EmailConflict) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.EmailConflict
-        );
-      } else if (error.message === HttpStatusMessages.FailedToSendEmail) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.FailedToSendEmail
-        );
-      } else if (error.message === HttpStatusMessages.DifferentLoginMethod) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.DifferentLoginMethod
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.InternalServerError
-        );
-      }
+      console.log(`Error to create trainer: ${error}`);
+      next(error)
     }
   }
-  static async updateUserProfile(req: Request, res: Response): Promise<void> {
+  static async updateUserProfile(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      console.log("req.body", req.body);
+      console.log("req.body", req.body)
       const updatedUserData = await user.updateUserProfile(req.body);
       sendResponse(
         res,
@@ -404,25 +187,12 @@ export class AuthController {
         HttpStatusMessages.UserDetailsUpdated
       );
     } catch (error: any) {
-      if (error.message === HttpStatusMessages.FailedToUpdateUserDetails) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.FailedToUpdateUserDetails
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.InternalServerError
-        );
-      }
+      console.log(`Error in updating user profile: ${error}`);
+      next(error)
     }
   }
 
-  static async changePassword(req: Request, res: Response): Promise<void> {
+  static async changePassword(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const { _id } = req.user;
 
@@ -435,39 +205,12 @@ export class AuthController {
         HttpStatusMessages.PasswordUpdated
       );
     } catch (error: any) {
-      if (error.message === HttpStatusMessages.AllFieldsAreRequired) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.AllFieldsAreRequired
-        );
-      } else if (error.message === HttpStatusMessages.InvalidId) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.InvalidId
-        );
-      } else if (error.message === HttpStatusMessages.IncorrectPassword) {
-        sendResponse(
-          res,
-          HttpStatusCodes.BadRequest,
-          null,
-          HttpStatusMessages.IncorrectPassword
-        );
-      } else {
-        sendResponse(
-          res,
-          HttpStatusCodes.InternalServerError,
-          null,
-          HttpStatusMessages.InternalServerError
-        );
-      }
+      console.log(`Error to change password: ${error}`);
+      next(error)
     }
   }
 
-  static async signOut(req: Request, res: Response): Promise<void> {
+  static async signOut(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       res.clearCookie("refreshToken", {
         httpOnly: true,
@@ -481,12 +224,8 @@ export class AuthController {
         HttpStatusMessages.LogoutSuccessful
       );
     } catch (error) {
-      sendResponse(
-        res,
-        HttpStatusCodes.InternalServerError,
-        null,
-        HttpStatusMessages.InternalServerError
-      );
+      console.log(`Error in signout: ${error}`);
+      next(error)
     }
   }
 
@@ -510,23 +249,5 @@ export class AuthController {
       HttpStatusMessages.AccessTokenRefreshedSuccessFully
     );
   }
-  static async checkBlockStatus(req: Request, res: Response): Promise<void> {
-    try {
-      const { _id } = req.user;
-      const blockstatus = await checkBlockStatus.checkBlockStatus(_id);
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-         {isBlocked:blockstatus},
-        "block status retrieved successfully"
-      );
-    } catch (error: any) {
-      sendResponse(
-        res,
-        HttpStatusCodes.InternalServerError,
-        null,
-        HttpStatusMessages.InternalServerError
-      );
-    }
-  }
+
 }

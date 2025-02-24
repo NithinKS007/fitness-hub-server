@@ -4,6 +4,7 @@ import { changePasswordDTO, IdDTO, Role, trainerVerification, updateBlockStatus,
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { cloudinaryUpload } from "../../infrastructure/services/cloudinaryService";
 import { comparePassword, hashPassword } from "../../shared/utils/hashPassword";
+import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 
 
 export class UserUseCase {
@@ -11,40 +12,43 @@ export class UserUseCase {
   
   public async getUsers(role:string): Promise<User[]> {
 
-    console.log("Received role parameter:", role);
-
     if (role!== "user" && role !== "trainer") {
-      throw new Error(HttpStatusMessages.InvalidRole); 
+      throw new validationError(HttpStatusMessages.InvalidRole); 
     }
     return await this.userRepository.getUsers(role as Role)
   }
+
+  
   public async updateBlockStatus(data:updateBlockStatus):Promise<User | null>{
      const { _id, isBlocked } = data
      if(!_id && isBlocked === undefined){
-       throw new Error(HttpStatusMessages.AllFieldsAreRequired)
+       throw new validationError(HttpStatusMessages.AllFieldsAreRequired)
      }
     const userData = await this.userRepository.updateBlockStatus({_id,isBlocked})
     if(!userData){
-      throw new Error(HttpStatusMessages.FailedToUpdateBlockStatus)
+      throw new validationError(HttpStatusMessages.FailedToUpdateBlockStatus)
     }
     return userData
   }
+
+
    public async trainerVerification(data:trainerVerification):Promise<User | null>{
     const { _id, action } = data
+
+    console.log("action",action)
     if(!_id && action===undefined){
-      throw new Error(HttpStatusMessages.AllFieldsAreRequired)
+      throw new validationError(HttpStatusMessages.AllFieldsAreRequired)
     }
     return await this.userRepository.trainerVerification({_id,action})
   }
+
+
   public async updateUserProfile(data:UpdateUserDetails):Promise<User | null>{
 
      let {certifications,specifications,_id,...profileData} = data
 
-     console.log("certificatinos",certifications)
-
     let result 
     if(certifications && certifications.length > 0){
-      console.log("certificatinossdfdsfs",certifications)
         result = await Promise.all(
         certifications.map(async (certi) => {
           const base64 = await cloudinaryUpload(certi.url, process.env.CLOUDINARY_TRAINER_CERTIFICATES_FOLDER as string);
@@ -66,46 +70,48 @@ export class UserUseCase {
 
     const updatedUserData = await this.userRepository.updateUserProfile({_id,...profileData})
     if(!updatedUserData){
-      throw new Error(HttpStatusMessages.FailedToUpdateUserDetails)
+      throw new validationError(HttpStatusMessages.FailedToUpdateUserDetails)
     }
 
-    console.log("data from base",updatedUserData)
     return updatedUserData
   }
+
+
   public async getUserDetails(data:IdDTO):Promise<User | null>{
 
      if(!data){
-      throw new Error(HttpStatusMessages.IdRequired)
+      throw new validationError(HttpStatusMessages.IdRequired)
      }
     const userData = await this.userRepository.findUserById(data)
 
     if(!userData){
-      throw new Error(HttpStatusMessages.FailedToRetrieveUserDetails)
+      throw new validationError(HttpStatusMessages.FailedToRetrieveUserDetails)
     }
 
-    console.log("returned data",userData)
     return userData
  }
 
+
  public async changePassword(data:changePasswordDTO):Promise<User| null> {
 
-   console.log("passsword coming",data)
     if(!data){
-      throw new Error(HttpStatusMessages.AllFieldsAreRequired)
+      throw new validationError(HttpStatusMessages.AllFieldsAreRequired)
     }
 
     const userData = await this.userRepository.findUserById(data._id)
     if(!userData){
-       throw new Error(HttpStatusMessages.InvalidId)
+       throw new validationError(HttpStatusMessages.InvalidId)
     }
 
     const isValidPassword = await comparePassword(data.password,userData.password)
 
     if(!isValidPassword){
-      throw new Error(HttpStatusMessages.IncorrectPassword)
+      throw new validationError(HttpStatusMessages.IncorrectPassword)
    }
     const hashedPassword = await hashPassword(data.newPassword)
     data.newPassword = hashedPassword
     return await this.userRepository.changePassword(data)
  }
+
+
 }

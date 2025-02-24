@@ -54,5 +54,12 @@ export enum HttpStatusMessages {
   NoAccessToken = "No access Token",
   FailedToHashPassword = "Failed to hash password",
   FailedToComparePassword = "Failed to compare password",
-  PasswordUpdated = "Password updated successfully"
+  PasswordUpdated = "Password updated successfully",
+  MissingCloudinaryCredentials = "Missing required cloudinary environment variables",
+  MissingJwtEnvironmentVariables = "Missing required jwt environment variables",
+  FailedToUploadToCloudinary = "Failed to upload data to cloudinary",
+  AuthenticationHeaderIsMissing = "Authentication header is missing",
+  SubscriptionCreated = "Subscription added successfully",
+  SubscriptionAlreadyExists = "Cannot add subscription , already exists in the database",
+  SubscriptionsListRetrieved = "Subscriptions list retrieved successfully"
 }

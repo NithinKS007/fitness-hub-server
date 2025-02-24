@@ -1,5 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary'; 
 import dotenv from 'dotenv';
+import { HttpStatusMessages } from '../../shared/constants/httpResponseStructure';
+import { validationError } from '../../interfaces/middlewares/errorMiddleWare';
 dotenv.config();
 interface CloudinaryConfig {
   CLOUDINARY_NAME: string;
@@ -10,7 +12,7 @@ interface CloudinaryConfig {
 const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env as unknown as CloudinaryConfig;
 
 if (!CLOUDINARY_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
-  throw new Error('Missing cloudinary environment variables');
+  throw new validationError(HttpStatusMessages.MissingCloudinaryCredentials);
 }
 
 cloudinary.config({

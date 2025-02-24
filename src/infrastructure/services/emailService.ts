@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import dotenv from "dotenv"
+import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 
 dotenv.config()
 
@@ -30,6 +31,6 @@ export const sendEmail = async (email:string, subject:string, text:string) => {
         console.log('Email sent successfully');
     } catch (error) {
         console.log(`Error sending the email:${error}`);
-        throw new Error(HttpStatusMessages.FailedToSendEmail);
+        throw new validationError(HttpStatusMessages.FailedToSendEmail);
     }
 };

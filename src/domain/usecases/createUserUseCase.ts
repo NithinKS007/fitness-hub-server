@@ -6,6 +6,7 @@ import { hashPassword } from "../../shared/utils/hashPassword";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { sendEmail } from "../../infrastructure/services/emailService";
 import generateOtp from "../../shared/utils/otpGenerator";
+import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 
 export class CreateUserUseCase {
   constructor(private userRepository: UserRepository,private otpRepository:OtpRepository) {}
@@ -23,15 +24,15 @@ export class CreateUserUseCase {
       !email ||
       !password
     ) {
-      throw new Error(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
     }
 
     const existinguser = await this.userRepository.findUserByEmail({email:email})
     if(existinguser && existinguser.otpVerified) {
-      throw new Error(HttpStatusMessages.EmailConflict)
+      throw new validationError(HttpStatusMessages.EmailConflict)
     }
     if(existinguser&&!existinguser.otpVerified && existinguser.googleVerified){
-      throw new Error(HttpStatusMessages.DifferentLoginMethod)
+      throw new validationError(HttpStatusMessages.DifferentLoginMethod)
     }
     if(existinguser && !existinguser.otpVerified){
       const otp = generateOtp(6)
@@ -69,17 +70,17 @@ export class CreateUserUseCase {
       !dateOfBirth||
       !phone
     ) {
-      throw new Error(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
     }
 
     console.log("exp",yearsOfExperience)
 
     const existinguser = await this.userRepository.findUserByEmail({email:email})
     if(existinguser && existinguser.otpVerified) {
-      throw new Error(HttpStatusMessages.EmailConflict)
+      throw new validationError(HttpStatusMessages.EmailConflict)
     }
     if(existinguser&&!existinguser.otpVerified && existinguser.googleVerified){
-      throw new Error(HttpStatusMessages.DifferentLoginMethod)
+      throw new validationError(HttpStatusMessages.DifferentLoginMethod)
     }
     if(existinguser && !existinguser.otpVerified){
       const otp = generateOtp(6)
@@ -89,7 +90,7 @@ export class CreateUserUseCase {
     }
 
     console.log("req.body for registering trainer",data)
-    const createdTrainerData = {...data, trainerData: { yearsOfExperience: yearsOfExperience},role:"trainer",dateOfBirth:new Date(dateOfBirth as string)}
+    const createdTrainerData = {...data,role:"trainer",dateOfBirth:new Date(dateOfBirth as string)}
     const hashedPassword = await hashPassword(password)
     const createdTrainer = await this.userRepository.createUser({...createdTrainerData,password:hashedPassword});
     const otp = generateOtp(6)

@@ -6,6 +6,7 @@ import { sendEmail } from "../../infrastructure/services/emailService";
 import { PassResetTokenEntity } from "../entities/passResetTokenEntity";
 import { hashToken, generateToken} from "../../shared/utils/generateToken";
 import { hashPassword } from "../../shared/utils/hashPassword";
+import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 
 export class ForgotPasswordUseCase {
   constructor(private userRepository: UserRepository,private passwordResetRepository:PasswordResetRepository ) {}
@@ -14,13 +15,13 @@ export class ForgotPasswordUseCase {
     const { email } = data;
     const userData = await this.userRepository.findUserByEmail({email: email});
     if (!userData) {
-      throw new Error(HttpStatusMessages.EmailNotFound);
+      throw new validationError(HttpStatusMessages.EmailNotFound);
     }
     if(userData.googleVerified){
-      throw new Error(HttpStatusMessages.DifferentLoginMethod)
+      throw new validationError(HttpStatusMessages.DifferentLoginMethod)
     }
     if (userData && !userData.otpVerified) {
-      throw new Error(HttpStatusMessages.AccountNotVerified);
+      throw new validationError(HttpStatusMessages.AccountNotVerified);
     }
     const token = await generateToken();
     const hashedToken = await hashToken(token)
@@ -44,12 +45,12 @@ export class ForgotPasswordUseCase {
     const tokenData = await this.passwordResetRepository.verifyToken({resetToken:token})
 
     if(!tokenData) {
-       throw new Error(HttpStatusMessages.LinkExpired)
+       throw new validationError(HttpStatusMessages.LinkExpired)
     }
     const { email } = tokenData
     const userData = await this.userRepository.findUserByEmail({email})
     if(!userData){
-      throw new Error(HttpStatusMessages.EmailNotFound)
+      throw new validationError(HttpStatusMessages.EmailNotFound)
     }
     const hashedPassword = await hashPassword(password as string)
     await this.userRepository.forgotPassword({email,password:hashedPassword})
