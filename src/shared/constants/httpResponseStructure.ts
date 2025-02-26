@@ -60,6 +60,13 @@ export enum HttpStatusMessages {
   FailedToUploadToCloudinary = "Failed to upload data to cloudinary",
   AuthenticationHeaderIsMissing = "Authentication header is missing",
   SubscriptionCreated = "Subscription added successfully",
-  SubscriptionAlreadyExists = "Cannot add subscription , already exists in the database",
-  SubscriptionsListRetrieved = "Subscriptions list retrieved successfully"
+  SubscriptionAlreadyExists = "Cannot made changes, subscription already exists",
+  SubscriptionsListRetrieved = "Subscriptions list retrieved successfully",
+  SubscriptionBlockStatusUpdated = "Subscription status updated successfully",
+  EditedSuccessfully = "Changes made successfully",
+  FailedToDelete= "Failed to delete",
+  DeletedSuccessfully = "Deleted Successfully",
+  FailedToRetrieveTrainerDetails = "Failed to retrieve trainer details",
+  FailedToRetrieveTrainerWithSubscription = "Failed to retrieve trainer with subscription details"
+  
 }

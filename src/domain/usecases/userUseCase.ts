@@ -5,10 +5,12 @@ import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure
 import { cloudinaryUpload } from "../../infrastructure/services/cloudinaryService";
 import { comparePassword, hashPassword } from "../../shared/utils/hashPassword";
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
+import { TrainerWithSubscription } from "../entities/trainerWithSubscription";
+import { SubscriptionRepository } from "../interfaces/subscriptionRepository";
 
 
 export class UserUseCase {
-  constructor(private userRepository:UserRepository) {}
+  constructor(private userRepository:UserRepository ,private subscriptionRepository:SubscriptionRepository) {}
   
   public async getUsers(role:string): Promise<User[]> {
 
@@ -113,5 +115,42 @@ export class UserUseCase {
     return await this.userRepository.changePassword(data)
  }
 
+ public async getApprovedTrainers():Promise<User []> {
 
+  const trainersList = await this.userRepository.getApprovedTrainers()
+  if(!trainersList){
+     throw new validationError(HttpStatusMessages.FailedToRetrieveTrainersList)
+  }
+
+  return trainersList
+}
+
+
+ public async getTrainerWithSubscription(data:IdDTO):Promise<TrainerWithSubscription > {
+
+  if(!data){
+    throw new validationError(HttpStatusMessages.AllFieldsAreRequired)
+  }
+  const trainerData = await this.userRepository.findUserById(data)
+  if(!trainerData){
+     throw new validationError(HttpStatusMessages.FailedToRetrieveTrainerDetails)
+  }
+  const trainerSubscriptionData = await this.subscriptionRepository.findSubscriptionByTrainerId(data)
+
+  if(!trainerSubscriptionData){
+    throw new validationError(HttpStatusMessages.FailedToRetrieveTrainerWithSubscription)
+  }
+  return {
+    ...trainerData,
+    trainerSubscriptionData:trainerSubscriptionData
+  }
+
+ }
+
+ public async  getTrainerSearchSuggestions(query:string):Promise<string[]> {
+  const suggestedData = await this.getTrainerSearchSuggestions(query)
+  return suggestedData
+
+
+ }
 }

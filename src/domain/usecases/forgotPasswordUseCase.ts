@@ -55,5 +55,7 @@ export class ForgotPasswordUseCase {
     const hashedPassword = await hashPassword(password as string)
     await this.userRepository.forgotPassword({email,password:hashedPassword})
   }
+
+  
   
 }

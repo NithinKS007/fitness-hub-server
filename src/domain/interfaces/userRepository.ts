@@ -15,4 +15,6 @@ export interface UserRepository {
   updateUserProfile(data:UpdateUserDetails):Promise<User | null>
   findUserById(data:IdDTO):Promise<User | null>
   changePassword(data:changePasswordDTO):Promise<User| null>
+  getApprovedTrainers():Promise<User[]>
+  getTrainerSearchSuggestions(query:string):Promise<string[]>
 }

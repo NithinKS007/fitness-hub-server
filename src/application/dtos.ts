@@ -1,5 +1,4 @@
 import {
-  PlanType,
   SubPeriod,
 } from "../infrastructure/databases/models/subscriptionModel";
 
@@ -120,7 +119,6 @@ export interface changePasswordDTO {
 export interface CreateSubscriptionDTO {
   trainerId: string;
   subPeriod: SubPeriod;
-  planType: PlanType;
   price: number;
   durationInWeeks: number;
   sessionsPerWeek: number;
@@ -130,5 +128,19 @@ export interface CreateSubscriptionDTO {
 export interface findExistingSubscriptionDTO {
   trainerId: string;
   subPeriod:SubPeriod
-  planType:PlanType
+}
+
+export interface updateSubscriptionBlockStatus {
+  _id:string
+  isBlocked:string
+}
+
+export interface updateSubscriptionDetails {
+  _id:string,
+  trainerId:string
+  subPeriod:SubPeriod
+  price:number,
+  durationInWeeks:number
+  sessionsPerWeek: number;
+  totalSessions: number;
 }
