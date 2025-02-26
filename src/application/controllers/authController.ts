@@ -18,6 +18,7 @@ import {
   generateAccessToken,
 } from "../../infrastructure/services/jwtService";
 import { JwtPayload } from "jsonwebtoken";
+import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/mongoSubscriptionRepository";
 
 const mongouserRepository = new MongoUserRepository();
 const mongoOtpRepository = new MongoOtpRepository();
@@ -32,8 +33,9 @@ const passwordReset = new ForgotPasswordUseCase(
   mongouserRepository,
   monogPasswordResetRepository
 );
+const mongoSubscriptionRepository = new MongoSubscriptionRepository()
 const googleAuth = new GoogleAuthUseCase(mongouserRepository);
-const user = new UserUseCase(mongouserRepository);
+const user = new UserUseCase(mongouserRepository,mongoSubscriptionRepository);
 
 export class AuthController {
   static async signup(req: Request, res: Response,next:NextFunction): Promise<void> {

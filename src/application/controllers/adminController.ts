@@ -6,9 +6,11 @@ import {
 } from "../../shared/constants/httpResponseStructure";
 import { MongoUserRepository } from "../../infrastructure/databases/repositories/mongouserRepository";
 import { UserUseCase } from "../../domain/usecases/userUseCase";
+import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/mongoSubscriptionRepository";
 
 const mongouserRepository = new MongoUserRepository();
-const user = new UserUseCase(mongouserRepository);
+const mongoSubscriptionRepository = new MongoSubscriptionRepository()
+const user = new UserUseCase(mongouserRepository,mongoSubscriptionRepository);
 
 export class AdminController {
   static async getUsers(req: Request, res: Response,next:NextFunction): Promise<void> {

@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import trainerRoutes from "./interfaces/routes/trainerRoutes";
 import { errorMiddleware } from "./interfaces/middlewares/errorMiddleWare";
+import userRoutes from "./interfaces/routes/userRoutes";
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(cookieParser());
 app.use("/api/v1/auth", authRoutes)
 app.use("/api/v1/admin",adminRoutes)
 app.use("/api/v1/trainer",trainerRoutes)
+app.use("/api/v1/user",userRoutes)
 app.use(errorMiddleware)
 
 export default app;

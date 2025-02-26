@@ -24,23 +24,23 @@ export class MongoUserRepository implements UserRepository {
 
   public async findUserByEmail(data: FindEmailDTO): Promise<User | null> {
     const { email } = data;
-    return await userModel.findOne({ email });
+    return await userModel.findOne({ email })
   }
   public async updateUserVerificationStatus(
     data: FindEmailDTO
   ): Promise<User | null> {
     const { email } = data;
-    return await userModel.findOneAndUpdate({ email }, { otpVerified: true });
+    return await userModel.findOneAndUpdate({ email }, { otpVerified: true })
   }
   public async forgotPassword(data: UpdatePassword): Promise<User | null> {
     const { email, password } = data;
-    return await userModel.findOneAndUpdate({ email }, { password: password });
+    return await userModel.findOneAndUpdate({ email }, { password: password })
   }
   public async createGoogleUser(data: CreateGoogleUserDTO): Promise<User> {
     return await userModel.create(data);
   }
   public async getUsers(data: Role): Promise<User[]> {
-    return await userModel.find({ role: data }).sort({ createdAt: -1 });
+    return await userModel.find({ role: data }).sort({ createdAt: -1 })
   }
   public async updateBlockStatus(
     data: updateBlockStatus
@@ -50,7 +50,7 @@ export class MongoUserRepository implements UserRepository {
       _id,
       { isBlocked: isBlocked },
       { new: true }
-    );
+    )
   }
   public async trainerVerification(
     data: trainerVerification
@@ -61,10 +61,10 @@ export class MongoUserRepository implements UserRepository {
         _id,
         { isApproved: true },
         { new: true }
-      );
+      )
     }
     if (action === "rejected") {
-      return await userModel.findByIdAndDelete(_id);
+      return await userModel.findByIdAndDelete(_id)
     }
     return null;
   }
@@ -110,7 +110,7 @@ export class MongoUserRepository implements UserRepository {
         },
       },
       { new: true }
-    );
+    )
   }
   public async updateCertifications(
     data: CertificationsDTO
@@ -120,7 +120,7 @@ export class MongoUserRepository implements UserRepository {
       _id,
       { $push: { certifications: { $each: certifications } } },
       { new: true }
-    );
+    )
   }
   public async updateSpecializations(
     data: SpecializationsDTO
@@ -130,13 +130,25 @@ export class MongoUserRepository implements UserRepository {
       _id,
       { $push: { specializations: { $each: specifications } } },
       { new: true }
-    );
+    )
   }
   public async findUserById(data: IdDTO): Promise<User | null> {
-    return await userModel.findById(data);
+    return await userModel.findById(data).lean()
   }
   public async changePassword(data: changePasswordDTO): Promise<User | null> {
     const { _id, newPassword } = data;
-    return await userModel.findByIdAndUpdate(_id, { password: newPassword });
+    return await userModel.findByIdAndUpdate(_id, { password: newPassword })
   }
+  public async getApprovedTrainers(): Promise<User []> {
+    return await userModel.find({isApproved:true,isBlocked:false})
+  }
+  public async   getTrainerSearchSuggestions(query:string): Promise<string[]> {
+    return await userModel.find({isApproved:true,isBlocked:false, $or: [
+      { fname: { $regex: query, $options: "i" } },
+      { lname: { $regex: query, $options: "i" } }, 
+    ],
+  },
+  { fname: 1, lname: 1 })
+}
+
 }
