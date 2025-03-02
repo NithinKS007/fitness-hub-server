@@ -7,9 +7,24 @@ export interface CreateUserDTO {
   lname: string;
   email: string;
   password: string;
-  phone?: string;
-  dateOfBirth?: string | Date;
-  yearsOfExperience?: string | number;
+}
+
+export interface CreateTrainerDTO {
+  fname: string;
+  lname: string;
+  email: string;
+  password:string
+  dateOfBirth: string 
+  phone:string
+  specializations:string[]
+  certificate:string
+  yearsOfExperience: string
+}
+
+export interface CreateTrainerSpecificDTO{
+  specializations:string[]
+  certificate:string
+  yearsOfExperience: string
 }
 
 export interface FindEmailDTO {
@@ -45,6 +60,59 @@ export interface CreateGoogleUserDTO {
   email?: string;
   profilePic?: string;
 }
+export interface UpdateUserDetails {
+  _id: string;
+  fname: string;
+  lname: string;
+  phone: string;
+  profilePic: string;
+  dateOfBirth: string;
+  gender: "male" | "female";
+  age: string;
+  height: string;
+  weight: string;
+  bloodGroup?: string;
+  medicalConditions?: string;
+  otherConcerns?: string;
+}
+export interface UpdateTrainerDetails {
+  _id: string;
+  fname: string;
+  lname: string;
+  phone: string;
+  profilePic: string;
+  dateOfBirth: string;
+  aboutMe: string;
+  gender: "male" | "female";
+  age: string;
+  height: string;
+  weight: string;
+  yearsOfExperience: string;
+  certifications: { url: string; fileName: string }[];
+  specializations: string[];
+}
+
+
+export interface TrainerSpecificDTO {
+  _id:string
+  yearsOfExperience: string;
+  specializations: string[];
+  certifications: { fileName: string; url: string }[];
+  aboutMe?: string;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 export interface UserDTO {
   _id: string;
   fname: string;
@@ -70,32 +138,14 @@ export interface UserDTO {
   otherConcerns: string;
 }
 
-export interface UpdateUserDetails {
-  _id: string;
-  fname: string;
-  lname: string;
-  phone?: string;
-  profilePic?: string;
-  dateOfBirth?: string;
-  yearsOfExperience?: string;
-  certifications?: { url: string; fileName: string }[];
-  specifications?: string[];
-  aboutMe?: string;
-  gender: "male" | "female";
-  age: string;
-  height: string;
-  weight: string;
-  bloodGroup: string;
-  medicalConditions: string;
-  otherConcerns: string;
-}
+
 export interface CertificationsDTO {
   _id: string;
   certifications: { url: string; fileName: string }[];
 }
 export interface SpecializationsDTO {
   _id: string;
-  specifications: string[];
+  specializations: string[];
 }
 export interface updateBlockStatus {
   _id: string;

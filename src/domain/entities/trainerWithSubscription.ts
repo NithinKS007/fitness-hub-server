@@ -1,6 +1,6 @@
 import { Subscription } from "./subscriptionEntity";
-import { User } from "./userEntity";
+import { Trainer } from "./trainerEntity";
 
-export interface TrainerWithSubscription extends User {
-    trainerSubscriptionData:Subscription[]
+export interface TrainerWithSubscription extends Trainer {
+    subscriptionDetails:Subscription[]
 }

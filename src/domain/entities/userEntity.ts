@@ -1,28 +1,23 @@
-import { Role } from "../../application/dtos";
-
 export interface User {
   _id: string;
   fname: string;
   lname: string;
   email: string;
-  password: string;
-  role: Role;
+  role:"user"| "admin"| "trainer";
   isBlocked: boolean;
+  password : string;
   otpVerified?: boolean;
   googleVerified?: boolean;
   phone?: string;
+  dateOfBirth?: Date;
   profilePic?: string;
   age?: string;
   height?: string;
   weight?: string;
-  gender?: string;
+  gender?: "male" | "female";
   
-  yearsOfExperience?: string;
-  specializations?: string[];
-  certifications?: { fileName: string; url: string }[];
-  aboutMe?: string;
-
   bloodGroup?: string;
   medicalConditions?: string;
   otherConcerns?: string;
 }
+

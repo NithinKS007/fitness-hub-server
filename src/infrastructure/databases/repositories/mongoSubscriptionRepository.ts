@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
   CreateSubscriptionDTO,
   findExistingSubscriptionDTO,
@@ -6,22 +7,17 @@ import {
   updateSubscriptionDetails,
 } from "../../../application/dtos";
 import { Subscription } from "../../../domain/entities/subscriptionEntity";
-import { TrainerWithSubscription } from "../../../domain/entities/trainerWithSubscription";
 import { SubscriptionRepository } from "../../../domain/interfaces/subscriptionRepository";
 import SubscriptionModel from "../models/subscriptionModel";
 
 export class MongoSubscriptionRepository implements SubscriptionRepository {
-  public async createSubscription(
-    data: CreateSubscriptionDTO
-  ): Promise<Subscription> {
+  public async createSubscription( data: CreateSubscriptionDTO ): Promise<Subscription> {
     return  (await SubscriptionModel.create(data)).toObject()
   }
   public async findAllSubscription(data: IdDTO): Promise<Subscription[]> {
     return await SubscriptionModel.find({ trainerId: data })
   }
-  public async findExistingSubscription(
-    data: findExistingSubscriptionDTO
-  ): Promise<boolean> {
+  public async findExistingSubscription(data: findExistingSubscriptionDTO ): Promise<boolean> {
     const existingSubscription = await SubscriptionModel.findOne({
       trainerId: data.trainerId,
       subPeriod: data.subPeriod,
@@ -29,9 +25,7 @@ export class MongoSubscriptionRepository implements SubscriptionRepository {
     return existingSubscription ? true : false;
   }
 
-  public async updateBlockStatus(
-    data: updateSubscriptionBlockStatus
-  ): Promise<Subscription | null> {
+  public async updateBlockStatus(data: updateSubscriptionBlockStatus): Promise<Subscription | null> {
     const { _id, isBlocked } = data;
     return await SubscriptionModel.findByIdAndUpdate(
       _id,
@@ -40,14 +34,12 @@ export class MongoSubscriptionRepository implements SubscriptionRepository {
     )
   }
 
-  public async editSubscription(
-    data: updateSubscriptionDetails
-  ): Promise<Subscription | null> {
-    const { _id, price, durationInWeeks, sessionsPerWeek, totalSessions } =
+  public async editSubscription(data: updateSubscriptionDetails ): Promise<Subscription | null> {
+    const { _id, price,subPeriod, durationInWeeks, sessionsPerWeek, totalSessions } =
       data;
     return await SubscriptionModel.findByIdAndUpdate(
       _id,
-      { price, durationInWeeks, sessionsPerWeek, totalSessions },
+      { price,subPeriod, durationInWeeks, sessionsPerWeek, totalSessions },
       { new: true }
     )
   }

@@ -14,59 +14,35 @@ import {
 } from "../../../application/dtos";
 import { User } from "../../../domain/entities/userEntity";
 import { UserRepository } from "../../../domain/interfaces/userRepository";
-import userModel from "../models/userModel";
+import UserModel from "../models/userModel";
 
 export class MongoUserRepository implements UserRepository {
-  public async createUser(data: CreateUserDTO): Promise<User> {
-    const userData = await userModel.create(data);
-    return userData.toObject();
+  public async create(data: CreateUserDTO): Promise<User> {
+    const userData = await UserModel.create(data);
+    return userData.toObject()
   }
-
-  public async findUserByEmail(data: FindEmailDTO): Promise<User | null> {
+  public async findByEmail(data: FindEmailDTO): Promise<User | null> {
     const { email } = data;
-    return await userModel.findOne({ email })
+    return await UserModel.findOne({ email })
   }
-  public async updateUserVerificationStatus(
-    data: FindEmailDTO
-  ): Promise<User | null> {
+  public async updateUserVerificationStatus(data: FindEmailDTO): Promise<User | null> {
     const { email } = data;
-    return await userModel.findOneAndUpdate({ email }, { otpVerified: true })
+    return await UserModel.findOneAndUpdate({ email }, { otpVerified: true })
   }
   public async forgotPassword(data: UpdatePassword): Promise<User | null> {
     const { email, password } = data;
-    return await userModel.findOneAndUpdate({ email }, { password: password })
+    return await UserModel.findOneAndUpdate({ email }, { password: password })
   }
   public async createGoogleUser(data: CreateGoogleUserDTO): Promise<User> {
-    return await userModel.create(data);
+    return await UserModel.create(data);
   }
-  public async getUsers(data: Role): Promise<User[]> {
-    return await userModel.find({ role: data }).sort({ createdAt: -1 })
+  public async findById(data: IdDTO): Promise<User | null> {
+    const userData = await UserModel.findById({_id:data}).lean()
+    return userData
   }
-  public async updateBlockStatus(
-    data: updateBlockStatus
-  ): Promise<User | null> {
-    const { _id, isBlocked } = data;
-    return await userModel.findByIdAndUpdate(
-      _id,
-      { isBlocked: isBlocked },
-      { new: true }
-    )
-  }
-  public async trainerVerification(
-    data: trainerVerification
-  ): Promise<User | null> {
-    const { _id, action } = data;
-    if (action === "approved") {
-      return await userModel.findByIdAndUpdate(
-        _id,
-        { isApproved: true },
-        { new: true }
-      )
-    }
-    if (action === "rejected") {
-      return await userModel.findByIdAndDelete(_id)
-    }
-    return null;
+  public async changePassword(data: changePasswordDTO): Promise<User | null> {
+    const { _id, newPassword } = data;
+    return await UserModel.findByIdAndUpdate(_id, { password: newPassword })
   }
   public async updateUserProfile(
     data: UpdateUserDetails
@@ -78,8 +54,6 @@ export class MongoUserRepository implements UserRepository {
       phone,
       profilePic,
       dateOfBirth,
-      yearsOfExperience,
-      aboutMe,
       gender,
       age,
       height,
@@ -89,7 +63,7 @@ export class MongoUserRepository implements UserRepository {
       otherConcerns,
     } = data;
 
-    return await userModel.findByIdAndUpdate(
+    return await UserModel.findByIdAndUpdate(
       _id,
       {
         $set: {
@@ -105,50 +79,23 @@ export class MongoUserRepository implements UserRepository {
           bloodGroup,
           medicalConditions,
           otherConcerns,
-          yearsOfExperience,
-          aboutMe,
         },
       },
       { new: true }
     )
   }
-  public async updateCertifications(
-    data: CertificationsDTO
-  ): Promise<User | null> {
-    const { _id, certifications } = data;
-    return await userModel.findByIdAndUpdate(
+
+  public async getUsers(): Promise<User[]> {
+    return await UserModel.find({ role: "user" }).sort({ createdAt: -1 })
+  }
+  public async updateBlockStatus(data: updateBlockStatus): Promise<User | null> {
+    const { _id, isBlocked } = data;
+    return await UserModel.findByIdAndUpdate(
       _id,
-      { $push: { certifications: { $each: certifications } } },
+      { isBlocked: isBlocked },
       { new: true }
     )
   }
-  public async updateSpecializations(
-    data: SpecializationsDTO
-  ): Promise<User | null> {
-    const { _id, specifications } = data;
-    return await userModel.findByIdAndUpdate(
-      _id,
-      { $push: { specializations: { $each: specifications } } },
-      { new: true }
-    )
-  }
-  public async findUserById(data: IdDTO): Promise<User | null> {
-    return await userModel.findById(data).lean()
-  }
-  public async changePassword(data: changePasswordDTO): Promise<User | null> {
-    const { _id, newPassword } = data;
-    return await userModel.findByIdAndUpdate(_id, { password: newPassword })
-  }
-  public async getApprovedTrainers(): Promise<User []> {
-    return await userModel.find({isApproved:true,isBlocked:false})
-  }
-  public async   getTrainerSearchSuggestions(query:string): Promise<string[]> {
-    return await userModel.find({isApproved:true,isBlocked:false, $or: [
-      { fname: { $regex: query, $options: "i" } },
-      { lname: { $regex: query, $options: "i" } }, 
-    ],
-  },
-  { fname: 1, lname: 1 })
-}
+
 
 }

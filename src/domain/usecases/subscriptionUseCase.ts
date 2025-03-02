@@ -1,4 +1,4 @@
-import { CreateSubscriptionDTO, IdDTO, updateBlockStatus, updateSubscriptionBlockStatus, updateSubscriptionDetails } from "../../application/dtos";
+import { CreateSubscriptionDTO, IdDTO, updateSubscriptionBlockStatus, updateSubscriptionDetails } from "../../application/dtos";
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { Subscription } from "../entities/subscriptionEntity";
@@ -20,12 +20,9 @@ export class SubscriptionUseCase {
     }
 
     public async getTrainerSubscriptions(data:IdDTO):Promise<Subscription[]> {
-
         if(!data){
             throw new validationError(HttpStatusMessages.IdRequired)
         }
-
-        
         return await this.subscriptionRepository.findAllSubscription(data)
     }
 

@@ -2,7 +2,6 @@ import {  SubPeriod } from "../../infrastructure/databases/models/subscriptionMo
 
 export interface Subscription {
   _id: string;
-  trainerId: string;
   subPeriod: SubPeriod;
   price: number;
   durationInWeeks: number;

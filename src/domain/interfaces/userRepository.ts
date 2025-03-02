@@ -2,19 +2,15 @@ import { CertificationsDTO, changePasswordDTO, CreateGoogleUserDTO, CreateUserDT
 import { User } from "../entities/userEntity";
 
 export interface UserRepository {
-  createUser(data: CreateUserDTO): Promise<User>;
-  findUserByEmail(data: FindEmailDTO): Promise<User | null>;
+  create(data: CreateUserDTO): Promise<User>;
+  findByEmail(data: FindEmailDTO): Promise<User | null>;
   updateUserVerificationStatus(data: FindEmailDTO): Promise<User | null>;
   forgotPassword(data:UpdatePassword):Promise<User | null>
   createGoogleUser(data:CreateGoogleUserDTO):Promise<User>
-  getUsers(data:Role):Promise<User[]>
-  updateBlockStatus(data:updateBlockStatus):Promise<User | null>
-  trainerVerification(data:trainerVerification):Promise<User | null>
-  updateCertifications(data:CertificationsDTO):Promise<User | null>
-  updateSpecializations(data:SpecializationsDTO):Promise<User | null>
-  updateUserProfile(data:UpdateUserDetails):Promise<User | null>
-  findUserById(data:IdDTO):Promise<User | null>
+  findById(data:IdDTO):Promise<User | null>
   changePassword(data:changePasswordDTO):Promise<User| null>
-  getApprovedTrainers():Promise<User[]>
-  getTrainerSearchSuggestions(query:string):Promise<string[]>
+  updateUserProfile(data:UpdateUserDetails):Promise<User | null>
+  getUsers():Promise<User[]>
+  updateBlockStatus(data:updateBlockStatus):Promise<User | null>
+
 }
