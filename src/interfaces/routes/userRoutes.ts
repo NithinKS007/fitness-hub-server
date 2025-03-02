@@ -1,8 +1,12 @@
 import express from "express"
-import { TrainerController } from "../../application/controllers/trainerController"
+import { authenticate } from "../middlewares/authenticate"
+import { UserController } from "../../application/controllers/userController"
+
 const userRoutes = express.Router()
-userRoutes.get("/trainers",TrainerController.getTrainers)
-userRoutes.get("/trainers/:_id",TrainerController.getTrainerWithSubscription)
-userRoutes.get("/trainer/suggestions",TrainerController.getTrainerSearchSuggestions)
+userRoutes.get("/trainers",UserController.getApprovedTrainers)
+userRoutes.get("/trainers/:_id",UserController.getApprovedTrainerDetailsWithSub)
+
+// USER PROFILE ROUTE
+userRoutes.put("/update-profile",authenticate,UserController.updateUserProfile)
 
 export default userRoutes

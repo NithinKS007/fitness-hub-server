@@ -8,9 +8,10 @@ adminRoutes.get("/users",authenticate,AdminController.getUsers)
 adminRoutes.get("/users/:_id",authenticate,AdminController.getUserDetails)
 adminRoutes.patch("/users/:_id",authenticate,AdminController.updateBlockStatus)
 
-adminRoutes.patch("/trainers/:_id",authenticate, AdminController.trainerVerification)
-// adminRoutes.get("/trainers",authenticate,AdminController.getTrainers)
-// adminRoutes.get("/trainers/:_id",authenticate,AdminController.getTrainerDetails)
-// adminRoutes.patch("/trainers/:_id",authenticate,AdminController.updateBlockStatus)
+adminRoutes.get("/trainers",authenticate,AdminController.getTrainers)
+adminRoutes.get("/trainers/:_id",authenticate,AdminController.getTrainerDetails)
+adminRoutes.get("/pending-approval",authenticate,AdminController.getApprovalPendingList)
+adminRoutes.patch("/pending-approval/:_id",authenticate, AdminController.approveRejectTrainerVerification)
+adminRoutes.get("/trainer/subscriptions/:_id",authenticate, AdminController.getTrainerSubscriptions)
 
 export default adminRoutes

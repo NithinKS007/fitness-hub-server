@@ -4,7 +4,7 @@ export type SubPeriod = "monthly" | "yearly" | "quarterly" | "halfYearly";
 
 interface ISubscription extends Document {
   _id:string
-  trainerId: string;
+  trainerId: mongoose.Schema.Types.ObjectId;
   subPeriod: SubPeriod;
   price: number;
   durationInWeeks: number;
@@ -14,7 +14,7 @@ interface ISubscription extends Document {
 }
 
 const SubscriptionSchema: Schema = new Schema({
-  trainerId: { type: String, required: true },
+  trainerId: { type: mongoose.Schema.Types.ObjectId,ref:"User", required: true },
   subPeriod: { type: String, enum: ["monthly", "yearly", "quarterly", "halfYearly"], required: true },
   price: { type: Number, required: true },
   durationInWeeks: { type: Number, required: true },

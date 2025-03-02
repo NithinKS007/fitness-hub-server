@@ -15,9 +15,9 @@ export class GoogleAuthUseCase {
     if (!googleUserInfo || !googleUserInfo.email) {
       throw new validationError(HttpStatusMessages.EmailNotFound);
     }
-    const { email,sub } = googleUserInfo;
+    const { email} = googleUserInfo;
     
-    const userData = await this.userRepository.findUserByEmail({email})
+    const userData = await this.userRepository.findByEmail({email})
     if(userData&&userData.isBlocked){
       throw new ForbiddenError(HttpStatusMessages.AccountBlocked)
     }

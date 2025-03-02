@@ -45,7 +45,8 @@ export class SubscriptionController {
 
     static async editSubscription(req:Request,res:Response,next:NextFunction):Promise<void> {
         try {
-            const{ _id }= req.params
+            const { _id } = req.params
+            console.log("id received",_id)
             const editSubscriptionData = await subscription.editSubscription({_id,...req.body})
             sendResponse(res,HttpStatusCodes.OK,editSubscriptionData,HttpStatusMessages.EditedSuccessfully);
         } catch (error) {

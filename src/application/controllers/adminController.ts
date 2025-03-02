@@ -6,16 +6,23 @@ import {
 } from "../../shared/constants/httpResponseStructure";
 import { MongoUserRepository } from "../../infrastructure/databases/repositories/mongouserRepository";
 import { UserUseCase } from "../../domain/usecases/userUseCase";
+import { TrainerUseCase } from "../../domain/usecases/trainerUseCase";
+import { MonogTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
+import { SubscriptionUseCase } from "../../domain/usecases/subscriptionUseCase";
 import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/mongoSubscriptionRepository";
 
+
 const mongouserRepository = new MongoUserRepository();
+const mongoTrainerRepository = new MonogTrainerRepository()
 const mongoSubscriptionRepository = new MongoSubscriptionRepository()
-const user = new UserUseCase(mongouserRepository,mongoSubscriptionRepository);
+const userUseCase = new UserUseCase(mongouserRepository);
+const trainerUsecase = new TrainerUseCase(mongoTrainerRepository)
+const subscriptionsUseCase = new SubscriptionUseCase(mongoSubscriptionRepository)
 
 export class AdminController {
   static async getUsers(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      const usersData = await user.getUsers(req?.query?.role as string);
+      const usersData = await userUseCase.getUsers();
       sendResponse(
         res,
         HttpStatusCodes.OK,
@@ -27,11 +34,56 @@ export class AdminController {
       next(error)
     }
   }
+  static async getUserDetails(req: Request, res: Response,next:NextFunction): Promise<void> {
+    try {
+      const userData = await userUseCase.getUserDetails(req.params._id);
+      sendResponse(
+        res,
+        HttpStatusCodes.OK,
+        userData,
+        HttpStatusMessages.UserDataRetrieved
+      );
+    } catch (error: any) {
+      console.log(`Failed to get user details: ${error}`);
+      next(error)
+    }
+  }
+
+  static async getTrainers(req: Request, res: Response,next:NextFunction): Promise<void> {
+    try {
+      const trainersData = await trainerUsecase.getTrainers();
+      sendResponse(
+        res,
+        HttpStatusCodes.OK,
+        trainersData,
+        HttpStatusMessages.TrainersListRetrieved
+      );
+    } catch (error: any) {
+      console.log(`Error in  getTrainers : ${error}`);
+      next(error)
+    }
+  }
+  static async getTrainerDetails(req: Request, res: Response,next:NextFunction): Promise<void> {
+    try {
+      console.log("req.parm.id",req.params._id)
+      const trainerData = await trainerUsecase.getTrainerDetailsByUserIdRef(req.params._id);
+      console.log("trainersData hekklsjfgdiosj",trainerData)
+      sendResponse(
+        res,
+        HttpStatusCodes.OK,
+        trainerData,
+        HttpStatusMessages.TrainerDetailsRetrieved
+      );
+    } catch (error: any) {
+      console.log(`Failed to get trainer details: ${error}`);
+      next(error)
+    }
+  }
   static async updateBlockStatus(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       let { _id } = req.params;
       const { isBlocked } = req.body;
-      const userData = await user.updateBlockStatus({ _id, isBlocked });
+      const userData = await userUseCase.updateBlockStatus({ _id, isBlocked });
       sendResponse(
         res,
         HttpStatusCodes.OK,
@@ -43,11 +95,22 @@ export class AdminController {
        next(error)
     }
   }
-  static async trainerVerification(req: Request, res: Response,next:NextFunction): Promise<void> {
+
+  static async getApprovalPendingList(req: Request, res: Response,next:NextFunction): Promise<void> {
+
+    try {
+      const trainersList = await trainerUsecase.getApprovalPendingList()
+      sendResponse(res,HttpStatusCodes.OK,trainersList,HttpStatusMessages.TrainersListRetrieved)
+    } catch (error: any) {
+      console.log(`Error to get trainer list to approve : ${error}`);
+      next(error)
+    }
+  }
+  static async approveRejectTrainerVerification(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const { _id } = req.params;
       const { action } = req.body;
-      const updatedTrainerData = await user.trainerVerification({
+      const updatedTrainerData = await trainerUsecase.approveRejectTrainerVerification({
         _id,
         action,
       });
@@ -71,18 +134,16 @@ export class AdminController {
       next(error)
     }
   }
-  static async getUserDetails(req: Request, res: Response,next:NextFunction): Promise<void> {
+ static async getTrainerSubscriptions(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      const userData = await user.getUserDetails(req.params._id);
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        userData,
-        HttpStatusMessages.UserDataRetrieved
-      );
+      const { _id } = req.params;
+      const subscriptionsData = await subscriptionsUseCase.getTrainerSubscriptions(_id);
+      sendResponse(res, HttpStatusCodes.OK, subscriptionsData, HttpStatusMessages.SubscriptionsListRetrieved);
     } catch (error: any) {
-      console.log(`Failed to get user details: ${error}`);
+      console.log(`Error to retrieve subscriptions only list : ${error}`);
       next(error)
     }
   }
+  
+
 }

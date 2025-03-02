@@ -12,7 +12,7 @@ export enum HttpStatusMessages {
   EmailConflict = "The email address you entered already exists in our system.",
   IncorrectPassword = "The password you entered is incorrect for this user.",
   FailedToCreateUser = "We were unable to create the user. Please try again later.",
-  UserCreatedSuccessfully = "The user has been created successfully. An OTP has been sent to your email for verification.",
+  UserCreatedSuccessfully = "Your has been created successfully. An OTP has been sent to your email for verification.",
   AccountBlocked = "Your account has been blocked due to security or policy reasons.",
   EmailNotFound = "We could not find an account associated with the provided email address.",
   LoginSuccessful = "You have logged in successfully.",
@@ -67,6 +67,7 @@ export enum HttpStatusMessages {
   FailedToDelete= "Failed to delete",
   DeletedSuccessfully = "Deleted Successfully",
   FailedToRetrieveTrainerDetails = "Failed to retrieve trainer details",
-  FailedToRetrieveTrainerWithSubscription = "Failed to retrieve trainer with subscription details"
-  
+  FailedToRetrieveTrainerWithSubscription = "Failed to retrieve trainer with subscription details",
+  TrainerDetailsRetrieved = "Trainer details retrieved successfully",
+  TrainersListRetrieved = "Trainer list retrieved successfully",
 }

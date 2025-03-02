@@ -7,7 +7,6 @@ import { sendEmail } from "../../infrastructure/services/emailService";
 import generateOtp from "../../shared/utils/otpGenerator";
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 
-
 export class OtpUseCase {
   constructor(private otpRepository: OtpRepository,private userRepository:UserRepository) {}
   
@@ -27,7 +26,7 @@ export class OtpUseCase {
   public async resendOtp(data:OtpDTO):Promise<void> {
      const {email} = data
 
-     const userData = await this.userRepository.findUserByEmail({email})
+     const userData = await this.userRepository.findByEmail({email})
 
      if(userData?.otpVerified) {
        throw new validationError(HttpStatusMessages.AlreadyUserVerifiedByOtp)

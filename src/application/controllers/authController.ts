@@ -9,38 +9,33 @@ import { MongoOtpRepository } from "../../infrastructure/databases/repositories/
 import { CreateUserUseCase } from "../../domain/usecases/createUserUseCase";
 import { SigninUserUseCase } from "../../domain/usecases/signInUserUseCase";
 import { OtpUseCase } from "../../domain/usecases/otpUseCase";
-import { ForgotPasswordUseCase } from "../../domain/usecases/forgotPasswordUseCase";
+import { PasswordUseCase } from "../../domain/usecases/passwordUseCase";
 import { GoogleAuthUseCase } from "../../domain/usecases/googleAuthUseCase";
 import { MonogPasswordResetRepository } from "../../infrastructure/databases/repositories/monogPasswordResetRepository";
-import { UserUseCase } from "../../domain/usecases/userUseCase";
 import {
   authenticateRefreshToken,
   generateAccessToken,
 } from "../../infrastructure/services/jwtService";
 import { JwtPayload } from "jsonwebtoken";
-import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/mongoSubscriptionRepository";
+import { CreateTrainerUseCase } from "../../domain/usecases/createTrainerUseCase";
+import { MonogTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
 
 const mongouserRepository = new MongoUserRepository();
+const monogTrainerRepository = new MonogTrainerRepository()
 const mongoOtpRepository = new MongoOtpRepository();
-const monogPasswordResetRepository = new MonogPasswordResetRepository();
-const createUser = new CreateUserUseCase(
-  mongouserRepository,
-  mongoOtpRepository
-);
-const signinUser = new SigninUserUseCase(mongouserRepository);
+const monogPasswordResetRepository = new MonogPasswordResetRepository()
+
+const createUserUseCase = new CreateUserUseCase(mongouserRepository, mongoOtpRepository);
+const signin = new SigninUserUseCase(mongouserRepository,monogTrainerRepository);
 const otp = new OtpUseCase(mongoOtpRepository, mongouserRepository);
-const passwordReset = new ForgotPasswordUseCase(
-  mongouserRepository,
-  monogPasswordResetRepository
-);
-const mongoSubscriptionRepository = new MongoSubscriptionRepository()
+const passwordUseCase = new PasswordUseCase(mongouserRepository, monogPasswordResetRepository);
 const googleAuth = new GoogleAuthUseCase(mongouserRepository);
-const user = new UserUseCase(mongouserRepository,mongoSubscriptionRepository);
+const createTrainerUseCase = new CreateTrainerUseCase(mongouserRepository,mongoOtpRepository,monogTrainerRepository)
 
 export class AuthController {
-  static async signup(req: Request, res: Response,next:NextFunction): Promise<void> {
+  static async createUser(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      const createdUser = await createUser.createUser(req.body);
+      const createdUser = await createUserUseCase.create(req.body);
       sendResponse(
         res,
         HttpStatusCodes.OK,
@@ -53,9 +48,24 @@ export class AuthController {
     }
   }
 
+  static async createTrainer(req: Request, res: Response,next:NextFunction): Promise<void> {
+    try {
+      const createdTrainer = await createTrainerUseCase.create(req.body);
+      sendResponse(
+        res,
+        HttpStatusCodes.OK,
+        createdTrainer,
+        HttpStatusMessages.UserCreatedSuccessfully
+      );
+    } catch (error: any) {
+      console.log(`Error to create trainer: ${error}`);
+      next(error)
+    }
+  }
+
   static async signin(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      const { userData, accessToken, refreshToken } = await signinUser.execute(
+      const { userData, accessToken, refreshToken } = await signin.signIn(
         req.body
       );
 
@@ -76,6 +86,7 @@ export class AuthController {
       next(error)
     }
   }
+
   static async verifyOtp(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       await otp.verifyOtpByEmail(req.body);
@@ -92,7 +103,6 @@ export class AuthController {
   }
   static async resendOtp(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      console.log("body", req.body);
       await otp.resendOtp(req.body);
       sendResponse(
         res,
@@ -105,13 +115,10 @@ export class AuthController {
       next(error)
     }
   }
-  static async generatePassResetLink(
-    req: Request,
-    res: Response,
-    next:NextFunction
-  ): Promise<void> {
+
+  static async generatePassResetLink(req: Request, res: Response, next:NextFunction): Promise<void> {
     try {
-      const tokenData = await passwordReset.generatePassResetLink(req.body);
+      const tokenData = await passwordUseCase.generatePassResetLink(req.body);
       sendResponse(
         res,
         HttpStatusCodes.OK,
@@ -127,7 +134,7 @@ export class AuthController {
     try {
       const { token } = req.params;
       const { password } = req.body;
-      await passwordReset.forgotPassword({
+      await passwordUseCase.forgotPassword({
         resetToken: token,
         password: password,
       });
@@ -142,6 +149,7 @@ export class AuthController {
       next(error)
     }
   }
+
   static async createGoogleUser(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const { userData, accessToken, refreshToken } =
@@ -163,43 +171,10 @@ export class AuthController {
       next(error)
     }
   }
-
-  static async createTrainer(req: Request, res: Response,next:NextFunction): Promise<void> {
-    try {
-      const createdTrainer = await createUser.createTrainer(req.body);
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        createdTrainer,
-        HttpStatusMessages.UserCreatedSuccessfully
-      );
-    } catch (error: any) {
-      console.log(`Error to create trainer: ${error}`);
-      next(error)
-    }
-  }
-  static async updateUserProfile(req: Request, res: Response,next:NextFunction): Promise<void> {
-    try {
-      console.log("req.body", req.body)
-      const updatedUserData = await user.updateUserProfile(req.body);
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        updatedUserData,
-        HttpStatusMessages.UserDetailsUpdated
-      );
-    } catch (error: any) {
-      console.log(`Error in updating user profile: ${error}`);
-      next(error)
-    }
-  }
-
   static async changePassword(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       const { _id } = req.user;
-
-      console.log("_id", _id, req.body);
-      await user.changePassword({ _id, ...req.body });
+      await passwordUseCase.changePassword({ _id,...req.body });
       sendResponse(
         res,
         HttpStatusCodes.OK,
@@ -211,7 +186,6 @@ export class AuthController {
       next(error)
     }
   }
-
   static async signOut(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
       res.clearCookie("refreshToken", {
@@ -230,7 +204,6 @@ export class AuthController {
       next(error)
     }
   }
-
   static async refreshAccessToken(req: Request, res: Response): Promise<void> {
     const refreshToken = req?.cookies?.refreshToken;
     if (!refreshToken) {
