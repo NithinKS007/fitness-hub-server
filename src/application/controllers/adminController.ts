@@ -10,14 +10,16 @@ import { TrainerUseCase } from "../../domain/usecases/trainerUseCase";
 import { MonogTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
 import { SubscriptionUseCase } from "../../domain/usecases/subscriptionUseCase";
 import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/mongoSubscriptionRepository";
+import { MonogUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/mongoUserSubscriptionRepository";
 
 
 const mongouserRepository = new MongoUserRepository();
 const mongoTrainerRepository = new MonogTrainerRepository()
 const mongoSubscriptionRepository = new MongoSubscriptionRepository()
+const monogUserSubscriptionPlanRepository = new MonogUserSubscriptionPlanRepository()
 const userUseCase = new UserUseCase(mongouserRepository);
 const trainerUsecase = new TrainerUseCase(mongoTrainerRepository)
-const subscriptionsUseCase = new SubscriptionUseCase(mongoSubscriptionRepository)
+const subscriptionsUseCase = new SubscriptionUseCase(mongoSubscriptionRepository,mongoTrainerRepository,monogUserSubscriptionPlanRepository)
 
 export class AdminController {
   static async getUsers(req: Request, res: Response,next:NextFunction): Promise<void> {

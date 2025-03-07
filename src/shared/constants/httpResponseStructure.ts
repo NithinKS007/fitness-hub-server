@@ -70,4 +70,14 @@ export enum HttpStatusMessages {
   FailedToRetrieveTrainerWithSubscription = "Failed to retrieve trainer with subscription details",
   TrainerDetailsRetrieved = "Trainer details retrieved successfully",
   TrainersListRetrieved = "Trainer list retrieved successfully",
+  SubscriptionAddedSuccessfully = "Subscription added successfully",
+  FailedToRetrieveSubscriptionDetails = "Subscription not found or unavailable",
+  FailedToCreateSubscriptionSession = "Failed to create subscription session",
+  WebHookCredentialsMissing = "Web hook credentials are missing",
+  WebHookVerificationFailed = "Webhook signature verification failed",
+  SubscriptionIdAndTraineIdMissing = "Missing metadata: subscriptionId or trainerId.",
+  SubscriptionListOfUserRetrievedSuccessfully = "User subscription list retrieved successfully",
+  SubscriptionCancelledSuccessfully = "Your subscription has been cancelled successfully",
+  InvalidSessionIdForStripe = "Invalid session id for stripe",
+  SubscriptionBlockedUnavailabe = "Currently unavailable"
 }

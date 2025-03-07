@@ -10,6 +10,7 @@ trainerRoutes.get("/subscriptions",authenticate,SubscriptionController.getTraine
 trainerRoutes.patch("/subscriptions/:_id",authenticate,SubscriptionController.updateSubscriptionBlockStatus)
 trainerRoutes.put("/subscriptions/:_id",authenticate,SubscriptionController.editSubscription)
 trainerRoutes.delete("/subscriptions/:_id",authenticate,SubscriptionController.deleteSubscription)
+trainerRoutes.get("/subscribers",authenticate,TrainerController.getTrainerSubscribedUsers)
 
 // PROFILE UPDATION ROUTES
 trainerRoutes.put("/update-profile",authenticate,TrainerController.updateTrainerProfile)

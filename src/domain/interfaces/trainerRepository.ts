@@ -9,7 +9,7 @@ export interface TrainerRepository {
   getTrainers():Promise<Trainer[]>
   getTrainerDetailsByUserIdRef(data:IdDTO):Promise<Trainer>
   approveRejectTrainerVerification(data:trainerVerification):Promise<Trainer | null>
-  getApprovedTrainers():Promise<Trainer[]>
+  getApprovedTrainers(searchFilterQuery:any):Promise<Trainer[]>
   getApprovedTrainerDetailsWithSub(data:IdDTO):Promise<TrainerWithSubscription>
   getApprovalPendingList():Promise<Trainer[]>
 }
