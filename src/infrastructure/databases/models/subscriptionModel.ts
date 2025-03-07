@@ -11,6 +11,7 @@ interface ISubscription extends Document {
   sessionsPerWeek: number;
   totalSessions: number;
   isBlocked: boolean;
+  stripePriceId: string;
 }
 
 const SubscriptionSchema: Schema = new Schema({
@@ -20,7 +21,8 @@ const SubscriptionSchema: Schema = new Schema({
   durationInWeeks: { type: Number, required: true },
   sessionsPerWeek: { type: Number, required: true },
   totalSessions: { type: Number, required: true },
-  isBlocked: { type: Boolean, default: false }
+  isBlocked: { type: Boolean, default: false },
+  stripePriceId: { type: String,required:true}
 });
 
 

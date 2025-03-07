@@ -4,9 +4,15 @@ import { HttpStatusCodes, HttpStatusMessages } from "../../shared/constants/http
 import { sendResponse } from "../../shared/utils/httpResponse";
 import { UpdateProfileUseCase } from "../../domain/usecases/updateProfileUseCase";
 import { MonogTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
+import { SubscriptionUseCase } from "../../domain/usecases/subscriptionUseCase";
+import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/mongoSubscriptionRepository";
+import { MonogUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/mongoUserSubscriptionRepository";
 
 const mongoUserRepository = new MongoUserRepository()
 const monogTrainerRepository = new MonogTrainerRepository()
+const mongoSubscriptionRepository = new MongoSubscriptionRepository()
+const mongoUserSubscriptionPlanRepository = new MonogUserSubscriptionPlanRepository() 
+const subscriptionUseCase = new SubscriptionUseCase(mongoSubscriptionRepository,monogTrainerRepository,mongoUserSubscriptionPlanRepository)
 const profileUseCase = new UpdateProfileUseCase(mongoUserRepository,monogTrainerRepository)
 
 
@@ -27,4 +33,22 @@ export class TrainerController {
         next(error)
       }
     }
+
+    static async getTrainerSubscribedUsers(req: Request, res: Response,next:NextFunction): Promise<void> {
+      try {
+
+         const {_id} = req.user
+        const subscribedUsersList = await subscriptionUseCase.getTrainerSubscribedUsers(_id);
+        sendResponse(
+          res,
+          HttpStatusCodes.OK,
+          subscribedUsersList,
+          HttpStatusMessages.SubscriptionsListRetrieved
+        );
+      } catch (error: any) {
+        console.log(`Error to get trainers subscribers list: ${error}`);
+        next(error)
+      }
+    }
+    
 }

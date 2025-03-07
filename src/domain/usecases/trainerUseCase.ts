@@ -44,9 +44,9 @@ export class TrainerUseCase {
     return await this.trainerRepository.approveRejectTrainerVerification({_id,action})
     }
 
-  public async getApprovedTrainers():Promise<Trainer []> {
+  public async getApprovedTrainers(searchFilterQuery:any):Promise<Trainer []> {
 
-    const trainersList = await this.trainerRepository.getApprovedTrainers()
+    const trainersList = await this.trainerRepository.getApprovedTrainers(searchFilterQuery)
     if(!trainersList){
        throw new validationError(HttpStatusMessages.FailedToRetrieveTrainersList)
     }
@@ -61,6 +61,13 @@ export class TrainerUseCase {
     }
     return trainerData
   }
+
+  // public async getTrainerNamesSuggestion(data:string):Promise<string[]> {
+
+  //   console.log(data,"query data")
+
+  //   const trainersData = await this.trainerRepository.getApprovedTrainers()
+  // }
 
 
 }

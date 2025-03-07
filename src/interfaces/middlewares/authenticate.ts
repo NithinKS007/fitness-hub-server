@@ -11,8 +11,6 @@ const checkBlockStatusUseCase = new CheckUserBlockStatus(mongouserRepository)
 
 export const authenticate = async(req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
-
-  console.log("auth",authHeader)
   if (!authHeader) {
     next(new UnauthorizedError(HttpStatusMessages.AuthenticationHeaderIsMissing));
     return

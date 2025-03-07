@@ -1,4 +1,4 @@
-import { CertificationsDTO, changePasswordDTO, CreateGoogleUserDTO, CreateUserDTO, FindEmailDTO,IdDTO,Role,SpecializationsDTO,trainerVerification,updateBlockStatus,UpdatePassword, UpdateUserDetails } from "../../application/dtos";
+import { changePasswordDTO, CreateGoogleUserDTO, CreateUserDTO, FindEmailDTO,IdDTO,updateBlockStatus,UpdatePassword, UpdateUserDetails } from "../../application/dtos";
 import { User } from "../entities/userEntity";
 
 export interface UserRepository {
@@ -12,5 +12,4 @@ export interface UserRepository {
   updateUserProfile(data:UpdateUserDetails):Promise<User | null>
   getUsers():Promise<User[]>
   updateBlockStatus(data:updateBlockStatus):Promise<User | null>
-
 }

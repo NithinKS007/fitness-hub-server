@@ -1,5 +1,3 @@
-import { ObjectId } from "mongoose";
-
 export interface Trainer {
   _id: string;
   fname: string;

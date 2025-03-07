@@ -56,6 +56,7 @@ export class MonogTrainerRepository implements TrainerRepository {
       { $unwind: "$trainersList" },
       {
         $project: {
+          trainerCollectionOriginalId: "$_id",
           _id: "$trainersList._id",
           fname: "$trainersList.fname",
           lname: "$trainersList.lname",
@@ -79,7 +80,7 @@ export class MonogTrainerRepository implements TrainerRepository {
           createdAt:1,
         },
       },
-    ]);
+    ]).sort({ createdAt: -1 });
   }
 
   public async getTrainerDetailsByUserIdRef(data: IdDTO): Promise<Trainer> {
@@ -100,6 +101,7 @@ export class MonogTrainerRepository implements TrainerRepository {
       { $unwind: "$trainerDetails" },
       {
         $project: {
+          trainerCollectionOriginalId: "$_id",
           _id: "$trainerDetails._id",
           fname: "$trainerDetails.fname",
           lname: "$trainerDetails.lname",
@@ -141,7 +143,50 @@ export class MonogTrainerRepository implements TrainerRepository {
     return null;
   }
 
-  public async  getApprovedTrainers(): Promise<Trainer[]> {
+  public async  getApprovedTrainers(searchFilterQuery:any): Promise<Trainer[]> {
+
+    console.log("search query received",searchFilterQuery)
+
+    let matchQuery :any = {}
+
+    if(searchFilterQuery){
+      if(searchFilterQuery.Search){
+        matchQuery.$or = [
+           {"trainersList.fname":{$regex:searchFilterQuery.Search,$options:"i"}},
+           {"trainersList.lname":{$regex:searchFilterQuery.Search,$options:"i"}},
+           {"trainersList.email":{$regex:searchFilterQuery.Search,$options:"i"}}
+        ]
+     }
+
+      if(searchFilterQuery?.Specialization?.length > 0){
+         matchQuery.$in = [
+           {specializations:searchFilterQuery.Specialization}
+         ]
+      }
+      
+      if(searchFilterQuery?.Experience?.length > 0) {
+             const experienceConditions:any = [];
+          searchFilterQuery.Experience.forEach((ex:any)=>{
+              if(ex==="1-3"){
+                experienceConditions.push({ yearsOfExperience: { $gte: "1", $lte: "3" } });
+              }
+
+              if(ex==="3-5"){
+                experienceConditions.push({ yearsOfExperience: { $gte: "3", $lte: "5" } });
+              }
+              if(ex==="Greater than 5"){
+                experienceConditions.push({ yearsOfExperience: { $gt: "5" } });
+              }
+              if(ex===" Less than 1"){
+                experienceConditions.push({ yearsOfExperience: { $lt: "1" } });
+              }
+               
+          })
+            matchQuery.$or = experienceConditions
+      }
+
+    }
+
     return await TrainerModel.aggregate([
       {$match:{isApproved:true}},
       {
@@ -154,8 +199,10 @@ export class MonogTrainerRepository implements TrainerRepository {
       },
       { $unwind: "$trainersList" },
       {$match:{"trainersList.isBlocked":false}},
+      {$match:matchQuery},
       {
         $project: {
+          trainerCollectionOriginalId: "$_id",
           _id: "$trainersList._id",
           fname: "$trainersList.fname",
           lname: "$trainersList.lname",
@@ -179,7 +226,8 @@ export class MonogTrainerRepository implements TrainerRepository {
           createdAt:1,
         },
       },
-    ]);
+      
+    ]).sort({ createdAt: -1 });
   }
 
   public async getApprovedTrainerDetailsWithSub(data:IdDTO):Promise<TrainerWithSubscription>{
@@ -209,6 +257,7 @@ export class MonogTrainerRepository implements TrainerRepository {
       }, 
       {
         $project: {
+          trainerCollectionOriginalId: "$_id",
           _id: "$trainerDetails._id",
           fname: "$trainerDetails.fname",
           lname: "$trainerDetails.lname",
@@ -251,6 +300,7 @@ export class MonogTrainerRepository implements TrainerRepository {
       { $unwind: "$trainersList" },
       {
         $project: {
+          trainerCollectionOriginalId: "$_id",
           _id: "$trainersList._id",
           fname: "$trainersList.fname",
           lname: "$trainersList.lname",
@@ -274,7 +324,7 @@ export class MonogTrainerRepository implements TrainerRepository {
           createdAt:1,
         },
       },
-    ]);
+    ]).sort({ createdAt: -1 });
 
     console.log("mmuunn",trainersList)
     return trainersList

@@ -12,10 +12,15 @@ import SubscriptionModel from "../models/subscriptionModel";
 
 export class MongoSubscriptionRepository implements SubscriptionRepository {
   public async createSubscription( data: CreateSubscriptionDTO ): Promise<Subscription> {
-    return  (await SubscriptionModel.create(data)).toObject()
+    const {trainerId} = data
+
+    const id =   new mongoose.Types.ObjectId(trainerId);
+    const subscription = await SubscriptionModel.create({...data,trainerId:id});
+  
+    return subscription.toObject();
   }
   public async findAllSubscription(data: IdDTO): Promise<Subscription[]> {
-    return await SubscriptionModel.find({ trainerId: data })
+    return await SubscriptionModel.find({ trainerId: data }).sort({ createdAt: -1 });
   }
   public async findExistingSubscription(data: findExistingSubscriptionDTO ): Promise<boolean> {
     const existingSubscription = await SubscriptionModel.findOne({
@@ -35,11 +40,11 @@ export class MongoSubscriptionRepository implements SubscriptionRepository {
   }
 
   public async editSubscription(data: updateSubscriptionDetails ): Promise<Subscription | null> {
-    const { _id, price,subPeriod, durationInWeeks, sessionsPerWeek, totalSessions } =
+    const { _id, price,subPeriod, durationInWeeks, sessionsPerWeek, totalSessions,stripePriceId } =
       data;
     return await SubscriptionModel.findByIdAndUpdate(
       _id,
-      { price,subPeriod, durationInWeeks, sessionsPerWeek, totalSessions },
+      { price,subPeriod, durationInWeeks, sessionsPerWeek, totalSessions,stripePriceId },
       { new: true }
     )
   }

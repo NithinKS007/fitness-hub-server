@@ -3,9 +3,15 @@ import { SubscriptionUseCase } from "../../domain/usecases/subscriptionUseCase";
 import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/mongoSubscriptionRepository";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import { HttpStatusCodes, HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { MonogTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
+import { MonogUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/mongoUserSubscriptionRepository";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const mongoSubscriptionRepository = new MongoSubscriptionRepository()
-const subscription = new SubscriptionUseCase(mongoSubscriptionRepository)
+const mongoTrainerRepository = new MonogTrainerRepository()
+const monogUserSubscriptionPlanRepository = new MonogUserSubscriptionPlanRepository()
+const subscription = new SubscriptionUseCase(mongoSubscriptionRepository,mongoTrainerRepository,monogUserSubscriptionPlanRepository)
 export class SubscriptionController {
     static async addSubscription(req:Request,res:Response,next:NextFunction):Promise<void> {
         try {
@@ -47,7 +53,7 @@ export class SubscriptionController {
         try {
             const { _id } = req.params
             console.log("id received",_id)
-            const editSubscriptionData = await subscription.editSubscription({_id,...req.body})
+            const editSubscriptionData = await subscription.editSubscription({trainerId:req.user._id,_id,...req.body})
             sendResponse(res,HttpStatusCodes.OK,editSubscriptionData,HttpStatusMessages.EditedSuccessfully);
         } catch (error) {
             console.log(`Error in editing subscription details : ${error}`);
@@ -65,5 +71,58 @@ export class SubscriptionController {
             next(error)
         }
     }
+
+    static async purchaseSubscription(req:Request,res:Response,next:NextFunction):Promise<void> {
+        try {
+            const { _id }= req.user
+            const { subscriptionId } =req.body
+            const sessionId = await subscription.createStripeSession({userId:_id,subscriptionId})
+            sendResponse(res,HttpStatusCodes.OK,{sessionId:sessionId},HttpStatusMessages.SubscriptionAddedSuccessfully);
+        } catch (error) {
+            console.log(`Error in purchasing subscription: ${error}`);
+            next(error)
+        }
+    }
+
+    static async webHookHandler(req:Request,res:Response,next:NextFunction):Promise<void> {
+        try {
+            const sig = req.headers['stripe-signature'];
+            const webhookSecret = process.env.STRIPE_WEBHOOK_SECRETKEY
+            await subscription.webHookHandler(sig ,webhookSecret,req.body)
+            sendResponse(res, HttpStatusCodes.OK, null, HttpStatusMessages.SubscriptionAddedSuccessfully);
+        } catch (error) {
+            console.log(`Error in web hook handler: ${error}`);
+            next(error)
+        }
+    }
+    static async getSubscriptionDetailsBySessionId(req:Request,res:Response,next:NextFunction):Promise<void> {
+        try {
+
+            const {sessionId} = req.params
+            const subscriptionData = await subscription.getSubscriptionDetailsBySessionId(sessionId)
+            sendResponse(res, HttpStatusCodes.OK, {subscriptionData:subscriptionData}, HttpStatusMessages.SubscriptionAddedSuccessfully);
+        } catch (error) {
+            console.log(`Error in web hook handler: ${error}`);
+            next(error)
+        }
+    }
+
+
+
+    static async  cancelSubscription(req:Request,res:Response,next:NextFunction):Promise<void> {
+        try {
+            const {  stripeSubscriptionId, action, userSubCollectionId,} = req.body
+            console.log("data received in req.body",  stripeSubscriptionId,
+                action,
+                userSubCollectionId)
+            const subscriptionCancelledData = await subscription.cancelSubscription({stripeSubscriptionId, action, userSubCollectionId})
+            sendResponse(res, HttpStatusCodes.OK,{subscriptionCancelledData:subscriptionCancelledData}, HttpStatusMessages.SubscriptionCancelledSuccessfully);
+        } catch (error) {
+            console.log(`Error in cancelling subscriptions : ${error}`);
+            next(error)
+        }
+    }
+
+
 
 }

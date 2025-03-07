@@ -1,6 +1,6 @@
-import {
-  SubPeriod,
-} from "../infrastructure/databases/models/subscriptionModel";
+import { ObjectId } from "mongoose";
+import { SubPeriod } from "../infrastructure/databases/models/subscriptionModel";
+import Stripe from "stripe";
 
 export interface CreateUserDTO {
   fname: string;
@@ -13,18 +13,18 @@ export interface CreateTrainerDTO {
   fname: string;
   lname: string;
   email: string;
-  password:string
-  dateOfBirth: string 
-  phone:string
-  specializations:string[]
-  certificate:string
-  yearsOfExperience: string
+  password: string;
+  dateOfBirth: string;
+  phone: string;
+  specializations: string[];
+  certificate: string;
+  yearsOfExperience: string;
 }
 
-export interface CreateTrainerSpecificDTO{
-  specializations:string[]
-  certificate:string
-  yearsOfExperience: string
+export interface CreateTrainerSpecificDTO {
+  specializations: string[];
+  certificate: string;
+  yearsOfExperience: string;
 }
 
 export interface FindEmailDTO {
@@ -92,26 +92,13 @@ export interface UpdateTrainerDetails {
   specializations: string[];
 }
 
-
 export interface TrainerSpecificDTO {
-  _id:string
+  _id: string;
   yearsOfExperience: string;
   specializations: string[];
   certifications: { fileName: string; url: string }[];
   aboutMe?: string;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 export interface UserDTO {
   _id: string;
@@ -137,7 +124,6 @@ export interface UserDTO {
   medicalConditions: string;
   otherConcerns: string;
 }
-
 
 export interface CertificationsDTO {
   _id: string;
@@ -173,24 +159,49 @@ export interface CreateSubscriptionDTO {
   durationInWeeks: number;
   sessionsPerWeek: number;
   totalSessions: number;
+  stripePriceId: string;
 }
 
 export interface findExistingSubscriptionDTO {
   trainerId: string;
-  subPeriod:SubPeriod
+  subPeriod: SubPeriod;
 }
 
 export interface updateSubscriptionBlockStatus {
-  _id:string
-  isBlocked:string
+  _id: string;
+  isBlocked: string;
 }
 
 export interface updateSubscriptionDetails {
-  _id:string,
-  trainerId:string
-  subPeriod:SubPeriod
-  price:number,
-  durationInWeeks:number
+  _id: string;
+  trainerId: string;
+  subPeriod: SubPeriod;
+  price: number;
+  durationInWeeks: number;
   sessionsPerWeek: number;
   totalSessions: number;
+  stripePriceId: string;
+}
+
+export interface PurchaseSubscriptionDTO {
+  subscriptionId: string;
+  userId: string;
+}
+
+export interface createUserSubscriptionPlanDTO {
+  userId: string;
+  trainerId: string;
+  subPeriod: SubPeriod;
+  price: number;
+  durationInWeeks: number;
+  sessionsPerWeek: number;
+  totalSessions: number;
+  stripePriceId: string;
+  stripeSubscriptionId: any;
+}
+
+export interface cancelSubscriptionDTO {
+  stripeSubscriptionId: string;
+  action: string;
+  userSubCollectionId: string;
 }
