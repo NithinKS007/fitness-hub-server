@@ -20,7 +20,7 @@ export class MongoSubscriptionRepository implements SubscriptionRepository {
     return subscription.toObject();
   }
   public async findAllSubscription(data: IdDTO): Promise<Subscription[]> {
-    return await SubscriptionModel.find({ trainerId: data }).sort({ createdAt: -1 });
+    return await SubscriptionModel.find({ trainerId: data }).sort({ createdAt: -1 }).lean()
   }
   public async findExistingSubscription(data: findExistingSubscriptionDTO ): Promise<boolean> {
     const existingSubscription = await SubscriptionModel.findOne({
@@ -36,7 +36,7 @@ export class MongoSubscriptionRepository implements SubscriptionRepository {
       _id,
       { isBlocked: isBlocked },
       { new: true }
-    )
+    ).lean()
   }
 
   public async editSubscription(data: updateSubscriptionDetails ): Promise<Subscription | null> {
@@ -46,16 +46,16 @@ export class MongoSubscriptionRepository implements SubscriptionRepository {
       _id,
       { price,subPeriod, durationInWeeks, sessionsPerWeek, totalSessions,stripePriceId },
       { new: true }
-    )
+    ).lean()
   }
   public async deletedSubscription(data: IdDTO): Promise<Subscription | null> {
-    return await SubscriptionModel.findByIdAndDelete(data)
+    return await SubscriptionModel.findByIdAndDelete(data).lean()
   }
   public async findSubscriptionById(data: IdDTO): Promise<Subscription | null> {
-    return await SubscriptionModel.findById(data)
+    return await SubscriptionModel.findById(data).lean()
   }
 
   public async findSubscriptionByTrainerId(data: IdDTO):Promise<Subscription[] > {
-    return await SubscriptionModel.find({trainerId:data,isBlocked:false})
+    return await SubscriptionModel.find({trainerId:data,isBlocked:false}).lean()
   }
 }

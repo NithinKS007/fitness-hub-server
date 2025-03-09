@@ -25,7 +25,7 @@ const trainerSchema = new Schema<ITrainer>({
     },
   ],
   isApproved: { type: Boolean, default: false },
-  aboutMe: { type: String, default: null },
+  aboutMe: { type: String},
 }, { timestamps: true });
 
 const TrainerModel = mongoose.model<ITrainer>("Trainer", trainerSchema);

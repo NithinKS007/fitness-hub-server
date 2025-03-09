@@ -9,7 +9,6 @@ import { Subscription } from "../entities/subscriptionEntity";
 import { SubscriptionRepository } from "../interfaces/subscriptionRepository";
 import { TrainerRepository } from "../interfaces/trainerRepository";
 import { UserSubscriptionPlanRepository } from "../interfaces/userSubscriptionRepository";
-import { SubscriptionPlanEntity } from "../entities/userSubscriptionPlanEntity";
 
 export class SubscriptionUseCase {
 

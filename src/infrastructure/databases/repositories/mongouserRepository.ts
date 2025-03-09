@@ -1,13 +1,9 @@
 import {
-  CertificationsDTO,
   changePasswordDTO,
   CreateGoogleUserDTO,
   CreateUserDTO,
   FindEmailDTO,
   IdDTO,
-  Role,
-  SpecializationsDTO,
-  trainerVerification,
   updateBlockStatus,
   UpdatePassword,
   UpdateUserDetails,
@@ -23,18 +19,18 @@ export class MongoUserRepository implements UserRepository {
   }
   public async findByEmail(data: FindEmailDTO): Promise<User | null> {
     const { email } = data;
-    return await UserModel.findOne({ email })
+    return await UserModel.findOne({ email }).lean()
   }
   public async updateUserVerificationStatus(data: FindEmailDTO): Promise<User | null> {
     const { email } = data;
-    return await UserModel.findOneAndUpdate({ email }, { otpVerified: true })
+    return await UserModel.findOneAndUpdate({ email }, { otpVerified: true }).lean()
   }
   public async forgotPassword(data: UpdatePassword): Promise<User | null> {
     const { email, password } = data;
-    return await UserModel.findOneAndUpdate({ email }, { password: password })
+    return await UserModel.findOneAndUpdate({ email }, { password: password }).lean()
   }
   public async createGoogleUser(data: CreateGoogleUserDTO): Promise<User> {
-    return await UserModel.create(data);
+    return await UserModel.create(data)
   }
   public async findById(data: IdDTO): Promise<User | null> {
     const userData = await UserModel.findById({_id:data}).lean()
@@ -42,7 +38,7 @@ export class MongoUserRepository implements UserRepository {
   }
   public async changePassword(data: changePasswordDTO): Promise<User | null> {
     const { _id, newPassword } = data;
-    return await UserModel.findByIdAndUpdate(_id, { password: newPassword })
+    return await UserModel.findByIdAndUpdate(_id, { password: newPassword }).lean()
   }
   public async updateUserProfile(
     data: UpdateUserDetails
@@ -63,6 +59,8 @@ export class MongoUserRepository implements UserRepository {
       otherConcerns,
     } = data;
 
+    console.log("data received in backend",data)
+
     return await UserModel.findByIdAndUpdate(
       _id,
       {
@@ -82,11 +80,11 @@ export class MongoUserRepository implements UserRepository {
         },
       },
       { new: true }
-    )
+    ).lean()
   }
 
   public async getUsers(): Promise<User[]> {
-    return await UserModel.find({ role: "user" }).sort({ createdAt: -1 })
+    return await UserModel.find({ role: "user" }).sort({ createdAt: -1 }).lean()
   }
   public async updateBlockStatus(data: updateBlockStatus): Promise<User | null> {
     const { _id, isBlocked } = data;
@@ -94,7 +92,7 @@ export class MongoUserRepository implements UserRepository {
       _id,
       { isBlocked: isBlocked },
       { new: true }
-    )
+    ).lean()
   }
 
 

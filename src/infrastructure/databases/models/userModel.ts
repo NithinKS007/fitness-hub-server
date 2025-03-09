@@ -17,6 +17,9 @@ export interface IUser extends Document {
   height: string;
   weight: string;
   gender: "male" | "female";
+  bloodGroup: string
+  medicalConditions: string
+  otherConcerns: string
 }
 
 const userSchema = new Schema<IUser>({
@@ -32,14 +35,17 @@ const userSchema = new Schema<IUser>({
   },
   otpVerified: { type: Boolean, default: false },
   googleVerified: { type: Boolean, default: false },
-  password:{type: String, default: null },
-  phone: { type: String, default: null },
-  dateOfBirth: { type: Date, default: null },
-  profilePic: { type: String, default: null },
-  age: { type: String, default: null },
-  height: { type: String, default: null },
-  weight: { type: String, default: null },
-  gender: { type: String, default: null },
+  password:{type: String },
+  phone: { type: String },
+  dateOfBirth: { type: Date },
+  profilePic: { type: String },
+  age: { type: String },
+  height: { type: String },
+  weight: { type: String },
+  gender: { type: String },
+  bloodGroup: { type: String },
+  medicalConditions: { type: String },
+  otherConcerns: { type: String },
 }, { timestamps: true });
 
 const UserModel = mongoose.model<IUser>("User", userSchema);

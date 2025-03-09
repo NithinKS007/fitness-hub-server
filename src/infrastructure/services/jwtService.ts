@@ -12,7 +12,6 @@ if (!JWT_SECRET || !JWT_EXPIRATION || !JWT_REFRESH_SECRET || !JWT_REFRESH_EXPIRA
   throw new validationError(HttpStatusMessages.MissingJwtEnvironmentVariables);
 }
 
-
 export const generateAccessToken = (_id: string, role: string):string=> {
   const payload = { _id: _id, role: role,}
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRATION as ms.StringValue}) 
