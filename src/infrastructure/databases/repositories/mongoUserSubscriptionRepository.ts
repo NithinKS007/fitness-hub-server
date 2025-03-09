@@ -34,24 +34,24 @@ export class MonogUserSubscriptionPlanRepository
       totalSessions,
       stripePriceId,
       stripeSubscriptionId,
-    });
+    })
 
-    return newSubscription;
+    return newSubscription.toObject()
   }
   public async findSubscriptionsOfUser(
     data: IdDTO
   ): Promise<SubscriptionPlanEntity[] | null> {
-    return await userSubscriptionPlanModel.aggregate([
+     const result =  await userSubscriptionPlanModel.aggregate([
       { $match: { userId: new mongoose.Types.ObjectId(data) } },
       {
         $lookup: {
           from: "users",
           localField: "trainerId",
           foreignField: "_id",
-          as: "subscribedTrainerDetails",
+          as: "subscribedTrainerData",
         },
       },
-      { $unwind: "$subscribedTrainerDetails" },
+      { $unwind: "$subscribedTrainerData" },
       {
         $project: {
           _id: 1,
@@ -64,42 +64,8 @@ export class MonogUserSubscriptionPlanRepository
           totalSessions: 1,
           trainerId: 1,
           userId: 1,
-          subscribedTrainerDetails: {
-            fname: 1,
-            lname: 1,
-            email: 1,
-            profilePic: 1,
-            isBlocked:1
-          },
-        },
-      },
-    ]);
-  }
-  public async findSubscriptionsOfTrainer(data: IdDTO): Promise<SubscriptionPlanEntity[] | null> {
-    return await userSubscriptionPlanModel.aggregate([
-      { $match: { trainerId : new mongoose.Types.ObjectId(data) } },
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "subscribedUserDetails",
-        },
-      },
-      { $unwind: "$subscribedUserDetails" },
-      {
-        $project: {
-          _id: 1,
-          durationInWeeks: 1,
-          price: 1,
-          sessionsPerWeek: 1,
-          stripePriceId: 1,
-          stripeSubscriptionId: 1,
-          subPeriod: 1,
-          totalSessions: 1,
-          trainerId: 1,
-          userId: 1,
-          subscribedUserDetails: {
+          subscribedTrainerData: {
+            _id:1,
             fname: 1,
             lname: 1,
             email: 1,
@@ -110,6 +76,47 @@ export class MonogUserSubscriptionPlanRepository
       },
     ]);
 
+    console.log("result hello ",result)
+    return result
+
+  }
+  public async findSubscriptionsOfTrainer(data: IdDTO): Promise<SubscriptionPlanEntity[] | null> {
+    const result = await userSubscriptionPlanModel.aggregate([
+      { $match: { trainerId : new mongoose.Types.ObjectId(data) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "subscribedUserData",
+        },
+      },
+      { $unwind: "$subscribedUserData" },
+      {
+        $project: {
+          _id: 1,
+          durationInWeeks: 1,
+          price: 1,
+          sessionsPerWeek: 1,
+          stripePriceId: 1,
+          stripeSubscriptionId: 1,
+          subPeriod: 1,
+          totalSessions: 1,
+          trainerId: 1,
+          userId: 1,
+          subscribedUserData: {
+            _id:1,
+            fname: 1,
+            lname: 1,
+            email: 1,
+            profilePic: 1,
+            isBlocked:1
+          },
+        },
+      },
+    ]);
+    console.log("subscription of trainer",result)
+    return result
   }
   public async findSubscriptionByStripeSubscriptionId(data: IdDTO): Promise<SubscriptionPlanEntity> {
     const result = await userSubscriptionPlanModel.aggregate([
@@ -119,10 +126,10 @@ export class MonogUserSubscriptionPlanRepository
           from: "users",
           localField: "trainerId",
           foreignField: "_id",
-          as: "subscribedTrainerDetails",
+          as: "subscribedTrainerData",
         },
       },
-      { $unwind: "$subscribedTrainerDetails" },
+      { $unwind: "$subscribedTrainerData" },
       {
         $project: {
           _id: 1,
@@ -135,7 +142,8 @@ export class MonogUserSubscriptionPlanRepository
           totalSessions: 1,
           trainerId: 1,
           userId: 1,
-          subscribedTrainerDetails: {
+          subscribedTrainerData: {
+            _id:1,
             fname: 1,
             lname: 1,
             email: 1,
@@ -145,7 +153,6 @@ export class MonogUserSubscriptionPlanRepository
         },
       },
     ]);
-
     return result[0]
   }
 

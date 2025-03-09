@@ -21,17 +21,13 @@ export class MonogTrainerRepository implements TrainerRepository {
   
   public async updateTrainerSpecificData( data: TrainerSpecificDTO): Promise<TrainerSpecific | null> {
     let updated: any = {};
-    const { certifications, specializations, aboutMe, yearsOfExperience, _id } =
-      data;
+    const { certifications, specializations, aboutMe, yearsOfExperience, _id } = data;
 
     if (certifications && certifications.length > 0) {
-      updated.$push = { certifications: { $each: certifications } };
+        updated.certifications = certifications; 
     }
     if (specializations && specializations.length > 0) {
-      updated.$push = {
-        ...updated.$push,
-        specializations: { $each: specializations },
-      };
+        updated.specializations = specializations; 
     }
     if (aboutMe) {
       updated.aboutMe = aboutMe;
@@ -39,8 +35,8 @@ export class MonogTrainerRepository implements TrainerRepository {
     if (yearsOfExperience) {
       updated.yearsOfExperience = yearsOfExperience;
     }
-
-    return await TrainerModel.findByIdAndUpdate(_id, updated, { new: true });
+    const result =  await TrainerModel.findOneAndUpdate({userId:_id},updated, { new: true }).lean()
+    return result
   }
 
   public async getTrainers(): Promise<Trainer[]> {
@@ -72,6 +68,7 @@ export class MonogTrainerRepository implements TrainerRepository {
           height: "$trainersList.height",
           weight: "$trainersList.weight",
           gender: "$trainersList.gender",
+
           yearsOfExperience: 1,
           specializations: 1,
           certifications: 1,

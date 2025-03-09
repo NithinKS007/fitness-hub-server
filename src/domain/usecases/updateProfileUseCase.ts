@@ -15,9 +15,7 @@ export class UpdateProfileUseCase {
     private userRepository: UserRepository,
     private trainerRepository: TrainerRepository
   ) {}
-  public async updateTrainerProfile(
-    data: UpdateTrainerDetails
-  ): Promise<Trainer | null> {
+  public async updateTrainerProfile(data: UpdateTrainerDetails): Promise<Trainer | null> {
 
     let { _id, yearsOfExperience, certifications, specializations, aboutMe, ...profileData } = data;
     
@@ -42,6 +40,7 @@ export class UpdateProfileUseCase {
       profileData.profilePic = url;
     }
 
+    console.log("id received updation",_id,updatedCertifications,updatedSpecializations, yearsOfExperience,aboutMe,)
     const updatedTrainerCollection =
       await this.trainerRepository.updateTrainerSpecificData({
         _id,
@@ -50,10 +49,15 @@ export class UpdateProfileUseCase {
         yearsOfExperience,
         aboutMe,
       });
+
+      console.log("trainer specific data",updatedTrainerCollection)
     const updatedTrainerDataFromUserCollection =
       await this.userRepository.updateUserProfile({ _id, ...profileData });
 
-     return Object.assign({},updatedTrainerDataFromUserCollection,updatedTrainerCollection,)
+    const trainerData = Object.assign({},updatedTrainerDataFromUserCollection,updatedTrainerCollection,)
+
+    console.log("trainer data after profile updation",trainerData)
+    return trainerData
   }
 
   public async updateUserProfile( data: UpdateUserDetails): Promise<User | null> {

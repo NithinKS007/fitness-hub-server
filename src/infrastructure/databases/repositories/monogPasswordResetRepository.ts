@@ -22,10 +22,10 @@ export class MonogPasswordResetRepository implements PasswordResetRepository {
   }
   public async verifyToken(data: PasswordResetDTO): Promise<PassResetTokenEntity | null> {
     const {resetToken } = data;
-    return await PasswordResetTokenModel.findOne({resetToken:resetToken})
+    return await PasswordResetTokenModel.findOne({resetToken:resetToken}).lean()
   }
   public async deleteToken(data:PassResetTokenDTO):Promise<PassResetTokenEntity | null> {
      const {resetToken} = data
-     return await PasswordResetTokenModel.findOneAndDelete({resetToken})
+     return await PasswordResetTokenModel.findOneAndDelete({resetToken}).lean()
   }
 }

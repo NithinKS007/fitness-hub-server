@@ -1,6 +1,4 @@
-import { ObjectId } from "mongoose";
 import { SubPeriod } from "../infrastructure/databases/models/subscriptionModel";
-import Stripe from "stripe";
 
 export interface CreateUserDTO {
   fname: string;
@@ -22,8 +20,8 @@ export interface CreateTrainerDTO {
 }
 
 export interface CreateTrainerSpecificDTO {
-  specializations: string[];
-  certificate: string;
+  // specializations: string[];
+  // certificate: string;
   yearsOfExperience: string;
 }
 

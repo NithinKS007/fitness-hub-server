@@ -19,10 +19,10 @@ export class MongoOtpRepository implements OtpRepository {
   }
   public async verifyOtpByEmail(data: OtpDTO): Promise<Otp | null> {
     const { email,otp } = data;
-    return await otpModel.findOne({ email: email,otp:otp });
+    return await otpModel.findOne({ email: email,otp:otp }).lean()
   }
   public async deleteOtp(data:OtpDTO):Promise<Otp | null> {
      const {email} = data
-     return await otpModel.findOneAndDelete({email})
+     return await otpModel.findOneAndDelete({email}).lean()
   }
 }

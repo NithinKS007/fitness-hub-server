@@ -1,11 +1,6 @@
 import { Response } from "express";
 
-export const sendResponse = (
-  res: Response,
-  statusCode: number,
-  data: any,
-  message: string
-) => {
+export const sendResponse = (res: Response,statusCode: number,data: any,message: string) => {
   const success = statusCode >= 200 && statusCode < 300;
   const response = {
     success,

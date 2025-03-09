@@ -12,12 +12,8 @@ const createProduct = async (name: string, description: string): Promise<string>
     }
 }
 
-const createPrice = async (
-    productId: string, 
-    amount: number, 
-    currency: string, 
-    interval: "year" | "month", 
-    intervalCount: number
+const createPrice = async (productId: string, amount: number, currency: string, interval: "year" | "month", 
+intervalCount: number
 ): Promise<string> => {
     try {
         const price = await stripe.prices.create({
@@ -40,10 +36,9 @@ const deactivatePrice =  async (priceId: string):Promise<void>  =>  {
 const createSubscriptionSession = async ({stripePriceId,userId,trainerId,subscriptionId}:{stripePriceId:string,userId:string,trainerId:string,subscriptionId:string}):Promise<{sessionId:string}> => { 
 
     try {
-        const productionUrl = `http://localhost:3000`;
-        const successUrl = `/subscription-success?sessionId={CHECKOUT_SESSION_ID}`;
-        const failureUrl = `/subscription-failed`
-        console.log("success redirecting url",`${productionUrl}${successUrl}`)
+        const productionUrl = process.env.CLIENT_ORIGINS;
+        const successUrl =    `/${process.env.STRIPE_SUCCESS_URL}`
+        const failureUrl =    `/${process.env.STRIPE_FAILURE_URL}`
         const session = await stripe.checkout.sessions.create({
 
             payment_method_types:["card"],
@@ -66,7 +61,6 @@ const createSubscriptionSession = async ({stripePriceId,userId,trainerId,subscri
 
     } catch (error) {
         console.log("error occured in stripe service layer",error);
-        
         throw new validationError(HttpStatusMessages.FailedToCreateSubscriptionSession)
     }
 }

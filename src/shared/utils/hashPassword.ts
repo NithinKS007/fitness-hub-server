@@ -1,9 +1,7 @@
 import bcrypt from "bcrypt";
 import { HttpStatusMessages } from "../constants/httpResponseStructure";
 
-export const hashPassword = async (
-  password: string
-): Promise<string> => {
+export const hashPassword = async (password: string): Promise<string> => {
   const saltRounds: number = 10;
   try {
     return await bcrypt.hash(password, saltRounds);
@@ -13,10 +11,7 @@ export const hashPassword = async (
   }
 };
 
-export const comparePassword = async (
-  userPassword: string,
-  hashedPassword: string
-): Promise<boolean> => {
+export const comparePassword = async (userPassword: string,hashedPassword: string): Promise<boolean> => {
   try {
     return await bcrypt.compare(userPassword, hashedPassword);
   } catch (error) {

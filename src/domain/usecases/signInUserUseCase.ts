@@ -39,6 +39,10 @@ export class SigninUserUseCase {
        }
        const accessToken = generateAccessToken(trainerData._id,trainerData.role)
        const refreshToken = generateRefreshToken(trainerData._id,trainerData.role)
+
+
+       console.log("trainer data sending to the front end after logging in",trainerData)
+
        return {accessToken,refreshToken,userData:trainerData}
      } else {
       const accessToken = generateAccessToken(userData._id,userData.role)
