@@ -13,14 +13,11 @@ export class TrainerUseCase {
         return trainerSpecificData
     }
 
-  public async getTrainerDetailsByUserIdRef(data:IdDTO):Promise<Trainer> {
+  public async getTrainerDetailsById(data:IdDTO):Promise<Trainer> {
         if(!data){
             throw new validationError(HttpStatusMessages.IdRequired)
         }
-        console.log("trainer data id un wanted",data)
-        const trainerDetails = await this.trainerRepository.getTrainerDetailsByUserIdRef(data)
-
-        console.log("details",trainerDetails)
+        const trainerDetails = await this.trainerRepository.getTrainerDetailsById(data)
         if(!trainerDetails){
           throw new validationError(HttpStatusMessages.FailedToRetrieveTrainerDetails)
         }
@@ -37,7 +34,6 @@ export class TrainerUseCase {
   public async approveRejectTrainerVerification(data:trainerVerification):Promise<Trainer | null>{
       
     const { _id, action } = data
-
     if(!_id && !action){
       throw new validationError(HttpStatusMessages.AllFieldsAreRequired)
     }
@@ -54,20 +50,10 @@ export class TrainerUseCase {
   }
   public async getApprovedTrainerDetailsWithSub(data:IdDTO):Promise<TrainerWithSubscription> {
     const trainerData = await this.trainerRepository.getApprovedTrainerDetailsWithSub(data)
-
-    console.log("data coming",trainerData)
     if(!trainerData){
        throw new validationError(HttpStatusMessages.FailedToRetrieveTrainerWithSubscription)
     }
     return trainerData
   }
-
-  // public async getTrainerNamesSuggestion(data:string):Promise<string[]> {
-
-  //   console.log(data,"query data")
-
-  //   const trainersData = await this.trainerRepository.getApprovedTrainers()
-  // }
-
 
 }

@@ -8,6 +8,7 @@ import generateOtp from "../../shared/utils/otpGenerator";
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 import { Trainer } from "../entities/trainerEntity";
 import { TrainerRepository } from "../interfaces/trainerRepository";
+import { User } from "../entities/userEntity";
 
 export class CreateTrainerUseCase {
   constructor(
@@ -16,18 +17,8 @@ export class CreateTrainerUseCase {
     private trainerRepository: TrainerRepository
   ) {}
 
-  public async create(data: CreateTrainerDTO): Promise<Trainer> {
-    const {
-      fname,
-      lname,
-      email,
-      password,
-      dateOfBirth,
-      phone,
-      yearsOfExperience,
-      specializations,
-      certificate,
-    } = data;
+  public async create(data: CreateTrainerDTO): Promise< Trainer | User > {
+    const { fname,lname,email,password, dateOfBirth, phone, yearsOfExperience, specializations, certificate} = data;
 
     if (
       !fname ||
@@ -86,17 +77,11 @@ export class CreateTrainerUseCase {
       certificate,
     };
 
-    const createdData = await this.trainerRepository.create(
-      trainerSpecificData
-    );
+    const createdData = await this.trainerRepository.create(trainerSpecificData);
 
     const otp = generateOtp(6);
     await this.otpRepository.createOtp({ email, otp });
-    await sendEmail(
-      email,
-      "OTP for Registration",
-      `Your OTP is ${otp}. Please do not share this OTP with anyone.`
-    )
+    await sendEmail(email,"OTP for Registration",`Your OTP is ${otp}. Please do not share this OTP with anyone.`)
     return {
       ...createdData,
       ...createdTrainer,

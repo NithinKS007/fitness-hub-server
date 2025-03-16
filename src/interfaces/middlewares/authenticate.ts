@@ -5,9 +5,11 @@ import { JwtPayload } from "jsonwebtoken";
 import { CheckUserBlockStatus } from "../../domain/usecases/checkUserBlockStatusUseCase";
 import { MongoUserRepository } from "../../infrastructure/databases/repositories/mongouserRepository";
 import { ForbiddenError, UnauthorizedError } from "./errorMiddleWare";
+import { MonogTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
 
 const mongouserRepository = new MongoUserRepository()
-const checkBlockStatusUseCase = new CheckUserBlockStatus(mongouserRepository)
+const mongoTrainerRepository = new MonogTrainerRepository()
+const checkBlockStatusUseCase = new CheckUserBlockStatus(mongouserRepository,mongoTrainerRepository)
 
 export const authenticate = async(req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];

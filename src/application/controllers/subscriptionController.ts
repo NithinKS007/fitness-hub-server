@@ -113,9 +113,8 @@ export class SubscriptionController {
         try {
             const {  stripeSubscriptionId, action, userSubCollectionId,} = req.body
             console.log("data received in req.body",  stripeSubscriptionId,
-                action,
-                userSubCollectionId)
-            const subscriptionCancelledData = await subscription.cancelSubscription({stripeSubscriptionId, action, userSubCollectionId})
+                action)
+            const subscriptionCancelledData = await subscription.cancelSubscription({stripeSubscriptionId, action})
             sendResponse(res, HttpStatusCodes.OK,{subscriptionCancelledData:subscriptionCancelledData}, HttpStatusMessages.SubscriptionCancelledSuccessfully);
         } catch (error) {
             console.log(`Error in cancelling subscriptions : ${error}`);

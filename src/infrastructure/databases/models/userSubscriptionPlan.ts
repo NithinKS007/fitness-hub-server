@@ -12,6 +12,7 @@ interface IUserSubscriptionPlan extends Document {
   totalSessions: number;
   stripePriceId: string;
   stripeSubscriptionId:string
+  stripeSubscriptionStatus:string
 }
 
 const userSubscriptionPlanSchema: Schema = new Schema(
@@ -38,6 +39,7 @@ const userSubscriptionPlanSchema: Schema = new Schema(
     totalSessions: { type: Number, required: true },
     stripePriceId: { type: String, required: true },
     stripeSubscriptionId: { type: String, required: true },
+    stripeSubscriptionStatus:{ type: String, required: true }
   },
   { timestamps: true }
 );

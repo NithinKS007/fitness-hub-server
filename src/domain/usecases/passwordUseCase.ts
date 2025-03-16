@@ -13,14 +13,9 @@ import { comparePassword, hashPassword } from "../../shared/utils/hashPassword";
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 
 export class PasswordUseCase {
-  constructor(
-    private userRepository: UserRepository,
-    private passwordResetRepository: PasswordResetRepository
-  ) {}
+  constructor(private userRepository: UserRepository,private passwordResetRepository: PasswordResetRepository) {}
 
-  public async generatePassResetLink(
-    data: PassResetTokenDTO
-  ): Promise<PassResetTokenEntity> {
+  public async generatePassResetLink(data: PassResetTokenDTO): Promise<PassResetTokenEntity> {
     const { email } = data;
     const userData = await this.userRepository.findByEmail({ email: email });
     if (!userData) {
@@ -35,11 +30,8 @@ export class PasswordUseCase {
     const token = await generateToken();
     const hashedToken = await hashToken(token);
 
-    const tokenData = await this.passwordResetRepository.createToken({
-      email,
-      resetToken: hashedToken,
-    });
-    const productionUrl = `http://localhost:3000`;
+    const tokenData = await this.passwordResetRepository.createToken({email,resetToken: hashedToken});
+    const productionUrl = process.env.CLIENT_ORIGINS;
     const resetURL = `${productionUrl}/auth/reset-password/${token}`;
     const subject = "Password Reset";
     const text =

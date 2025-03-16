@@ -2,7 +2,7 @@ import { ObjectId } from "mongoose";
 import { SubPeriod } from "../../infrastructure/databases/models/subscriptionModel";
 
 export interface SubscriptionPlanEntity {
-  _id:ObjectId
+  _id:ObjectId | string
   userId: string | ObjectId
   trainerId: string | ObjectId
   subPeriod: SubPeriod;
@@ -11,6 +11,7 @@ export interface SubscriptionPlanEntity {
   sessionsPerWeek: number;
   totalSessions: number;
   stripePriceId: string;
-  stripeSubscriptionId: any
+  stripeSubscriptionId: string,
+  stripeSubscriptionStatus:string
 }
 

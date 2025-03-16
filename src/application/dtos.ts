@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 import { SubPeriod } from "../infrastructure/databases/models/subscriptionModel";
 
 export interface CreateUserDTO {
@@ -20,8 +21,6 @@ export interface CreateTrainerDTO {
 }
 
 export interface CreateTrainerSpecificDTO {
-  // specializations: string[];
-  // certificate: string;
   yearsOfExperience: string;
 }
 
@@ -85,6 +84,7 @@ export interface UpdateTrainerDetails {
   age: string;
   height: string;
   weight: string;
+  userId: string;
   yearsOfExperience: string;
   certifications: { url: string; fileName: string }[];
   specializations: string[];
@@ -195,11 +195,61 @@ export interface createUserSubscriptionPlanDTO {
   sessionsPerWeek: number;
   totalSessions: number;
   stripePriceId: string;
-  stripeSubscriptionId: any;
+  stripeSubscriptionId: string;
+  stripeSubscriptionStatus: string;
 }
 
 export interface cancelSubscriptionDTO {
   stripeSubscriptionId: string;
   action: string;
-  userSubCollectionId: string;
+}
+
+export interface CheckSubscriptionStatus {
+  _id: string;
+  trainerId: string;
+}
+
+export interface UpdateSubscriptionStatus {
+  stripeSubscriptionId: string;
+  status: string;
+}
+
+export interface CreatePlayList {
+  trainerId: string;
+  title: string;
+}
+
+export interface CreatedVideoDTO {
+  trainerId: string;
+  title: string;
+  description: string;
+  duration: Number;
+  thumbnail: string;
+  video: string;
+  playLists: string[];
+}
+
+export interface CreateBookingSlot {
+  trainerId: string;
+  time:string
+  date: Date;
+}
+
+export interface BookAppointment {
+  slotId:string
+  userId:string
+}
+
+export interface CreateAppointment{
+  bookingSlotId: string | ObjectId
+  userId: string | ObjectId
+  trainerId: string | ObjectId
+  appointmentDate: Date; 
+  appointmentTime: string; 
+}
+
+export interface approveRejectBookingRequest {
+  appointmentId:string
+  bookingSlotId:string
+  action:"approved" | "rejected"
 }

@@ -1,18 +1,16 @@
 import mongoose from "mongoose";
 import {
+  CheckSubscriptionStatus,
   createUserSubscriptionPlanDTO,
   IdDTO,
+  UpdateSubscriptionStatus,
 } from "../../../application/dtos";
 import { SubscriptionPlanEntity } from "../../../domain/entities/userSubscriptionPlanEntity";
 import { UserSubscriptionPlanRepository } from "../../../domain/interfaces/userSubscriptionRepository";
 import userSubscriptionPlanModel from "../models/userSubscriptionPlan";
 
-export class MonogUserSubscriptionPlanRepository
-  implements UserSubscriptionPlanRepository
-{
-  public async create(
-    data: createUserSubscriptionPlanDTO
-  ): Promise<SubscriptionPlanEntity> {
+export class MonogUserSubscriptionPlanRepository implements UserSubscriptionPlanRepository {
+  public async create( data: createUserSubscriptionPlanDTO ): Promise<SubscriptionPlanEntity> {
     const {
       userId,
       trainerId,
@@ -23,6 +21,8 @@ export class MonogUserSubscriptionPlanRepository
       totalSessions,
       stripePriceId,
       stripeSubscriptionId,
+      stripeSubscriptionStatus
+      
     } = data;
     const newSubscription = await userSubscriptionPlanModel.create({
       userId: new mongoose.Types.ObjectId(userId),
@@ -34,19 +34,28 @@ export class MonogUserSubscriptionPlanRepository
       totalSessions,
       stripePriceId,
       stripeSubscriptionId,
+      stripeSubscriptionStatus
     })
 
     return newSubscription.toObject()
   }
-  public async findSubscriptionsOfUser(
-    data: IdDTO
-  ): Promise<SubscriptionPlanEntity[] | null> {
+  public async findSubscriptionsOfUser(data: IdDTO): Promise<SubscriptionPlanEntity[] | null> {
+
+    console.log("data received",data)
      const result =  await userSubscriptionPlanModel.aggregate([
       { $match: { userId: new mongoose.Types.ObjectId(data) } },
       {
         $lookup: {
-          from: "users",
+          from: "trainers",
           localField: "trainerId",
+          foreignField: "_id",
+          as: "subscribedTrainerData",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "subscribedTrainerData.userId",
           foreignField: "_id",
           as: "subscribedTrainerData",
         },
@@ -76,7 +85,6 @@ export class MonogUserSubscriptionPlanRepository
       },
     ]);
 
-    console.log("result hello ",result)
     return result
 
   }
@@ -115,7 +123,6 @@ export class MonogUserSubscriptionPlanRepository
         },
       },
     ]);
-    console.log("subscription of trainer",result)
     return result
   }
   public async findSubscriptionByStripeSubscriptionId(data: IdDTO): Promise<SubscriptionPlanEntity> {
@@ -155,5 +162,24 @@ export class MonogUserSubscriptionPlanRepository
     ]);
     return result[0]
   }
+  public async findSubscriptionsOfUserwithUserIdAndTrainerId(data: CheckSubscriptionStatus): Promise<SubscriptionPlanEntity[] | null> {
+    const { _id, trainerId } = data;
+    const result = await userSubscriptionPlanModel.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(_id),
+          trainerId: new mongoose.Types.ObjectId(trainerId)
+        }
+      }
+    ]);
+  
+    return result.length > 0 ? result : null;
+  }
+  public async   findSubscriptionByStripeSubscriptionIdAndUpdateStatus(data: UpdateSubscriptionStatus): Promise<SubscriptionPlanEntity | null> {
+    const { status,stripeSubscriptionId} = data;
+    const result = await userSubscriptionPlanModel.findOneAndUpdate({stripeSubscriptionId:stripeSubscriptionId},{stripeSubscriptionStatus:status})
+    return result
+  }
+
 
 }

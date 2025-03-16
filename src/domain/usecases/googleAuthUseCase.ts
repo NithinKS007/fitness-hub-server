@@ -30,12 +30,12 @@ export class GoogleAuthUseCase {
       const userData = await this.userRepository.createGoogleUser(userObj)
       return {
          userData,
-        accessToken: generateAccessToken(userData._id, email),
-        refreshToken: generateRefreshToken(userData._id, email),
+        accessToken: generateAccessToken(userData._id.toString(), email),
+        refreshToken: generateRefreshToken(userData._id.toString(), email),
       };
     }
-    const accessToken = generateAccessToken(userData._id, email);
-    const refreshToken = generateRefreshToken(userData._id, email);
+    const accessToken = generateAccessToken(userData._id.toString(), email);
+    const refreshToken = generateRefreshToken(userData._id.toString(), email);
     return {
        userData,
       accessToken,

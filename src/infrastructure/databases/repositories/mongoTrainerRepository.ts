@@ -35,49 +35,180 @@ export class MonogTrainerRepository implements TrainerRepository {
     if (yearsOfExperience) {
       updated.yearsOfExperience = yearsOfExperience;
     }
-    const result =  await TrainerModel.findOneAndUpdate({userId:_id},updated, { new: true }).lean()
+    const result =  await TrainerModel.findOneAndUpdate(new mongoose.Types.ObjectId(_id),updated, { new: true }).lean()
     return result
   }
 
-  public async getTrainers(): Promise<Trainer[]> {
-    return await TrainerModel.aggregate([
+  public async getTrainerDetailsById(data: IdDTO): Promise<Trainer> {
+
+    const trainerData = await TrainerModel.aggregate([
+      { 
+        $match: { 
+          _id: new mongoose.Types.ObjectId(data)
+        } 
+      },
       {
         $lookup: {
           from: "users",
           localField: "userId",
           foreignField: "_id",
-          as: "trainersList",
+          as: "trainerDetails",
         },
       },
-      { $unwind: "$trainersList" },
+      { $unwind: "$trainerDetails" },
       {
         $project: {
-          trainerCollectionOriginalId: "$_id",
-          _id: "$trainersList._id",
-          fname: "$trainersList.fname",
-          lname: "$trainersList.lname",
-          email: "$trainersList.email",
-          role: "$trainersList.role",
-          isBlocked: "$trainersList.isBlocked",
-          otpVerified: "$trainersList.otpVerified",
-          googleVerified: "$trainersList.googleVerified",
-          phone: "$trainersList.phone",
-          dateOfBirth: "$trainersList.dateOfBirth",
-          profilePic: "$trainersList.profilePic",
-          age: "$trainersList.age",
-          height: "$trainersList.height",
-          weight: "$trainersList.weight",
-          gender: "$trainersList.gender",
+          fname: "$trainerDetails.fname",
+          lname: "$trainerDetails.lname",
+          email: "$trainerDetails.email",
+          role: "$trainerDetails.role",
+          isBlocked: "$trainerDetails.isBlocked",
+          otpVerified: "$trainerDetails.otpVerified",
+          googleVerified: "$trainerDetails.googleVerified",
+          phone: "$trainerDetails.phone",
+          dateOfBirth: "$trainerDetails.dateOfBirth",
+          profilePic: "$trainerDetails.profilePic",
+          age: "$trainerDetails.age",
+          height: "$trainerDetails.height",
+          weight: "$trainerDetails.weight",
+          gender: "$trainerDetails.gender",
 
+          _id: 1,
+          userId:1,
+          yearsOfExperience: 1,
+          specializations: 1,
+          certifications: 1,
+          isApproved: 1,
+          aboutMe: 1,
+          createdAt:1,
+        },
+      },
+    ]);
+    return trainerData[0]
+  }
+  
+  public async getApprovedTrainerDetailsWithSub(data:IdDTO):Promise<TrainerWithSubscription>{
+    const result = await TrainerModel.aggregate([
+      { 
+        $match: { 
+          _id: new mongoose.Types.ObjectId(data),
+          isApproved:true
+        } 
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "trainerDetails",
+        },
+      },
+      { $unwind: "$trainerDetails" }, 
+      {
+        $lookup: {
+          from: "subscriptions",  
+          localField: "_id", 
+          foreignField: "trainerId",  
+          as: "subscriptionDetails", 
+        },
+      }, 
+      {
+        $project: {
+          fname: "$trainerDetails.fname",
+          lname: "$trainerDetails.lname",
+          email: "$trainerDetails.email",
+          role: "$trainerDetails.role",
+          isBlocked: "$trainerDetails.isBlocked",
+          otpVerified: "$trainerDetails.otpVerified",
+          googleVerified: "$trainerDetails.googleVerified",
+          phone: "$trainerDetails.phone",
+          dateOfBirth: "$trainerDetails.dateOfBirth",
+          profilePic: "$trainerDetails.profilePic",
+          age: "$trainerDetails.age",
+          height: "$trainerDetails.height",
+          weight: "$trainerDetails.weight",
+          gender: "$trainerDetails.gender",
+
+          _id: 1,
+          userId:1,
           yearsOfExperience: 1,
           specializations: 1,
           certifications: 1,
           isApproved:1,
           aboutMe: 1,
+          subscriptionDetails: "$subscriptionDetails",
           createdAt:1,
         },
       },
-    ]).sort({ createdAt: -1 });
+    ]);
+
+    console.log("details for showing subscription",result[0])
+    return result[0]
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //need to correct it
+
+  public async approveRejectTrainerVerification(data: trainerVerification): Promise<Trainer | null> {
+    const { _id, action } = data;
+    if (action === "approved") {
+      return await TrainerModel.findByIdAndUpdate(
+        _id,
+        { isApproved: true },
+        { new: true }
+      )
+    }
+    if (action === "rejected") {
+      return await TrainerModel.findByIdAndDelete(_id)
+    }
+    return null;
   }
 
   public async getTrainerDetailsByUserIdRef(data: IdDTO): Promise<Trainer> {
@@ -98,8 +229,6 @@ export class MonogTrainerRepository implements TrainerRepository {
       { $unwind: "$trainerDetails" },
       {
         $project: {
-          trainerCollectionOriginalId: "$_id",
-          _id: "$trainerDetails._id",
           fname: "$trainerDetails.fname",
           lname: "$trainerDetails.lname",
           email: "$trainerDetails.email",
@@ -114,6 +243,9 @@ export class MonogTrainerRepository implements TrainerRepository {
           height: "$trainerDetails.height",
           weight: "$trainerDetails.weight",
           gender: "$trainerDetails.gender",
+
+          _id: 1,
+          userId:1,
           yearsOfExperience: 1,
           specializations: 1,
           certifications: 1,
@@ -125,24 +257,50 @@ export class MonogTrainerRepository implements TrainerRepository {
     ]);
     return trainerData[0]
   }
-    public async approveRejectTrainerVerification(data: trainerVerification): Promise<Trainer | null> {
-    const { _id, action } = data;
-    if (action === "approved") {
-      return await TrainerModel.findByIdAndUpdate(
-        _id,
-        { isApproved: true },
-        { new: true }
-      )
-    }
-    if (action === "rejected") {
-      return await TrainerModel.findByIdAndDelete(_id)
-    }
-    return null;
+
+ 
+  public async getTrainers(): Promise<Trainer[]> {
+    return await TrainerModel.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "trainersList",
+        },
+      },
+      { $unwind: "$trainersList" },
+      {
+        $project: {
+          fname: "$trainersList.fname",
+          lname: "$trainersList.lname",
+          email: "$trainersList.email",
+          role: "$trainersList.role",
+          isBlocked: "$trainersList.isBlocked",
+          otpVerified: "$trainersList.otpVerified",
+          googleVerified: "$trainersList.googleVerified",
+          phone: "$trainersList.phone",
+          dateOfBirth: "$trainersList.dateOfBirth",
+          profilePic: "$trainersList.profilePic",
+          age: "$trainersList.age",
+          height: "$trainersList.height",
+          weight: "$trainersList.weight",
+          gender: "$trainersList.gender",
+
+          _id: 1,
+          userId:1,
+          yearsOfExperience: 1,
+          specializations: 1,
+          certifications: 1,
+          isApproved:1,
+          aboutMe: 1,
+          createdAt:1,
+        },
+      },
+    ]).sort({ createdAt: -1 });
   }
 
   public async  getApprovedTrainers(searchFilterQuery:any): Promise<Trainer[]> {
-
-    console.log("search query received",searchFilterQuery)
 
     let matchQuery :any = {}
 
@@ -155,11 +313,9 @@ export class MonogTrainerRepository implements TrainerRepository {
         ]
      }
 
-      if(searchFilterQuery?.Specialization?.length > 0){
-         matchQuery.$in = [
-           {specializations:searchFilterQuery.Specialization}
-         ]
-      }
+     if (searchFilterQuery?.Specialization?.length > 0) {
+      matchQuery.specializations = { $in: searchFilterQuery.Specialization };
+     }
       
       if(searchFilterQuery?.Experience?.length > 0) {
              const experienceConditions:any = [];
@@ -174,16 +330,35 @@ export class MonogTrainerRepository implements TrainerRepository {
               if(ex==="Greater than 5"){
                 experienceConditions.push({ yearsOfExperience: { $gt: "5" } });
               }
-              if(ex===" Less than 1"){
+              if(ex==="Less than 1"){
                 experienceConditions.push({ yearsOfExperience: { $lt: "1" } });
               }
                
           })
-            matchQuery.$or = experienceConditions
+          if (experienceConditions.length > 0) {
+            matchQuery.$or = experienceConditions;
+          }
+      }
+
+      if(searchFilterQuery?.Gender?.length > 0){
+         const gender:any = []
+         searchFilterQuery.Gender.forEach((gen:string)=>{
+            if(gen==="Male"){
+              gender.push("male"); 
+            } else if(gen==="Female"){
+              gender.push("female")
+            } else {
+              gender.push("male", "female");
+            }
+         })
+         console.log(gender);  
+         if (gender.length > 0) {
+          matchQuery["trainersList.gender"] = { $in: gender }; 
+        }
       }
 
     }
-
+    console.log("Match query:", matchQuery);
     return await TrainerModel.aggregate([
       {$match:{isApproved:true}},
       {
@@ -199,8 +374,6 @@ export class MonogTrainerRepository implements TrainerRepository {
       {$match:matchQuery},
       {
         $project: {
-          trainerCollectionOriginalId: "$_id",
-          _id: "$trainersList._id",
           fname: "$trainersList.fname",
           lname: "$trainersList.lname",
           email: "$trainersList.email",
@@ -215,6 +388,9 @@ export class MonogTrainerRepository implements TrainerRepository {
           height: "$trainersList.height",
           weight: "$trainersList.weight",
           gender: "$trainersList.gender",
+
+          _id: 1,
+          userId:1,
           yearsOfExperience: 1,
           specializations: 1,
           certifications: 1,
@@ -225,62 +401,6 @@ export class MonogTrainerRepository implements TrainerRepository {
       },
       
     ]).sort({ createdAt: -1 });
-  }
-
-  public async getApprovedTrainerDetailsWithSub(data:IdDTO):Promise<TrainerWithSubscription>{
-    const result = await TrainerModel.aggregate([
-      { 
-        $match: { 
-          userId: new mongoose.Types.ObjectId(data),
-          isApproved:true
-        } 
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "trainerDetails",
-        },
-      },
-      { $unwind: "$trainerDetails" }, 
-      {
-        $lookup: {
-          from: "subscriptions",  
-          localField: "trainerDetails._id", 
-          foreignField: "trainerId",  
-          as: "subscriptionDetails", 
-        },
-      }, 
-      {
-        $project: {
-          trainerCollectionOriginalId: "$_id",
-          _id: "$trainerDetails._id",
-          fname: "$trainerDetails.fname",
-          lname: "$trainerDetails.lname",
-          email: "$trainerDetails.email",
-          role: "$trainerDetails.role",
-          isBlocked: "$trainerDetails.isBlocked",
-          otpVerified: "$trainerDetails.otpVerified",
-          googleVerified: "$trainerDetails.googleVerified",
-          phone: "$trainerDetails.phone",
-          dateOfBirth: "$trainerDetails.dateOfBirth",
-          profilePic: "$trainerDetails.profilePic",
-          age: "$trainerDetails.age",
-          height: "$trainerDetails.height",
-          weight: "$trainerDetails.weight",
-          gender: "$trainerDetails.gender",
-          yearsOfExperience: 1,
-          specializations: 1,
-          certifications: 1,
-          isApproved:1,
-          aboutMe: 1,
-          subscriptionDetails: "$subscriptionDetails",
-          createdAt:1,
-        },
-      },
-    ]);
-    return result[0]
   }
 
   public async getApprovalPendingList():Promise<Trainer[]>{
@@ -297,8 +417,6 @@ export class MonogTrainerRepository implements TrainerRepository {
       { $unwind: "$trainersList" },
       {
         $project: {
-          trainerCollectionOriginalId: "$_id",
-          _id: "$trainersList._id",
           fname: "$trainersList.fname",
           lname: "$trainersList.lname",
           email: "$trainersList.email",
@@ -313,6 +431,9 @@ export class MonogTrainerRepository implements TrainerRepository {
           height: "$trainersList.height",
           weight: "$trainersList.weight",
           gender: "$trainersList.gender",
+
+          _id: 1,
+          userId:1,
           yearsOfExperience: 1,
           specializations: 1,
           certifications: 1,
@@ -323,7 +444,6 @@ export class MonogTrainerRepository implements TrainerRepository {
       },
     ]).sort({ createdAt: -1 });
 
-    console.log("mmuunn",trainersList)
     return trainersList
   }
 }
