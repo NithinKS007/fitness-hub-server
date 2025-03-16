@@ -67,9 +67,7 @@ export class AdminController {
   }
   static async getTrainerDetails(req: Request, res: Response,next:NextFunction): Promise<void> {
     try {
-      console.log("req.parm.id",req.params._id)
-      const trainerData = await trainerUsecase.getTrainerDetailsByUserIdRef(req.params._id);
-      console.log("trainersData hekklsjfgdiosj",trainerData)
+      const trainerData = await trainerUsecase.getTrainerDetailsById(req.params._id);
       sendResponse(
         res,
         HttpStatusCodes.OK,

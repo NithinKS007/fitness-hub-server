@@ -1,5 +1,6 @@
+import { ObjectId } from "mongoose";
+
 export interface Trainer {
-  _id: string;
   fname: string;
   lname: string;
   email: string;
@@ -16,6 +17,8 @@ export interface Trainer {
   weight?: string;
   gender?: string;
 
+  _id: string | ObjectId
+  userId:string| ObjectId
   yearsOfExperience?: string;
   specializations?: string[];
   certifications?: { fileName: string; url: string }[];
@@ -24,7 +27,8 @@ export interface Trainer {
 }
 
 export interface TrainerSpecific {
-  _id:string 
+  _id:string | ObjectId
+  userId:string | ObjectId
   yearsOfExperience: string;
   specializations: string[];
   isApproved:boolean

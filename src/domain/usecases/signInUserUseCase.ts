@@ -32,21 +32,17 @@ export class SigninUserUseCase {
         throw new validationError(HttpStatusMessages.IncorrectPassword)
      }
      if(userData.role==="trainer"){
-       const trainerData = await this.trainerRepository.getTrainerDetailsByUserIdRef(userData._id)
+       const trainerData = await this.trainerRepository.getTrainerDetailsByUserIdRef(userData?._id.toString())
        if(!trainerData){
-        console.log("triggering here")
         throw new validationError(HttpStatusMessages.FailedToRetrieveTrainerDetails)
        }
-       const accessToken = generateAccessToken(trainerData._id,trainerData.role)
-       const refreshToken = generateRefreshToken(trainerData._id,trainerData.role)
-
-
-       console.log("trainer data sending to the front end after logging in",trainerData)
+       const accessToken = generateAccessToken(trainerData._id.toString(),trainerData.role)
+       const refreshToken = generateRefreshToken(trainerData._id.toString(),trainerData.role)
 
        return {accessToken,refreshToken,userData:trainerData}
      } else {
-      const accessToken = generateAccessToken(userData._id,userData.role)
-      const refreshToken = generateRefreshToken(userData._id,userData.role)
+      const accessToken = generateAccessToken(userData._id.toString(),userData.role)
+      const refreshToken = generateRefreshToken(userData._id.toString(),userData.role)
       return {accessToken,refreshToken,userData}
      }
 

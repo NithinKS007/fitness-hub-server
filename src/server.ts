@@ -20,7 +20,7 @@ app.use(
   })
 );
 app.post("/api/v1/webhook",express.raw({type:"application/json"}),SubscriptionController.webHookHandler)
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: "50mb" }))
 app.use(cookieParser());
 app.use("/api/v1/auth", authRoutes)
 app.use("/api/v1/admin",adminRoutes)

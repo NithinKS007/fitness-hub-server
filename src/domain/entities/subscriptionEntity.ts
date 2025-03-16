@@ -2,8 +2,8 @@ import { ObjectId } from "mongoose";
 import {  SubPeriod } from "../../infrastructure/databases/models/subscriptionModel";
 
 export interface Subscription {
-  _id : string;
-  trainerId: ObjectId
+  _id : string | ObjectId
+  trainerId: string | ObjectId
   subPeriod: SubPeriod;
   price: number;
   durationInWeeks: number;

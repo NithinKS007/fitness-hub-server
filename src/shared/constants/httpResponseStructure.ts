@@ -9,6 +9,7 @@ export enum HttpStatusCodes {
 }
 
 export enum HttpStatusMessages {
+  UserIsSubscribed = "The current user is subscribed",
   EmailConflict = "The email address you entered already exists in our system.",
   IncorrectPassword = "The password you entered is incorrect for this user.",
   FailedToCreateUser = "We were unable to create the user. Please try again later.",
@@ -79,5 +80,43 @@ export enum HttpStatusMessages {
   SubscriptionListOfUserRetrievedSuccessfully = "User subscription list retrieved successfully",
   SubscriptionCancelledSuccessfully = "Your subscription has been cancelled successfully",
   InvalidSessionIdForStripe = "Invalid session id for stripe",
-  SubscriptionBlockedUnavailabe = "Currently unavailable"
+  SubscriptionBlockedUnavailabe = "Currently unavailable",
+  FailedToCheckSubscriptionStatus = "Failed to check subscription status",
+
+
+  //playlist
+  PlayListCreated = "Playlist added successfully",
+  PlayListEdited = "Changes made successfully",
+  FailedToCreatePlayList = "Failed to create PlayList",
+  PlayListsOfTrainerRetrievedSuccessfully = "Playlists of trainer retrieved successfully",
+  
+  //create video
+  VideoUploadedSuccessfully = "Video uploaded successfully",
+  VideoDataRetrievedSuccessfully = "Video data retrieved successfully",
+
+  FailedToCreateBookingSlot = "Failed to add slot",
+  SlotCreatedSuccessfully = "Booking slot added successfully",
+  SlotDataRetrievedSuccessfully = "Slot data retrieved successfully",
+  FailedToGetAvailableSlotData = "Failed to get available slot data",
+  
+  FailedToBookSlot = "Failed to book slot please try again",
+  SlotBookedSuccessfully = "Slot booked successfully. Please wait for confirmation",
+  SlotCurrentlyUnavailable = "The slot is currently unavailable. Please try again later",
+
+  BookingRequestsRetrievedSuccessfully = "Booking requests retrieved successfully",
+  FailedToRetrieveBookingRequests = "Failed to retrieve booking requests",
+  BookingRejected = "Booking rejected successfully",
+  BookingApproved = "Booking approved successfully",
+  BookingSlotNotFound = "Booking slot not found",
+  FailedToApproveRejectBookingStatus = "Failed to change appointment booking status",
+  AppointmentsListRetrievedSuccessfully = "Appointments list retrieved successfully",
+  FailedToRetrieveAppointmentsList = "Failed to retrieve appointments list",
+
+  AppointmentCancelledSuccessfully = "Appointment cancelled successfully",
+  FailedToCancelAppointmentStatus = "Failed to cancel appointment schedule",
+
+  SlotDeletedSuccessfully = "Booking slot deleted successfully",
+  FailedToDeleteSlot = "Failed to delete Slot",
+  FailedToDeleteSlotAlreadyUsedForTakingAppointment = "Slot currently unavailbale, Please try again"
+
 }
