@@ -1,9 +1,12 @@
-import { CreateBookingSlot, IdDTO } from "../../application/dtos";
+import { CreateBookingSlotDTO } from "../../application/dtos/bookingDTOs";
+import { GetAvailableSlotsDTO } from "../../application/dtos/queryDTOs";
+import { IdDTO, PaginationDTO } from "../../application/dtos/utilityDTOs";
 import { bookingSlot } from "../entities/bookingSlotEntity";
 
 export interface BookingSlotRepository {
-    addBookingSlot(data:CreateBookingSlot):Promise<bookingSlot>
-    getAvailableSlots(data:IdDTO):Promise<bookingSlot[]>
+    addBookingSlot(data:CreateBookingSlotDTO):Promise<bookingSlot>
+    getAvailableSlots(_id:IdDTO,data:GetAvailableSlotsDTO):Promise<{availableSlotsList:bookingSlot[],paginationData:PaginationDTO}>
+    getAvailableSlotsUser(data:IdDTO):Promise<bookingSlot[]>
     findSlotById(data:IdDTO):Promise<bookingSlot | null>
     findBookSlotAndChangeStatusTobooked(data:IdDTO):Promise<bookingSlot | null>
     findBookSlotAndChangeStatusToPending(data:IdDTO):Promise<bookingSlot | null>

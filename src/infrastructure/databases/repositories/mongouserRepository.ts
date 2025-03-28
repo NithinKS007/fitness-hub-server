@@ -1,16 +1,13 @@
-import {
-  changePasswordDTO,
-  CreateGoogleUserDTO,
-  CreateUserDTO,
-  FindEmailDTO,
-  IdDTO,
-  updateBlockStatus,
-  UpdatePassword,
-  UpdateUserDetails,
-} from "../../../application/dtos";
+import { UpdateBlockStatusDTO } from "../../../application/dtos/authDTOs";
+
+import { changePasswordDTO,FindEmailDTO,UpdatePasswordDTO } from "../../../application/dtos/authDTOs";
+import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
+
+import { CreateGoogleUserDTO,CreateUserDTO,UpdateUserDetailsDTO } from "../../../application/dtos/userDTOs";
 import { User } from "../../../domain/entities/userEntity";
 import { UserRepository } from "../../../domain/interfaces/userRepository";
 import UserModel from "../models/userModel";
+import { GetUsersQueryDTO } from "../../../application/dtos/queryDTOs";
 
 export class MongoUserRepository implements UserRepository {
   public async create(data: CreateUserDTO): Promise<User> {
@@ -25,7 +22,7 @@ export class MongoUserRepository implements UserRepository {
     const { email } = data;
     return await UserModel.findOneAndUpdate({ email }, { otpVerified: true }).lean()
   }
-  public async forgotPassword(data: UpdatePassword): Promise<User | null> {
+  public async forgotPassword(data: UpdatePasswordDTO): Promise<User | null> {
     const { email, password } = data;
     return await UserModel.findOneAndUpdate({ email }, { password: password }).lean()
   }
@@ -41,7 +38,7 @@ export class MongoUserRepository implements UserRepository {
     return await UserModel.findByIdAndUpdate(_id, { password: newPassword }).lean()
   }
   public async updateUserProfile(
-    data: UpdateUserDetails
+    data: UpdateUserDetailsDTO
   ): Promise<User | null> {
     const {
       _id,
@@ -83,10 +80,56 @@ export class MongoUserRepository implements UserRepository {
     ).lean()
   }
 
-  public async getUsers(): Promise<User[]> {
-    return await UserModel.find({ role: "user" }).sort({ createdAt: -1 }).lean()
+  public async getUsers(data: GetUsersQueryDTO): Promise<{ usersList: User[], paginationData: PaginationDTO }> {
+    const { page, limit, search, filters } = data;
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 10;
+    const skip = (pageNumber - 1) * limitNumber;
+  
+    let matchQuery: any = {};
+  
+    if (data) {
+      if (search) {
+        matchQuery.$or = [
+          { fname: { $regex: search, $options: "i" } },
+          { lname: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+        ];
+      }
+  
+      if (filters && filters.length > 0 && !filters.includes("All")) {
+        const conditions: any = [];
+  
+        if (filters.includes("Block")) conditions.push({ isBlocked: true });
+        if (filters.includes("Unblock")) conditions.push({ isBlocked: false });
+        if (filters.includes("verified")) conditions.push({ $or: [{ otpVerified: true }, { googleVerified: true }] });
+        if (filters.includes("Not verified")) conditions.push({ $and: [{ otpVerified: false }, { googleVerified: false }] });
+  
+        if (conditions.length > 0) matchQuery.$and = conditions;
+      }
+    }
+  
+    // Get the total count of users and the paginated users list.
+    const totalCount = await UserModel.countDocuments({ role: "user", ...matchQuery });
+    const usersList = await UserModel.find({ role: "user", ...matchQuery })
+      .skip(skip)
+      .limit(limitNumber)
+      .sort({ createdAt: -1 })
+      .lean();
+  
+    const totalPages = Math.ceil(totalCount / limitNumber);
+  
+    return {
+      usersList,
+      paginationData: {
+        currentPage: pageNumber ,
+        totalPages: totalPages,
+      },
+    };
   }
-  public async updateBlockStatus(data: updateBlockStatus): Promise<User | null> {
+  
+
+  public async updateBlockStatus(data: UpdateBlockStatusDTO): Promise<User | null> {
     const { _id, isBlocked } = data;
     return await UserModel.findByIdAndUpdate(
       _id,
@@ -95,5 +138,8 @@ export class MongoUserRepository implements UserRepository {
     ).lean()
   }
 
+  public async countDocs(role:string):Promise<number> {
+    return await UserModel.countDocuments({role:role})
+  }
 
 }

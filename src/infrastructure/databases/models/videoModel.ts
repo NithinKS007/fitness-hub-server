@@ -25,12 +25,6 @@ const videoSchema: Schema = new Schema(
     thumbnail: { type: String, required: true},
     video: { type: String, required: true},
     privacy: { type: Boolean, default: false},
-    playLists: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Playlist",
-      },
-    ],
   },
   { timestamps: true }
 );

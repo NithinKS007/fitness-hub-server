@@ -1,32 +1,23 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface IPlaylist extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  trainerId: mongoose.Schema.Types.ObjectId;
-  title: string;
-  privacy: boolean;
+interface IVideoPlaylist extends Document {
+  videoId: mongoose.Schema.Types.ObjectId;
+  playlistId: mongoose.Schema.Types.ObjectId;
 }
 
-const playlistSchema: Schema = new Schema(
-  {
-    trainerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Trainer",
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    privacy: {
-      type: Boolean,
-      default: false,
-    },
+const videoPlaylistSchema: Schema = new Schema({
+  videoId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Video",
+    required: true,
   },
-  { timestamps: true }
-);
+  playListId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Playlist",
+    required: true,
+  },
+});
 
-const playlistModel = mongoose.model<IPlaylist>("Playlist", playlistSchema);
+const videoPlayListModel = mongoose.model<IVideoPlaylist>("VideoPlaylist", videoPlaylistSchema);
 
-export default playlistModel;
+export default videoPlayListModel;

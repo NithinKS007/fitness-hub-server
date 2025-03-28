@@ -1,4 +1,4 @@
-import { PassResetTokenDTO ,PasswordResetDTO} from "../../../application/dtos";
+import { PassResetTokenDTO,PasswordResetDTO } from "../../../application/dtos/authDTOs";
 import { PassResetTokenEntity } from "../../../domain/entities/passResetTokenEntity";
 import { PasswordResetRepository } from "../../../domain/interfaces/passwordResetTokenRepository";
 import PasswordResetTokenModel from "../models/passwordResetTokenModel";

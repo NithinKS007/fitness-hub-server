@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { CreatedVideoDTO, IdDTO } from "../../../application/dtos";
+import { CreatedVideoDTO } from "../../../application/dtos/contentDTOs";
+import { IdDTO } from "../../../application/dtos/utilityDTOs";
 import { Video } from "../../../domain/entities/videoEntity";
 import { videoRepository } from "../../../domain/interfaces/videoRepository";
 import videoModel from "../models/videoModel";
@@ -25,4 +26,9 @@ export class MonogVideoRepository implements videoRepository {
     public async getVideosOfTrainerByTrainerId(data:IdDTO):Promise<Video[]>{
         return await videoModel.find({trainerId:data})
     }
+
+    public async getVideoById(data:IdDTO):Promise<Video | null>{
+        return await videoModel.findOne({_id:new mongoose.Types.ObjectId(data)})
+    }
+
 }

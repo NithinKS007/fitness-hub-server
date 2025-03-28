@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import {
-  CreateTrainerSpecificDTO,
-  IdDTO,
-  TrainerSpecificDTO,
-  trainerVerification,
-} from "../../../application/dtos";
+import { IdDTO } from "../../../application/dtos/utilityDTOs";
+import { CreateTrainerCollectionDTO, TrainerDTO } from "../../../application/dtos/trainerDTOs";
+import { GetTrainersApprovalQueryDTO, GetTrainersQueryDTO } from "../../../application/dtos/queryDTOs";
+import { PaginationDTO } from "../../../application/dtos/utilityDTOs";
+import { TrainerVerificationDTO } from "../../../application/dtos/trainerDTOs";
+
 import {
   Trainer,
   TrainerSpecific,
@@ -13,13 +13,13 @@ import { TrainerWithSubscription } from "../../../domain/entities/trainerWithSub
 import { TrainerRepository } from "../../../domain/interfaces/trainerRepository";
 import TrainerModel from "../models/trainerModel";
 
-export class MonogTrainerRepository implements TrainerRepository {
+export class MongoTrainerRepository implements TrainerRepository {
 
-  public async create( data: CreateTrainerSpecificDTO ): Promise<TrainerSpecific> {
+  public async create( data: CreateTrainerCollectionDTO ): Promise<TrainerSpecific> {
     return (await TrainerModel.create(data)).toObject();
   }
   
-  public async updateTrainerSpecificData( data: TrainerSpecificDTO): Promise<TrainerSpecific | null> {
+  public async updateTrainerSpecificData( data: TrainerDTO): Promise<TrainerSpecific | null> {
     let updated: any = {};
     const { certifications, specializations, aboutMe, yearsOfExperience, _id } = data;
 
@@ -141,62 +141,10 @@ export class MonogTrainerRepository implements TrainerRepository {
         },
       },
     ]);
-
-    console.log("details for showing subscription",result[0])
     return result[0]
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //need to correct it
-
-  public async approveRejectTrainerVerification(data: trainerVerification): Promise<Trainer | null> {
+  public async approveRejectTrainerVerification(data: TrainerVerificationDTO): Promise<Trainer | null> {
     const { _id, action } = data;
     if (action === "approved") {
       return await TrainerModel.findByIdAndUpdate(
@@ -258,46 +206,102 @@ export class MonogTrainerRepository implements TrainerRepository {
     return trainerData[0]
   }
 
- 
-  public async getTrainers(): Promise<Trainer[]> {
-    return await TrainerModel.aggregate([
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "trainersList",
-        },
-      },
-      { $unwind: "$trainersList" },
-      {
-        $project: {
-          fname: "$trainersList.fname",
-          lname: "$trainersList.lname",
-          email: "$trainersList.email",
-          role: "$trainersList.role",
-          isBlocked: "$trainersList.isBlocked",
-          otpVerified: "$trainersList.otpVerified",
-          googleVerified: "$trainersList.googleVerified",
-          phone: "$trainersList.phone",
-          dateOfBirth: "$trainersList.dateOfBirth",
-          profilePic: "$trainersList.profilePic",
-          age: "$trainersList.age",
-          height: "$trainersList.height",
-          weight: "$trainersList.weight",
-          gender: "$trainersList.gender",
+  public async getTrainers(data:GetTrainersQueryDTO): Promise<{trainersList:Trainer[],paginationData:PaginationDTO}> {
 
-          _id: 1,
-          userId:1,
-          yearsOfExperience: 1,
-          specializations: 1,
-          certifications: 1,
-          isApproved:1,
-          aboutMe: 1,
-          createdAt:1,
+    const { page,limit,search,filters } = data
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 10;
+    const skip = (pageNumber - 1) * limitNumber;
+    
+    let matchQuery:any = {}
+
+    if(data){
+       if(search){
+          matchQuery.$or = [
+            {"trainersList.fname":{$regex:search,$options:"i"}},
+            {"trainersList.lname":{$regex:search,$options:"i"}},
+            {"trainersList.email":{$regex:search,$options:"i"}}
+          ]
+       }
+
+       if(filters && filters.length > 0 && !filters.includes("All")){
+          const conditions:any = []
+          if (filters.includes("Block")) conditions.push({"trainersList.isBlocked":true})
+          if (filters.includes("Unblock")) conditions.push({"trainersList.isBlocked": false });
+          if (filters.includes("verified")) conditions.push({ $or: [{ "trainersList.otpVerified": true }, {"trainersList. googleVerified": true }] });
+          if (filters.includes("Not verified")) conditions.push({ $and:[{ "trainersList.otpVerified": false},{"trainersList.googleVerified": false }]});
+          if (filters.includes("Approved")) conditions.push({ isApproved: true });
+          if (filters.includes("Not Approved")) conditions.push({ isApproved: false });
+          if (conditions.length > 0) matchQuery.$and = conditions;
+       }
+    }
+
+    const [totalCount, trainersList] = await Promise.all([
+      TrainerModel.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "trainersList",
+          },
         },
+        { $match: matchQuery },  
+        { $unwind: "$trainersList" },
+        { $count: "totalCount" },
+      ]).then((result) => (result.length > 0 ? result[0].totalCount : 0)),
+      TrainerModel.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "trainersList",
+          },
+        },
+        { $match: matchQuery },
+        { $unwind: "$trainersList" },
+        {
+          $project: {
+            fname: "$trainersList.fname",
+            lname: "$trainersList.lname",
+            email: "$trainersList.email",
+            role: "$trainersList.role",
+            isBlocked: "$trainersList.isBlocked",
+            otpVerified: "$trainersList.otpVerified",
+            googleVerified: "$trainersList.googleVerified",
+            phone: "$trainersList.phone",
+            dateOfBirth: "$trainersList.dateOfBirth",
+            profilePic: "$trainersList.profilePic",
+            age: "$trainersList.age",
+            height: "$trainersList.height",
+            weight: "$trainersList.weight",
+            gender: "$trainersList.gender",
+            _id: 1,
+            userId: 1,
+            yearsOfExperience: 1,
+            specializations: 1,
+            certifications: 1,
+            isApproved: 1,
+            aboutMe: 1,
+            createdAt: 1,
+          },
+        },
+      ])
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNumber)
+        .exec()
+    ]);
+
+    const totalPages = Math.ceil(totalCount / limitNumber);
+    return {
+      trainersList,
+      paginationData: {
+        currentPage: pageNumber,
+        totalPages:totalPages,
       },
-    ]).sort({ createdAt: -1 });
+    };
   }
 
   public async  getApprovedTrainers(searchFilterQuery:any): Promise<Trainer[]> {
@@ -358,7 +362,6 @@ export class MonogTrainerRepository implements TrainerRepository {
       }
 
     }
-    console.log("Match query:", matchQuery);
     return await TrainerModel.aggregate([
       {$match:{isApproved:true}},
       {
@@ -370,8 +373,8 @@ export class MonogTrainerRepository implements TrainerRepository {
         },
       },
       { $unwind: "$trainersList" },
-      {$match:{"trainersList.isBlocked":false}},
-      {$match:matchQuery},
+      { $match: {"trainersList.isBlocked":false}},
+      { $match: matchQuery},
       {
         $project: {
           fname: "$trainersList.fname",
@@ -403,47 +406,108 @@ export class MonogTrainerRepository implements TrainerRepository {
     ]).sort({ createdAt: -1 });
   }
 
-  public async getApprovalPendingList():Promise<Trainer[]>{
-    const trainersList = await TrainerModel.aggregate([
-    {$match:{isApproved:false}},
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "trainersList",
-        },
-      },
-      { $unwind: "$trainersList" },
-      {
-        $project: {
-          fname: "$trainersList.fname",
-          lname: "$trainersList.lname",
-          email: "$trainersList.email",
-          role: "$trainersList.role",
-          isBlocked: "$trainersList.isBlocked",
-          otpVerified: "$trainersList.otpVerified",
-          googleVerified: "$trainersList.googleVerified",
-          phone: "$trainersList.phone",
-          dateOfBirth: "$trainersList.dateOfBirth",
-          profilePic: "$trainersList.profilePic",
-          age: "$trainersList.age",
-          height: "$trainersList.height",
-          weight: "$trainersList.weight",
-          gender: "$trainersList.gender",
+  public async getApprovalPendingList(data:GetTrainersApprovalQueryDTO):Promise<{trainersList:Trainer[],paginationData:PaginationDTO}>{
 
-          _id: 1,
-          userId:1,
-          yearsOfExperience: 1,
-          specializations: 1,
-          certifications: 1,
-          isApproved:1,
-          aboutMe: 1,
-          createdAt:1,
-        },
-      },
-    ]).sort({ createdAt: -1 });
+    const { page,limit,search,fromDate,toDate } = data
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 10;
+    const skip = (pageNumber - 1) * limitNumber;
+    let matchQuery: any = { isApproved: false }
 
-    return trainersList
+    if(data){
+      if(search){
+        matchQuery.$or = [
+          {"trainersList.fname":{$regex:search,$options:"i"}},
+          {"trainersList.lname":{$regex:search,$options:"i"}},
+          {"trainersList.email":{$regex:search,$options:"i"}}
+        ]
+      }
+
+      if (fromDate && toDate) {
+        matchQuery.createdAt = { $gte: fromDate, $lte: toDate };
+      } else {
+        if (fromDate) {
+          matchQuery.createdAt = { $gte: fromDate };
+        }
+        if (toDate) {
+          matchQuery.createdAt = { $lte: toDate };
+        }
+      }
+      
+    }
+
+     const [ totalCount, trainersList] = await Promise.all([
+      TrainerModel.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "trainersList",
+          },
+        },
+        { $match: matchQuery },  
+        { $unwind: "$trainersList" },
+        { $count: "totalCount" },
+      ]).then((result) => (result.length > 0 ? result[0].totalCount : 0))
+      ,TrainerModel.aggregate([
+      
+          {
+            $lookup: {
+              from: "users",
+              localField: "userId",
+              foreignField: "_id",
+              as: "trainersList",
+            },
+          },
+          { $match:matchQuery},
+          { $unwind: "$trainersList" },
+          {
+            $project: {
+              fname: "$trainersList.fname",
+              lname: "$trainersList.lname",
+              email: "$trainersList.email",
+              role: "$trainersList.role",
+              isBlocked: "$trainersList.isBlocked",
+              otpVerified: "$trainersList.otpVerified",
+              googleVerified: "$trainersList.googleVerified",
+              phone: "$trainersList.phone",
+              dateOfBirth: "$trainersList.dateOfBirth",
+              profilePic: "$trainersList.profilePic",
+              age: "$trainersList.age",
+              height: "$trainersList.height",
+              weight: "$trainersList.weight",
+              gender: "$trainersList.gender",
+    
+              _id: 1,
+              userId:1,
+              yearsOfExperience: 1,
+              specializations: 1,
+              certifications: 1,
+              isApproved:1,
+              aboutMe: 1,
+              createdAt:1,
+            },
+          },
+        ]).sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNumber)
+        .exec()
+    
+     ]) 
+     const totalPages = Math.ceil(totalCount / limitNumber)
+
+     console.log("trainers pending list",trainersList)
+      return {
+        trainersList,
+        paginationData: {
+          currentPage: pageNumber,
+          totalPages: totalPages
+        }
+      }
+  }
+
+  public async countPendingTrainerApprovals(): Promise<number> {
+    return await TrainerModel.countDocuments({isApproved:false})
   }
 }

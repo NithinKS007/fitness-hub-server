@@ -1,5 +1,5 @@
 import { UploadApiResponse } from "cloudinary";
-import cloudinary from "../config/cloudinary";
+import cloudinary from "../config/cloudinaryConfig";
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 

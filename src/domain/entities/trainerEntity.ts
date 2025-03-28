@@ -35,3 +35,27 @@ export interface TrainerSpecific {
   certifications: { fileName: string; url: string }[];
   aboutMe?: string;
 }
+
+
+export interface TrainerDashboardStats {
+  chartData:{
+    _id:string
+    total:number
+    active:number
+    canceled:number
+  }[]
+  pieChartData:{
+    _id:string
+    name:string
+    value:number
+  }[]
+  totalSubscribersCount: number;
+  activeSubscribersCount: number;
+  canceledSubscribersCount: number;
+}
+
+export interface AdminDashBoardStats {
+  pendingTrainerApprovalCount:number
+  totalUsersCount: number;
+  totalTrainersCount: number;
+}

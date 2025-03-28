@@ -1,6 +1,6 @@
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
-import stripe from "../config/stripe";
+import stripe from "../config/stripeConfig";
 
 const createProduct = async (name: string, description: string): Promise<string> => {
     try {
@@ -18,7 +18,7 @@ intervalCount: number
     try {
         const price = await stripe.prices.create({
             product: productId,
-            unit_amount: amount * 100, 
+            unit_amount: amount, 
             currency,
             recurring: { interval, interval_count: intervalCount },
         });

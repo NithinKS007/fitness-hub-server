@@ -8,5 +8,4 @@ export interface Video {
   duration:Number
   thumbnail: string;
   video: string;
-  playLists: string | ObjectId[];
 }

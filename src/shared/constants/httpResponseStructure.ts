@@ -60,9 +60,7 @@ export enum HttpStatusMessages {
   MissingJwtEnvironmentVariables = "Missing required jwt environment variables",
   FailedToUploadToCloudinary = "Failed to upload data to cloudinary",
   AuthenticationHeaderIsMissing = "Authentication header is missing",
-  SubscriptionCreated = "Subscription added successfully",
-  SubscriptionAlreadyExists = "Cannot made changes, subscription already exists",
-  SubscriptionsListRetrieved = "Subscriptions list retrieved successfully",
+
   SubscriptionBlockStatusUpdated = "Subscription status updated successfully",
   EditedSuccessfully = "Changes made successfully",
   FailedToDelete= "Failed to delete",
@@ -71,6 +69,11 @@ export enum HttpStatusMessages {
   FailedToRetrieveTrainerWithSubscription = "Failed to retrieve trainer with subscription details",
   TrainerDetailsRetrieved = "Trainer details retrieved successfully",
   TrainersListRetrieved = "Trainer list retrieved successfully",
+  
+  //SUBSCRIPTION MESSAGES
+  SubscriptionCreated = "Subscription added successfully",
+  SubscriptionAlreadyExists = "Cannot made changes, subscription already exists",
+  SubscriptionsListRetrieved = "Subscriptions list retrieved successfully",
   SubscriptionAddedSuccessfully = "Subscription added successfully",
   FailedToRetrieveSubscriptionDetails = "Subscription not found or unavailable",
   FailedToCreateSubscriptionSession = "Failed to create subscription session",
@@ -117,6 +120,22 @@ export enum HttpStatusMessages {
 
   SlotDeletedSuccessfully = "Booking slot deleted successfully",
   FailedToDeleteSlot = "Failed to delete Slot",
-  FailedToDeleteSlotAlreadyUsedForTakingAppointment = "Slot currently unavailbale, Please try again"
+  FailedToDeleteSlotAlreadyUsedForTakingAppointment = "Slot currently unavailbale, Please try again",
 
+  FailedToCreateMessageInChatDatabase = "Failed to create message",
+  FailedToGetChatMessages = "Failed to get messages",
+  ChatsSendSuccessfully = "chat history send successfully",
+
+  FailedToCreateVideoCallLog = "Failed to create video call Log",
+
+  FailedToFindAppointment = "Failed to find appointment data",
+
+  VideoCallLogsRetrievedSuccessfully = "video call logs retrieved successfully",
+  FailedToRetrieveVideoCallLogs = "Failed to retrieve video call logs",
+
+  MissingEmailEnvironmentVariables = "Missing required email environment variables",
+
+  //DASHBOARD
+  FailedToRetrieveCount = "Failed to get count."
+  
 }

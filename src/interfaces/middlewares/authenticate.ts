@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import { authenticateAccessToken } from "../../infrastructure/services/jwtService";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { JwtPayload } from "jsonwebtoken";
-import { CheckUserBlockStatus } from "../../domain/usecases/checkUserBlockStatusUseCase";
-import { MongoUserRepository } from "../../infrastructure/databases/repositories/mongouserRepository";
+import { CheckUserBlockStatus } from "../../application/usecases/checkUserBlockStatusUseCase";
+import { MongoUserRepository } from "../../infrastructure/databases/repositories/mongoUserRepository";
 import { ForbiddenError, UnauthorizedError } from "./errorMiddleWare";
-import { MonogTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
+import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
 
 const mongouserRepository = new MongoUserRepository()
-const mongoTrainerRepository = new MonogTrainerRepository()
+const mongoTrainerRepository = new MongoTrainerRepository()
 const checkBlockStatusUseCase = new CheckUserBlockStatus(mongouserRepository,mongoTrainerRepository)
 
 export const authenticate = async(req: Request, res: Response, next: NextFunction) => {
