@@ -4,10 +4,12 @@ import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
 import { SubscriptionPlanEntity } from "../../../domain/entities/userSubscriptionPlanEntity";
 import { UserSubscriptionPlanRepository } from "../../../domain/interfaces/userSubscriptionRepository";
 import userSubscriptionPlanModel from "../models/userSubscriptionPlan";
-import { DateRangeQueryDTO, GetTrainerSubscribersQueryDTO, GetUserSubscriptionsQueryDTO } from "../../../application/dtos/queryDTOs";
-import { MongoUserSubscriptionsList, MonogoTrainerSubscribersList } from "../../../domain/entities/subscriptionEntity";
+import { DateRangeQueryDTO, GetTrainerSubscribersQueryDTO, GetUserSubscriptionsQueryDTO, UserDashBoardQueryDTO } from "../../../application/dtos/queryDTOs";
+import { MongoUserSubscriptionsList, MonogoTrainerSubscribersList, TrainerSubscribersList, UserSubscriptionsList } from "../../../domain/entities/subscriptionEntity";
+import { TrainerChartData, TrainerPieChartData } from "../../../domain/entities/chartEntity";
+import { Top5List } from "../../../domain/entities/trainerEntity";
 
-export class MonogUserSubscriptionPlanRepository implements UserSubscriptionPlanRepository {
+export class MongoUserSubscriptionPlanRepository implements UserSubscriptionPlanRepository {
   public async create( data: CreateUserSubscriptionPlanDTO ): Promise<SubscriptionPlanEntity> {
     const {
       userId,
@@ -158,7 +160,6 @@ export class MonogUserSubscriptionPlanRepository implements UserSubscriptionPlan
 
   }
   public async findSubscriptionsOfTrainer(_id:IdDTO,data:GetTrainerSubscribersQueryDTO): Promise<{mongoTrainerSubscribers:MonogoTrainerSubscribersList[] ,paginationData:PaginationDTO}> {
-        console.log("data",_id,data)
 
         const { page,limit,search,filters } = data
         const pageNumber = parseInt(page, 10) || 1;
@@ -434,12 +435,9 @@ export class MonogUserSubscriptionPlanRepository implements UserSubscriptionPlan
     ])
   }
 
-  public async trainerChartDataFilter(trainerId: IdDTO, data: DateRangeQueryDTO): Promise<any> {
+  public async trainerChartDataFilter(trainerId: IdDTO, data: DateRangeQueryDTO): Promise<TrainerChartData[]> {
 
     const {startDate,endDate} = data
-    console.log("trainerdid",trainerId)
-
-    console.log("data",data)
     const result = await userSubscriptionPlanModel.aggregate([
       {
         $match: {
@@ -471,12 +469,9 @@ export class MonogUserSubscriptionPlanRepository implements UserSubscriptionPlan
     return result
   }
 
-     public async trainerPieChartDataFilter(trainerId:IdDTO,data:DateRangeQueryDTO):Promise<any>{
+     public async trainerPieChartDataFilter(trainerId:IdDTO,data:DateRangeQueryDTO):Promise<TrainerPieChartData[]>{
 
       const {startDate,endDate} = data
-      console.log("trainerdid",trainerId)
-  
-      console.log("data",data)
       const result = await userSubscriptionPlanModel.aggregate([
         {
           $match: {
@@ -487,24 +482,172 @@ export class MonogUserSubscriptionPlanRepository implements UserSubscriptionPlan
             },
           },
         },
-        {$group:
+        {
+          $group:
            {
               _id:"$subPeriod",
               value:{$sum:1}
            }
         },
-        
-       
-      
       ])
-    
-      console.log("result of the pie chart",result)
+
      return result
     }
 
-    // findAllSubscriptionsOfUser(userId: IdDTO): Promise<any> {
-      
+    public async findTrainerChatList(trainerId: IdDTO): Promise<TrainerSubscribersList[]> {
+      return await userSubscriptionPlanModel.aggregate([
+        { $match: { trainerId: new mongoose.Types.ObjectId(trainerId) } },
+        { $sort:  { updatedAt: -1 } },
+        { $group: { _id: "$userId", latestSubscription: { $first: "$$ROOT" } } },
+        { $replaceRoot: { newRoot: "$latestSubscription" } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "subscribedUserData",
+          },
+        },
+        { $unwind: "$subscribedUserData" },
+        { $sort:  { updatedAt: 1 } },
+        {
+          $project: {
+            _id: 1,
+            durationInWeeks: 1,
+            price: 1,
+            sessionsPerWeek: 1,
+            stripePriceId: 1,
+            stripeSubscriptionStatus: 1,
+            stripeSubscriptionId: 1,
+            subPeriod: 1,
+            totalSessions: 1,
+            trainerId: 1,
+            userId: 1,
+            subscribedUserData: {
+              _id: 1,
+              fname: 1,
+              lname: 1,
+              email: 1,
+              profilePic: 1,
+              isBlocked: 1,
+            },
+          },
+        },
+      ])
+    }
 
-    // }
+     public async findUserChatList(userId: IdDTO): Promise<UserSubscriptionsList[]> {
+      const result =  await userSubscriptionPlanModel.aggregate([
+        { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+        { $sort:  { updatedAt: -1 } },
+        { $group: { _id: "$trainerId", latestSubscription: { $first: "$$ROOT" } } },
+        { $replaceRoot: { newRoot: "$latestSubscription" } },
+        {
+          $lookup: {
+            from: "trainers",
+            localField: "trainerId",
+            foreignField: "_id",
+            as: "trainerData",
+          },
+        },
+        { 
+          $unwind: "$trainerData" 
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "trainerData.userId",
+            foreignField: "_id",
+            as: "subscribedTrainerData",
+          },
+        },
+        { 
+          $unwind: "$subscribedTrainerData" 
+        },
+        { $sort:  { updatedAt: 1 } },
+        {
+          $project: {
+            _id: 1,
+            durationInWeeks: 1,
+            price: 1,
+            sessionsPerWeek: 1,
+            stripePriceId: 1,
+            stripeSubscriptionId: 1,
+            stripeSubscriptionStatus:1,
+            subPeriod: 1,
+            totalSessions: 1,
+            trainerId: 1,
+            userId: 1,
+            subscribedTrainerData: {
+              _id:1,
+              fname: 1,
+              lname: 1,
+              email: 1,
+              profilePic: 1,
+              isBlocked:1
+            },
+          },
+        }
+      ])
+      return result
+    }
 
+    public async findTop5TrainersWithHighestSubscribers():Promise<Top5List[]>{
+      const result = await userSubscriptionPlanModel.aggregate([
+          {
+            $group: {
+              _id: "$trainerId",
+              totalActiveSubscriptions: {
+                $sum: {
+                  $cond: [{ $eq: ["$stripeSubscriptionStatus", "active"] }, 1, 0]
+                }
+              },
+              totalCanceledSubscriptions: {
+                $sum: {
+                  $cond: [{ $eq: ["$stripeSubscriptionStatus", "canceled"] }, 1, 0]
+                }
+              },
+              totalSubscriptions: { $sum: 1 }
+            }
+          },
+          {
+            $lookup:
+            {
+              from:"trainers",
+              localField:"_id",
+              foreignField:"_id",
+              as:"trainerCollectionData"
+            }
+          },
+          {$unwind:"$trainerCollectionData"},
+          {
+            $lookup:
+            {
+              from:"users",
+              localField:"trainerCollectionData.userId",
+              foreignField:"_id",
+              as:"trainerData"
+            }
+          },
+          {$unwind:"$trainerData"},
+          {$project:
+            {
+            fname:"$trainerData.fname",
+            lname:"$trainerData.lname",
+            email:"$trainerData.email",
+            _id: 1,
+            totalActiveSubscriptions: 1,
+            totalCanceledSubscriptions: 1,
+            totalSubscriptions: 1,
+            }
+          },
+          { $sort: { totalSubscriptions: -1 } },
+          { $limit: 5 }
+      ])
+      return result
+    }
+
+   
+
+    
 }

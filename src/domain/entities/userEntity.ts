@@ -1,4 +1,5 @@
 import { ObjectId } from "mongoose";
+import { WorkoutChartData } from "./workoutEntity";
 
 export interface User {
   _id: string | ObjectId
@@ -23,3 +24,9 @@ export interface User {
   otherConcerns?: string;
 }
 
+export interface UserDashBoard {
+  chartData:WorkoutChartData[]
+  totalWorkoutTime:number
+  todaysTotalPendingWorkouts:number
+  todaysTotalCompletedWorkouts:number
+}

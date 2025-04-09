@@ -1,6 +1,6 @@
 import { ObjectId } from "mongoose";
 
-export interface appointment {
+export interface Appointment {
   _id: string | ObjectId;
   bookingSlotId: string | ObjectId;
   userId: string | ObjectId;

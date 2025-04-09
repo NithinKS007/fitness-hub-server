@@ -2,7 +2,7 @@ import { HandleBookingRequestDTO,BookAppointmentDTO,CreateBookingSlotDTO } from 
 import { IdDTO, PaginationDTO } from "../dtos/utilityDTOs";
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
-import { appointment, AppointmentRequestsTrainer,AppointmentRequestsUser } from "../../domain/entities/appointmentEntity";
+import { Appointment, AppointmentRequestsTrainer,AppointmentRequestsUser } from "../../domain/entities/appointmentEntity";
 import { bookingSlot } from "../../domain/entities/bookingSlotEntity";
 import { BookingSlotRepository } from "../../domain/interfaces/bookingSlotRepository";
 import { AppointmentRepository } from "../../domain/interfaces/appointmentRepository";
@@ -59,7 +59,7 @@ export class BookingSlotUseCase {
   }
 
 
-  public async bookSlotAppointment(data:BookAppointmentDTO):Promise<appointment> {
+  public async bookSlotAppointment(data:BookAppointmentDTO):Promise<Appointment> {
     if (!data) {
       throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
     }
@@ -107,7 +107,7 @@ export class BookingSlotUseCase {
     }
     return {bookingRequestsList,paginationData }
   }
-  public async approveOrRejectBooking(data:HandleBookingRequestDTO):Promise<appointment> {
+  public async approveOrRejectBooking(data:HandleBookingRequestDTO):Promise<Appointment> {
     if (!data) {
       throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
     }
@@ -153,7 +153,7 @@ export class BookingSlotUseCase {
     }
     return {trainerBookingSchedulesList,paginationData}
   }
-  public async cancelAppointment(data:IdDTO):Promise<appointment> {
+  public async cancelAppointment(data:IdDTO):Promise<Appointment> {
     if (!data) {
       throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
     }
@@ -212,7 +212,7 @@ export class BookingSlotUseCase {
     return deletedSlotData
   }
 
-  public async getAppointmentById (data:IdDTO):Promise<appointment | null> {
+  public async getAppointmentById (data:IdDTO):Promise<Appointment | null> {
     if (!data) {
       throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
     }

@@ -33,7 +33,8 @@ const deactivatePrice =  async (priceId: string):Promise<void>  =>  {
     await stripe.prices.update(priceId, { active: false });
 }
 
-const createSubscriptionSession = async ({stripePriceId,userId,trainerId,subscriptionId}:{stripePriceId:string,userId:string,trainerId:string,subscriptionId:string}):Promise<{sessionId:string}> => { 
+const createSubscriptionSession = async ({stripePriceId,userId,trainerId,subscriptionId}:
+    {stripePriceId:string,userId:string,trainerId:string,subscriptionId:string}):Promise<{sessionId:string}> => { 
 
     try {
         const productionUrl = process.env.CLIENT_ORIGINS;
@@ -65,4 +66,46 @@ const createSubscriptionSession = async ({stripePriceId,userId,trainerId,subscri
     }
 }
 
-export { createProduct, createPrice ,deactivatePrice,createSubscriptionSession };
+const  getCheckoutSession = async(sessionId: string) => {
+    if (!sessionId) {
+      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+    }
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (!session) {
+      throw new validationError(HttpStatusMessages.InvalidSessionIdForStripe);
+    }
+    return session;
+}
+
+const getSubscription  = async(stripeSubscriptionId: string) => {
+    if (!stripeSubscriptionId) {
+        throw new validationError(HttpStatusMessages.InvalidId);
+    }
+    const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+    if (!subscription) {
+    throw new validationError(HttpStatusMessages.InvalidId);
+    }
+    return subscription;
+}
+
+const cancelSubscription = async(stripeSubscriptionId: string) => {
+
+    if(!stripeSubscriptionId){
+        throw new validationError(HttpStatusMessages.InvalidId)
+    }
+    const canceledSub = await stripe.subscriptions.cancel(stripeSubscriptionId);
+    return canceledSub
+}
+
+const getSubscriptionsData = async (stripeSubscriptionId: string) =>{
+    const stripeSub = await getSubscription(stripeSubscriptionId)
+    return {
+        startDate: new Date(stripeSub.current_period_start * 1000).toISOString().split("T")[0],
+        endDate: new Date(stripeSub.current_period_end * 1000).toISOString().split("T")[0],
+        isActive: stripeSub.status,
+        stripeSubscriptionStatus: stripeSub.status,
+      };
+}
+
+
+export { createProduct, createPrice ,deactivatePrice,createSubscriptionSession,getCheckoutSession,getSubscription,cancelSubscription ,getSubscriptionsData};

@@ -1,4 +1,4 @@
-import { changePasswordDTO,FindEmailDTO,UpdatePasswordDTO } from "../../application/dtos/authDTOs";
+import { ChangePasswordDTO,FindEmailDTO,UpdatePasswordDTO } from "../../application/dtos/authDTOs";
 import { IdDTO, PaginationDTO } from "../../application/dtos/utilityDTOs";
 import { CreateGoogleUserDTO,UpdateUserDetailsDTO,CreateUserDTO } from "../../application/dtos/userDTOs";
 import { UpdateBlockStatusDTO } from "../../application/dtos/authDTOs";
@@ -12,7 +12,7 @@ export interface UserRepository {
   forgotPassword(data:UpdatePasswordDTO):Promise<User | null>
   createGoogleUser(data:CreateGoogleUserDTO):Promise<User>
   findById(data:IdDTO):Promise<User | null>
-  changePassword(data:changePasswordDTO):Promise<User| null>
+  changePassword(data:ChangePasswordDTO):Promise<User| null>
   updateUserProfile(data:UpdateUserDetailsDTO):Promise<User | null>
   getUsers(data:GetUsersQueryDTO):Promise<{usersList :User[],paginationData:PaginationDTO}>
   updateBlockStatus(data:UpdateBlockStatusDTO):Promise<User | null>

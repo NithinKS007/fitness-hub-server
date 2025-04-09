@@ -2,9 +2,9 @@ import { NextFunction,Request,Response } from "express";
 import { HttpStatusCodes, HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import { BookingSlotUseCase } from "../../application/usecases/bookingSlotUseCase";
-import { MongoBookingSlotRepository } from "../../infrastructure/databases/repositories/mongoBookingSlotRepository";
-import { MongoAppointmentRepository } from "../../infrastructure/databases/repositories/mongoAppointmentRepository";
-import { MongoVideoCallLogRepository } from "../../infrastructure/databases/repositories/mongoVideoCallLogRepository";
+import { MongoBookingSlotRepository } from "../../infrastructure/databases/repositories/bookingSlotRepository";
+import { MongoAppointmentRepository } from "../../infrastructure/databases/repositories/appointmentRepository";
+import { MongoVideoCallLogRepository } from "../../infrastructure/databases/repositories/videoCallLogRepository";
 
 //MONGO REPOSITORY INSTANCES
 const mongoBookingSlotRepository = new MongoBookingSlotRepository()

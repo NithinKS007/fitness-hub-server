@@ -2,7 +2,7 @@ import { CancelSubscriptionDTO,CheckSubscriptionStatusDTO,PurchaseSubscriptionDT
 import { IdDTO, PaginationDTO } from "../dtos/utilityDTOs";
 import stripe from "../../infrastructure/config/stripeConfig";
 import { SubPeriod } from "../../infrastructure/databases/models/subscriptionModel";
-import { createPrice, createProduct, createSubscriptionSession, deactivatePrice } from "../../infrastructure/services/stripeServices";
+import { cancelSubscription, createPrice, createProduct, createSubscriptionSession, deactivatePrice, getSubscription, getSubscriptionsData } from "../../infrastructure/services/stripeServices";
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { Subscription, TrainerSubscribersList, UserSubscriptionsList } from "../../domain/entities/subscriptionEntity";
@@ -11,10 +11,26 @@ import { TrainerRepository } from "../../domain/interfaces/trainerRepository";
 import { UserSubscriptionPlanRepository } from "../../domain/interfaces/userSubscriptionRepository";
 import { SubscriptionPlanEntity } from "../../domain/entities/userSubscriptionPlanEntity";
 import { GetTrainerSubscribersQueryDTO, GetUserSubscriptionsQueryDTO } from "../dtos/queryDTOs";
+import { RevenueRepository } from "../../domain/interfaces/revenueRepository";
 
 export class SubscriptionUseCase {
 
-    constructor(private subscriptionRepository:SubscriptionRepository,private trainerRepository:TrainerRepository,private userSubscriptionPlanRepository:UserSubscriptionPlanRepository) {}
+    constructor(private subscriptionRepository:SubscriptionRepository,private trainerRepository:TrainerRepository,private userSubscriptionPlanRepository:UserSubscriptionPlanRepository,private revenueRepository:RevenueRepository) {}
+
+    private getInterval(subPeriod: SubPeriod): "month" | "year" {
+        return subPeriod === "yearly" ? "year" : "month";
+    }
+    private getIntervalCount = (subPeriod: SubPeriod): number => {
+        if (subPeriod === 'quarterly') {
+          return 3; 
+        } else if (subPeriod === 'halfYearly') {
+          return 6;  
+        } else if (subPeriod === 'yearly') {
+          return 1;  
+        } else {
+          return 1;
+        }
+    };
 
     public async createSubscription(data:{trainerId: string;subPeriod: SubPeriod;price: number;durationInWeeks: number;sessionsPerWeek: number;totalSessions: number;}):Promise<Subscription> {
 
@@ -26,25 +42,9 @@ export class SubscriptionUseCase {
         if(existing){
             throw new validationError(HttpStatusMessages.SubscriptionAlreadyExists)
         }
-        const getIntervalCount = (subPeriod: SubPeriod): number => {
-            if (subPeriod === 'quarterly') {
-              return 3; 
-            } else if (subPeriod === 'halfYearly') {
-              return 6;  
-            } else if (subPeriod === 'yearly') {
-              return 1;  
-            } else {
-              return 1;
-            }
-          };
-          
-          
-          const getInterval = (subPeriod: SubPeriod): 'month' | 'year' => {
-            return subPeriod === 'yearly' ? 'year' : 'month';
-          }
         
-          const interval = getInterval(subPeriod)
-          const intervalCount = getIntervalCount(subPeriod)
+          const interval = this.getInterval(subPeriod)
+          const intervalCount = this.getIntervalCount(subPeriod)
           const productId = await createProduct(
             `${subPeriod.charAt(0).toUpperCase() + subPeriod.slice(1).toLowerCase()} Fitness Plan`,
             `Trainer: ${trainerData.fname} ${trainerData.lname}, ${totalSessions} sessions, Email: ${trainerData.email}`
@@ -79,6 +79,7 @@ export class SubscriptionUseCase {
 
         return updatedSubscriptionData
     }
+
     public async editSubscription(data:UpdateSubscriptionDetailsDTO):Promise<Subscription>{
 
         const {trainerId,subPeriod,totalSessions,price} = data
@@ -91,11 +92,6 @@ export class SubscriptionUseCase {
         if(!subscriptionData){
             throw new validationError(HttpStatusMessages.InvalidId)
         }
-        // const existing = await this.subscriptionRepository.findExistingSubscription({trainerId,subPeriod})
-
-        // if(existing){
-        //     throw new validationError(HttpStatusMessages.SubscriptionAlreadyExists)
-        // }
 
         const existingSubData = await this.subscriptionRepository.findSubscriptionById(data._id)
 
@@ -107,24 +103,9 @@ export class SubscriptionUseCase {
                 `${subPeriod.charAt(0).toUpperCase() + subPeriod.slice(1).toLowerCase()} Fitness Plan`,
                 `Trainer: ${trainerData?.fname} ${trainerData?.lname}, ${totalSessions} sessions, Email: ${trainerData?.email}`
               ); 
-            const getIntervalCount = (subPeriod: SubPeriod): number => {
-            if (subPeriod === 'quarterly') {
-                return 3; 
-            } else if (subPeriod === 'halfYearly') {
-                return 6;  
-            } else if (subPeriod === 'yearly') {
-                return 1;  
-            } else {
-                return 1;
-            }
-            };
-            
-            const getInterval = (subPeriod: SubPeriod): 'month' | 'year' => {
-            return subPeriod === 'yearly' ? 'year' : 'month';
-            }
 
-            const interval = getInterval(subPeriod)
-            const intervalCount = getIntervalCount(subPeriod)
+            const interval = this.getInterval(subPeriod)
+            const intervalCount = this.getIntervalCount(subPeriod)
             const stripePriceId = await createPrice(productId, price * 100, 'usd', interval, intervalCount)
             updatedSubscriptionData = await this.subscriptionRepository.editSubscription({...data,stripePriceId:stripePriceId})
         }
@@ -213,7 +194,23 @@ export class SubscriptionUseCase {
                     stripeSubscriptionId:stripeSubscriptionId as string,
                     stripeSubscriptionStatus:subscription.status
                   }
-                await this.userSubscriptionPlanRepository.create(newSubscriptionAdding)
+                const createdSubscription =  await this.userSubscriptionPlanRepository.create(newSubscriptionAdding)
+
+                if(createdSubscription){
+                    const adminCommission = Math.round(subscriptionData?.price * 0.10); 
+                    const platformFee = Math.round(subscriptionData?.price * 0.05);    
+                    const trainerAmount = subscriptionData?.price - adminCommission - platformFee;
+
+                    await this.revenueRepository.create({
+                    userId:createdSubscription.userId.toString(),
+                    trainerId:trainerId,
+                    subscriptionId:subscriptionData._id.toString(),
+                    userSubscriptionPlanId:createdSubscription._id.toString(),
+                    amountPaid:subscriptionData.price,platformRevenue:platformFee,
+                    trainerRevenue:trainerAmount,
+                    commission:adminCommission,
+                })
+                }
                 console.log(`Subscription ${subscriptionId} successful in webhook handler`);
              } 
 
@@ -253,12 +250,10 @@ export class SubscriptionUseCase {
             if (!userTakenSubscription) {
                 throw new validationError(HttpStatusMessages.FailedToRetrieveSubscriptionDetails);
             }
-            const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId as string);
+            const stripeSubscription = await getSubscription(stripeSubscriptionId as string)
             const subscriptionStatus = stripeSubscription.status === 'active' && userTakenSubscription.stripeSubscriptionStatus==="active"
 
             return {...userTakenSubscription,isSubscribed:subscriptionStatus}
-   
-        
     }
 
     public async getUserSubscriptionsData(_id:IdDTO,data:GetUserSubscriptionsQueryDTO):Promise<{userSubscriptionsList: UserSubscriptionsList[] ,paginationData:PaginationDTO}> {
@@ -273,21 +268,12 @@ export class SubscriptionUseCase {
         }
 
         const userSubscriptionsList = await Promise.all(mongoUserSubscriptionsList.map(async (sub) => {
-            const stripeSub = await stripe.subscriptions.retrieve(sub.stripeSubscriptionId);
-            const stripeData = {
-              startDate: new Date(stripeSub.current_period_start * 1000).toISOString().split("T")[0],
-              endDate: new Date(stripeSub.current_period_end * 1000).toISOString().split("T")[0],
-              isActive: stripeSub.status
-            }
-
+        const stripeData = await getSubscriptionsData(sub.stripeSubscriptionId)
             return {
               ...sub, 
               ...stripeData,
-            };
+            }
           }))
-
-          console.log("list of subscriptions",userSubscriptionsList)
-        
           return  { userSubscriptionsList:userSubscriptionsList,paginationData:paginationData}
     }
     public async getTrainerSubscribedUsers(_id:IdDTO,data:GetTrainerSubscribersQueryDTO):Promise<{trainerSubscribers:TrainerSubscribersList[],paginationData:PaginationDTO}> {
@@ -301,14 +287,7 @@ export class SubscriptionUseCase {
         }
 
         const trainerSubscribers = await Promise.all(mongoTrainerSubscribers.map(async (sub) => {
-            const stripeSub = await stripe.subscriptions.retrieve(sub.stripeSubscriptionId);
-            const stripeData = {
-              startDate: new Date(stripeSub.current_period_start * 1000).toISOString().split("T")[0],
-              endDate: new Date(stripeSub.current_period_end * 1000).toISOString().split("T")[0],
-              isActive: stripeSub.status,
-              stripeSubscriptionStatus: stripeSub.status
-            }
-
+        const stripeData = await getSubscriptionsData(sub.stripeSubscriptionId)
             return {
               ...sub, 
               ...stripeData,
@@ -330,7 +309,7 @@ export class SubscriptionUseCase {
             throw new validationError(HttpStatusMessages.InvalidId)
         }
         if (action === 'cancelImmediately') {
-        const stripeSub:any = await stripe.subscriptions.cancel(stripeSubscriptionId)
+        const stripeSub = await cancelSubscription(stripeSubscriptionId)
         return {
             stripeSubscriptionId :stripeSub.id,
             isActive:stripeSub.status,
@@ -353,9 +332,7 @@ export class SubscriptionUseCase {
         if (subscriptionData && subscriptionData.length > 0) {
             for (const sub of subscriptionData) {
                 try {
-                    const stripeSubscription = await stripe.subscriptions.retrieve(
-                        sub.stripeSubscriptionId
-                    );
+                    const stripeSubscription = await getSubscription(sub.stripeSubscriptionId)
                     if (stripeSubscription.status === "active" && sub.stripeSubscriptionStatus === "active") {
                         return {
                             trainerId: trainerId,
@@ -363,7 +340,7 @@ export class SubscriptionUseCase {
                         };
                     }
                 } catch (error) {
-                    console.error(`Error checking subscription ${sub.stripeSubscriptionId}:`, error);
+                    console.log(`Error checking subscription ${sub.stripeSubscriptionId}:`, error);
                 }
             }
         }

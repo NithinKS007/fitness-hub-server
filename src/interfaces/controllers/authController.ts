@@ -16,10 +16,10 @@ import {
 import { JwtPayload } from "jsonwebtoken";
 import { CreateTrainerUseCase } from "../../application/usecases/createTrainerUseCase";
 import { UpdateProfileUseCase } from "../../application/usecases/updateProfileUseCase";
-import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
-import { MonogPasswordResetRepository } from "../../infrastructure/databases/repositories/monogPasswordResetRepository";
-import { MongoUserRepository } from "../../infrastructure/databases/repositories/mongoUserRepository";
-import { MongoOtpRepository } from "../../infrastructure/databases/repositories/mongoOtpRepository";
+import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/trainerRepository";
+import { MonogPasswordResetRepository } from "../../infrastructure/databases/repositories/passwordResetRepository";
+import { MongoUserRepository } from "../../infrastructure/databases/repositories/userRepository";
+import { MongoOtpRepository } from "../../infrastructure/databases/repositories/otpRepository";
 
 //MONGO REPOSITORY INSTANCES
 const mongoUserRepository = new MongoUserRepository();

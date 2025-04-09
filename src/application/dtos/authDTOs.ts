@@ -28,13 +28,13 @@ export interface UpdatePasswordDTO {
   newPassword?: string;
 }
 
-export interface changePasswordDTO {
+export interface ChangePasswordDTO {
   _id: string;
   password: string;
   newPassword: string;
 }
 
-export interface googleTokenDTO {
+export interface GoogleTokenDTO {
   token: string;
 }
 

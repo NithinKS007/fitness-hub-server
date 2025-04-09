@@ -16,7 +16,8 @@ const videoPlaylistSchema: Schema = new Schema({
     ref: "Playlist",
     required: true,
   },
-});
+  
+},{ timestamps: true });
 
 const videoPlayListModel = mongoose.model<IVideoPlaylist>("VideoPlaylist", videoPlaylistSchema);
 

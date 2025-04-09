@@ -1,6 +1,6 @@
 import { UpdateBlockStatusDTO } from "../../../application/dtos/authDTOs";
 
-import { changePasswordDTO,FindEmailDTO,UpdatePasswordDTO } from "../../../application/dtos/authDTOs";
+import { ChangePasswordDTO,FindEmailDTO,UpdatePasswordDTO } from "../../../application/dtos/authDTOs";
 import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
 
 import { CreateGoogleUserDTO,CreateUserDTO,UpdateUserDetailsDTO } from "../../../application/dtos/userDTOs";
@@ -33,7 +33,7 @@ export class MongoUserRepository implements UserRepository {
     const userData = await UserModel.findById({_id:data}).lean()
     return userData
   }
-  public async changePassword(data: changePasswordDTO): Promise<User | null> {
+  public async changePassword(data: ChangePasswordDTO): Promise<User | null> {
     const { _id, newPassword } = data;
     return await UserModel.findByIdAndUpdate(_id, { password: newPassword }).lean()
   }
@@ -55,8 +55,6 @@ export class MongoUserRepository implements UserRepository {
       medicalConditions,
       otherConcerns,
     } = data;
-
-    console.log("data received in backend",data)
 
     return await UserModel.findByIdAndUpdate(
       _id,
@@ -109,7 +107,6 @@ export class MongoUserRepository implements UserRepository {
       }
     }
   
-    // Get the total count of users and the paginated users list.
     const totalCount = await UserModel.countDocuments({ role: "user", ...matchQuery });
     const usersList = await UserModel.find({ role: "user", ...matchQuery })
       .skip(skip)

@@ -23,7 +23,7 @@ const SubscriptionSchema: Schema = new Schema({
   totalSessions: { type: Number, required: true },
   isBlocked: { type: Boolean, default: false },
   stripePriceId: { type: String,required:true}
-});
+},{ timestamps: true });
 
 
 const SubscriptionModel = mongoose.model<ISubscription>('Subscription', SubscriptionSchema);

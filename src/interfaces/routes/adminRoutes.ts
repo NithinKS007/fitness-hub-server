@@ -20,4 +20,7 @@ adminRoutes.get("/trainer/subscriptions/:_id",authenticate, AdminController.getT
 //DASHBOARD MANAGEMENT ROUTES
 adminRoutes.get("/dashboard",authenticate,AdminDashboardController.getAdminDashBoardData)
 
+//REVENUE MANAGEMENT ROUTES
+adminRoutes.get("/revenue",authenticate,AdminController.getAdminRevenueHistory)
+
 export default adminRoutes

@@ -130,4 +130,6 @@ export interface UserSubscriptionsList {
   endDate: string;
   isActive: string;
   stripeSubscriptionStatus: string;
+  createdAt?:Date
+  updatedAt?:Date
 }

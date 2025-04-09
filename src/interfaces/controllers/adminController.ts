@@ -7,21 +7,26 @@ import {
 import { UserUseCase } from "../../application/usecases/userUseCase";
 import { TrainerUseCase } from "../../application/usecases/trainerUseCase";
 import { SubscriptionUseCase } from "../../application/usecases/subscriptionUseCase";
-import { MongoUserRepository } from "../../infrastructure/databases/repositories/mongoUserRepository";
-import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
-import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/mongoSubscriptionRepository";
-import { MonogUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/mongoUserSubscriptionRepository";
+import { MongoUserRepository } from "../../infrastructure/databases/repositories/userRepository";
+import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/trainerRepository";
+import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/subscriptionRepository";
+import { MongoUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/userSubscriptionRepository";
+import { MongoRevenueRepository } from "../../infrastructure/databases/repositories/revenueRepository";
+import { RevenueHistory } from "../../application/usecases/RevenueHistory";
 
 //MONGO REPOSITORY INSTANCES
 const mongouserRepository = new MongoUserRepository();
 const mongoTrainerRepository = new MongoTrainerRepository()
 const mongoSubscriptionRepository = new MongoSubscriptionRepository()
-const monogUserSubscriptionPlanRepository = new MonogUserSubscriptionPlanRepository()
+const monogUserSubscriptionPlanRepository = new MongoUserSubscriptionPlanRepository()
+const mongoRevenueRepository = new MongoRevenueRepository()
 
 //USE CASE INSTANCES
 const userUseCase = new UserUseCase(mongouserRepository);
 const trainerUsecase = new TrainerUseCase(mongoTrainerRepository)
-const subscriptionsUseCase = new SubscriptionUseCase(mongoSubscriptionRepository,mongoTrainerRepository,monogUserSubscriptionPlanRepository)
+const revenueUseCase = new RevenueHistory(mongoRevenueRepository)
+
+const subscriptionsUseCase = new SubscriptionUseCase(mongoSubscriptionRepository,mongoTrainerRepository,monogUserSubscriptionPlanRepository,mongoRevenueRepository)
 
 export class AdminController {
 static async getUsers(req: Request, res: Response,next:NextFunction): Promise<void> {
@@ -117,4 +122,17 @@ static async getTrainerSubscriptions(req: Request, res: Response,next:NextFuncti
     next(error)
   }
 }
+
+static async getAdminRevenueHistory(req: Request, res: Response,next:NextFunction): Promise<void> {
+  try {
+
+    const {fromDate,toDate, page,limit,search,filters} = req.query
+    const { revenueData,paginationData } = await revenueUseCase .getAdminRevenueHistory({fromDate:fromDate as any,toDate:toDate as any, page:page as string,limit:limit as string,search:search as string,filters:filters as string[]});
+    sendResponse(res, HttpStatusCodes.OK,{revenueData:revenueData,paginationData:paginationData}, HttpStatusMessages.SuccessFullyFetchedRevenueHistory);
+  } catch (error: any) {
+    console.log(`Error retrieving revenue history`);
+    next(error)
+  }
+}
+
 }

@@ -1,4 +1,4 @@
-import { googleTokenDTO } from "../dtos/authDTOs";
+import { GoogleTokenDTO } from "../dtos/authDTOs";
 import { verifyGoogleToken } from "../../infrastructure/services/googleAuthService";
 import { generateAccessToken, generateRefreshToken } from "../../infrastructure/services/jwtService";
 import { ForbiddenError, validationError } from "../../interfaces/middlewares/errorMiddleWare";
@@ -9,7 +9,7 @@ import { UserRepository } from "../../domain/interfaces/userRepository";
 export class GoogleAuthUseCase {
   constructor(private userRepository: UserRepository) {}
 
-  public async createGoogleUser(data: googleTokenDTO): Promise<{ accessToken: string; refreshToken: string; userData: User }> {
+  public async createGoogleUser(data: GoogleTokenDTO): Promise<{ accessToken: string; refreshToken: string; userData: User }> {
     const { token } = data;
     const googleUserInfo = await verifyGoogleToken(token)
     if (!googleUserInfo || !googleUserInfo.email) {

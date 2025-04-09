@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { IdDTO } from "../../../application/dtos/utilityDTOs";
 import { CreateTrainerCollectionDTO, TrainerDTO } from "../../../application/dtos/trainerDTOs";
-import { GetTrainersApprovalQueryDTO, GetTrainersQueryDTO } from "../../../application/dtos/queryDTOs";
+import { GetApprovedTrainerQueryDTO, GetTrainersApprovalQueryDTO, GetTrainersQueryDTO } from "../../../application/dtos/queryDTOs";
 import { PaginationDTO } from "../../../application/dtos/utilityDTOs";
 import { TrainerVerificationDTO } from "../../../application/dtos/trainerDTOs";
 
@@ -304,26 +304,40 @@ export class MongoTrainerRepository implements TrainerRepository {
     };
   }
 
-  public async  getApprovedTrainers(searchFilterQuery:any): Promise<Trainer[]> {
+  public async  getApprovedTrainers(searchFilterQuery:GetApprovedTrainerQueryDTO): Promise<{trainersList:Trainer[],paginationData:PaginationDTO}> {
+
+    const { page,limit,Search,Specialization,Experience,Gender,Sort} = searchFilterQuery
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 10;
+    const skip = (pageNumber - 1) * limitNumber;
 
     let matchQuery :any = {}
+    let sortQuery: any = {};
 
+    if(Sort==="aA - zz") {
+      sortQuery = { "trainersList.fname": 1 };
+     } else if(Sort==="zz - aa"){
+      sortQuery = { "trainersList.fname": -1 };
+     } else {
+      sortQuery = {createdAt: -1 }
+     }
+ 
     if(searchFilterQuery){
-      if(searchFilterQuery.Search){
+      if(Search){
         matchQuery.$or = [
-           {"trainersList.fname":{$regex:searchFilterQuery.Search,$options:"i"}},
-           {"trainersList.lname":{$regex:searchFilterQuery.Search,$options:"i"}},
-           {"trainersList.email":{$regex:searchFilterQuery.Search,$options:"i"}}
+           {"trainersList.fname":{$regex:Search,$options:"i"}},
+           {"trainersList.lname":{$regex:Search,$options:"i"}},
+           {"trainersList.email":{$regex:Search,$options:"i"}}
         ]
      }
 
-     if (searchFilterQuery?.Specialization?.length > 0) {
-      matchQuery.specializations = { $in: searchFilterQuery.Specialization };
+     if (Specialization?.length > 0) {
+      matchQuery.specializations = { $in:Specialization };
      }
       
-      if(searchFilterQuery?.Experience?.length > 0) {
+      if(Experience?.length > 0) {
              const experienceConditions:any = [];
-          searchFilterQuery.Experience.forEach((ex:any)=>{
+          Experience.forEach((ex:string)=>{
               if(ex==="1-3"){
                 experienceConditions.push({ yearsOfExperience: { $gte: "1", $lte: "3" } });
               }
@@ -344,9 +358,9 @@ export class MongoTrainerRepository implements TrainerRepository {
           }
       }
 
-      if(searchFilterQuery?.Gender?.length > 0){
+      if(Gender?.length > 0){
          const gender:any = []
-         searchFilterQuery.Gender.forEach((gen:string)=>{
+          Gender.forEach((gen:string)=>{
             if(gen==="Male"){
               gender.push("male"); 
             } else if(gen==="Female"){
@@ -355,14 +369,15 @@ export class MongoTrainerRepository implements TrainerRepository {
               gender.push("male", "female");
             }
          })
-         console.log(gender);  
          if (gender.length > 0) {
           matchQuery["trainersList.gender"] = { $in: gender }; 
         }
       }
 
     }
-    return await TrainerModel.aggregate([
+
+    const [ totalCount, trainersList] = await Promise.all([
+      TrainerModel.aggregate([
       {$match:{isApproved:true}},
       {
         $lookup: {
@@ -375,35 +390,64 @@ export class MongoTrainerRepository implements TrainerRepository {
       { $unwind: "$trainersList" },
       { $match: {"trainersList.isBlocked":false}},
       { $match: matchQuery},
-      {
-        $project: {
-          fname: "$trainersList.fname",
-          lname: "$trainersList.lname",
-          email: "$trainersList.email",
-          role: "$trainersList.role",
-          isBlocked: "$trainersList.isBlocked",
-          otpVerified: "$trainersList.otpVerified",
-          googleVerified: "$trainersList.googleVerified",
-          phone: "$trainersList.phone",
-          dateOfBirth: "$trainersList.dateOfBirth",
-          profilePic: "$trainersList.profilePic",
-          age: "$trainersList.age",
-          height: "$trainersList.height",
-          weight: "$trainersList.weight",
-          gender: "$trainersList.gender",
-
-          _id: 1,
-          userId:1,
-          yearsOfExperience: 1,
-          specializations: 1,
-          certifications: 1,
-          isApproved:1,
-          aboutMe: 1,
-          createdAt:1,
+      { $count: "totalCount" },
+    ]).then((result) => (result.length > 0 ? result[0].totalCount : 0))
+      ,TrainerModel.aggregate([
+        {$match:{isApproved:true}},
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "trainersList",
+          },
         },
-      },
-      
-    ]).sort({ createdAt: -1 });
+        { $unwind: "$trainersList" },
+        { $match: {"trainersList.isBlocked":false}},
+        { $match: matchQuery},
+        { $sort: sortQuery },
+        {
+          $project: {
+            fname: "$trainersList.fname",
+            lname: "$trainersList.lname",
+            email: "$trainersList.email",
+            role: "$trainersList.role",
+            isBlocked: "$trainersList.isBlocked",
+            otpVerified: "$trainersList.otpVerified",
+            googleVerified: "$trainersList.googleVerified",
+            phone: "$trainersList.phone",
+            dateOfBirth: "$trainersList.dateOfBirth",
+            profilePic: "$trainersList.profilePic",
+            age: "$trainersList.age",
+            height: "$trainersList.height",
+            weight: "$trainersList.weight",
+            gender: "$trainersList.gender",
+  
+            _id: 1,
+            userId:1,
+            yearsOfExperience: 1,
+            specializations: 1,
+            certifications: 1,
+            isApproved:1,
+            aboutMe: 1,
+            createdAt:1,
+          },
+        },
+        
+      ]).skip(skip)
+      .limit(limitNumber)
+      .exec()
+    ])
+
+    const totalPages = Math.ceil(totalCount / limitNumber)
+
+      return {
+        trainersList,
+        paginationData: {
+          currentPage: pageNumber,
+          totalPages: totalPages
+        }
+      }
   }
 
   public async getApprovalPendingList(data:GetTrainersApprovalQueryDTO):Promise<{trainersList:Trainer[],paginationData:PaginationDTO}>{

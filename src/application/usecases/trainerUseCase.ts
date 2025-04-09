@@ -1,4 +1,4 @@
-import { GetTrainersApprovalQueryDTO, GetTrainersQueryDTO } from "../dtos/queryDTOs";
+import { GetApprovedTrainerQueryDTO, GetTrainersApprovalQueryDTO, GetTrainersQueryDTO } from "../dtos/queryDTOs";
 import { IdDTO } from "../dtos/utilityDTOs";
 import { PaginationDTO } from "../dtos/utilityDTOs";
 import { TrainerVerificationDTO } from "../dtos/trainerDTOs";
@@ -56,13 +56,15 @@ export class TrainerUseCase {
     return await this.trainerRepository.approveRejectTrainerVerification({_id,action})
     }
 
-  public async getApprovedTrainers(searchFilterQuery:any):Promise<Trainer []> {
+  public async getApprovedTrainers(searchFilterQuery:GetApprovedTrainerQueryDTO):Promise<{trainersList:Trainer[],paginationData:PaginationDTO}> {
 
-    const trainersList = await this.trainerRepository.getApprovedTrainers(searchFilterQuery)
+    const {trainersList,paginationData} = await this.trainerRepository.getApprovedTrainers(searchFilterQuery)
     if(!trainersList){
        throw new validationError(HttpStatusMessages.FailedToRetrieveTrainersList)
     }
-    return trainersList
+    return {
+      trainersList,paginationData
+    }
   }
   public async getApprovedTrainerDetailsWithSub(data:IdDTO):Promise<TrainerWithSubscription> {
     const trainerData = await this.trainerRepository.getApprovedTrainerDetailsWithSub(data)

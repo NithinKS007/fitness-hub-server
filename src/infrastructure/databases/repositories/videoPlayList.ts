@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { CreateVideoPlayListDTO } from "../../../application/dtos/contentDTOs";
+import { BulkWriteAddVideoPlayListDTO, BulkWriteDeleteVideoPlayListDTO, CreateVideoPlayListDTO } from "../../../application/dtos/contentDTOs";
 import { IdDTO } from "../../../application/dtos/utilityDTOs";
 import { VideoPlayList } from "../../../domain/entities/videoPlayList";
 import { VideoPlayListRepository } from "../../../domain/interfaces/videoPlayListRepository";
@@ -8,6 +8,22 @@ import videoPlayListModel from "../models/videoPlayListModel";
 export class MonogVideoPlayListRepository implements VideoPlayListRepository { 
     public async insertManyVideoPlayList(data:CreateVideoPlayListDTO[]): Promise<VideoPlayList[]> {
         return await videoPlayListModel.insertMany(data)
+    }
+
+    public async bulkWriteAddNewDeleteUnused(addPlayList:BulkWriteAddVideoPlayListDTO[],deletePlayList:BulkWriteDeleteVideoPlayListDTO[]): Promise<void> {
+        
+        await videoPlayListModel.bulkWrite(
+            [
+                {
+                    deleteMany: {
+                        filter: { videoId: { $in: deletePlayList } }
+                    }
+                },
+                ...addPlayList.map(playList => ({
+                    insertOne: { document: playList }
+                }))
+            ]
+         )
     }
     public async getVideosOfTrainerByPlayListId(data: IdDTO): Promise<any> {
         const playListId = new mongoose.Types.ObjectId(data);
@@ -26,8 +42,6 @@ export class MonogVideoPlayListRepository implements VideoPlayListRepository {
             {$unwind:"$videoData"},
             
         ]);
-
-        console.log("hello my result",result)
         return result
     }
     

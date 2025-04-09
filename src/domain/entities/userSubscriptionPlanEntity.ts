@@ -15,3 +15,8 @@ export interface SubscriptionPlanEntity {
   stripeSubscriptionStatus:string
 }
 
+export interface Top10Trainers {
+    fname: string;
+    lname:string
+    email: string; 
+}

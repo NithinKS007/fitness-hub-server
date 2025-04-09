@@ -5,6 +5,8 @@ import { SubscriptionController } from "../controllers/subscriptionController"
 import { BookingController } from "../controllers/bookingController"
 import { ContentController } from "../controllers/contentController"
 import { AuthController } from "../controllers/authController"
+import { WorkoutController } from "../controllers/workOutController"
+import { UserDashboardController } from "../controllers/userDashBoardController"
 
 const userRoutes = express.Router()
 
@@ -34,6 +36,14 @@ userRoutes.get("/video-call-logs",authenticate,BookingController.getUserVideoCal
 
 //PROFILE ROUTES
 userRoutes.put("/update-profile",authenticate,AuthController.updateUserProfile)
+
+//WORKOUT ROUTES
+userRoutes.post("/add-workout",authenticate,WorkoutController.addWorkout)
+userRoutes.get("/workouts",authenticate,WorkoutController.getWorkoutsByUserId)
+userRoutes.delete("/delete-workout-set/:setId",authenticate,WorkoutController.deleteWorkoutSet)
+userRoutes.patch("/complete-workout-set/:setId",authenticate,WorkoutController.markSetAsCompleted)
+userRoutes.get("/dashBoard",authenticate,UserDashboardController.getUserDashBoardData)
+
 
 export default userRoutes
 

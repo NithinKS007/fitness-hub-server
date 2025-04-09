@@ -4,7 +4,6 @@ import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 
 dotenv.config();
-
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const verifyGoogleToken = async (token: string) => {

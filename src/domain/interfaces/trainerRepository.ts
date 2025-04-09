@@ -1,4 +1,4 @@
-import { GetTrainersApprovalQueryDTO, GetTrainersQueryDTO } from "../../application/dtos/queryDTOs";
+import { GetApprovedTrainerQueryDTO, GetTrainersApprovalQueryDTO, GetTrainersQueryDTO } from "../../application/dtos/queryDTOs";
 import { IdDTO } from "../../application/dtos/utilityDTOs";
 import { PaginationDTO } from "../../application/dtos/utilityDTOs";
 import { CreateTrainerCollectionDTO, CreateTrainerDTO, TrainerDTO } from "../../application/dtos/trainerDTOs";
@@ -13,7 +13,7 @@ export interface TrainerRepository {
   getTrainers(data:GetTrainersQueryDTO):Promise<{trainersList:Trainer[],paginationData:PaginationDTO}>
   getTrainerDetailsByUserIdRef(data:IdDTO):Promise<Trainer>
   approveRejectTrainerVerification(data:TrainerVerificationDTO):Promise<Trainer | null>
-  getApprovedTrainers(searchFilterQuery:any):Promise<Trainer[]>
+  getApprovedTrainers(searchFilterQuery:GetApprovedTrainerQueryDTO):Promise<{trainersList:Trainer[],paginationData:PaginationDTO}>
   getApprovedTrainerDetailsWithSub(data:IdDTO):Promise<TrainerWithSubscription>
   getApprovalPendingList(data:GetTrainersApprovalQueryDTO):Promise<{trainersList:Trainer[],paginationData:PaginationDTO}>
   countPendingTrainerApprovals():Promise<number>

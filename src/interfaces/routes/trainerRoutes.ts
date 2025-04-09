@@ -18,7 +18,12 @@ trainerRoutes.get("/subscribers",authenticate,SubscriptionController.getTrainerS
 //CONTENT MANAGEMENT ROUTES
 trainerRoutes.post("/create-playlist",authenticate,ContentController.addPlaylist)
 trainerRoutes.get("/playlists",authenticate,ContentController.getPlayListsOfTrainer)
+trainerRoutes.get("/playlist-all",authenticate,ContentController.getAllPlayListsOfTrainer)
 trainerRoutes.post("/upload-video/",authenticate,ContentController.addVideo)
+trainerRoutes.patch("/videos/:videoId",authenticate,ContentController.updateVideoBlockStatus)
+trainerRoutes.put("/videos/:videoId",authenticate,ContentController.editVideoData)
+trainerRoutes.patch("/playlist/:playListId",authenticate,ContentController.updatePlayListBlockStatus)
+trainerRoutes.put("/playlist/:playListId",authenticate,ContentController.editPlayListData)
 trainerRoutes.get("/videos",authenticate,ContentController.getVideosByTrainerId)
 
 //SLOT MANAGEMENT AND BOOKING ROUTES

@@ -3,9 +3,9 @@ import { authenticateAccessToken } from "../../infrastructure/services/jwtServic
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { JwtPayload } from "jsonwebtoken";
 import { CheckUserBlockStatus } from "../../application/usecases/checkUserBlockStatusUseCase";
-import { MongoUserRepository } from "../../infrastructure/databases/repositories/mongoUserRepository";
+import { MongoUserRepository } from "../../infrastructure/databases/repositories/userRepository";
 import { ForbiddenError, UnauthorizedError } from "./errorMiddleWare";
-import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
+import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/trainerRepository";
 
 const mongouserRepository = new MongoUserRepository()
 const mongoTrainerRepository = new MongoTrainerRepository()

@@ -1,4 +1,4 @@
-import { changePasswordDTO,PassResetTokenDTO,PasswordResetDTO } from "../dtos/authDTOs";
+import { ChangePasswordDTO,PassResetTokenDTO,PasswordResetDTO } from "../dtos/authDTOs";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { UserRepository } from "../../domain/interfaces/userRepository";
 import { PasswordResetRepository } from "../../domain/interfaces/passwordResetTokenRepository";
@@ -61,7 +61,7 @@ export class PasswordUseCase {
     });
   }
 
-  public async changePassword(data: changePasswordDTO): Promise<void> {
+  public async changePassword(data: ChangePasswordDTO): Promise<void> {
     if (!data) {
       throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
     }

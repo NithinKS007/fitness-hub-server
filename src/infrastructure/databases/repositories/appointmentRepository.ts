@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { HandleBookingRequestDTO,CreateAppointmentDTO } from "../../../application/dtos/bookingDTOs";
 import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
-import { appointment, AppointmentRequestsTrainer, AppointmentRequestsUser } from "../../../domain/entities/appointmentEntity";
+import { Appointment, AppointmentRequestsTrainer, AppointmentRequestsUser } from "../../../domain/entities/appointmentEntity";
 import { AppointmentRepository } from "../../../domain/interfaces/appointmentRepository";
 import appointmentModel from "../models/appointmentModel";
 import { GetBookingRequestsDTO, GetBookingSchedulesDTO } from "../../../application/dtos/queryDTOs";
@@ -9,7 +9,7 @@ const today = new Date();
 today.setUTCHours(0, 0, 0, 0)
 
 export class MongoAppointmentRepository implements AppointmentRepository{
-    public async createAppointment(data: CreateAppointmentDTO): Promise<appointment> {
+    public async createAppointment(data: CreateAppointmentDTO): Promise<Appointment> {
         return await appointmentModel.create(data)
     }
     public async getBookingAppointmentRequests(_id:IdDTO,data:GetBookingRequestsDTO): Promise<{bookingRequestsList:AppointmentRequestsTrainer[],paginationData:PaginationDTO}> {
@@ -102,7 +102,7 @@ export class MongoAppointmentRepository implements AppointmentRepository{
            }
          }
     }
-    public async approveOrRejectAppointment(data: HandleBookingRequestDTO): Promise<appointment | null> {
+    public async approveOrRejectAppointment(data: HandleBookingRequestDTO): Promise<Appointment | null> {
       const {appointmentId,action} = data
       return await appointmentModel.findByIdAndUpdate(appointmentId, { status: action }, { new: true });
     }
@@ -299,12 +299,12 @@ export class MongoAppointmentRepository implements AppointmentRepository{
   }
 
 
-  public async cancelAppointmentSchedule(data: IdDTO): Promise<appointment | null> {
+  public async cancelAppointmentSchedule(data: IdDTO): Promise<Appointment | null> {
     console.log("for cancel appointment")
     return await appointmentModel.findByIdAndUpdate(new mongoose.Types.ObjectId(data), { status: "cancelled" }, { new: true });
   }
 
-  public async  getAppointmentById(data:IdDTO):Promise<appointment | null> {
+  public async  getAppointmentById(data:IdDTO):Promise<Appointment | null> {
     return await appointmentModel.findOne(new mongoose.Types.ObjectId(data));
   }
 

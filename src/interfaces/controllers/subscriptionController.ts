@@ -2,17 +2,19 @@ import { NextFunction,Request,Response } from "express-serve-static-core";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import { HttpStatusCodes, HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { SubscriptionUseCase } from "../../application/usecases/subscriptionUseCase";
-import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/mongoTrainerRepository";
-import { MonogUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/mongoUserSubscriptionRepository";
-import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/mongoSubscriptionRepository";
+import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/trainerRepository";
+import { MongoUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/userSubscriptionRepository";
+import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/subscriptionRepository";
+import { MongoRevenueRepository } from "../../infrastructure/databases/repositories/revenueRepository";
 
 //MONGO REPOSITORY INSTANCES
 const mongoSubscriptionRepository = new MongoSubscriptionRepository()
 const mongoTrainerRepository = new MongoTrainerRepository()
-const monogUserSubscriptionPlanRepository = new MonogUserSubscriptionPlanRepository()
+const monogUserSubscriptionPlanRepository = new MongoUserSubscriptionPlanRepository()
+const mongoRevenueRepository = new MongoRevenueRepository()
 
 //USE CASE INSTANCES
-const subscriptionUseCase = new SubscriptionUseCase(mongoSubscriptionRepository,mongoTrainerRepository,monogUserSubscriptionPlanRepository)
+const subscriptionUseCase = new SubscriptionUseCase(mongoSubscriptionRepository,mongoTrainerRepository,monogUserSubscriptionPlanRepository,mongoRevenueRepository)
 
 export class SubscriptionController {
 
