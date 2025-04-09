@@ -2,12 +2,14 @@ import { UserRepository } from "../../domain/interfaces/userRepository";
 import { User } from "../../domain/entities/userEntity";
 import { UpdateUserDetailsDTO } from "../dtos/userDTOs";
 import { UpdateTrainerDetailsDTO } from "../dtos/trainerDTOs";
-
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { cloudinaryUpload } from "../../infrastructure/services/cloudinaryService";
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 import { TrainerRepository } from "../../domain/interfaces/trainerRepository";
 import { Trainer } from "../../domain/entities/trainerEntity";
+import dotenv from "dotenv";
+dotenv.config()
+
 
 export class UpdateProfileUseCase {
   constructor( private userRepository: UserRepository, private trainerRepository: TrainerRepository) {}
