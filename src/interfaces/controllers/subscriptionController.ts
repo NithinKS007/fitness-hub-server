@@ -104,6 +104,7 @@ static async webHookHandler(req:Request,res:Response,next:NextFunction):Promise<
 static async getSubscriptionDetailsBySessionId(req:Request,res:Response,next:NextFunction):Promise<void> {
     try {
         const {sessionId} = req.params
+        console.log("session id",sessionId)
         const subscriptionData = await subscriptionUseCase.getSubscriptionDetailsBySessionId(sessionId)
         sendResponse(res, HttpStatusCodes.OK, {subscriptionData:subscriptionData}, HttpStatusMessages.SubscriptionAddedSuccessfully);
     } catch (error) {

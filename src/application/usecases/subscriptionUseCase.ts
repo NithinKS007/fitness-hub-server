@@ -2,7 +2,7 @@ import { CancelSubscriptionDTO,CheckSubscriptionStatusDTO,PurchaseSubscriptionDT
 import { IdDTO, PaginationDTO } from "../dtos/utilityDTOs";
 import stripe from "../../infrastructure/config/stripeConfig";
 import { SubPeriod } from "../../infrastructure/databases/models/subscriptionModel";
-import { cancelSubscription, createPrice, createProduct, createSubscriptionSession, deactivatePrice, getSubscription, getSubscriptionsData } from "../../infrastructure/services/stripeServices";
+import { cancelSubscription, createPrice, createProduct, createSubscriptionSession, deactivatePrice, getCheckoutSession, getSubscription, getSubscriptionsData } from "../../infrastructure/services/stripeServices";
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { Subscription, TrainerSubscribersList, UserSubscriptionsList } from "../../domain/entities/subscriptionEntity";
@@ -237,11 +237,11 @@ export class SubscriptionUseCase {
         }
     }
 
-    public async getSubscriptionDetailsBySessionId(data:string):Promise<SubscriptionPlanEntity & { isSubscribed: boolean }> {
-        if(!data){
+    public async getSubscriptionDetailsBySessionId(sessionId:string):Promise<SubscriptionPlanEntity & { isSubscribed: boolean }> {
+        if(!sessionId){
             throw new validationError(HttpStatusMessages.AllFieldsAreRequired)
         }
-        const session = await stripe.checkout.sessions.retrieve(data)
+        const session = await getCheckoutSession(sessionId)
         if(!session){
             throw new validationError(HttpStatusMessages.InvalidSessionIdForStripe)
         }
