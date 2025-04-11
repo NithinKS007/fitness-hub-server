@@ -245,8 +245,16 @@ export class SubscriptionUseCase {
         if(!session){
             throw new validationError(HttpStatusMessages.InvalidSessionIdForStripe)
         }
-            const stripeSubscriptionId = session.subscription
+            const stripeSubscriptionId =
+            typeof session.subscription === "string"
+              ? session.subscription
+              : session.subscription?.id;
+
+              console.log(stripeSubscriptionId)
+        
             const userTakenSubscription = await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionId(stripeSubscriptionId as string)
+
+            console.log("user sub data",userTakenSubscription)
             if (!userTakenSubscription) {
                 throw new validationError(HttpStatusMessages.FailedToRetrieveSubscriptionDetails);
             }

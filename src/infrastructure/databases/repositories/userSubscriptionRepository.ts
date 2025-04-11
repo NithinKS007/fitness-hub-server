@@ -41,7 +41,6 @@ export class MongoUserSubscriptionPlanRepository implements UserSubscriptionPlan
   }
   public async findSubscriptionsOfUser(_id:IdDTO,data:GetUserSubscriptionsQueryDTO): Promise<{mongoUserSubscriptionsList: MongoUserSubscriptionsList[] ,paginationData:PaginationDTO}> {
 
-    console.log("data received",data)
     const { page,limit,search,filters } = data
     const pageNumber = parseInt(page, 10) || 1;
     const limitNumber = parseInt(limit, 10) || 10;
@@ -262,16 +261,25 @@ export class MongoUserSubscriptionPlanRepository implements UserSubscriptionPlan
     };
      
   }
-  public async findSubscriptionByStripeSubscriptionId(data: IdDTO): Promise<SubscriptionPlanEntity> {
+  public async findSubscriptionByStripeSubscriptionId(stripeSubscriptionId: IdDTO): Promise<SubscriptionPlanEntity> {
     const result = await userSubscriptionPlanModel.aggregate([
-      { $match: { stripeSubscriptionId: data} },
+      { $match: { stripeSubscriptionId: stripeSubscriptionId} },
       {
         $lookup: {
-          from: "users",
+          from: "trainers",
           localField: "trainerId",
           foreignField: "_id",
-          as: "subscribedTrainerData",
+          as: "trainerData",
         },
+      },
+      { $unwind: "$trainerData" },
+      { 
+        $lookup: {
+          from: "users",
+          localField: "trainerData.userId",
+          foreignField: "_id",
+          as: "subscribedTrainerData",
+         }
       },
       { $unwind: "$subscribedTrainerData" },
       {
@@ -297,6 +305,8 @@ export class MongoUserSubscriptionPlanRepository implements UserSubscriptionPlan
         },
       },
     ]);
+    
+    console.log("result",result)
     return result[0]
   }
   public async findSubscriptionsOfUserwithUserIdAndTrainerId(data: CheckSubscriptionStatusDTO): Promise<SubscriptionPlanEntity[] | null> {
