@@ -8,8 +8,6 @@ import { PlayListRepository } from "../../domain/interfaces/playListRepository";
 import { videoRepository } from "../../domain/interfaces/videoRepository";
 import { VideoPlayListRepository } from "../../domain/interfaces/videoPlayListRepository";
 import { GetPlayListsQueryDTO, GetVideoQueryDTO } from "../dtos/queryDTOs";
-import { UpdateBlockStatusDTO } from "../dtos/authDTOs";
-
 
 export class ContentManagementUseCase {
   constructor(private playListRepository:PlayListRepository ,private videoRepository:videoRepository, private videoPlayListRepository :VideoPlayListRepository) {}

@@ -242,6 +242,10 @@ export class MongoRevenueRepository implements RevenueRepository{
                  }
     
              ])
+             .sort({ createdAt: -1 })
+             .skip(skip)
+             .limit(limitNumber)
+             .exec()
       
        
           ])

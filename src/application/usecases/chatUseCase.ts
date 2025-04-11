@@ -1,12 +1,11 @@
 import { Chat } from "../../domain/entities/chatEntity";
-import { MongoUserSubscriptionsList, MonogoTrainerSubscribersList, TrainerSubscribersList, UserSubscriptionsList } from "../../domain/entities/subscriptionEntity";
+import { MongoUserSubscriptionsList, MonogoTrainerSubscribersList} from "../../domain/entities/subscriptionEntity";
 import { ChatRepository } from "../../domain/interfaces/chatRepository";
 import { UserSubscriptionPlanRepository } from "../../domain/interfaces/userSubscriptionRepository";
 import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { CreateChatDTO,FindChatDTO } from "../dtos/chatDTOs";
 import { IdDTO } from "../dtos/utilityDTOs";
-import stripe from "../../infrastructure/config/stripeConfig";
 
 export class ChatUseCase {
     constructor(private chatRepository:ChatRepository,private userSubscriptionPlanRepository:UserSubscriptionPlanRepository){}
