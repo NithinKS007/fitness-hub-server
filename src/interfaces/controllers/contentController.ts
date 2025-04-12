@@ -88,8 +88,8 @@ static async getVideosByPlaylistId(req: Request, res: Response,next:NextFunction
 static async getPlayListsByTrainerId(req:Request,res:Response,next:NextFunction):Promise<void>{
   try {
     const trainerId = req.params.trainerId
-    // const playListsOfTrainer = await contentManagementUseCase.getPlayListsOfTrainer(trainerId)
-    sendResponse(res,HttpStatusCodes.OK,{playListsOfTrainer:[]},HttpStatusMessages.PlayListsOfTrainerRetrievedSuccessfully);
+    const playListsOfTrainer = await contentManagementUseCase.getAllPlayListsOfTrainer(trainerId)
+    sendResponse(res,HttpStatusCodes.OK,{playListsOfTrainer},HttpStatusMessages.PlayListsOfTrainerRetrievedSuccessfully);
   } catch (error) {
     console.log(`Error getting trainer playlists: ${error}`);
     next(error)
