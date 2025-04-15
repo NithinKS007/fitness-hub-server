@@ -17,10 +17,12 @@ export interface PasswordResetDTO {
   resetToken: string;
 }
 
-export interface PassResetTokenDTO {
+export interface CreatePassResetTokenDTO {
   email: string;
   resetToken: string;
 }
+
+export interface DeletePasswordResetTokenDTO extends CreatePassResetTokenDTO {}
 
 export interface UpdatePasswordDTO {
   email: string;
@@ -29,7 +31,7 @@ export interface UpdatePasswordDTO {
 }
 
 export interface ChangePasswordDTO {
-  _id: string;
+  userId: string;
   password: string;
   newPassword: string;
 }
@@ -39,6 +41,6 @@ export interface GoogleTokenDTO {
 }
 
 export interface UpdateBlockStatusDTO {
-  _id: string;
+  userId: string;
   isBlocked: boolean;
 }

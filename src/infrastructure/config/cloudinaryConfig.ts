@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary'; 
 import dotenv from 'dotenv';
 import { HttpStatusMessages } from '../../shared/constants/httpResponseStructure';
-import { validationError } from '../../interfaces/middlewares/errorMiddleWare';
+import { validationError } from '../../presentation/middlewares/errorMiddleWare';
 dotenv.config();
 interface CloudinaryConfig {
   CLOUDINARY_NAME: string;

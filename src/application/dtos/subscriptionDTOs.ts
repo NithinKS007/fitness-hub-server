@@ -16,12 +16,12 @@ export interface FindExistingSubscriptionDTO {
 }
 
 export interface UpdateSubscriptionBlockStatusDTO {
-  _id: string;
+  subscriptionId: string;
   isBlocked: string;
 }
 
 export interface UpdateSubscriptionDetailsDTO {
-  _id: string;
+  subscriptionId: string;
   trainerId: string;
   subPeriod: SubPeriod;
   price: number;
@@ -55,7 +55,7 @@ export interface CancelSubscriptionDTO {
 }
 
 export interface CheckSubscriptionStatusDTO {
-  _id: string;
+  userId: string;
   trainerId: string;
 }
 

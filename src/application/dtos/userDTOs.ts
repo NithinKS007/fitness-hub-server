@@ -13,7 +13,7 @@ export interface CreateGoogleUserDTO {
 }
 
 export interface UpdateUserDetailsDTO {
-  _id: string;
+  userId: string;
   fname: string;
   lname: string;
   phone: string;

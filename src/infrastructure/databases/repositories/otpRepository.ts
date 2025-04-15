@@ -1,12 +1,10 @@
 import { OtpDTO } from "../../../application/dtos/authDTOs";
 import { Otp } from "../../../domain/entities/otpEntity";
-import { OtpRepository } from "../../../domain/interfaces/otpRepository";
+import { IOtpRepository } from "../../../domain/interfaces/IOtpRepository";
 import otpModel from "../models/otpModel";
 
-export class MongoOtpRepository implements OtpRepository {
-  public async createOtp(data: OtpDTO): Promise<Otp> {
-    const { email, otp } = data;
-
+export class MongoOtpRepository implements IOtpRepository {
+  public async createOtp({ email, otp }: OtpDTO): Promise<Otp> {
     const otpData = await otpModel.findOneAndUpdate(
       { email },
       { otp },
@@ -17,12 +15,10 @@ export class MongoOtpRepository implements OtpRepository {
     );
     return otpData.toObject();
   }
-  public async verifyOtpByEmail(data: OtpDTO): Promise<Otp | null> {
-    const { email,otp } = data;
-    return await otpModel.findOne({ email: email,otp:otp }).lean()
+  public async verifyOtpByEmail({ email, otp }: OtpDTO): Promise<Otp | null> {
+    return await otpModel.findOne({ email: email, otp: otp }).lean();
   }
-  public async deleteOtp(data:OtpDTO):Promise<Otp | null> {
-     const {email} = data
-     return await otpModel.findOneAndDelete({email}).lean()
+  public async deleteOtp({ email }: OtpDTO): Promise<Otp | null> {
+    return await otpModel.findOneAndDelete({ email }).lean();
   }
 }

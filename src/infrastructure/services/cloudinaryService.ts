@@ -1,6 +1,6 @@
 import { UploadApiResponse } from "cloudinary";
 import cloudinary from "../config/cloudinaryConfig";
-import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
+import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 
 export const cloudinaryUpload = async (

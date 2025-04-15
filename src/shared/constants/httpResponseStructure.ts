@@ -175,9 +175,12 @@ export enum HttpStatusMessages {
   FailedToMarkCompletionSetStatus = "Failed to mark workout completion status",
   WorkoutSetCompleted = "Workout Completed",
   WorkoutSetDeleted = "Workout set deleted successfully",
+  cannotCompleteFutureWorkouts = "You cannot mark a workout as complete before its scheduled date",
 
 
   //revenue
   FailedToFetchRevenueHistory = "Failed to fetch revenue history",
-  SuccessFullyFetchedRevenueHistory = "Revenue list retrieved successfully"
+  SuccessFullyFetchedRevenueHistory = "Revenue list retrieved successfully",
+
+  
 }

@@ -1,6 +1,6 @@
 import { ObjectId } from "mongoose";
 
-export interface bookingSlot {
+export interface BookingSlot {
   _id: ObjectId | string;
   trainerId: ObjectId | string;
   time:string

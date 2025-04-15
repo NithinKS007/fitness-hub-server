@@ -33,28 +33,6 @@ export interface MonogoTrainerSubscribersList {
     profilePic: string;
     isBlocked: boolean;
   };
-};
-
-export interface MonogoTrainerSubscribersList {
-  _id: string | ObjectId;
-  durationInWeeks: number;
-  price: number;
-  sessionsPerWeek: number;
-  stripePriceId: string;
-  stripeSubscriptionStatus: string;
-  stripeSubscriptionId: string;
-  subPeriod: SubPeriod;
-  totalSessions: number;
-  trainerId: string | ObjectId;
-  userId: string | ObjectId;
-  subscribedUserData: {
-    _id: string | ObjectId;
-    fname: string;
-    lname: string;
-    email: string;
-    profilePic: string;
-    isBlocked: boolean;
-  };
 }
 
 export interface MongoUserSubscriptionsList {

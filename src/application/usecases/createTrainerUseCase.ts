@@ -1,25 +1,33 @@
-import { UserRepository } from "../../domain/interfaces/userRepository";
-import { OtpRepository } from "../../domain/interfaces/otpRepository";
+import { IUserRepository } from "../../domain/interfaces/IUserRepository";
+import { IOtpRepository } from "../../domain/interfaces/IOtpRepository";
 import { CreateTrainerDTO } from "../dtos/trainerDTOs";
 import { hashPassword } from "../../shared/utils/hashPassword";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { sendEmail } from "../../infrastructure/services/emailService";
 import generateOtp from "../../shared/utils/otpGenerator";
-import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
+import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 import { Trainer } from "../../domain/entities/trainerEntity";
-import { TrainerRepository } from "../../domain/interfaces/trainerRepository";
+import { ITrainerRepository } from "../../domain/interfaces/ITrainerRepository";
 import { User } from "../../domain/entities/userEntity";
 
 export class CreateTrainerUseCase {
   constructor(
-    private userRepository: UserRepository,
-    private otpRepository: OtpRepository,
-    private trainerRepository: TrainerRepository
+    private userRepository: IUserRepository,
+    private otpRepository: IOtpRepository,
+    private trainerRepository: ITrainerRepository
   ) {}
 
-  public async create(data: CreateTrainerDTO): Promise< Trainer | User > {
-    const { fname,lname,email,password, dateOfBirth, phone, yearsOfExperience, specializations, certificate} = data;
-
+  public async create({
+    fname,
+    lname,
+    email,
+    password,
+    dateOfBirth,
+    phone,
+    yearsOfExperience,
+    specializations,
+    certificate,
+  }: CreateTrainerDTO): Promise<Trainer | User> {
     if (
       !fname ||
       !lname ||
@@ -77,11 +85,17 @@ export class CreateTrainerUseCase {
       certificate,
     };
 
-    const createdData = await this.trainerRepository.create(trainerSpecificData);
+    const createdData = await this.trainerRepository.create(
+      trainerSpecificData
+    );
 
     const otp = generateOtp(6);
     await this.otpRepository.createOtp({ email, otp });
-    await sendEmail(email,"OTP for Registration",`Your OTP is ${otp}. Please do not share this OTP with anyone.`)
+    await sendEmail(
+      email,
+      "OTP for Registration",
+      `Your OTP is ${otp}. Please do not share this OTP with anyone.`
+    );
     return {
       ...createdData,
       ...createdTrainer,

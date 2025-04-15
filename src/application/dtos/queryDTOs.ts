@@ -4,8 +4,8 @@ export interface BaseQueryDTO {
   page: string;
   limit: string;
   filters: string[];
-  fromDate: Date;
-  toDate: Date;
+  fromDate: Date | undefined;
+  toDate: Date | undefined;
 }
 // Trainer-related DTOs
 export type GetTrainersQueryDTO = Omit<BaseQueryDTO, "fromDate" | "toDate">;
@@ -32,7 +32,7 @@ export type GetUserSubscriptionsQueryDTO = Omit<
 >;
 
 // Booking/Schedule-related DTOs
-export type GetAvailableSlotsDTO = Omit<BaseQueryDTO, "filters" | "search">;
+export type AvailableSlotsQueryDTO = Omit<BaseQueryDTO, "filters" | "search">;
 export type GetBookingRequestsDTO = BaseQueryDTO;
 export type GetBookingSchedulesDTO = BaseQueryDTO;
 export type GetVideoCallLogQueryDTO = BaseQueryDTO;
@@ -62,3 +62,8 @@ export type GetWorkoutQueryDTO = BaseQueryDTO;
 
 //Revenue-related DTOs
 export type GetRevenueQueryDTO = BaseQueryDTO;
+
+export type GetUserTrainersListQueryDTO = Omit<
+  BaseQueryDTO,
+  "filters" | "fromDate" | "toDate"
+>;

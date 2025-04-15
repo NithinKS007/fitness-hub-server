@@ -11,7 +11,7 @@ export interface CreateTrainerDTO {
 }
 
 export interface UpdateTrainerDetailsDTO {
-  _id: string;
+  trainerId: string;
   fname: string;
   lname: string;
   phone: string;
@@ -29,7 +29,7 @@ export interface UpdateTrainerDetailsDTO {
 }
 
 export interface TrainerDTO {
-  _id: string;
+  trainerId: string;
   yearsOfExperience: string;
   specializations: string[];
   certifications: { fileName: string; url: string }[];
@@ -46,7 +46,7 @@ export interface SpecializationsDTO {
 }
 
 export interface TrainerVerificationDTO {
-  _id: string;
+  trainerId: string;
   action: "approved" | "rejected";
 }
 

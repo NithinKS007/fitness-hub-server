@@ -1,7 +1,9 @@
 import dayjs from "dayjs";
 import { DashBoardChartFilterDTO } from "../../application/dtos/queryDTOs";
 
-const getDateRange = (data: DashBoardChartFilterDTO): { startDate: Date; endDate: Date } => {
+const getDateRange = (
+  data: DashBoardChartFilterDTO
+): { startDate: Date; endDate: Date } => {
   let startDate = dayjs().startOf("month").toDate();
   let endDate = dayjs().endOf("month").toDate();
   switch (data) {
@@ -27,4 +29,12 @@ const getDateRange = (data: DashBoardChartFilterDTO): { startDate: Date; endDate
 
   return { startDate, endDate };
 };
-export { getDateRange };
+
+const parseDateRange = (fromDate?: Date, toDate?: Date) => {
+  return {
+    parsedFromDate: fromDate ? dayjs(fromDate).toDate() : undefined,
+    parsedToDate: toDate ? dayjs(toDate).toDate() : undefined,
+  };
+};
+
+export { getDateRange, parseDateRange };

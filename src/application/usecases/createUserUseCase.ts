@@ -1,21 +1,24 @@
-import { UserRepository } from "../../domain/interfaces/userRepository";
-import { OtpRepository } from "../../domain/interfaces/otpRepository";
+import { IUserRepository } from "../../domain/interfaces/IUserRepository";
+import { IOtpRepository } from "../../domain/interfaces/IOtpRepository";
 import { User } from "../../domain/entities/userEntity";
 import { CreateUserDTO } from "../dtos/userDTOs";
 import { hashPassword } from "../../shared/utils/hashPassword";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import { sendEmail } from "../../infrastructure/services/emailService";
 import generateOtp from "../../shared/utils/otpGenerator";
-import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
+import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 
 export class CreateUserUseCase {
   constructor(
-    private userRepository: UserRepository,
-    private otpRepository: OtpRepository
+    private userRepository: IUserRepository,
+    private otpRepository: IOtpRepository
   ) {}
-  public async create(data: CreateUserDTO): Promise<User> {
-    const { fname, lname, email, password } = data;
-
+  public async create({
+    fname,
+    lname,
+    email,
+    password,
+  }: CreateUserDTO): Promise<User> {
     if (!fname || !lname || !email || !password) {
       throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
     }
@@ -46,11 +49,11 @@ export class CreateUserUseCase {
 
     const hashedPassword = await hashPassword(password);
     const userData = await this.userRepository.create({
-      ...data,
+      ...{ fname, lname, email },
       password: hashedPassword,
     });
     const otp = generateOtp(6);
-    console.log("otp generated for user registeration",otp)
+    console.log("otp generated for user registeration", otp);
     await this.otpRepository.createOtp({ email, otp });
     await sendEmail(
       email,

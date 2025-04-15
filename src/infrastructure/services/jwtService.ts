@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import ms from "ms";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
-import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
+import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 import dotenv from "dotenv";
 dotenv.config()
 

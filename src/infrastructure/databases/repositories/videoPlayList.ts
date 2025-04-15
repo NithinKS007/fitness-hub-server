@@ -1,13 +1,11 @@
-import mongoose from "mongoose";
 import { BulkWriteAddVideoPlayListDTO, BulkWriteDeleteVideoPlayListDTO, CreateVideoPlayListDTO } from "../../../application/dtos/contentDTOs";
-import { IdDTO } from "../../../application/dtos/utilityDTOs";
 import { VideoPlayList } from "../../../domain/entities/videoPlayList";
-import { VideoPlayListRepository } from "../../../domain/interfaces/videoPlayListRepository";
+import { IVideoPlayListRepository } from "../../../domain/interfaces/IVideoPlayListRepository";
 import videoPlayListModel from "../models/videoPlayListModel";
 
-export class MonogVideoPlayListRepository implements VideoPlayListRepository { 
-    public async insertManyVideoPlayList(data:CreateVideoPlayListDTO[]): Promise<VideoPlayList[]> {
-        return await videoPlayListModel.insertMany(data)
+export class MonogVideoPlayListRepository implements IVideoPlayListRepository { 
+    public async insertManyVideoPlayList(createVideoPlayList:CreateVideoPlayListDTO[]): Promise<VideoPlayList[]> {
+        return await videoPlayListModel.insertMany(createVideoPlayList)
     }
 
     public async bulkWriteAddNewDeleteUnused(addPlayList:BulkWriteAddVideoPlayListDTO[],deletePlayList:BulkWriteDeleteVideoPlayListDTO[]): Promise<void> {
@@ -24,25 +22,6 @@ export class MonogVideoPlayListRepository implements VideoPlayListRepository {
                 }))
             ]
          )
-    }
-    public async getVideosOfTrainerByPlayListId(data: IdDTO): Promise<any> {
-        const playListId = new mongoose.Types.ObjectId(data);
-        const result = await videoPlayListModel.aggregate([
-            {
-                $match: { playListId: playListId }
-            },
-            {
-                $lookup: {
-                    from: "videos",
-                    localField: "videoId",
-                    foreignField: "_id",
-                    as: "videoData"
-                }
-            },
-            {$unwind:"$videoData"},
-            
-        ]);
-        return result
     }
     
 }

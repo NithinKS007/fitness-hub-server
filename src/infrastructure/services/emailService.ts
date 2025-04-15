@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import dotenv from "dotenv"
-import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
+import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 dotenv.config()
 
 const transporter = nodemailer.createTransport({

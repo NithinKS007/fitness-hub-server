@@ -1,4 +1,4 @@
-import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
+import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import stripe from "../config/stripeConfig";
 

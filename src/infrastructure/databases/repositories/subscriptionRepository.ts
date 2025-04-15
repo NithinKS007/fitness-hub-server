@@ -1,56 +1,100 @@
 import mongoose from "mongoose";
-import { CreateSubscriptionDTO,FindExistingSubscriptionDTO,UpdateSubscriptionBlockStatusDTO,UpdateSubscriptionDetailsDTO } from "../../../application/dtos/subscriptionDTOs";
+import {
+  CreateSubscriptionDTO,
+  FindExistingSubscriptionDTO,
+  UpdateSubscriptionBlockStatusDTO,
+  UpdateSubscriptionDetailsDTO,
+} from "../../../application/dtos/subscriptionDTOs";
 import { IdDTO } from "../../../application/dtos/utilityDTOs";
 import { Subscription } from "../../../domain/entities/subscriptionEntity";
-import { SubscriptionRepository } from "../../../domain/interfaces/subscriptionRepository";
+import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
 import SubscriptionModel from "../models/subscriptionModel";
 
-export class MongoSubscriptionRepository implements SubscriptionRepository {
-  public async createSubscription( data: CreateSubscriptionDTO ): Promise<Subscription> {
-    const {trainerId} = data
+export class MongoSubscriptionRepository implements ISubscriptionRepository {
+  public async createSubscription({
+    trainerId,
+    durationInWeeks,
+    price,
+    sessionsPerWeek,
+    stripePriceId,
+    subPeriod,
+    totalSessions,
+  }: CreateSubscriptionDTO): Promise<Subscription> {
+    const id = new mongoose.Types.ObjectId(trainerId);
+    const createSubscriptionData = {
+      durationInWeeks,
+      price,
+      sessionsPerWeek,
+      stripePriceId,
+      subPeriod,
+      totalSessions,
+    };
+    const subscription = await SubscriptionModel.create({
+      ...createSubscriptionData,
+      trainerId: id,
+    });
 
-    const id =   new mongoose.Types.ObjectId(trainerId);
-    const subscription = await SubscriptionModel.create({...data,trainerId:id});
-  
     return subscription.toObject();
   }
-  public async findAllSubscription(data: IdDTO): Promise<Subscription[]> {
-    return await SubscriptionModel.find({ trainerId: data }).sort({ createdAt: -1 }).lean()
+  public async findAllSubscription(trainerId: IdDTO): Promise<Subscription[]> {
+    return await SubscriptionModel.find({ trainerId: trainerId })
+      .sort({ createdAt: -1 })
+      .lean();
   }
-  public async findExistingSubscription(data: FindExistingSubscriptionDTO ): Promise<boolean> {
+  public async findExistingSubscription({
+    subPeriod,
+    trainerId,
+  }: FindExistingSubscriptionDTO): Promise<boolean> {
     const existingSubscription = await SubscriptionModel.findOne({
-      trainerId: data.trainerId,
-      subPeriod: data.subPeriod,
+      trainerId: trainerId,
+      subPeriod: subPeriod,
     });
     return existingSubscription ? true : false;
   }
 
-  public async updateBlockStatus(data: UpdateSubscriptionBlockStatusDTO): Promise<Subscription | null> {
-    const { _id, isBlocked } = data;
+  public async updateBlockStatus({
+    subscriptionId,
+    isBlocked,
+  }: UpdateSubscriptionBlockStatusDTO): Promise<Subscription | null> {
     return await SubscriptionModel.findByIdAndUpdate(
-      _id,
+      subscriptionId,
       { isBlocked: isBlocked },
       { new: true }
-    ).lean()
+    ).lean();
   }
 
-  public async editSubscription(data: UpdateSubscriptionDetailsDTO ): Promise<Subscription | null> {
-    const { _id, price,subPeriod, durationInWeeks, sessionsPerWeek, totalSessions,stripePriceId } =
-      data;
+  public async editSubscription({
+    subscriptionId,
+    price,
+    subPeriod,
+    durationInWeeks,
+    sessionsPerWeek,
+    totalSessions,
+    stripePriceId,
+    trainerId,
+  }: UpdateSubscriptionDetailsDTO): Promise<Subscription | null> {
     return await SubscriptionModel.findByIdAndUpdate(
-      _id,
-      { price,subPeriod, durationInWeeks, sessionsPerWeek, totalSessions,stripePriceId },
+      subscriptionId,
+      {
+        price,
+        subPeriod,
+        durationInWeeks,
+        sessionsPerWeek,
+        totalSessions,
+        stripePriceId,
+      },
       { new: true }
-    ).lean()
+    ).lean();
   }
-  public async deletedSubscription(data: IdDTO): Promise<Subscription | null> {
-    return await SubscriptionModel.findByIdAndDelete(data).lean()
+  public async deletedSubscription(
+    subscriptionId: IdDTO
+  ): Promise<Subscription | null> {
+    return await SubscriptionModel.findByIdAndDelete(subscriptionId).lean();
   }
-  public async findSubscriptionById(data: IdDTO): Promise<Subscription | null> {
-    return await SubscriptionModel.findById(data).lean()
+  public async findSubscriptionById(
+    subscriptionId: IdDTO
+  ): Promise<Subscription | null> {
+    return await SubscriptionModel.findById(subscriptionId).lean();
   }
 
-  public async findSubscriptionByTrainerId(data: IdDTO):Promise<Subscription[] > {
-    return await SubscriptionModel.find({trainerId:data,isBlocked:false}).lean()
-  }
 }

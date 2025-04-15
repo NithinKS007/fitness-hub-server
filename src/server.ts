@@ -1,20 +1,21 @@
 import express from "express";
-import authRoutes from "./interfaces/routes/authRoutes";
-import adminRoutes from "./interfaces/routes/adminRoutes";
+import authRoutes from "./presentation/routes/authRoutes";
+import adminRoutes from "./presentation/routes/adminRoutes";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import trainerRoutes from "./interfaces/routes/trainerRoutes";
-import { errorMiddleware } from "./interfaces/middlewares/errorMiddleWare";
-import userRoutes from "./interfaces/routes/userRoutes";
-import { SubscriptionController } from "./interfaces/controllers/subscriptionController";
-import chatRoutes from "./interfaces/routes/chatRoutes";
+import trainerRoutes from "./presentation/routes/trainerRoutes";
+import { errorMiddleware } from "./presentation/middlewares/errorMiddleWare";
+import userRoutes from "./presentation/routes/userRoutes";
+import { SubscriptionController } from "./presentation/controllers/subscriptionController";
+import chatRoutes from "./presentation/routes/chatRoutes";
 import dotenv from "dotenv";
 import { Request,Response } from "express";
+import morganMiddleware from "./infrastructure/logger/morganMiddleware";
 dotenv.config();
 
 const app = express();
 const allowedOrigins = process.env.CLIENT_ORIGINS;
-
+app.use(morganMiddleware);
 app.use(
   cors({
     origin: allowedOrigins,

@@ -1,17 +1,23 @@
-import { PassResetTokenDTO,PasswordResetDTO } from "../../../application/dtos/authDTOs";
+import {
+  CreatePassResetTokenDTO,
+  DeletePasswordResetTokenDTO,
+  PasswordResetDTO,
+} from "../../../application/dtos/authDTOs";
 import { PassResetTokenEntity } from "../../../domain/entities/passResetTokenEntity";
-import { PasswordResetRepository } from "../../../domain/interfaces/passwordResetTokenRepository";
+import { IPasswordResetRepository } from "../../../domain/interfaces/IPasswordResetTokenRepository";
 import PasswordResetTokenModel from "../models/passwordResetTokenModel";
 
-export class MonogPasswordResetRepository implements PasswordResetRepository {
-  public async createToken(data: PassResetTokenDTO): Promise<PassResetTokenEntity> {
-    const { email,resetToken} = data;
-
-    const PasswordResetTokenData = await PasswordResetTokenModel.findOneAndUpdate(
+export class MonogPasswordResetRepository implements IPasswordResetRepository {
+  public async createToken({
+    email,
+    resetToken,
+  }: CreatePassResetTokenDTO): Promise<PassResetTokenEntity> {
+    const PasswordResetTokenData =
+      await PasswordResetTokenModel.findOneAndUpdate(
         { email },
         {
           resetToken,
-          resetTokenCreatedAt: Date.now(), 
+          resetTokenCreatedAt: Date.now(),
         },
         {
           new: true,
@@ -20,12 +26,18 @@ export class MonogPasswordResetRepository implements PasswordResetRepository {
       );
     return PasswordResetTokenData.toObject();
   }
-  public async verifyToken(data: PasswordResetDTO): Promise<PassResetTokenEntity | null> {
-    const {resetToken } = data;
-    return await PasswordResetTokenModel.findOne({resetToken:resetToken}).lean()
+  public async verifyToken({
+    resetToken,
+  }: PasswordResetDTO): Promise<PassResetTokenEntity | null> {
+    return await PasswordResetTokenModel.findOne({
+      resetToken: resetToken,
+    }).lean();
   }
-  public async deleteToken(data:PassResetTokenDTO):Promise<PassResetTokenEntity | null> {
-     const {resetToken} = data
-     return await PasswordResetTokenModel.findOneAndDelete({resetToken}).lean()
+  public async deleteToken({
+    resetToken,
+  }: DeletePasswordResetTokenDTO): Promise<PassResetTokenEntity | null> {
+    return await PasswordResetTokenModel.findOneAndDelete({
+      resetToken,
+    }).lean();
   }
 }

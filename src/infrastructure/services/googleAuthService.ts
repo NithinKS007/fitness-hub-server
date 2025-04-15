@@ -1,7 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
 import dotenv from "dotenv";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
-import { validationError } from "../../interfaces/middlewares/errorMiddleWare";
+import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 
 dotenv.config();
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
