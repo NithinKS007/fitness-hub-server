@@ -191,6 +191,22 @@ export const chatSocket = (io: Server) => {
       }
     });
 
+    socket.on("typing",({ senderId, receiverId }: { senderId: string; receiverId: string })=>{
+       console.log("typing event triggered",senderId,receiverId)
+       const receiverSocketId = userSocketMap.get(receiverId);
+       if(receiverSocketId){
+         io.to(receiverSocketId).emit("typing",{senderId})
+       }
+    })
+
+    socket.on('stopTyping', ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
+      console.log("typing event triggered",senderId,receiverId)
+      const receiverSocketId = userSocketMap.get(receiverId);
+      if(receiverSocketId){
+        io.to(receiverSocketId).emit('stopTyping', { senderId });
+      }
+    });
+
     socket.on("disconnect", () => {
       for (const [userId, socketId] of userSocketMap.entries()) {
         if (socketId === socket.id) {
