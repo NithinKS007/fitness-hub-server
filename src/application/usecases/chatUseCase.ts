@@ -25,6 +25,11 @@ export class ChatUseCase {
     return createdMessage;
   }
 
+  public async markMessageAsRead({userId,otherUserId}:{userId:string,otherUserId:string}):Promise<Chat[]| null>{
+
+   return await this.chatRepository.markAsRead(userId,otherUserId)
+  }
+
   public async getMessages({
     userId,
     otherUserId,

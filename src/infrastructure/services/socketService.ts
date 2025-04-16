@@ -35,6 +35,7 @@ const bookingSlotUseCase = new BookingSlotUseCase(
 
 const userSocketMap = new Map<string, string>();
 const onlineUsers = new Set<string>();
+const openChats = new Map<string, string>()
 
 export const chatSocket = (io: Server) => {
   io.on("connection", (socket: Socket) => {
@@ -51,6 +52,112 @@ export const chatSocket = (io: Server) => {
       const isOnline = onlineUsers.has(targetId);
       socket.emit("onlineStatusResponse", { userId: targetId, isOnline });
     });
+
+    socket.on("setActiveChat",async ({ userId, partnerId }: { userId: string; partnerId: string }) => {
+      openChats.set(userId, partnerId);
+      console.log(`User ${userId} opened chat with ${partnerId}`);
+      const readMessagesToUpdateUI = await chatUseCase.markMessageAsRead({userId,otherUserId:partnerId})
+
+      console.log("sending message ids",readMessagesToUpdateUI)
+      if(readMessagesToUpdateUI && readMessagesToUpdateUI.length > 0 ) {
+        const messageIds = readMessagesToUpdateUI.map(msg => msg._id.toString())
+        const receiverSocketId = userSocketMap.get(userId)
+        if(receiverSocketId){
+          readMessagesToUpdateUI.forEach(msg => {
+            io.to(receiverSocketId).emit("receiveMessage", {
+              _id: msg._id.toString(),
+              senderId: msg.senderId,
+              receiverId: msg.receiverId,
+              message: msg.message,
+              createdAt: msg.createdAt,
+              isRead: msg.isRead,
+            });
+          });
+        }
+        const senderSocketId = userSocketMap.get(partnerId);
+        if (senderSocketId) {
+          io.to(senderSocketId).emit("messageRead", { messageIds });
+        }
+      }
+    });
+
+    socket.on("closeChat", (userId: string) => {
+      openChats.delete(userId);
+      console.log(`User ${userId} closed chat`);
+    });
+
+
+    socket.on("sendMessage", async ({ senderId, receiverId, message }:{ senderId: string; receiverId: string; message: string }) => {
+      console.log("Received message:", senderId, receiverId, message);
+
+      const currentChatPartner = openChats.get(receiverId);
+      const isChatOpen = currentChatPartner === senderId;
+      
+      const savedMessage = await chatUseCase.sendMessageAndSave({
+        senderId,
+        receiverId,
+        message,
+        isRead:isChatOpen
+      });
+      const receiverSocketId = userSocketMap.get(receiverId);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("receiveMessage", {
+          _id: savedMessage._id,
+          senderId,
+          receiverId,
+          message,
+          createdAt: savedMessage?.createdAt,
+          isRead: savedMessage.isRead
+        });
+        console.log(
+          `Message emitted to socket ${receiverSocketId} for user ${receiverId}`
+        );
+      } else {
+        console.log(`Receiver ${receiverId} not connected`);
+      }
+      const senderSocketId = userSocketMap.get(senderId);
+
+      console.log("is chat open",isChatOpen,"sender id",senderSocketId)
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("receiveMessage",{
+        _id: savedMessage._id.toString(),
+        senderId,
+        receiverId,
+        message,
+        createdAt: savedMessage.createdAt,
+        isRead: savedMessage.isRead
+      })
+        console.log(`Message emitted to socket ${senderSocketId} for user ${senderId}`);
+        console.log("emiting to the user to mark as read","saved message id",savedMessage._id,"sender id",senderId)
+
+        if (isChatOpen) {
+          io.to(senderSocketId).emit("messageRead", {
+            messageIds: [savedMessage._id.toString()],
+          });
+        console.log(`Notified ${senderId} of read message ${savedMessage._id}`);
+       }
+     }
+    })
+
+    socket.on("typing",({ senderId, receiverId }: { senderId: string; receiverId: string })=>{
+       console.log("typing event triggered",senderId,receiverId)
+       const receiverSocketId = userSocketMap.get(receiverId);
+       if(receiverSocketId){
+         io.to(receiverSocketId).emit("typing",{senderId})
+       }
+    })
+
+    socket.on('stopTyping', ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
+      console.log("typing event triggered",senderId,receiverId)
+      const receiverSocketId = userSocketMap.get(receiverId);
+      if(receiverSocketId){
+        io.to(receiverSocketId).emit('stopTyping', { senderId });
+      }
+    });
+
+   
+
+    //HANDLE VIDEO CALLS
 
     socket.on(
       "initiateVideoCall",
@@ -168,50 +275,14 @@ export const chatSocket = (io: Server) => {
       io.to(roomId).emit("callEnded");
     });
 
-    socket.on("sendMessage", async ({ senderId, receiverId, message }) => {
-      console.log("Received message:", senderId, receiverId, message);
-      const savedMessage = await chatUseCase.sendMessageAndSave({
-        senderId,
-        receiverId,
-        message,
-      });
-      const receiverSocketId = userSocketMap.get(receiverId);
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("receiveMessage", {
-          _id: savedMessage._id,
-          senderId,
-          message,
-          createdAt: savedMessage?.createdAt,
-        });
-        console.log(
-          `Message emitted to socket ${receiverSocketId} for user ${receiverId}`
-        );
-      } else {
-        console.log(`Receiver ${receiverId} not connected`);
-      }
-    });
-
-    socket.on("typing",({ senderId, receiverId }: { senderId: string; receiverId: string })=>{
-       console.log("typing event triggered",senderId,receiverId)
-       const receiverSocketId = userSocketMap.get(receiverId);
-       if(receiverSocketId){
-         io.to(receiverSocketId).emit("typing",{senderId})
-       }
-    })
-
-    socket.on('stopTyping', ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
-      console.log("typing event triggered",senderId,receiverId)
-      const receiverSocketId = userSocketMap.get(receiverId);
-      if(receiverSocketId){
-        io.to(receiverSocketId).emit('stopTyping', { senderId });
-      }
-    });
+    
 
     socket.on("disconnect", () => {
       for (const [userId, socketId] of userSocketMap.entries()) {
         if (socketId === socket.id) {
           userSocketMap.delete(userId);
           onlineUsers.delete(userId);
+          openChats.delete(userId);
           console.log(`User ${userId} disconnected`);
           break;
         }
