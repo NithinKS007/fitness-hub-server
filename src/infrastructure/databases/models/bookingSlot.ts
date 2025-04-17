@@ -10,7 +10,7 @@ interface IBookingSlot extends Document {
 
 const bookingSlotSchema: Schema = new Schema(
   {
-    trainerId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    trainerId: { type: mongoose.Schema.Types.ObjectId,  ref: "Trainer", required: true },
     time: { type: String, required: true },
     status: { type: String, enum: ['pending', 'booked', 'completed'], default: 'pending' },
     date: { type :Date,required:true}

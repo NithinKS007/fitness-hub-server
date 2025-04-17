@@ -11,6 +11,7 @@ import { MongoSubscriptionRepository } from "../../infrastructure/databases/repo
 import { MongoRevenueRepository } from "../../infrastructure/databases/repositories/revenueRepository";
 import logger from "../../infrastructure/logger/logger";
 import { handleLogError } from "../../shared/utils/handleLogError";
+import { MongoConversationRepository } from "../../infrastructure/databases/repositories/conversationRepository";
 
 //MONGO REPOSITORY INSTANCES
 const mongoSubscriptionRepository = new MongoSubscriptionRepository();
@@ -18,13 +19,15 @@ const mongoTrainerRepository = new MongoTrainerRepository();
 const monogUserSubscriptionPlanRepository =
   new MongoUserSubscriptionPlanRepository();
 const mongoRevenueRepository = new MongoRevenueRepository();
+const mongoConversationRepository = new MongoConversationRepository()
 
 //USE CASE INSTANCES
 const subscriptionUseCase = new SubscriptionUseCase(
   mongoSubscriptionRepository,
   mongoTrainerRepository,
   monogUserSubscriptionPlanRepository,
-  mongoRevenueRepository
+  mongoRevenueRepository,
+  mongoConversationRepository
 );
 
 export class SubscriptionController {

@@ -18,8 +18,8 @@ export interface IUserSubscriptionPlanRepository {
     countCanceledSubscribers(trainerId:IdDTO):Promise<number>
     trainerChartDataFilter(trainerId:IdDTO,dateFilterQuery:DateRangeQueryDTO):Promise<TrainerChartData[]>
     trainerPieChartDataFilter(trainerId:IdDTO,dateFilterQuery:DateRangeQueryDTO):Promise<TrainerPieChartData[]>
-    findTrainerChatList(trainerId:IdDTO):Promise<TrainerSubscribersList[]>
-    findUserChatList(userId:IdDTO):Promise<UserSubscriptionsList[]>
+    // findTrainerChatList(trainerId:IdDTO):Promise<TrainerSubscribersList[]>
+    // findUserChatList(userId:IdDTO):Promise<UserSubscriptionsList[]>
     findTop5TrainersWithHighestSubscribers():Promise<Top5List[]>
     usersMyTrainersList(userId:IdDTO,searchFilterQuery:GetUserTrainersListQueryDTO):Promise<{userTrainersList:MongoUserSubscriptionsList[] ,paginationData:PaginationDTO}>
 }

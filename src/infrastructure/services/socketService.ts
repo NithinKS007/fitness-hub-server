@@ -9,7 +9,7 @@ import { MongoAppointmentRepository } from "../databases/repositories/appointmen
 import { MongoBookingSlotRepository } from "../databases/repositories/bookingSlotRepository";
 import { MongoChatRepository } from "../databases/repositories/chatRepository";
 import { MongoVideoCallLogRepository } from "../databases/repositories/videoCallLogRepository";
-import { MongoUserSubscriptionPlanRepository } from "../databases/repositories/userSubscriptionRepository";
+import { MongoConversationRepository } from "../databases/repositories/conversationRepository";
 
 //MONGO REPOSITORY INSTANCES
 const mongoChatRepository = new MongoChatRepository();
@@ -17,14 +17,13 @@ const mongoVideoCallLogRepository = new MongoVideoCallLogRepository();
 const mongoTrainerRepository = new MongoTrainerRepository();
 const mongoAppointmentRepository = new MongoAppointmentRepository();
 const mongoBookingSlotRepository = new MongoBookingSlotRepository();
-const monogUserSubscriptionPlanRepository =
-  new MongoUserSubscriptionPlanRepository();
+const mongoConversationRepository = new MongoConversationRepository()
 
 //USE CASE INSTANCES
 const trainerUseCase = new TrainerUseCase(mongoTrainerRepository);
 const chatUseCase = new ChatUseCase(
   mongoChatRepository,
-  monogUserSubscriptionPlanRepository
+  mongoConversationRepository
 );
 const videoCallLogUseCase = new VideoCallUseCase(mongoVideoCallLogRepository);
 const bookingSlotUseCase = new BookingSlotUseCase(
@@ -57,8 +56,6 @@ export const chatSocket = (io: Server) => {
       openChats.set(userId, partnerId);
       console.log(`User ${userId} opened chat with ${partnerId}`);
       const readMessagesToUpdateUI = await chatUseCase.markMessageAsRead({userId,otherUserId:partnerId})
-
-      console.log("sending message ids",readMessagesToUpdateUI)
       if(readMessagesToUpdateUI && readMessagesToUpdateUI.length > 0 ) {
         const messageIds = readMessagesToUpdateUI.map(msg => msg._id.toString())
         const receiverSocketId = userSocketMap.get(userId)
@@ -88,8 +85,6 @@ export const chatSocket = (io: Server) => {
 
 
     socket.on("sendMessage", async ({ senderId, receiverId, message }:{ senderId: string; receiverId: string; message: string }) => {
-      console.log("Received message:", senderId, receiverId, message);
-
       const currentChatPartner = openChats.get(receiverId);
       const isChatOpen = currentChatPartner === senderId;
       
@@ -99,6 +94,9 @@ export const chatSocket = (io: Server) => {
         message,
         isRead:isChatOpen
       });
+
+      await chatUseCase.updateLastMessage({userId:senderId,otherUserId:receiverId,message:message})
+
       const receiverSocketId = userSocketMap.get(receiverId);
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("receiveMessage", {
@@ -112,6 +110,7 @@ export const chatSocket = (io: Server) => {
         console.log(
           `Message emitted to socket ${receiverSocketId} for user ${receiverId}`
         );
+
       } else {
         console.log(`Receiver ${receiverId} not connected`);
       }

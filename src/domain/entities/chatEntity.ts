@@ -2,8 +2,8 @@ import { ObjectId } from "mongoose";
 
 export interface Chat {
   _id: ObjectId | string;
-  senderId: string;
-  receiverId: string;
+  senderId:ObjectId | string;
+  receiverId: ObjectId | string;
   message: string;
   isRead:boolean
   createdAt:Date

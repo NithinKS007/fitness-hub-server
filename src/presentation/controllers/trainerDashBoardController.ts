@@ -6,7 +6,6 @@ import {
 } from "../../shared/constants/httpResponseStructure";
 import { MongoUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/userSubscriptionRepository";
 import { TrainerDashBoardUseCase } from "../../application/usecases/trainerDashBoardUseCase";
-import logger from "../../infrastructure/logger/logger";
 import { handleLogError } from "../../shared/utils/handleLogError";
 
 //MONGO REPOSITORY INSTANCES

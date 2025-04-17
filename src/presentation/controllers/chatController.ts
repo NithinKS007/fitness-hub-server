@@ -7,18 +7,19 @@ import {
 import { ChatUseCase } from "../../application/usecases/chatUseCase";
 import { MongoChatRepository } from "../../infrastructure/databases/repositories/chatRepository";
 import { MongoUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/userSubscriptionRepository";
-import logger from "../../infrastructure/logger/logger";
 import { handleLogError } from "../../shared/utils/handleLogError";
+import { MongoConversationRepository } from "../../infrastructure/databases/repositories/conversationRepository";
 
 //MONGO REPOSITORY INSTANCES
 const mongoChatRepository = new MongoChatRepository();
 const monogUserSubscriptionPlanRepository =
   new MongoUserSubscriptionPlanRepository();
+const mongoConversationRepository = new MongoConversationRepository()
 
 //USE CASE INSTANCES
 const chatUseCase = new ChatUseCase(
   mongoChatRepository,
-  monogUserSubscriptionPlanRepository
+  mongoConversationRepository
 );
 
 export class ChatController {
@@ -42,8 +43,8 @@ export class ChatController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { _id } = req.user;
-      const trainerChatList = await chatUseCase.getTrainerChatList(_id);
+      const trainerId = req.user._id
+      const trainerChatList = await chatUseCase.getTrainerChatList(trainerId);
       sendResponse(
         res,
         HttpStatusCodes.OK,
@@ -66,8 +67,8 @@ export class ChatController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { _id } = req.user;
-      const userChatList = await chatUseCase.getUserChatList(_id);
+      const userId = req.user._id
+      const userChatList = await chatUseCase.getUserChatList(userId);
       sendResponse(
         res,
         HttpStatusCodes.OK,

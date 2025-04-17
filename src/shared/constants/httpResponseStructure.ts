@@ -182,5 +182,5 @@ export enum HttpStatusMessages {
   FailedToFetchRevenueHistory = "Failed to fetch revenue history",
   SuccessFullyFetchedRevenueHistory = "Revenue list retrieved successfully",
 
-  
+  FailedToUpdateLastMessage = "Failed to update last message"
 }

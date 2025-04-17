@@ -14,6 +14,7 @@ import { MongoUserSubscriptionPlanRepository } from "../../infrastructure/databa
 import { MongoRevenueRepository } from "../../infrastructure/databases/repositories/revenueRepository";
 import { RevenueHistory } from "../../application/usecases/RevenueHistory";
 import { handleLogError } from "../../shared/utils/handleLogError";
+import { MongoConversationRepository } from "../../infrastructure/databases/repositories/conversationRepository";
 
 //MONGO REPOSITORY INSTANCES
 const mongouserRepository = new MongoUserRepository();
@@ -22,6 +23,7 @@ const mongoSubscriptionRepository = new MongoSubscriptionRepository();
 const monogUserSubscriptionPlanRepository =
   new MongoUserSubscriptionPlanRepository();
 const mongoRevenueRepository = new MongoRevenueRepository();
+const mongoConversationRepository = new MongoConversationRepository()
 
 //USE CASE INSTANCES
 const userUseCase = new UserUseCase(mongouserRepository);
@@ -32,7 +34,8 @@ const subscriptionsUseCase = new SubscriptionUseCase(
   mongoSubscriptionRepository,
   mongoTrainerRepository,
   monogUserSubscriptionPlanRepository,
-  mongoRevenueRepository
+  mongoRevenueRepository,
+  mongoConversationRepository
 );
 
 export class AdminController {

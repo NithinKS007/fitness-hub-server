@@ -2,7 +2,7 @@ export interface CreateChatDTO {
   senderId: string;
   receiverId: string;
   message: string;
-  isRead:boolean
+  isRead: boolean;
 }
 
 export interface FindChatDTO {
@@ -27,4 +27,9 @@ export interface UpdateVideoCallLogDTO {
 export interface UpdateVideoCallDurationDTO {
   callRoomId: string;
   callDuration: number;
+}
+
+export interface CountUnReadMessages {
+  senderId: string;
+  receiverId: string;
 }

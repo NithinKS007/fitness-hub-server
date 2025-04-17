@@ -36,13 +36,15 @@ import {
   GetUserTrainersListQueryDTO,
 } from "../dtos/queryDTOs";
 import { IRevenueRepository } from "../../domain/interfaces/IRevenueRepository";
+import { IConversationRepository } from "../../domain/interfaces/IConversationRepository";
 
 export class SubscriptionUseCase {
   constructor(
     private subscriptionRepository: ISubscriptionRepository,
     private trainerRepository: ITrainerRepository,
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
-    private revenueRepository: IRevenueRepository
+    private revenueRepository: IRevenueRepository,
+    private conversationRepository: IConversationRepository
   ) {}
 
   private getInterval(subPeriod: SubPeriod): "month" | "year" {
@@ -86,7 +88,7 @@ export class SubscriptionUseCase {
     const intervalCount = this.getIntervalCount(subPeriod);
     const productId = await createProduct(
       `${
-        subPeriod.charAt(0).toUpperCase() + subPeriod.slice(1).toLowerCase()
+        subPeriod.toUpperCase()
       } FITNESS PLAN`,
       `TRAINER: ${trainerData.fname} ${trainerData.lname}, ${totalSessions} SESSIONS, EMAIL: ${trainerData.email}`
     );
@@ -185,7 +187,7 @@ export class SubscriptionUseCase {
     ) {
       const productId = await createProduct(
         `${
-          subPeriod.charAt(0).toUpperCase() + subPeriod.slice(1).toLowerCase()
+          subPeriod.toUpperCase()
         } FITNESS PLAN`,
         `TRAINER: ${trainerData?.fname} ${trainerData?.lname}, ${totalSessions} SESSIONS, EMAIL: ${trainerData?.email}`
       );
@@ -370,6 +372,20 @@ export class SubscriptionUseCase {
               trainerRevenue: trainerAmount,
               commission: adminCommission,
             });
+
+            const existingConversation =
+              await this.conversationRepository.findConversation({
+                userId: createdSubscription.userId.toString(),
+                trainerId: trainerId,
+              });
+
+            if (!existingConversation) {
+              await this.conversationRepository.createChatConversation({
+                userId: createdSubscription.userId.toString(),
+                trainerId: trainerId,
+                stripeSubscriptionStatus: subscription.status,
+              });
+            }
           }
           console.log(
             `Subscription ${subscriptionId} successful in webhook handler`
@@ -382,6 +398,18 @@ export class SubscriptionUseCase {
         const stripeSubscriptionId = invoice.subscription as string;
 
         if (stripeSubscriptionId) {
+          const findExistingSubscription =
+            await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionId(
+              stripeSubscriptionId
+            );
+          const { userId, trainerId } = findExistingSubscription;
+          if (findExistingSubscription) {
+            await this.conversationRepository.updateSubscriptionStatus({
+              userId: userId.toString(),
+              trainerId: trainerId.toString(),
+              stripeSubscriptionStatus: "canceled",
+            });
+          }
           await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionIdAndUpdateStatus(
             { stripeSubscriptionId, status: "canceled" }
           );
@@ -393,12 +421,28 @@ export class SubscriptionUseCase {
         break;
       case "customer.subscription.deleted":
         const subscription = event.data.object;
-        await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionIdAndUpdateStatus(
-          { stripeSubscriptionId: subscription.id, status: "canceled" }
-        );
-        console.log(
-          `Subscription ${subscription.id} cancelled due to customer cancellation`
-        );
+
+        if (subscription) {
+          const findExistingSubscription =
+            await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionId(
+              subscription.id
+            );
+          const { userId, trainerId } = findExistingSubscription;
+          if (findExistingSubscription) {
+            await this.conversationRepository.updateSubscriptionStatus({
+              userId: userId.toString(),
+              trainerId: trainerId.toString(),
+              stripeSubscriptionStatus: "canceled",
+            });
+          }
+          await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionIdAndUpdateStatus(
+            { stripeSubscriptionId: subscription.id, status: "canceled" }
+          );
+          console.log(
+            `Subscription ${subscription.id} cancelled due to customer cancellation`
+          );
+        }
+
         break;
       default:
         console.log(`Unhandled event type: ${event.type}`);
