@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from "express-serve-static-core";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import {
   HttpStatusCodes,
-  HttpStatusMessages,
+  SubscriptionStatusMessage,
+  TrainerStatusMessage,
 } from "../../shared/constants/httpResponseStructure";
 import { SubscriptionUseCase } from "../../application/usecases/subscriptionUseCase";
 import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/trainerRepository";
@@ -46,7 +47,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         subscriptionData,
-        HttpStatusMessages.SubscriptionCreated
+        SubscriptionStatusMessage.SubscriptionCreated
       );
     } catch (error) {
        handleLogError(
@@ -71,7 +72,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         subscriptionsData,
-        HttpStatusMessages.SubscriptionsListRetrieved
+        SubscriptionStatusMessage.SubscriptionsListRetrieved
       );
     } catch (error) {
       handleLogError(
@@ -100,7 +101,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         updatedSubscriptionStatus,
-        HttpStatusMessages.SubscriptionBlockStatusUpdated
+        SubscriptionStatusMessage.SubscriptionBlockStatusUpdated
       );
     } catch (error) {
       handleLogError(
@@ -129,7 +130,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         editSubscriptionData,
-        HttpStatusMessages.EditedSuccessfully
+        SubscriptionStatusMessage.SubscriptionEditedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -154,7 +155,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         deletedSubscriptionData,
-        HttpStatusMessages.DeletedSuccessfully
+        SubscriptionStatusMessage.SubscriptionDeletedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -182,7 +183,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         { sessionId: sessionId },
-        HttpStatusMessages.SubscriptionAddedSuccessfully
+        SubscriptionStatusMessage.SubscriptionAddedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -214,7 +215,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         null,
-        HttpStatusMessages.SubscriptionAddedSuccessfully
+        SubscriptionStatusMessage.SubscriptionAddedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -239,7 +240,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         { subscriptionData: subscriptionData },
-        HttpStatusMessages.SubscriptionAddedSuccessfully
+        SubscriptionStatusMessage.SubscriptionAddedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -267,7 +268,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         { subscriptionCancelledData: subscriptionCancelledData },
-        HttpStatusMessages.SubscriptionCancelledSuccessfully
+        SubscriptionStatusMessage.SubscriptionCancelledSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -298,7 +299,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         { trainerSubscribers, paginationData },
-        HttpStatusMessages.SubscriptionsListRetrieved
+        SubscriptionStatusMessage.SubscriptionsListRetrieved
       );
     } catch (error) {
       handleLogError(
@@ -329,7 +330,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         { userSubscriptionsList, paginationData },
-        HttpStatusMessages.SubscriptionListOfUserRetrievedSuccessfully
+        SubscriptionStatusMessage.SubscriptionListOfUserRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -358,7 +359,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         { isUserSubscribedToTheTrainer },
-        HttpStatusMessages.UserIsSubscribed
+        SubscriptionStatusMessage.UserIsSubscribed
       );
     } catch (error) {
       handleLogError(
@@ -388,7 +389,7 @@ export class SubscriptionController {
         res,
         HttpStatusCodes.OK,
         { userTrainersList, paginationData },
-        HttpStatusMessages.TrainersListRetrieved
+        TrainerStatusMessage.TrainersListRetrieved
       );
     } catch (error) {
       handleLogError(

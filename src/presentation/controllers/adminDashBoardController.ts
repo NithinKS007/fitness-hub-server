@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import {
+  DashboardStatusMessage,
   HttpStatusCodes,
-  HttpStatusMessages,
 } from "../../shared/constants/httpResponseStructure";
 import { MongoUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/userSubscriptionRepository";
 import { AdminDashBoardUseCase } from "../../application/usecases/adminDashBoardUseCase";
@@ -57,7 +57,7 @@ export class AdminDashboardController {
           chartData: chartData,
           topTrainersList: top5List,
         },
-        HttpStatusMessages.AdminDashBoardRetrievedSuccessfully
+        DashboardStatusMessage.AdminDashBoardRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(

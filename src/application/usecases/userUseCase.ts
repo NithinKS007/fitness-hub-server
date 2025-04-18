@@ -1,7 +1,7 @@
 import { IUserRepository } from "../../domain/interfaces/IUserRepository";
 import { User } from "../../domain/entities/userEntity";
 import { IdDTO, PaginationDTO } from "../dtos/utilityDTOs";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage, BlockStatusMessage, ProfileStatusMessage, UserStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 import { UpdateBlockStatusDTO } from "../dtos/authDTOs";
 import { GetUsersQueryDTO } from "../dtos/queryDTOs";
@@ -25,7 +25,7 @@ export class UserUseCase {
       filters,
     });
     if (!usersList) {
-      throw new validationError(HttpStatusMessages.failedToRetrieveUsersList);
+      throw new validationError(UserStatusMessage.failedToRetrieveUsersList);
     }
 
     
@@ -35,11 +35,11 @@ export class UserUseCase {
 
   public async getUserDetails(userId: IdDTO): Promise<User | null> {
     if (!userId) {
-      throw new validationError(HttpStatusMessages.IdRequired);
+      throw new validationError(AuthenticationStatusMessage.IdRequired);
     }
     const userData = await this.userRepository.findById(userId);
     if (!userData) {
-      throw new validationError(HttpStatusMessages.FailedToRetrieveUserDetails);
+      throw new validationError(ProfileStatusMessage.FailedToRetrieveUserDetails);
     }
     return userData;
   }
@@ -49,14 +49,14 @@ export class UserUseCase {
     isBlocked,
   }: UpdateBlockStatusDTO): Promise<User | null> {
     if (!userId || !isBlocked) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const userData = await this.userRepository.updateBlockStatus({
       userId,
       isBlocked,
     });
     if (!userData) {
-      throw new validationError(HttpStatusMessages.FailedToUpdateBlockStatus);
+      throw new validationError(BlockStatusMessage.FailedToUpdateBlockStatus);
     }
     return userData;
   }

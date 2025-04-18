@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import {
   HttpStatusCodes,
-  HttpStatusMessages,
+  WorkoutStatusMessage,
 } from "../../shared/constants/httpResponseStructure";
 import { WorkOutUseCase } from "../../application/usecases/workoutUseCase";
 import { MongoWorkoutRepository } from "../../infrastructure/databases/repositories/workoutRepository";
@@ -25,7 +25,7 @@ export class WorkoutController {
         res,
         HttpStatusCodes.OK,
         addedWorkOut,
-        HttpStatusMessages.workoutAddedSuccessfully
+        WorkoutStatusMessage.workoutAddedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -58,7 +58,7 @@ export class WorkoutController {
         res,
         HttpStatusCodes.OK,
         { workoutList: workoutList, paginationData: paginationData },
-        HttpStatusMessages.WorkoutListRetrievedSuccessfully
+        WorkoutStatusMessage.WorkoutListRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -82,7 +82,7 @@ export class WorkoutController {
         res,
         HttpStatusCodes.OK,
         deletedWorkoutSet,
-        HttpStatusMessages.WorkoutSetDeleted
+        WorkoutStatusMessage.WorkoutSetDeleted
       );
     } catch (error) {
       handleLogError(
@@ -108,7 +108,7 @@ export class WorkoutController {
         res,
         HttpStatusCodes.OK,
         completedWorkoutSet,
-        HttpStatusMessages.WorkoutSetCompleted
+        WorkoutStatusMessage.WorkoutSetCompleted
       );
     } catch (error) {
       handleLogError(

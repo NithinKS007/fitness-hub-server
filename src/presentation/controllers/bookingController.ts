@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  AppointmentStatusMessage,
   HttpStatusCodes,
-  HttpStatusMessages,
+  SlotStatusMessage,
+  VideoCallStatusMessage,
 } from "../../shared/constants/httpResponseStructure";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import { BookingSlotUseCase } from "../../application/usecases/bookingSlotUseCase";
@@ -44,7 +46,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         { trainerVideoCallLogList, paginationData },
-        HttpStatusMessages.VideoCallLogsRetrievedSuccessfully
+        VideoCallStatusMessage.VideoCallLogsRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -70,7 +72,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         deletedSlotData,
-        HttpStatusMessages.SlotDeletedSuccessfully
+        SlotStatusMessage.SlotDeletedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -95,7 +97,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         cancelledAppointmentData,
-        HttpStatusMessages.AppointmentCancelledSuccessfully
+        AppointmentStatusMessage.AppointmentCancelledSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -131,7 +133,7 @@ export class BookingController {
           trainerBookingSchedulesList: trainerBookingSchedulesList,
           paginationData: paginationData,
         },
-        HttpStatusMessages.AppointmentsListRetrievedSuccessfully
+        AppointmentStatusMessage.AppointmentsListRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -159,14 +161,14 @@ export class BookingController {
           res,
           HttpStatusCodes.OK,
           appointmentData,
-          HttpStatusMessages.BookingApproved
+          AppointmentStatusMessage.BookingApproved
         );
       } else if (appointmentData.status === "rejected") {
         sendResponse(
           res,
           HttpStatusCodes.OK,
           appointmentData,
-          HttpStatusMessages.BookingRejected
+          AppointmentStatusMessage.BookingRejected
         );
       }
     } catch (error) {
@@ -195,7 +197,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         createdSlotData,
-        HttpStatusMessages.SlotCreatedSuccessfully
+        SlotStatusMessage.SlotCreatedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -229,7 +231,7 @@ export class BookingController {
           availableSlotsList: availableSlotsList,
           paginationData: paginationData,
         },
-        HttpStatusMessages.SlotDataRetrievedSuccessfully
+        SlotStatusMessage.SlotDataRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -262,7 +264,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         { bookingRequestsList, paginationData },
-        HttpStatusMessages.BookingRequestsRetrievedSuccessfully
+        AppointmentStatusMessage.BookingRequestsRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -287,7 +289,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         bookingSlotsOfTrainer,
-        HttpStatusMessages.SlotDataRetrievedSuccessfully
+        SlotStatusMessage.SlotDataRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -315,7 +317,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         bookedSlotData,
-        HttpStatusMessages.SlotBookedSuccessfully
+        AppointmentStatusMessage.SlotBookedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -348,7 +350,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         { appointmentList: appointmentList, paginationData: paginationData },
-        HttpStatusMessages.AppointmentsListRetrievedSuccessfully
+        AppointmentStatusMessage.AppointmentsListRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -381,7 +383,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         { userVideoCallLogList, paginationData },
-        HttpStatusMessages.VideoCallLogsRetrievedSuccessfully
+        VideoCallStatusMessage.VideoCallLogsRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(

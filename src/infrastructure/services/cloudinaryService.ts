@@ -1,7 +1,7 @@
 import { UploadApiResponse } from "cloudinary";
 import cloudinary from "../config/cloudinaryConfig";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { CloudinaryStatusMessage } from "../../shared/constants/httpResponseStructure";
 
 export const cloudinaryUpload = async (
   image: string,
@@ -15,6 +15,6 @@ export const cloudinaryUpload = async (
     return result.secure_url;
   } catch (error:any) {
     console.log("Error while uploading to cloudinary:", error);
-    throw new validationError(HttpStatusMessages.FailedToUploadToCloudinary);
+    throw new validationError(CloudinaryStatusMessage.FailedToUploadToCloudinary);
   }
 }

@@ -7,7 +7,7 @@ import {
 } from "../dtos/contentDTOs";
 import { IdDTO, PaginationDTO } from "../dtos/utilityDTOs";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage, BlockStatusMessage, VideoStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { Playlist } from "../../domain/entities/playListEntity";
 import { Video } from "../../domain/entities/videoEntity";
 import { IPlayListRepository } from "../../domain/interfaces/IPlayListRepository";
@@ -28,7 +28,7 @@ export class ContentManagementUseCase {
     trainerId,
   }: CreatePlayListDTO): Promise<Playlist> {
     if (!title || !trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     return await this.playListRepository.createPlayList({ title, trainerId });
   }
@@ -37,7 +37,7 @@ export class ContentManagementUseCase {
     { page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
   ): Promise<{ playList: Playlist[]; paginationData: PaginationDTO }> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.IdRequired);
+      throw new validationError(AuthenticationStatusMessage.IdRequired);
     }
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
 
@@ -72,7 +72,7 @@ export class ContentManagementUseCase {
       !title ||
       !trainerId
     ) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const createdVideo = await this.videoRepository.createVideo({
       video,
@@ -103,7 +103,7 @@ export class ContentManagementUseCase {
     { page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO
   ): Promise<{ videoList: Video[]; paginationData: PaginationDTO }> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
 
@@ -124,7 +124,7 @@ export class ContentManagementUseCase {
     privacy,
   }: UpdateVideoBlockStatus): Promise<Video> {
     if (!videoId || !privacy) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const updatedVideoData = await this.videoRepository.updateVideoBlockStatus({
       videoId,
@@ -132,7 +132,7 @@ export class ContentManagementUseCase {
     });
 
     if (!updatedVideoData) {
-      throw new validationError(HttpStatusMessages.FailedToUpdateBlockStatus);
+      throw new validationError(BlockStatusMessage.FailedToUpdateBlockStatus);
     }
     return updatedVideoData;
   }
@@ -142,7 +142,7 @@ export class ContentManagementUseCase {
     privacy,
   }: UpdatePlayListBlockStatus): Promise<Playlist> {
     if (!playListId || !privacy) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const updatedPlayListData =
       await this.playListRepository.updatePlayListBlockStatus({
@@ -150,7 +150,7 @@ export class ContentManagementUseCase {
         privacy,
       });
     if (!updatedPlayListData) {
-      throw new validationError(HttpStatusMessages.FailedToUpdateBlockStatus);
+      throw new validationError(BlockStatusMessage.FailedToUpdateBlockStatus);
     }
 
     return updatedPlayListData;
@@ -158,7 +158,7 @@ export class ContentManagementUseCase {
 
   public async getAllPlayListsOfTrainer(trainerId: IdDTO): Promise<Playlist[]> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const playListData =
       await this.playListRepository.getFullPlayListsOfTrainer(trainerId);
@@ -186,7 +186,7 @@ export class ContentManagementUseCase {
       !trainerId ||
       !video
     ) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const editedVideo = await this.videoRepository.editVideo({
       _id,
@@ -200,7 +200,7 @@ export class ContentManagementUseCase {
     });
 
     if (!editedVideo) {
-      throw new validationError(HttpStatusMessages.FailedToEditVideo);
+      throw new validationError(VideoStatusMessage.FailedToEditVideo);
     }
 
     if (editedVideo && playLists && playLists.length > 0) {
@@ -223,7 +223,7 @@ export class ContentManagementUseCase {
     const videoData =  await this.videoRepository.getVideoById(videoId)
 
     if(!videoData){
-      throw new validationError(HttpStatusMessages.FailedToGetVideo)
+      throw new validationError(VideoStatusMessage.FailedToGetVideo)
     }
 
     return videoData

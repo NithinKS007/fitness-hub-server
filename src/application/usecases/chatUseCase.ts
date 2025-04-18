@@ -7,7 +7,7 @@ import {
 import { IChatRepository } from "../../domain/interfaces/IChatRepository";
 import { IConversationRepository } from "../../domain/interfaces/IConversationRepository";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage, ChatStatusMessage } from "../../shared/constants/httpResponseStructure";
 import {
   CreateChatDTO,
   FindChatDTO,
@@ -28,7 +28,7 @@ export class ChatUseCase {
     const createdMessage = await this.chatRepository.saveChat(createChat);
     if (!createdMessage) {
       throw new validationError(
-        HttpStatusMessages.FailedToCreateMessageInChatDatabase
+        ChatStatusMessage.FailedToCreateMessageInChatDatabase
       );
     }
     return createdMessage;
@@ -53,7 +53,7 @@ export class ChatUseCase {
       otherUserId,
     });
     if (!chatData) {
-      throw new validationError(HttpStatusMessages.FailedToGetChatMessages);
+      throw new validationError(ChatStatusMessage.FailedToGetChatMessages);
     }
     return chatData;
   }
@@ -62,24 +62,24 @@ export class ChatUseCase {
     trainerId: IdDTO
   ): Promise<TrainerChatList[]> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const trainerChatList = await this.conversation.findTrainerChatList(
       trainerId
     );
     if (!trainerChatList) {
-      throw new validationError(HttpStatusMessages.FailedToRetrieveChatList);
+      throw new validationError(ChatStatusMessage.FailedToRetrieveChatList);
     }
     return trainerChatList;
   }
 
   public async getUserChatList(userId: IdDTO): Promise<UserChatList[]> {
     if (!userId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const usersChatList = await this.conversation.findUserChatList(userId);
     if (!usersChatList) {
-      throw new validationError(HttpStatusMessages.FailedToRetrieveChatList);
+      throw new validationError(ChatStatusMessage.FailedToRetrieveChatList);
     }
     return usersChatList;
   }
@@ -95,7 +95,7 @@ export class ChatUseCase {
       lastMessageId,
     });
     if (!lastMessage) {
-      throw new validationError(HttpStatusMessages.FailedToUpdateLastMessage);
+      throw new validationError(ChatStatusMessage.FailedToUpdateLastMessage);
     }
     return lastMessage;
   }
@@ -113,7 +113,7 @@ export class ChatUseCase {
       });
 
     if (!updatedUnReadMessageDoc) {
-      throw new validationError(HttpStatusMessages.FailedtoUpdateUnReadCount);
+      throw new validationError(ChatStatusMessage.FailedtoUpdateUnReadCount);
     }
     return updatedUnReadMessageDoc;
   }
@@ -129,7 +129,7 @@ export class ChatUseCase {
       });
 
     if(!incrementUnReadMessageDoc){
-      throw new validationError(HttpStatusMessages.FailedtoUpdateUnReadCount)
+      throw new validationError(ChatStatusMessage.FailedtoUpdateUnReadCount)
     }
 
     return incrementUnReadMessageDoc

@@ -5,7 +5,7 @@ import {
 } from "../dtos/bookingDTOs";
 import { IdDTO, PaginationDTO } from "../dtos/utilityDTOs";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AppointmentStatusMessage, AuthenticationStatusMessage, SlotStatusMessage, VideoCallStatusMessage } from "../../shared/constants/httpResponseStructure";
 import {
   Appointment,
   AppointmentRequestsTrainer,
@@ -39,7 +39,7 @@ export class BookingSlotUseCase {
   ): Promise<BookingSlot> {
     const { date, ...otherSlotData } = slotData;
     if (!slotData) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const createdSlotData = await this.bookingSlotRepository.addBookingSlot({
       date: new Date(date),
@@ -47,7 +47,7 @@ export class BookingSlotUseCase {
     });
 
     if (!createdSlotData) {
-      throw new validationError(HttpStatusMessages.FailedToCreateBookingSlot);
+      throw new validationError(SlotStatusMessage.FailedToCreateBookingSlot);
     }
     return createdSlotData;
   }
@@ -60,7 +60,7 @@ export class BookingSlotUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.IdRequired);
+      throw new validationError(AuthenticationStatusMessage.IdRequired);
     }
 
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -74,7 +74,7 @@ export class BookingSlotUseCase {
       });
     if (!availableSlotsList) {
       throw new validationError(
-        HttpStatusMessages.FailedToGetAvailableSlotData
+        SlotStatusMessage.FailedToGetAvailableSlotData
       );
     }
     return { availableSlotsList, paginationData };
@@ -82,13 +82,13 @@ export class BookingSlotUseCase {
 
   public async getAvailableSlotsUser(trainerId: IdDTO): Promise<BookingSlot[]> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.IdRequired);
+      throw new validationError(AuthenticationStatusMessage.IdRequired);
     }
     const availableSlotData =
       await this.bookingSlotRepository.getAvailableSlotsUser(trainerId);
     if (!availableSlotData) {
       throw new validationError(
-        HttpStatusMessages.FailedToGetAvailableSlotData
+        SlotStatusMessage.FailedToGetAvailableSlotData
       );
     }
     return availableSlotData;
@@ -99,17 +99,17 @@ export class BookingSlotUseCase {
     userId,
   }: BookAppointmentDTO): Promise<Appointment> {
     if (!slotId || !userId) {
-      throw new validationError(HttpStatusMessages.IdRequired);
+      throw new validationError(AuthenticationStatusMessage.IdRequired);
     }
 
     const bookingSlot = await this.bookingSlotRepository.findSlotById(slotId);
 
     if (!bookingSlot) {
-      throw new validationError(HttpStatusMessages.FailedToBookSlot);
+      throw new validationError(AppointmentStatusMessage.FailedToBookSlot);
     }
 
     if (bookingSlot.status === "booked" || bookingSlot.status === "completed") {
-      throw new validationError(HttpStatusMessages.SlotCurrentlyUnavailable);
+      throw new validationError(AppointmentStatusMessage.SlotCurrentlyUnavailable);
     }
 
     const {
@@ -133,7 +133,7 @@ export class BookingSlotUseCase {
       );
 
     if (!appointmentData || !bookingSlotData) {
-      throw new validationError(HttpStatusMessages.FailedToBookSlot);
+      throw new validationError(AppointmentStatusMessage.FailedToBookSlot);
     }
     return appointmentData;
   }
@@ -146,7 +146,7 @@ export class BookingSlotUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -166,7 +166,7 @@ export class BookingSlotUseCase {
 
     if (!bookingRequestsList) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveBookingRequests
+        AppointmentStatusMessage.FailedToRetrieveBookingRequests
       );
     }
     return { bookingRequestsList, paginationData };
@@ -178,14 +178,14 @@ export class BookingSlotUseCase {
     action,
   }: HandleBookingRequestDTO): Promise<Appointment> {
     if (!appointmentId || bookingSlotId || action) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const bookingSlotData = await this.bookingSlotRepository.findSlotById(
       bookingSlotId
     );
 
     if (!bookingSlotData) {
-      throw new validationError(HttpStatusMessages.BookingSlotNotFound);
+      throw new validationError(AppointmentStatusMessage.BookingSlotNotFound);
     }
 
     if (action === "approved") {
@@ -206,7 +206,7 @@ export class BookingSlotUseCase {
 
     if (!appointmentData) {
       throw new validationError(
-        HttpStatusMessages.FailedToApproveRejectBookingStatus
+        AppointmentStatusMessage.FailedToApproveRejectBookingStatus
       );
     }
     return appointmentData;
@@ -220,7 +220,7 @@ export class BookingSlotUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.IdRequired);
+      throw new validationError(AuthenticationStatusMessage.IdRequired);
     }
 
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -237,7 +237,7 @@ export class BookingSlotUseCase {
 
     if (!trainerBookingSchedulesList) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveBookingRequests
+        AppointmentStatusMessage.FailedToRetrieveBookingRequests
       );
     }
     return { trainerBookingSchedulesList, paginationData };
@@ -245,14 +245,14 @@ export class BookingSlotUseCase {
 
   public async cancelAppointment(appointmentId: IdDTO): Promise<Appointment> {
     if (!appointmentId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const cancelledAppointment =
       await this.appointmentRepository.cancelAppointmentSchedule(appointmentId);
 
     if (!cancelledAppointment) {
       throw new validationError(
-        HttpStatusMessages.FailedToCancelAppointmentStatus
+        AppointmentStatusMessage.FailedToCancelAppointmentStatus
       );
     }
 
@@ -262,7 +262,7 @@ export class BookingSlotUseCase {
       );
     if (!makingbookingSlotAvailableAgain) {
       throw new validationError(
-        HttpStatusMessages.FailedToCancelAppointmentStatus
+        AppointmentStatusMessage.FailedToCancelAppointmentStatus
       );
     }
 
@@ -277,7 +277,7 @@ export class BookingSlotUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!userId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -294,7 +294,7 @@ export class BookingSlotUseCase {
 
     if (!appointmentList) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveBookingRequests
+        AppointmentStatusMessage.FailedToRetrieveBookingRequests
       );
     }
     return { appointmentList, paginationData };
@@ -302,7 +302,7 @@ export class BookingSlotUseCase {
 
   public async deleteBookingSlot(bookingSlotId: IdDTO): Promise<BookingSlot> {
     if (!bookingSlotId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const slotData = await this.bookingSlotRepository.findSlotById(
@@ -310,13 +310,13 @@ export class BookingSlotUseCase {
     );
 
     if (slotData?.status === "booked" || slotData?.status === "completed") {
-      throw new validationError(HttpStatusMessages.SlotCurrentlyUnavailable);
+      throw new validationError(AppointmentStatusMessage.SlotCurrentlyUnavailable);
     }
     const deletedSlotData =
       await this.bookingSlotRepository.findByIdAndDeleteSlot(bookingSlotId);
 
     if (!deletedSlotData) {
-      throw new validationError(HttpStatusMessages.FailedToDeleteSlot);
+      throw new validationError(SlotStatusMessage.FailedToDeleteSlot);
     }
     return deletedSlotData;
   }
@@ -325,14 +325,14 @@ export class BookingSlotUseCase {
     appointmentId: IdDTO
   ): Promise<Appointment | null> {
     if (!appointmentId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const appointmentData = await this.appointmentRepository.getAppointmentById(
       appointmentId
     );
 
     if (!appointmentData) {
-      throw new validationError(HttpStatusMessages.FailedToFindAppointment);
+      throw new validationError(AppointmentStatusMessage.FailedToFindAppointment);
     }
     return appointmentData;
   }
@@ -345,7 +345,7 @@ export class BookingSlotUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -362,7 +362,7 @@ export class BookingSlotUseCase {
 
     if (!trainerVideoCallLogList) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveVideoCallLogs
+        VideoCallStatusMessage.FailedToRetrieveVideoCallLogs
       );
     }
     return { trainerVideoCallLogList, paginationData };
@@ -376,7 +376,7 @@ export class BookingSlotUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!userId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -393,7 +393,7 @@ export class BookingSlotUseCase {
 
     if (!userVideoCallLogList) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveVideoCallLogs
+        VideoCallStatusMessage.FailedToRetrieveVideoCallLogs
       );
     }
     return { userVideoCallLogList, paginationData };

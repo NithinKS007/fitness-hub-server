@@ -1,6 +1,6 @@
 import { OAuth2Client } from "google-auth-library";
 import dotenv from "dotenv";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 
 dotenv.config();
@@ -14,6 +14,6 @@ export const verifyGoogleToken = async (token: string) => {
     });
     return ticket.getPayload();
   } catch (error) {
-    throw new validationError(HttpStatusMessages.GoogleAuthFailed);
+    throw new validationError(AuthenticationStatusMessage.GoogleAuthFailed);
   }
 };

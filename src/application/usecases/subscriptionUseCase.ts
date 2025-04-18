@@ -19,7 +19,7 @@ import {
   getSubscriptionsData,
 } from "../../infrastructure/services/stripeServices";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage, BlockStatusMessage,SubscriptionStatusMessage } from "../../shared/constants/httpResponseStructure";
 import {
   MongoUserSubscriptionsList,
   Subscription,
@@ -81,7 +81,7 @@ export class SubscriptionUseCase {
     );
 
     if (existing) {
-      throw new validationError(HttpStatusMessages.SubscriptionAlreadyExists);
+      throw new validationError(SubscriptionStatusMessage.SubscriptionAlreadyExists);
     }
 
     const interval = this.getInterval(subPeriod);
@@ -107,7 +107,7 @@ export class SubscriptionUseCase {
     trainerId: IdDTO
   ): Promise<Subscription[]> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.IdRequired);
+      throw new validationError(AuthenticationStatusMessage.IdRequired);
     }
     return await this.subscriptionRepository.findAllSubscription(trainerId);
   }
@@ -117,14 +117,14 @@ export class SubscriptionUseCase {
     isBlocked,
   }: UpdateSubscriptionBlockStatusDTO): Promise<Subscription> {
     if (!subscriptionId || !isBlocked) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const subscriptionData =
       await this.subscriptionRepository.findSubscriptionById(subscriptionId);
 
     if (!subscriptionData) {
-      throw new validationError(HttpStatusMessages.InvalidId);
+      throw new validationError(AuthenticationStatusMessage.InvalidId);
     }
 
     const updatedSubscriptionData =
@@ -134,7 +134,7 @@ export class SubscriptionUseCase {
       });
 
     if (!updatedSubscriptionData) {
-      throw new validationError(HttpStatusMessages.FailedToUpdateBlockStatus);
+      throw new validationError(BlockStatusMessage.FailedToUpdateBlockStatus);
     }
 
     return updatedSubscriptionData;
@@ -160,14 +160,14 @@ export class SubscriptionUseCase {
       !totalSessions ||
       !trainerId
     ) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const subscriptionData =
       await this.subscriptionRepository.findSubscriptionById(subscriptionId);
 
     if (!subscriptionData) {
-      throw new validationError(HttpStatusMessages.InvalidId);
+      throw new validationError(AuthenticationStatusMessage.InvalidId);
     }
 
     const existingSubData =
@@ -227,7 +227,7 @@ export class SubscriptionUseCase {
         },
       });
     if (!updatedSubscriptionData) {
-      throw new validationError(HttpStatusMessages.FailedToUpdateBlockStatus);
+      throw new validationError(BlockStatusMessage.FailedToUpdateBlockStatus);
     }
     return updatedSubscriptionData;
   }
@@ -236,13 +236,13 @@ export class SubscriptionUseCase {
     subscriptionId: IdDTO
   ): Promise<Subscription> {
     if (!subscriptionId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const subscriptionData =
       await this.subscriptionRepository.findSubscriptionById(subscriptionId);
 
     if (!subscriptionData) {
-      throw new validationError(HttpStatusMessages.InvalidId);
+      throw new validationError(AuthenticationStatusMessage.InvalidId);
     }
     const stripePriceId = subscriptionData.stripePriceId;
     if (stripePriceId) {
@@ -252,7 +252,7 @@ export class SubscriptionUseCase {
       await this.subscriptionRepository.deletedSubscription(subscriptionId);
 
     if (!deletedSubscription) {
-      throw new validationError(HttpStatusMessages.FailedToDelete);
+      throw new validationError(SubscriptionStatusMessage.FailedToDeleteSubscription);
     }
     return deletedSubscription;
   }
@@ -265,13 +265,13 @@ export class SubscriptionUseCase {
       await this.subscriptionRepository.findSubscriptionById(subscriptionId);
     if (!subscriptionData) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveSubscriptionDetails
+        SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
       );
     }
 
     if (subscriptionData.isBlocked) {
       throw new validationError(
-        HttpStatusMessages.SubscriptionBlockedUnavailabe
+        SubscriptionStatusMessage.SubscriptionBlockedUnavailabe
       );
     }
     const sessionId = await createSubscriptionSession({
@@ -282,7 +282,7 @@ export class SubscriptionUseCase {
     });
     if (!sessionId) {
       throw new validationError(
-        HttpStatusMessages.FailedToCreateSubscriptionSession
+        SubscriptionStatusMessage.FailedToCreateSubscriptionSession
       );
     }
     return sessionId.sessionId;
@@ -290,14 +290,14 @@ export class SubscriptionUseCase {
 
   private validateWebhookInput(sig: any, webhookSecret: any, body: any): void {
     if (!sig || !webhookSecret || !body) {
-      throw new validationError(HttpStatusMessages.WebHookCredentialsMissing);
+      throw new validationError(SubscriptionStatusMessage.WebHookCredentialsMissing);
     }
   }
 
   private constructStripeEvent(body: any, sig: any, webhookSecret: any) {
     const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     if (!event) {
-      throw new validationError(HttpStatusMessages.WebHookVerificationFailed);
+      throw new validationError(SubscriptionStatusMessage.WebHookVerificationFailed);
     }
     return event;
   }
@@ -323,7 +323,7 @@ export class SubscriptionUseCase {
 
           if (!subscriptionId || !trainerId) {
             throw new validationError(
-              HttpStatusMessages.SubscriptionIdAndTraineIdMissing
+              SubscriptionStatusMessage.SubscriptionIdAndTraineIdMissing
             );
           }
           const subscriptionData =
@@ -332,7 +332,7 @@ export class SubscriptionUseCase {
             );
           if (!subscriptionData) {
             throw new validationError(
-              HttpStatusMessages.FailedToRetrieveSubscriptionDetails
+              SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
             );
           }
           const newSubscriptionAdding = {
@@ -455,11 +455,11 @@ export class SubscriptionUseCase {
     sessionId: string
   ): Promise<SubscriptionPlanEntity & { isSubscribed: boolean }> {
     if (!sessionId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const session = await getCheckoutSession(sessionId);
     if (!session) {
-      throw new validationError(HttpStatusMessages.InvalidSessionIdForStripe);
+      throw new validationError(SubscriptionStatusMessage.InvalidSessionIdForStripe);
     }
     const stripeSubscriptionId =
       typeof session.subscription === "string"
@@ -473,7 +473,7 @@ export class SubscriptionUseCase {
 
     if (!userTakenSubscription) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveSubscriptionDetails
+        SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
       );
     }
     const stripeSubscription = await getSubscription(
@@ -494,7 +494,7 @@ export class SubscriptionUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!userId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const { mongoUserSubscriptionsList, paginationData } =
@@ -504,7 +504,7 @@ export class SubscriptionUseCase {
       );
     if (!mongoUserSubscriptionsList) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveSubscriptionDetails
+        SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
       );
     }
 
@@ -530,7 +530,7 @@ export class SubscriptionUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const { mongoTrainerSubscribers, paginationData } =
       await this.userSubscriptionPlanRepository.findSubscriptionsOfTrainer(
@@ -539,7 +539,7 @@ export class SubscriptionUseCase {
       );
     if (!mongoTrainerSubscribers) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveSubscriptionDetails
+        SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
       );
     }
 
@@ -565,12 +565,12 @@ export class SubscriptionUseCase {
     cancelAction: string;
   }> {
     if (!stripeSubscriptionId || !action) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
 
     if (!stripeSub) {
-      throw new validationError(HttpStatusMessages.InvalidId);
+      throw new validationError(AuthenticationStatusMessage.InvalidId);
     }
     if (action === "cancelImmediately") {
       const stripeSub = await cancelSubscription(stripeSubscriptionId);
@@ -591,7 +591,7 @@ export class SubscriptionUseCase {
     isSubscribed: boolean;
   }> {
     if (!userId || !trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const subscriptionData =

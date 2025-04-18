@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import {
+  DashboardStatusMessage,
   HttpStatusCodes,
-  HttpStatusMessages,
 } from "../../shared/constants/httpResponseStructure";
 import { MongoUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/userSubscriptionRepository";
 import { TrainerDashBoardUseCase } from "../../application/usecases/trainerDashBoardUseCase";
@@ -46,7 +46,7 @@ export class TrainerDashboardController {
           chartData,
           pieChartData,
         },
-        HttpStatusMessages.TrainerDashBoardRetrievedSuccessfully
+        DashboardStatusMessage.TrainerDashBoardRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(

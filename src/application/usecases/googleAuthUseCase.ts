@@ -8,7 +8,7 @@ import {
   ForbiddenError,
   validationError,
 } from "../../presentation/middlewares/errorMiddleWare";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { User } from "../../domain/entities/userEntity";
 import { IUserRepository } from "../../domain/interfaces/IUserRepository";
 
@@ -24,16 +24,16 @@ export class GoogleAuthUseCase {
   }> {
     const googleUserInfo = await verifyGoogleToken(token);
     if (!googleUserInfo || !googleUserInfo.email) {
-      throw new validationError(HttpStatusMessages.EmailNotFound);
+      throw new validationError(AuthenticationStatusMessage.EmailNotFound);
     }
     const { email } = googleUserInfo;
 
     const userData = await this.userRepository.findByEmail({ email });
     if (userData && userData.isBlocked) {
-      throw new ForbiddenError(HttpStatusMessages.AccountBlocked);
+      throw new ForbiddenError(AuthenticationStatusMessage.AccountBlocked);
     }
     if (userData && userData.otpVerified) {
-      throw new validationError(HttpStatusMessages.DifferentLoginMethod);
+      throw new validationError(AuthenticationStatusMessage.DifferentLoginMethod);
     }
     if (!userData) {
       const { email, given_name, family_name, picture } = googleUserInfo;

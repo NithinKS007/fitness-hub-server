@@ -1,8 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import {
+  AuthenticationStatusMessage,
   HttpStatusCodes,
-  HttpStatusMessages,
+  JWTStatusMessage,
+  OTPStatusMessage,
+  PasswordStatusMessage,
+  ProfileStatusMessage,
 } from "../../shared/constants/httpResponseStructure";
 import { CreateUserUseCase } from "../../application/usecases/createUserUseCase";
 import { SigninUserUseCase } from "../../application/usecases/signInUserUseCase";
@@ -66,7 +70,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         createdUser,
-        HttpStatusMessages.UserCreatedSuccessfully
+        AuthenticationStatusMessage.UserCreatedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -89,7 +93,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         createdTrainer,
-        HttpStatusMessages.UserCreatedSuccessfully
+        AuthenticationStatusMessage.UserCreatedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -120,7 +124,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         { userData, accessToken },
-        HttpStatusMessages.LoginSuccessful
+        AuthenticationStatusMessage.LoginSuccessful
       );
     } catch (error) {
       handleLogError(
@@ -143,7 +147,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         null,
-        HttpStatusMessages.RegistrationSuccessful
+        AuthenticationStatusMessage.RegistrationSuccessful
       );
     } catch (error) {
       handleLogError(
@@ -166,7 +170,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         null,
-        HttpStatusMessages.OtpSendSuccessful
+        OTPStatusMessage.OtpSendSuccessful
       );
     } catch (error) {
       handleLogError(
@@ -189,7 +193,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         tokenData.email,
-        HttpStatusMessages.LinkSentToEmail
+        AuthenticationStatusMessage.LinkSentToEmail
       );
     } catch (error) {
       handleLogError(
@@ -217,7 +221,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         null,
-        HttpStatusMessages.PassWordResetSuccess
+        PasswordStatusMessage.PassWordResetSuccess
       );
     } catch (error) {
       handleLogError(
@@ -247,7 +251,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         { userData, accessToken },
-        HttpStatusMessages.LoginSuccessful
+        AuthenticationStatusMessage.LoginSuccessful
       );
     } catch (error) {
       handleLogError(
@@ -271,7 +275,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         null,
-        HttpStatusMessages.PasswordUpdated
+        PasswordStatusMessage.PasswordUpdated
       );
     } catch (error) {
       handleLogError(
@@ -297,7 +301,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         null,
-        HttpStatusMessages.LogoutSuccessful
+        AuthenticationStatusMessage.LogoutSuccessful
       );
     } catch (error) {
       handleLogError(
@@ -315,7 +319,7 @@ export class AuthController {
         res,
         HttpStatusCodes.Forbidden,
         null,
-        HttpStatusMessages.NoRefreshToken
+        JWTStatusMessage.NoRefreshToken
       );
       return;
     }
@@ -325,7 +329,7 @@ export class AuthController {
       res,
       HttpStatusCodes.OK,
       { newAccessToken },
-      HttpStatusMessages.AccessTokenRefreshedSuccessFully
+      JWTStatusMessage.AccessTokenRefreshedSuccessFully
     );
   }
 
@@ -344,7 +348,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         updatedTrainerData,
-        HttpStatusMessages.UserDetailsUpdated
+        ProfileStatusMessage.UserDetailsUpdated
       );
     } catch (error) {
       handleLogError(
@@ -370,7 +374,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         updatedUserData,
-        HttpStatusMessages.UserDetailsUpdated
+        ProfileStatusMessage.UserDetailsUpdated
       );
     } catch (error) {
       handleLogError(

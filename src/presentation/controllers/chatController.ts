@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import {
+  ChatStatusMessage,
   HttpStatusCodes,
-  HttpStatusMessages,
+  TrainerStatusMessage,
+  UserStatusMessage,
 } from "../../shared/constants/httpResponseStructure";
 import { ChatUseCase } from "../../application/usecases/chatUseCase";
 import { MongoChatRepository } from "../../infrastructure/databases/repositories/chatRepository";
@@ -33,7 +35,7 @@ export class ChatController {
       res,
       HttpStatusCodes.OK,
       messages,
-      HttpStatusMessages.ChatsSendSuccessfully
+      ChatStatusMessage.ChatSendSuccessfully
     );
   }
 
@@ -49,7 +51,7 @@ export class ChatController {
         res,
         HttpStatusCodes.OK,
         trainerChatList,
-        HttpStatusMessages.TrainersList
+        TrainerStatusMessage.TrainersList
       );
     } catch (error) {
       handleLogError(
@@ -73,7 +75,7 @@ export class ChatController {
         res,
         HttpStatusCodes.OK,
         userChatList,
-        HttpStatusMessages.UserList
+        UserStatusMessage.UserList
       );
     } catch (error) {
       handleLogError(

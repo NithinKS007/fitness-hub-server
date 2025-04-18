@@ -1,6 +1,6 @@
 import { IdDTO } from "../dtos/utilityDTOs";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { IUserSubscriptionPlanRepository } from "../../domain/interfaces/IUserSubscriptionRepository";
 import { TrainerDashboardStats } from "../../domain/entities/trainerEntity";
 import { DashBoardChartFilterDTO } from "../dtos/queryDTOs";
@@ -15,7 +15,7 @@ export class TrainerDashBoardUseCase {
     period: DashBoardChartFilterDTO
   ): Promise<TrainerDashboardStats> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const [
@@ -42,7 +42,7 @@ export class TrainerDashBoardUseCase {
 
   private async getTotalSubscriptionsCount(trainerId: IdDTO): Promise<number> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const totalCount =
       await this.userSubscriptionPlanRepository.countAllTrainerSubscribers(
@@ -53,7 +53,7 @@ export class TrainerDashBoardUseCase {
 
   private async getActiveSubscriptionsCount(trainerId: IdDTO): Promise<number> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const activeCount =
       await this.userSubscriptionPlanRepository.countAllActiveSubscribers(
@@ -66,7 +66,7 @@ export class TrainerDashBoardUseCase {
     trainerId: IdDTO
   ): Promise<number> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const canceledCount =

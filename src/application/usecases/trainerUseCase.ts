@@ -7,7 +7,7 @@ import { IdDTO } from "../dtos/utilityDTOs";
 import { PaginationDTO } from "../dtos/utilityDTOs";
 import { TrainerVerificationDTO } from "../dtos/trainerDTOs";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage, TrainerStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { Trainer } from "../../domain/entities/trainerEntity";
 import { TrainerWithSubscription } from "../../domain/entities/trainerWithSubscription";
 import { ITrainerRepository } from "../../domain/interfaces/ITrainerRepository";
@@ -40,14 +40,14 @@ export class TrainerUseCase {
 
   public async getTrainerDetailsById(trainerId: IdDTO): Promise<Trainer> {
     if (!trainerId) {
-      throw new validationError(HttpStatusMessages.IdRequired);
+      throw new validationError(AuthenticationStatusMessage.IdRequired);
     }
     const trainerDetails = await this.trainerRepository.getTrainerDetailsById(
       trainerId
     );
     if (!trainerDetails) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveTrainerDetails
+        TrainerStatusMessage.FailedToRetrieveTrainerDetails
       );
     }
     return trainerDetails;
@@ -74,7 +74,7 @@ export class TrainerUseCase {
       });
     if (!trainersList) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveTrainersList
+        TrainerStatusMessage.FailedToRetrieveTrainersList
       );
     }
     return {
@@ -88,7 +88,7 @@ export class TrainerUseCase {
     action,
   }: TrainerVerificationDTO): Promise<Trainer | null> {
     if (!trainerId || !action) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     return await this.trainerRepository.approveRejectTrainerVerification({
       trainerId,
@@ -120,7 +120,7 @@ export class TrainerUseCase {
       });
     if (!trainersList) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveTrainersList
+        TrainerStatusMessage.FailedToRetrieveTrainersList
       );
     }
     return {
@@ -135,7 +135,7 @@ export class TrainerUseCase {
       await this.trainerRepository.getApprovedTrainerDetailsWithSub(trainerId);
     if (!trainerData) {
       throw new validationError(
-        HttpStatusMessages.FailedToRetrieveTrainerWithSubscription
+        TrainerStatusMessage.FailedToRetrieveTrainerWithSubscription
       );
     }
     return trainerData;

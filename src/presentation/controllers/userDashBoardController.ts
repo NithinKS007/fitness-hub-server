@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import {
+  DashboardStatusMessage,
   HttpStatusCodes,
-  HttpStatusMessages,
 } from "../../shared/constants/httpResponseStructure";
 import { UserDashBoardUseCase } from "../../application/usecases/userDashBoardUseCase";
 import { MongoWorkoutRepository } from "../../infrastructure/databases/repositories/workoutRepository";
@@ -42,7 +42,7 @@ export class UserDashboardController {
           chartData: chartData,
           totalWorkoutTime: totalWorkoutTime,
         },
-        HttpStatusMessages.UserDashBoardRetrievedSuccessfully
+        DashboardStatusMessage.UserDashBoardRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(

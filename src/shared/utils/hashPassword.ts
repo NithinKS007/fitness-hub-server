@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { HttpStatusMessages } from "../constants/httpResponseStructure";
+import { PasswordStatusMessage } from "../constants/httpResponseStructure";
 
 export const hashPassword = async (password: string): Promise<string> => {
   const saltRounds: number = 10;
@@ -7,7 +7,7 @@ export const hashPassword = async (password: string): Promise<string> => {
     return await bcrypt.hash(password, saltRounds);
   } catch (error) {
     console.log(`Error hashing password: ${error}`);
-    throw new Error(HttpStatusMessages.FailedToHashPassword);
+    throw new Error(PasswordStatusMessage.FailedToHashPassword);
   }
 };
 
@@ -16,7 +16,7 @@ export const comparePassword = async (userPassword: string,hashedPassword: strin
     return await bcrypt.compare(userPassword, hashedPassword);
   } catch (error) {
     console.log(`Error while comparing the passwords: ${error}`);
-    throw new Error(HttpStatusMessages.FailedToComparePassword)
+    throw new Error(PasswordStatusMessage.FailedToComparePassword)
   }
 };
 

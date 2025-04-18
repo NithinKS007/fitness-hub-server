@@ -1,5 +1,5 @@
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage, SubscriptionStatusMessage } from "../../shared/constants/httpResponseStructure";
 import stripe from "../config/stripeConfig";
 
 const createProduct = async (name: string, description: string): Promise<string> => {
@@ -62,28 +62,28 @@ const createSubscriptionSession = async ({stripePriceId,userId,trainerId,subscri
 
     } catch (error) {
         console.log("error occured in stripe service layer",error);
-        throw new validationError(HttpStatusMessages.FailedToCreateSubscriptionSession)
+        throw new validationError(SubscriptionStatusMessage.FailedToCreateSubscriptionSession)
     }
 }
 
 const  getCheckoutSession = async(sessionId: string) => {
     if (!sessionId) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (!session) {
-      throw new validationError(HttpStatusMessages.InvalidSessionIdForStripe);
+      throw new validationError(SubscriptionStatusMessage.InvalidSessionIdForStripe);
     }
     return session;
 }
 
 const getSubscription  = async(stripeSubscriptionId: string) => {
     if (!stripeSubscriptionId) {
-        throw new validationError(HttpStatusMessages.InvalidId);
+        throw new validationError(AuthenticationStatusMessage.InvalidId);
     }
     const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
     if (!subscription) {
-    throw new validationError(HttpStatusMessages.InvalidId);
+    throw new validationError(AuthenticationStatusMessage.InvalidId);
     }
     return subscription;
 }
@@ -91,7 +91,7 @@ const getSubscription  = async(stripeSubscriptionId: string) => {
 const cancelSubscription = async(stripeSubscriptionId: string) => {
 
     if(!stripeSubscriptionId){
-        throw new validationError(HttpStatusMessages.InvalidId)
+        throw new validationError(AuthenticationStatusMessage.InvalidId)
     }
     const canceledSub = await stripe.subscriptions.cancel(stripeSubscriptionId);
     return canceledSub

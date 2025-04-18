@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import ms from "ms";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { EnvironmentVariableStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 import dotenv from "dotenv";
 dotenv.config()
@@ -11,7 +11,7 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
 const JWT_REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXPIRATION 
 
 if (!JWT_SECRET || !JWT_EXPIRATION || !JWT_REFRESH_SECRET || !JWT_REFRESH_EXPIRATION) {
-  throw new validationError(HttpStatusMessages.MissingJwtEnvironmentVariables);
+  throw new validationError(EnvironmentVariableStatusMessage.MissingJwtEnvironmentVariables);
 }
 
 export const generateAccessToken = (_id: string, role: string):string=> {

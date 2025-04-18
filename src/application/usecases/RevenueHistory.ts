@@ -1,6 +1,6 @@
 import { IRevenueRepository } from "../../domain/interfaces/IRevenueRepository";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { RevenueStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { parseDateRange } from "../../shared/utils/dayjs";
 import { GetRevenueQueryDTO } from "../dtos/queryDTOs";
 import { AdminRevenueHistory } from "../dtos/revenueDTOs";
@@ -29,7 +29,7 @@ export class RevenueHistory {
         filters,
       });
     if (!revenueData) {
-      throw new validationError(HttpStatusMessages.FailedToFetchRevenueHistory);
+      throw new validationError(RevenueStatusMessage.FailedToFetchRevenueHistory);
     }
     return { revenueData, paginationData };
   }

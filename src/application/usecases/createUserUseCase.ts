@@ -3,7 +3,7 @@ import { IOtpRepository } from "../../domain/interfaces/IOtpRepository";
 import { User } from "../../domain/entities/userEntity";
 import { CreateUserDTO } from "../dtos/userDTOs";
 import { hashPassword } from "../../shared/utils/hashPassword";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { sendEmail } from "../../infrastructure/services/emailService";
 import generateOtp from "../../shared/utils/otpGenerator";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
@@ -20,21 +20,21 @@ export class CreateUserUseCase {
     password,
   }: CreateUserDTO): Promise<User> {
     if (!fname || !lname || !email || !password) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
 
     const existinguser = await this.userRepository.findByEmail({
       email: email,
     });
     if (existinguser && existinguser.otpVerified) {
-      throw new validationError(HttpStatusMessages.EmailConflict);
+      throw new validationError(AuthenticationStatusMessage.EmailConflict);
     }
     if (
       existinguser &&
       !existinguser.otpVerified &&
       existinguser.googleVerified
     ) {
-      throw new validationError(HttpStatusMessages.DifferentLoginMethod);
+      throw new validationError(AuthenticationStatusMessage.DifferentLoginMethod);
     }
     if (existinguser && !existinguser.otpVerified) {
       const otp = generateOtp(6);

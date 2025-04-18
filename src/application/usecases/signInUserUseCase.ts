@@ -1,7 +1,7 @@
 import { IUserRepository } from "../../domain/interfaces/IUserRepository";
 import { User } from "../../domain/entities/userEntity";
 import { comparePassword } from "../../shared/utils/hashPassword";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage, PasswordStatusMessage, TrainerStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { SignInDTO } from "../dtos/authDTOs";
 import {
   generateAccessToken,
@@ -30,20 +30,20 @@ export class SigninUserUseCase {
   }> {
     const userData = await this.userRepository.findByEmail({ email: email });
     if (!userData) {
-      throw new validationError(HttpStatusMessages.EmailNotFound);
+      throw new validationError(AuthenticationStatusMessage.EmailNotFound);
     }
     if (userData && userData?.googleVerified) {
-      throw new validationError(HttpStatusMessages.DifferentLoginMethod);
+      throw new validationError(AuthenticationStatusMessage.DifferentLoginMethod);
     }
     if (!userData?.otpVerified) {
-      throw new ForbiddenError(HttpStatusMessages.AccountNotVerified);
+      throw new ForbiddenError(AuthenticationStatusMessage.AccountNotVerified);
     }
     if (userData?.isBlocked) {
-      throw new ForbiddenError(HttpStatusMessages.AccountBlocked);
+      throw new ForbiddenError(AuthenticationStatusMessage.AccountBlocked);
     }
     const isValidPassword = await comparePassword(password, userData?.password);
     if (!isValidPassword) {
-      throw new validationError(HttpStatusMessages.IncorrectPassword);
+      throw new validationError(PasswordStatusMessage.IncorrectPassword);
     }
     if (userData?.role === "trainer") {
       const trainerData =
@@ -52,7 +52,7 @@ export class SigninUserUseCase {
         );
       if (!trainerData) {
         throw new validationError(
-          HttpStatusMessages.FailedToRetrieveTrainerDetails
+          TrainerStatusMessage.FailedToRetrieveTrainerDetails
         );
       }
       const accessToken = generateAccessToken(

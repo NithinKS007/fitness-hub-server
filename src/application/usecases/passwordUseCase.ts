@@ -3,7 +3,7 @@ import {
   CreatePassResetTokenDTO,
   PasswordResetDTO,
 } from "../dtos/authDTOs";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage, PasswordStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { IUserRepository } from "../../domain/interfaces/IUserRepository";
 import { IPasswordResetRepository } from "../../domain/interfaces/IPasswordResetTokenRepository";
 import { sendEmail } from "../../infrastructure/services/emailService";
@@ -24,13 +24,13 @@ export class PasswordUseCase {
   }: CreatePassResetTokenDTO): Promise<PassResetTokenEntity> {
     const userData = await this.userRepository.findByEmail({ email: email });
     if (!userData) {
-      throw new validationError(HttpStatusMessages.EmailNotFound);
+      throw new validationError(AuthenticationStatusMessage.EmailNotFound);
     }
     if (userData.googleVerified) {
-      throw new validationError(HttpStatusMessages.DifferentLoginMethod);
+      throw new validationError(AuthenticationStatusMessage.DifferentLoginMethod);
     }
     if (userData && !userData.otpVerified) {
-      throw new validationError(HttpStatusMessages.AccountNotVerified);
+      throw new validationError(AuthenticationStatusMessage.AccountNotVerified);
     }
     const token = await generateToken();
     const hashedToken = await hashToken(token);
@@ -61,12 +61,12 @@ export class PasswordUseCase {
     });
 
     if (!tokenData) {
-      throw new validationError(HttpStatusMessages.LinkExpired);
+      throw new validationError(PasswordStatusMessage.LinkExpired);
     }
     const { email } = tokenData;
     const userData = await this.userRepository.findByEmail({ email });
     if (!userData) {
-      throw new validationError(HttpStatusMessages.EmailNotFound);
+      throw new validationError(AuthenticationStatusMessage.EmailNotFound);
     }
     const hashedPassword = await hashPassword(password as string);
     await this.userRepository.forgotPassword({
@@ -81,16 +81,16 @@ export class PasswordUseCase {
     password,
   }: ChangePasswordDTO): Promise<void> {
     if (!userId || !newPassword || !password) {
-      throw new validationError(HttpStatusMessages.AllFieldsAreRequired);
+      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const userData = await this.userRepository.findById(userId);
     if (!userData) {
-      throw new validationError(HttpStatusMessages.InvalidId);
+      throw new validationError(AuthenticationStatusMessage.InvalidId);
     }
     const isValidPassword = await comparePassword(password, userData.password);
 
     if (!isValidPassword) {
-      throw new validationError(HttpStatusMessages.IncorrectPassword);
+      throw new validationError(PasswordStatusMessage.IncorrectPassword);
     }
     const hashedPassword = await hashPassword(newPassword);
     await this.userRepository.changePassword({

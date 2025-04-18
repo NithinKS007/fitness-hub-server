@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { authenticateAccessToken } from "../../infrastructure/services/jwtService";
-import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
+import { AuthenticationStatusMessage, JWTStatusMessage } from "../../shared/constants/httpResponseStructure";
 import { JwtPayload } from "jsonwebtoken";
 import { CheckUserBlockStatus } from "../../application/usecases/checkUserBlockStatusUseCase";
 import { MongoUserRepository } from "../../infrastructure/databases/repositories/userRepository";
@@ -14,12 +14,12 @@ const checkBlockStatusUseCase = new CheckUserBlockStatus(mongouserRepository,mon
 export const authenticate = async(req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
-    next(new UnauthorizedError(HttpStatusMessages.AuthenticationHeaderIsMissing));
+    next(new UnauthorizedError(JWTStatusMessage.AuthenticationHeaderIsMissing));
     return
   }
   const accessToken = authHeader.split(' ')[1]; 
   if (!accessToken) {
-    next(new UnauthorizedError(HttpStatusMessages.NoAccessToken));
+    next(new UnauthorizedError(JWTStatusMessage.NoAccessToken));
     return
   }
   try {
@@ -28,13 +28,13 @@ export const authenticate = async(req: Request, res: Response, next: NextFunctio
     const {_id } = req.user
       const isBlocked = await checkBlockStatusUseCase.checkUserBlockStatus(_id)
       if (isBlocked) {
-       next(new ForbiddenError(HttpStatusMessages.AccountBlocked));
+       next(new ForbiddenError(AuthenticationStatusMessage.AccountBlocked));
        return
        }
     next();
   } catch (error:any) {
     console.log(`Error in authentication middleware${error} `);
-   next(new UnauthorizedError(HttpStatusMessages.NoAccessToken));
+   next(new UnauthorizedError(JWTStatusMessage.NoAccessToken));
    return
   }
 };

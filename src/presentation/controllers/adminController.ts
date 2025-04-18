@@ -1,8 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import {
+  BlockStatusMessage,
   HttpStatusCodes,
-  HttpStatusMessages,
+  ProfileStatusMessage,
+  RevenueStatusMessage,
+  SubscriptionStatusMessage,
+  TrainerStatusMessage,
+  UserStatusMessage,
 } from "../../shared/constants/httpResponseStructure";
 import { UserUseCase } from "../../application/usecases/userUseCase";
 import { TrainerUseCase } from "../../application/usecases/trainerUseCase";
@@ -56,7 +61,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         { usersList: usersList, paginationData: paginationData },
-        HttpStatusMessages.UserList
+        UserStatusMessage.UserList
       );
     } catch (error) {
       handleLogError(error, "AdminController.getUsers", "Error fetching users");
@@ -76,7 +81,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         userData,
-        HttpStatusMessages.UserDataRetrieved
+        ProfileStatusMessage.UserDataRetrieved
       );
     } catch (error) {
       handleLogError(
@@ -107,7 +112,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         { trainersList: trainersList, paginationData },
-        HttpStatusMessages.TrainersListRetrieved
+        TrainerStatusMessage.TrainersListRetrieved
       );
     } catch (error) {
       handleLogError(
@@ -130,7 +135,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         trainerData,
-        HttpStatusMessages.TrainerDetailsRetrieved
+        TrainerStatusMessage.TrainerDetailsRetrieved
       );
     } catch (error) {
       handleLogError(
@@ -157,7 +162,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         updatedData,
-        HttpStatusMessages.BlockStatusUpdated
+        BlockStatusMessage.BlockStatusUpdated
       );
     } catch (error) {
       handleLogError(
@@ -189,7 +194,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         { trainersList: trainersList, paginationData: paginationData },
-        HttpStatusMessages.TrainersListRetrieved
+        TrainerStatusMessage.TrainersListRetrieved
       );
     } catch (error) {
       handleLogError(
@@ -218,14 +223,14 @@ export class AdminController {
           res,
           HttpStatusCodes.OK,
           updatedTrainerData,
-          HttpStatusMessages.TrainerApproved
+          TrainerStatusMessage.TrainerApproved
         );
       } else {
         sendResponse(
           res,
           HttpStatusCodes.OK,
           updatedTrainerData,
-          HttpStatusMessages.TrainerRejected
+          TrainerStatusMessage.TrainerRejected
         );
       }
     } catch (error) {
@@ -250,7 +255,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         subscriptionsData,
-        HttpStatusMessages.SubscriptionsListRetrieved
+        SubscriptionStatusMessage.SubscriptionsListRetrieved
       );
     } catch (error) {
       handleLogError(
@@ -282,7 +287,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         { revenueData: revenueData, paginationData: paginationData },
-        HttpStatusMessages.SuccessFullyFetchedRevenueHistory
+        RevenueStatusMessage.SuccessFullyFetchedRevenueHistory
       );
     } catch (error) {
       handleLogError(

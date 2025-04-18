@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  BlockStatusMessage,
   HttpStatusCodes,
-  HttpStatusMessages,
+  PlayListStatusMessage,
+  VideoStatusMessage,
 } from "../../shared/constants/httpResponseStructure";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import { ContentManagementUseCase } from "../../application/usecases/contentManagementUseCase";
@@ -40,7 +42,7 @@ export class ContentController {
         res,
         HttpStatusCodes.OK,
         createdPlayList,
-        HttpStatusMessages.PlayListCreated
+        PlayListStatusMessage.PlayListCreated
       );
     } catch (error) {
       handleLogError(
@@ -73,7 +75,7 @@ export class ContentController {
         res,
         HttpStatusCodes.OK,
         { playList: playList, paginationData: paginationData },
-        HttpStatusMessages.PlayListsOfTrainerRetrievedSuccessfully
+        PlayListStatusMessage.PlayListsOfTrainerRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -98,7 +100,7 @@ export class ContentController {
         res,
         HttpStatusCodes.OK,
         playListData,
-        HttpStatusMessages.PlayListsOfTrainerRetrievedSuccessfully
+        PlayListStatusMessage.PlayListsOfTrainerRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -125,7 +127,7 @@ export class ContentController {
         res,
         HttpStatusCodes.OK,
         createdVideo,
-        HttpStatusMessages.VideoUploadedSuccessfully
+        VideoStatusMessage.VideoUploadedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -158,7 +160,7 @@ export class ContentController {
         res,
         HttpStatusCodes.OK,
         { videoList: videoList, paginationData: paginationData },
-        HttpStatusMessages.VideoDataRetrievedSuccessfully
+        VideoStatusMessage.VideoDataRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -191,7 +193,7 @@ export class ContentController {
         res,
         HttpStatusCodes.OK,
         { videoList: videoList, paginationData: paginationData },
-        HttpStatusMessages.VideoDataRetrievedSuccessfully
+        VideoStatusMessage.VideoDataRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -216,7 +218,7 @@ export class ContentController {
         res,
         HttpStatusCodes.OK,
         playListsOfTrainer,
-        HttpStatusMessages.PlayListsOfTrainerRetrievedSuccessfully
+        PlayListStatusMessage.PlayListsOfTrainerRetrievedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -232,7 +234,7 @@ export class ContentController {
     try {
       const { videoId }= req.params
       const videoData = await contentManagementUseCase.getVideoById(videoId)
-      sendResponse(res,HttpStatusCodes.OK,videoData,HttpStatusMessages.VideoDataRetrievedSuccessfully)
+      sendResponse(res,HttpStatusCodes.OK,videoData,VideoStatusMessage.VideoDataRetrievedSuccessfully)
     } catch (error: any) {
       logger.error(`Error retrieving video data: ${error}`);
       next(error)
@@ -255,7 +257,7 @@ export class ContentController {
         res,
         HttpStatusCodes.OK,
         videoData,
-        HttpStatusMessages.BlockStatusUpdated
+        BlockStatusMessage.BlockStatusUpdated
       );
     } catch (error: any) {
       handleLogError(
@@ -284,7 +286,7 @@ export class ContentController {
         res,
         HttpStatusCodes.OK,
         playListData,
-        HttpStatusMessages.BlockStatusUpdated
+        BlockStatusMessage.BlockStatusUpdated
       );
     } catch (error) {
       handleLogError(
@@ -320,7 +322,7 @@ export class ContentController {
         res,
         HttpStatusCodes.OK,
         editedVideoData,
-        HttpStatusMessages.videoEditedSuccessfully
+        VideoStatusMessage.videoEditedSuccessfully
       );
     } catch (error) {
       handleLogError(
@@ -343,7 +345,7 @@ export class ContentController {
         res,
         HttpStatusCodes.OK,
         null,
-        HttpStatusMessages.PlayListEditedSuccessfully
+        PlayListStatusMessage.PlayListEditedSuccessfully
       );
     } catch (error) {
       handleLogError(
