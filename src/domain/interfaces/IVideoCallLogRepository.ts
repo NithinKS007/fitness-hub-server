@@ -1,4 +1,4 @@
-import { CreateVideoCallLogDTO,UpdateVideoCallLogDTO,UpdateVideoCallDurationDTO } from "../../application/dtos/chatDTOs";
+import { CreateVideoCallLogDTO,UpdateVideoCallLogDTO,UpdateVideoCallDurationDTO } from "../../application/dtos/videoCallDTOs";
 import { GetVideoCallLogQueryDTO } from "../../application/dtos/queryDTOs";
 import { IdDTO, PaginationDTO } from "../../application/dtos/utilityDTOs";
 import { TrainerVideoCallLog, UserVideoCallLog, VideoCallLog } from "../entities/videoCallLogEntity";
