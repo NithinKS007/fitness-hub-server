@@ -6,7 +6,7 @@ import {
 } from "../../shared/constants/httpResponseStructure";
 import { TrainerUseCase } from "../../application/usecases/trainerUseCase";
 import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/trainerRepository";
-import { handleLogError } from "../../shared/utils/handleLogError";
+import { handleLogError } from "../../shared/utils/handleLog";
 
 //MONGO REPOSITORY INSTANCES
 const mongoTrainerRepository = new MongoTrainerRepository();

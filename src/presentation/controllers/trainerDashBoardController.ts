@@ -6,7 +6,7 @@ import {
 } from "../../shared/constants/httpResponseStructure";
 import { MongoUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/userSubscriptionRepository";
 import { TrainerDashBoardUseCase } from "../../application/usecases/trainerDashBoardUseCase";
-import { handleLogError } from "../../shared/utils/handleLogError";
+import { handleLogError } from "../../shared/utils/handleLog";
 
 //MONGO REPOSITORY INSTANCES
 const mongoUserSubscriptionRepository =

@@ -4,19 +4,11 @@ import {
   TrainerChatList,
   UserChatList,
 } from "../../domain/entities/conversationEntity";
-import {
-  MongoUserSubscriptionsList,
-  MonogoTrainerSubscribersList,
-  TrainerSubscribersList,
-  UserSubscriptionsList,
-} from "../../domain/entities/subscriptionEntity";
 import { IChatRepository } from "../../domain/interfaces/IChatRepository";
 import { IConversationRepository } from "../../domain/interfaces/IConversationRepository";
-import { IUserSubscriptionPlanRepository } from "../../domain/interfaces/IUserSubscriptionRepository";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 import { HttpStatusMessages } from "../../shared/constants/httpResponseStructure";
 import {
-  CountUnReadMessages,
   CreateChatDTO,
   FindChatDTO,
 } from "../dtos/chatDTOs";
@@ -95,12 +87,12 @@ export class ChatUseCase {
   public async updateLastMessage({
     userId,
     otherUserId,
-    message,
+    lastMessageId,
   }: UpdateLastMessage): Promise<Conversation> {
     const lastMessage = await this.conversation.updateLastMessage({
       userId,
       otherUserId,
-      message,
+      lastMessageId,
     });
     if (!lastMessage) {
       throw new validationError(HttpStatusMessages.FailedToUpdateLastMessage);

@@ -7,7 +7,7 @@ import {
 import { WorkOutUseCase } from "../../application/usecases/workoutUseCase";
 import { MongoWorkoutRepository } from "../../infrastructure/databases/repositories/workoutRepository";
 import logger from "../../infrastructure/logger/logger";
-import { handleLogError } from "../../shared/utils/handleLogError";
+import { handleLogError } from "../../shared/utils/handleLog";
 
 const mongoWorkoutRepository = new MongoWorkoutRepository();
 const workoutUseCase = new WorkOutUseCase(mongoWorkoutRepository);

@@ -8,7 +8,7 @@ import { BookingSlotUseCase } from "../../application/usecases/bookingSlotUseCas
 import { MongoBookingSlotRepository } from "../../infrastructure/databases/repositories/bookingSlotRepository";
 import { MongoAppointmentRepository } from "../../infrastructure/databases/repositories/appointmentRepository";
 import { MongoVideoCallLogRepository } from "../../infrastructure/databases/repositories/videoCallLogRepository";
-import { handleLogError } from "../../shared/utils/handleLogError";
+import { handleLogError } from "../../shared/utils/handleLog";
 
 //MONGO REPOSITORY INSTANCES
 const mongoBookingSlotRepository = new MongoBookingSlotRepository();

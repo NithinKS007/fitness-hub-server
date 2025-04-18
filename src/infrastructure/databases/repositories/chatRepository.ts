@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import {
-  CountUnReadMessages,
   CreateChatDTO,
   FindChatDTO,
 } from "../../../application/dtos/chatDTOs";

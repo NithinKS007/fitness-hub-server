@@ -6,7 +6,7 @@ import {
 } from "../../shared/constants/httpResponseStructure";
 import { UserDashBoardUseCase } from "../../application/usecases/userDashBoardUseCase";
 import { MongoWorkoutRepository } from "../../infrastructure/databases/repositories/workoutRepository";
-import { handleLogError } from "../../shared/utils/handleLogError";
+import { handleLogError } from "../../shared/utils/handleLog";
 
 //MONGO INSTANCES
 const mongoWorkoutRepository = new MongoWorkoutRepository();

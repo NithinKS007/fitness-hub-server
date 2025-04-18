@@ -7,7 +7,7 @@ import {
 import { ChatUseCase } from "../../application/usecases/chatUseCase";
 import { MongoChatRepository } from "../../infrastructure/databases/repositories/chatRepository";
 import { MongoUserSubscriptionPlanRepository } from "../../infrastructure/databases/repositories/userSubscriptionRepository";
-import { handleLogError } from "../../shared/utils/handleLogError";
+import { handleLogError } from "../../shared/utils/handleLog";
 import { MongoConversationRepository } from "../../infrastructure/databases/repositories/conversationRepository";
 
 //MONGO REPOSITORY INSTANCES

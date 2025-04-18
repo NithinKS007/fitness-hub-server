@@ -10,6 +10,8 @@ import { MongoBookingSlotRepository } from "../databases/repositories/bookingSlo
 import { MongoChatRepository } from "../databases/repositories/chatRepository";
 import { MongoVideoCallLogRepository } from "../databases/repositories/videoCallLogRepository";
 import { MongoConversationRepository } from "../databases/repositories/conversationRepository";
+import logger from "../logger/logger";
+import { handleLogInfo } from "../../shared/utils/handleLog";
 
 //MONGO REPOSITORY INSTANCES
 const mongoChatRepository = new MongoChatRepository();
@@ -17,7 +19,7 @@ const mongoVideoCallLogRepository = new MongoVideoCallLogRepository();
 const mongoTrainerRepository = new MongoTrainerRepository();
 const mongoAppointmentRepository = new MongoAppointmentRepository();
 const mongoBookingSlotRepository = new MongoBookingSlotRepository();
-const mongoConversationRepository = new MongoConversationRepository()
+const mongoConversationRepository = new MongoConversationRepository();
 
 //USE CASE INSTANCES
 const trainerUseCase = new TrainerUseCase(mongoTrainerRepository);
@@ -34,17 +36,18 @@ const bookingSlotUseCase = new BookingSlotUseCase(
 
 const userSocketMap = new Map<string, string>();
 const onlineUsers = new Set<string>();
-const openChats = new Map<string, string>()
+const openChats = new Map<string, string>();
 
 export const chatSocket = (io: Server) => {
   io.on("connection", (socket: Socket) => {
-    console.log(`socket id connected: ${socket.id}`);
-
+    handleLogInfo("info", `Socket connected`, { socketId: socket.id });
     socket.on("register", (userId: string) => {
       userSocketMap.set(userId, socket.id);
       onlineUsers.add(userId);
       io.emit("onlineStatusUpdate", { userId, isOnline: true });
-      console.log(`User ${userId} registered with socket ${socket.id}`);
+      handleLogInfo("info", `user ${userId} registered with socket`, {
+        socketId: socket.id,
+      });
     });
 
     socket.on("checkOnlineStatus", (targetId: string) => {
@@ -52,128 +55,172 @@ export const chatSocket = (io: Server) => {
       socket.emit("onlineStatusResponse", { userId: targetId, isOnline });
     });
 
-    socket.on("setActiveChat",async ({ userId, partnerId }: { userId: string; partnerId: string }) => {
-      openChats.set(userId, partnerId);
-      console.log(`User ${userId} opened chat with ${partnerId}`);
-      const readMessagesToUpdateUI = await chatUseCase.markMessageAsRead({userId,otherUserId:partnerId})
+    socket.on(
+      "setActiveChat",
+      async ({ userId, partnerId }: { userId: string; partnerId: string }) => {
+        openChats.set(userId, partnerId);
+        handleLogInfo("info", `User ${userId} opened chat with ${partnerId}`, {
+          socketId: socket.id,
+        });
+        const readMessagesToUpdateUI = await chatUseCase.markMessageAsRead({
+          userId,
+          otherUserId: partnerId,
+        });
 
-      console.log("messagees for sending to the fornt",readMessagesToUpdateUI)
-      await chatUseCase.updateUnReadMessageCount({userId,otherUserId:partnerId,count:0})
+        const updatedCountDoc = await chatUseCase.updateUnReadMessageCount({
+          userId,
+          otherUserId: partnerId,
+          count: 0,
+        });
 
-      if(readMessagesToUpdateUI && readMessagesToUpdateUI.length > 0 ) {
-        const messageIds = readMessagesToUpdateUI.map(msg => msg._id.toString())
-        const receiverSocketId = userSocketMap.get(userId)
-        if(receiverSocketId){
-          readMessagesToUpdateUI.forEach(msg => {
-            io.to(receiverSocketId).emit("receiveMessage", {
-              _id: msg._id.toString(),
-              senderId: msg.senderId,
-              receiverId: msg.receiverId,
-              message: msg.message,
-              createdAt: msg.createdAt,
-              updatedAt:msg.updatedAt,
-              isRead: msg.isRead,
+        if (readMessagesToUpdateUI && readMessagesToUpdateUI.length > 0) {
+          const messageIds = readMessagesToUpdateUI.map((msg) =>
+            msg._id.toString()
+          );
+          const receiverSocketId = userSocketMap.get(userId);
+          if (receiverSocketId) {
+            readMessagesToUpdateUI.forEach((msg) => {
+              io.to(receiverSocketId).emit("receiveMessage", {
+                _id: msg._id.toString(),
+                senderId: msg.senderId,
+                receiverId: msg.receiverId,
+                message: msg.message,
+                createdAt: msg.createdAt,
+                updatedAt: msg.updatedAt,
+                isRead: msg.isRead,
+              });
             });
-          });
-        }
-        const senderSocketId = userSocketMap.get(partnerId);
-        if (senderSocketId) {
-          io.to(senderSocketId).emit("messageRead", { messageIds });
+            io.to(receiverSocketId).emit("unreadCountUpdated", updatedCountDoc);
+          }
+          const senderSocketId = userSocketMap.get(partnerId);
+          if (senderSocketId) {
+            io.to(senderSocketId).emit("messageRead", { messageIds });
+            io.to(senderSocketId).emit("unreadCountUpdated", updatedCountDoc);
+          }
         }
       }
-    });
+    );
 
     socket.on("closeChat", (userId: string) => {
       openChats.delete(userId);
-      console.log(`User ${userId} closed chat`);
+      handleLogInfo("info", `user ${userId} closed chat`, {
+        socketId: socket.id,
+      });
     });
 
-
-    socket.on("sendMessage", async ({ senderId, receiverId, message }:{ senderId: string; receiverId: string; message: string }) => {
-      const currentChatPartner = openChats.get(receiverId);
-      const isChatOpen = currentChatPartner === senderId;
-      
-      const savedMessage = await chatUseCase.sendMessageAndSave({
+    socket.on(
+      "sendMessage",
+      async ({
         senderId,
         receiverId,
         message,
-        isRead:isChatOpen
-      });
+      }: {
+        senderId: string;
+        receiverId: string;
+        message: string;
+      }) => {
+        const currentChatPartner = openChats.get(receiverId);
+        const isChatOpen = currentChatPartner === senderId;
 
-      await chatUseCase.updateLastMessage({userId:senderId,otherUserId:receiverId,message:message})
-
-      if(!isChatOpen){
-        await chatUseCase.incrementUnReadMessageCount({userId:senderId,otherUserId:receiverId})
-      }
-      const receiverSocketId = userSocketMap.get(receiverId);
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("receiveMessage", {
-          _id: savedMessage._id,
+        const savedMessage = await chatUseCase.sendMessageAndSave({
           senderId,
           receiverId,
           message,
-          createdAt: savedMessage?.createdAt,
-          updatedAt:savedMessage.updatedAt,
-          isRead: savedMessage.isRead
+          isRead: isChatOpen,
         });
-        console.log(
-          `Message emitted to socket ${receiverSocketId} for user ${receiverId}`
-        );
-        
-      } else {
-        console.log(`Receiver ${receiverId} not connected`);
-       
-      }
-      const senderSocketId = userSocketMap.get(senderId);
 
-      console.log("is chat open",isChatOpen,"sender id",senderSocketId)
-      if (senderSocketId) {
-        io.to(senderSocketId).emit("receiveMessage",{
-        _id: savedMessage._id.toString(),
-        senderId,
-        receiverId,
-        message,
-        createdAt: savedMessage.createdAt,
-        updatedAt:savedMessage.updatedAt,
-        isRead: savedMessage.isRead
-      })
-        console.log(`Message emitted to socket ${senderSocketId} for user ${senderId}`);
-        console.log("emiting to the user to mark as read","saved message id",savedMessage._id,"sender id",senderId)
+        await chatUseCase.updateLastMessage({
+          userId: senderId,
+          otherUserId: receiverId,
+          lastMessageId: savedMessage._id.toString(),
+        });
 
-        if (isChatOpen) {
-          io.to(senderSocketId).emit("messageRead", {
-            messageIds: [savedMessage._id.toString()],
+        let incrementedMessageDoc;
+        if (!isChatOpen) {
+          incrementedMessageDoc = await chatUseCase.incrementUnReadMessageCount(
+            { userId: senderId, otherUserId: receiverId }
+          );
+        }
+        const receiverSocketId = userSocketMap.get(receiverId);
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("receiveMessage", {
+            _id: savedMessage._id,
+            senderId,
+            receiverId,
+            message,
+            createdAt: savedMessage?.createdAt,
+            updatedAt: savedMessage.updatedAt,
+            isRead: savedMessage.isRead,
           });
-        console.log(`Notified ${senderId} of read message ${savedMessage._id}`);
-       } 
-     }
-    })
 
-    socket.on("typing",({ senderId, receiverId }: { senderId: string; receiverId: string })=>{
-       console.log("typing event triggered",senderId,receiverId)
-       const receiverSocketId = userSocketMap.get(receiverId);
-       if(receiverSocketId){
-         io.to(receiverSocketId).emit("typing",{senderId})
-       }
-    })
+          if (incrementedMessageDoc) {
+            io.to(receiverSocketId).emit(
+              "unreadCountUpdated",
+              incrementedMessageDoc
+            );
+          }
+          handleLogInfo(
+            "info",
+            `notified ${senderId} of read message ${savedMessage._id}`,
+            { socketId: socket.id }
+          );
+        } else {
+          handleLogInfo("info", `receiver ${receiverId} not connected`, {
+            socketId: socket.id,
+          });
+        }
+        const senderSocketId = userSocketMap.get(senderId);
+        if (senderSocketId) {
+          io.to(senderSocketId).emit("receiveMessage", {
+            _id: savedMessage._id.toString(),
+            senderId,
+            receiverId,
+            message,
+            createdAt: savedMessage.createdAt,
+            updatedAt: savedMessage.updatedAt,
+            isRead: savedMessage.isRead,
+          });
 
-    socket.on('stopTyping', ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
-      console.log("typing event triggered",senderId,receiverId)
-      const receiverSocketId = userSocketMap.get(receiverId);
-      if(receiverSocketId){
-        io.to(receiverSocketId).emit('stopTyping', { senderId });
+          if (isChatOpen) {
+            io.to(senderSocketId).emit("messageRead", {
+              messageIds: [savedMessage._id.toString()],
+            });
+            io.to(senderSocketId).emit(
+              "unreadCountUpdated",
+              incrementedMessageDoc
+            );
+          }
+        }
       }
-    });
+    );
 
-   
+    socket.on(
+      "typing",
+      ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
+        const receiverSocketId = userSocketMap.get(receiverId);
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("typing", { senderId });
+        }
+      }
+    );
 
-    //HANDLE VIDEO CALLS
+    socket.on(
+      "stopTyping",
+      ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
+        const receiverSocketId = userSocketMap.get(receiverId);
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("stopTyping", { senderId });
+        }
+      }
+    );
 
     socket.on(
       "initiateVideoCall",
       async ({ callerId, receiverId, roomId, appointmentId }) => {
-        console.log(
-          `Video call initiated by ${callerId} to ${receiverId} in room ${roomId}`
+        handleLogInfo(
+          "info",
+          `video call initiated by ${callerId} to ${receiverId} in room ${roomId}`,
+          { socketId: socket.id }
         );
         const trainerData = await trainerUseCase.getTrainerDetailsById(
           callerId
@@ -183,7 +230,11 @@ export const chatSocket = (io: Server) => {
         );
 
         if (appointmentData?.status === "cancelled") {
-          console.log(`Call to ${receiverId} failed: Appointment cancelled`);
+          handleLogInfo(
+            "info",
+            `call to ${receiverId} failed: Appointment cancelled`,
+            { socketId: socket.id }
+          );
           throw new validationError("Failed to connect");
         }
 
@@ -200,12 +251,17 @@ export const chatSocket = (io: Server) => {
 
         const receiverSocketId = userSocketMap.get(receiverId);
         if (!receiverSocketId) {
-          console.log(`No socket found for receiverId: ${receiverId}`);
+          handleLogInfo(
+            "info",
+            `no socket found for receiverId: ${receiverId}`,
+            { socketId: socket.id }
+          );
           return;
         }
 
-        console.log(
-          `Emitting incomingCall to socket ${receiverSocketId} for user ${receiverId}`,
+        handleLogInfo(
+          "info",
+          `emitting incomingCall to socket ${receiverSocketId} for user ${receiverId}`,
           {
             trainerName,
             appointmentTime,
@@ -228,13 +284,13 @@ export const chatSocket = (io: Server) => {
     );
 
     socket.on("acceptVideoCall", async ({ roomId, userId }) => {
-      console.log(`${userId} accepted call in room ${roomId}`);
+      handleLogInfo("info", `${userId} accepted call in room ${roomId}`);
       socket.join(roomId);
       io.to(roomId).emit("callStarted", { roomId });
     });
 
     socket.on("rejectVideoCall", async ({ roomId }) => {
-      console.log(`Call rejected for room ${roomId}`);
+      handleLogInfo("info", `call rejected for room ${roomId}`);
       const endTime = new Date();
       const videoCallLogData = await videoCallLogUseCase.updateVideoCallLog({
         callRoomId: roomId,
@@ -252,15 +308,16 @@ export const chatSocket = (io: Server) => {
           callDuration: duration,
         });
       } else {
-        console.error(
-          `Failed to calculate duration for ${roomId}: Missing start or end time`
+        handleLogInfo(
+          "error",
+          `failed to calculate duration for ${roomId}: missing start or end time`
         );
       }
       io.to(roomId).emit("callEnded");
     });
 
     socket.on("videoCallEnded", async ({ roomId }) => {
-      console.log(`Call ended in room ${roomId}`);
+      handleLogInfo("info", `call ended in room ${roomId}`);
       const endTime = new Date();
       const videoCallLogData = await videoCallLogUseCase.updateVideoCallLog({
         callRoomId: roomId,
@@ -278,14 +335,13 @@ export const chatSocket = (io: Server) => {
           callDuration: duration,
         });
       } else {
-        console.error(
-          `Failed to calculate duration for ${roomId}: Missing start or end time`
+        handleLogInfo(
+          "error",
+          `failed to calculate duration for ${roomId}: missing start or end time`
         );
       }
       io.to(roomId).emit("callEnded");
     });
-
-    
 
     socket.on("disconnect", () => {
       for (const [userId, socketId] of userSocketMap.entries()) {
@@ -293,11 +349,11 @@ export const chatSocket = (io: Server) => {
           userSocketMap.delete(userId);
           onlineUsers.delete(userId);
           openChats.delete(userId);
-          console.log(`User ${userId} disconnected`);
+          handleLogInfo("info", `user ${userId} disconnected`);
           break;
         }
       }
-      console.log(`Socket disconnected: ${socket.id}`);
+      handleLogInfo("info", `socket disconnected: ${socket.id}`);
     });
   });
 };

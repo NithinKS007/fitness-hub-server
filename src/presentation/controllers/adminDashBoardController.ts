@@ -9,7 +9,7 @@ import { AdminDashBoardUseCase } from "../../application/usecases/adminDashBoard
 import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/trainerRepository";
 import { MongoUserRepository } from "../../infrastructure/databases/repositories/userRepository";
 import { MongoRevenueRepository } from "../../infrastructure/databases/repositories/revenueRepository";
-import { handleLogError } from "../../shared/utils/handleLogError";
+import { handleLogError } from "../../shared/utils/handleLog";
 
 //MONGO REPOSITORY INSTANCES
 const mongoUserSubscriptionRepository =

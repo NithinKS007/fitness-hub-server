@@ -9,7 +9,7 @@ import { MonogVideoPlayListRepository } from "../../infrastructure/databases/rep
 import { MongoPlayListRepository } from "../../infrastructure/databases/repositories/playListRepository";
 import { MonogVideoRepository } from "../../infrastructure/databases/repositories/videoRepository";
 import logger from "../../infrastructure/logger/logger";
-import { handleLogError } from "../../shared/utils/handleLogError";
+import { handleLogError } from "../../shared/utils/handleLog";
 
 //MONGO REPOSITORY INSTANCES
 const mongoPlayListRepository = new MongoPlayListRepository();

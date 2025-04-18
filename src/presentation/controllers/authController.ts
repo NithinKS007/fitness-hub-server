@@ -21,7 +21,7 @@ import { MonogPasswordResetRepository } from "../../infrastructure/databases/rep
 import { MongoUserRepository } from "../../infrastructure/databases/repositories/userRepository";
 import { MongoOtpRepository } from "../../infrastructure/databases/repositories/otpRepository";
 import logger from "../../infrastructure/logger/logger";
-import { handleLogError } from "../../shared/utils/handleLogError";
+import { handleLogError } from "../../shared/utils/handleLog";
 
 //MONGO REPOSITORY INSTANCES
 const mongoUserRepository = new MongoUserRepository();

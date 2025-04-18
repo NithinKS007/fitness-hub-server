@@ -15,12 +15,15 @@ export interface UpdateUnReadMessageCount {
   userId: string;
   otherUserId: string;
   count: number;
-};
+}
 
-export type IncrementUnReadMessageCount = Omit<UpdateUnReadMessageCount,"count">
+export type IncrementUnReadMessageCount = Omit<
+  UpdateUnReadMessageCount,
+  "count"
+>;
 
 export interface UpdateLastMessage {
   userId: string;
   otherUserId: string;
-  message: string;
+  lastMessageId: string 
 }

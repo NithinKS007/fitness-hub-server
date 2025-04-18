@@ -11,6 +11,7 @@ import { IConversationRepository } from "../../../domain/interfaces/IConversatio
 import conversationModel from "../models/conversation";
 import {
   Conversation,
+  Ichat,
   TrainerChatList,
   UserChatList,
 } from "../../../domain/entities/conversationEntity";
@@ -48,33 +49,49 @@ export class MongoConversationRepository implements IConversationRepository {
     userId,
     trainerId,
   }: FindConversation): Promise<Conversation | null> {
-    return await conversationModel.findOne({
-      userId: new mongoose.Types.ObjectId(userId),
-      trainerId: new mongoose.Types.ObjectId(trainerId),
-    });
+    return await conversationModel
+      .findOne({
+        userId: new mongoose.Types.ObjectId(userId),
+        trainerId: new mongoose.Types.ObjectId(trainerId),
+      })
+      .populate<{ lastMessage: Ichat | null }>({
+        path: "lastMessage",
+        model: "Chat",
+      })
+      .lean()
+      .exec();
   }
 
   public async updateLastMessage({
     userId,
     otherUserId,
-    message,
+    lastMessageId,
   }: UpdateLastMessage): Promise<Conversation | null> {
-    return await conversationModel.findOneAndUpdate(
-      {
-        $or: [
-          {
-            userId: new mongoose.Types.ObjectId(userId),
-            trainerId: new mongoose.Types.ObjectId(otherUserId),
-          },
-          {
-            userId: new mongoose.Types.ObjectId(otherUserId),
-            trainerId: new mongoose.Types.ObjectId(userId),
-          },
-        ],
-      },
-      { $set: { lastMessage: message } },
-      { new: true }
-    );
+
+    console.log("message id for updating",lastMessageId)
+    return await conversationModel
+      .findOneAndUpdate(
+        {
+          $or: [
+            {
+              userId: new mongoose.Types.ObjectId(userId),
+              trainerId: new mongoose.Types.ObjectId(otherUserId),
+            },
+            {
+              userId: new mongoose.Types.ObjectId(otherUserId),
+              trainerId: new mongoose.Types.ObjectId(userId),
+            },
+          ],
+        },
+        { $set: { lastMessage: new mongoose.Types.ObjectId(lastMessageId) } },
+        { new: true }
+      )
+      .populate<{ lastMessage: Ichat | null }>({
+        path: "lastMessage",
+        model: "Chat",
+      })
+      .lean()
+      .exec();
   }
 
   public async updateUnReadMessageCount({
@@ -82,51 +99,63 @@ export class MongoConversationRepository implements IConversationRepository {
     otherUserId,
     count,
   }: UpdateUnReadMessageCount): Promise<Conversation | null> {
-    return await conversationModel.findOneAndUpdate(
-      {
-        $or: [
-          {
-            userId: new mongoose.Types.ObjectId(userId),
-            trainerId: new mongoose.Types.ObjectId(otherUserId),
-          },
-          {
-            userId: new mongoose.Types.ObjectId(otherUserId),
-            trainerId: new mongoose.Types.ObjectId(userId),
-          },
-        ],
-      },
-      {
-        $set: { unreadCount: count },
-      },
-      { new: true }
-    );
+    return await conversationModel
+      .findOneAndUpdate(
+        {
+          $or: [
+            {
+              userId: new mongoose.Types.ObjectId(userId),
+              trainerId: new mongoose.Types.ObjectId(otherUserId),
+            },
+            {
+              userId: new mongoose.Types.ObjectId(otherUserId),
+              trainerId: new mongoose.Types.ObjectId(userId),
+            },
+          ],
+        },
+        {
+          $set: { unreadCount: count },
+        },
+        { new: true }
+      )
+      .populate<{ lastMessage: Ichat | null }>({
+        path: "lastMessage",
+        model: "Chat",
+      })
+      .lean()
+      .exec();
   }
 
   public async incrementUnReadMessageCount({
     userId,
     otherUserId,
   }: IncrementUnReadMessageCount): Promise<Conversation | null> {
-    const updatedDoc =  await conversationModel.findOneAndUpdate(
-      {
-        $or: [
-          {
-            userId: new mongoose.Types.ObjectId(userId),
-            trainerId: new mongoose.Types.ObjectId(otherUserId),
-          },
-          {
-            userId: new mongoose.Types.ObjectId(otherUserId),
-            trainerId: new mongoose.Types.ObjectId(userId),
-          },
-        ],
-      },
-      {
-        $inc: { unreadCount: 1 }
-      },
-      { new: true }
-    );
-
-    console.log("updated doc",updatedDoc)
-    return updatedDoc
+    const updatedDoc = await conversationModel
+      .findOneAndUpdate(
+        {
+          $or: [
+            {
+              userId: new mongoose.Types.ObjectId(userId),
+              trainerId: new mongoose.Types.ObjectId(otherUserId),
+            },
+            {
+              userId: new mongoose.Types.ObjectId(otherUserId),
+              trainerId: new mongoose.Types.ObjectId(userId),
+            },
+          ],
+        },
+        {
+          $inc: { unreadCount: 1 },
+        },
+        { new: true }
+      )
+      .populate<{ lastMessage: Ichat | null }>({
+        path: "lastMessage",
+        model: "Chat",
+      })
+      .lean()
+      .exec();
+    return updatedDoc;
   }
 
   public async findUserChatList(userId: IdDTO): Promise<UserChatList[]> {
@@ -156,15 +185,29 @@ export class MongoConversationRepository implements IConversationRepository {
         $unwind: "$subscribedTrainerData",
       },
       {
+        $lookup: {
+          from: "chats",
+          localField: "lastMessage",
+          foreignField: "_id",
+          as: "lastMessageData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$lastMessageData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: {
           _id: 1,
           userId: 1,
           trainerId: 1,
-          lastMessage: 1,
           unreadCount: 1,
           stripeSubscriptionStatus: 1,
-          createdAt:1,
-          updatedAt:1,
+          lastMessage: "$lastMessageData",
+          createdAt: 1,
+          updatedAt: 1,
           subscribedTrainerData: {
             fname: 1,
             lname: 1,
@@ -180,7 +223,6 @@ export class MongoConversationRepository implements IConversationRepository {
   public async findTrainerChatList(
     trainerId: IdDTO
   ): Promise<TrainerChatList[]> {
-    console.log("trainer id", trainerId);
     const result = await conversationModel.aggregate([
       { $match: { trainerId: new mongoose.Types.ObjectId(trainerId) } },
       { $sort: { updatedAt: -1 } },
@@ -194,15 +236,29 @@ export class MongoConversationRepository implements IConversationRepository {
       },
       { $unwind: "$subscribedUserData" },
       {
+        $lookup: {
+          from: "chats",
+          localField: "lastMessage",
+          foreignField: "_id",
+          as: "lastMessageData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$lastMessageData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: {
           _id: 1,
           userId: 1,
           trainerId: 1,
-          lastMessage: 1,
           unreadCount: 1,
           stripeSubscriptionStatus: 1,
-          createdAt:1,
-          updatedAt:1,
+          lastMessage: "$lastMessageData",
+          createdAt: 1,
+          updatedAt: 1,
           subscribedUserData: {
             fname: 1,
             lname: 1,

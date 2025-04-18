@@ -10,7 +10,7 @@ import { MongoUserSubscriptionPlanRepository } from "../../infrastructure/databa
 import { MongoSubscriptionRepository } from "../../infrastructure/databases/repositories/subscriptionRepository";
 import { MongoRevenueRepository } from "../../infrastructure/databases/repositories/revenueRepository";
 import logger from "../../infrastructure/logger/logger";
-import { handleLogError } from "../../shared/utils/handleLogError";
+import { handleLogError } from "../../shared/utils/handleLog";
 import { MongoConversationRepository } from "../../infrastructure/databases/repositories/conversationRepository";
 
 //MONGO REPOSITORY INSTANCES
