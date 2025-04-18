@@ -1,30 +1,34 @@
-import { createLogger, transports, format } from "winston";
+import { createLogger, transports, format, Logger } from "winston";
+import type { Format, TransformableInfo } from "logform";
 const { combine, timestamp, errors, json, colorize, printf } = format;
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction: boolean = process.env.NODE_ENV === "PRODUCTION";
 
-const devFormat = combine(
+const devFormat: Format = combine(
   colorize(),
   timestamp(),
   errors({ stack: true }),
-  printf(({ timestamp, level, message, stack }) => {
-    return stack
-    ? `${timestamp} [${level}]: ${message}\n${stack}`
-    : `${timestamp} [${level}]: ${message}`;
-  })
+  printf(
+    (
+      info: TransformableInfo & { timestamp?: string; stack?: string }
+    ): string => {
+      const { timestamp = "", level, message, stack } = info;
+      return stack
+        ? `${timestamp} [${level}]: ${message}\n${stack}`
+        : `${timestamp} [${level}]: ${message}`;
+    }
+  )
 );
 
-const prodFormat = combine(
-  timestamp(),
-  errors({ stack: true }),
-  json()
-);
+const prodFormat = combine(timestamp(), errors({ stack: true }), json());
 
 const logger = createLogger({
-  level: isProduction ? 'info' : 'debug',
+  level: isProduction ? "info" : "debug",
   format: isProduction ? prodFormat : devFormat,
-  defaultMeta: { service: 'fitness-hub-backend' },
-  transports: [new transports.Console()],
+  defaultMeta: { service: "fitness-hub-backend" } as { service: string },
+  transports: [
+    new transports.Console(),
+  ] as transports.ConsoleTransportInstance[],
 });
 
 export default logger;
