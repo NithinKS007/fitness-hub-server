@@ -218,4 +218,14 @@ export class ContentManagementUseCase {
     }
     return editedVideo;
   }
+
+  public async getVideoById(videoId:IdDTO):Promise<Video>{
+    const videoData =  await this.videoRepository.getVideoById(videoId)
+
+    if(!videoData){
+      throw new validationError(HttpStatusMessages.FailedToGetVideo)
+    }
+
+    return videoData
+  }
 }

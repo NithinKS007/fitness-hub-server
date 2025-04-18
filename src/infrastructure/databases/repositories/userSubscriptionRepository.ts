@@ -490,7 +490,6 @@ export class MongoUserSubscriptionPlanRepository
     return result;
   }
 
-
   public async usersMyTrainersList(
     userId: IdDTO,
     { page, limit, search }: GetUserTrainersListQueryDTO

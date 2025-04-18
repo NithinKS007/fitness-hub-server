@@ -87,9 +87,7 @@ export class SubscriptionUseCase {
     const interval = this.getInterval(subPeriod);
     const intervalCount = this.getIntervalCount(subPeriod);
     const productId = await createProduct(
-      `${
-        subPeriod.toUpperCase()
-      } FITNESS PLAN`,
+      `${subPeriod.toUpperCase()} FITNESS PLAN`,
       `TRAINER: ${trainerData.fname} ${trainerData.lname}, ${totalSessions} SESSIONS, EMAIL: ${trainerData.email}`
     );
     const stripePriceId = await createPrice(
@@ -186,9 +184,7 @@ export class SubscriptionUseCase {
       totalSessions !== existingSubData?.totalSessions
     ) {
       const productId = await createProduct(
-        `${
-          subPeriod.toUpperCase()
-        } FITNESS PLAN`,
+        `${subPeriod.toUpperCase()} FITNESS PLAN`,
         `TRAINER: ${trainerData?.fname} ${trainerData?.lname}, ${totalSessions} SESSIONS, EMAIL: ${trainerData?.email}`
       );
 
@@ -381,6 +377,12 @@ export class SubscriptionUseCase {
 
             if (!existingConversation) {
               await this.conversationRepository.createChatConversation({
+                userId: createdSubscription.userId.toString(),
+                trainerId: trainerId,
+                stripeSubscriptionStatus: subscription.status,
+              });
+            } else {
+              await this.conversationRepository.updateSubscriptionStatus({
                 userId: createdSubscription.userId.toString(),
                 trainerId: trainerId,
                 stripeSubscriptionStatus: subscription.status,

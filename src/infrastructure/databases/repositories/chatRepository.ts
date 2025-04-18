@@ -65,13 +65,5 @@ export class MongoChatRepository implements IChatRepository {
 
     return unreadMessages;
   }
-  // public async countUnReadMessages({
-  //   senderId,
-  //   receiverId,
-  // }: CountUnReadMessages): Promise<number> {
-  //   return await chatModel.countDocuments({
-  //     senderId: senderId,
-  //     receiverId: receiverId,
-  //   });
-  // }
+
 }

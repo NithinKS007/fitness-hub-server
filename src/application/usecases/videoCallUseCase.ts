@@ -6,7 +6,7 @@ import {
   CreateVideoCallLogDTO,
   UpdateVideoCallLogDTO,
   UpdateVideoCallDurationDTO,
-} from "../dtos/chatDTOs";
+} from "../dtos/videoCallDTOs";
 
 export class VideoCallUseCase {
   constructor(private videoCallLogRepository: IVideoCallLogRepository) {}

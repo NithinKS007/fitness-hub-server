@@ -228,16 +228,16 @@ export class ContentController {
     }
   }
 
-  // static async getVideoById(req: Request, res: Response,next:NextFunction): Promise<void> {
-  //   try {
-  //     const { videoId }= req.params
-  //     const videoData = await contentManagementUseCase.getVideoById(videoId)
-  //     sendResponse(res,HttpStatusCodes.OK,videoData,HttpStatusMessages.VideoDataRetrievedSuccessfully)
-  //   } catch (error: any) {
-  //     logger.error(`Error retrieving video data: ${error}`);
-  //     next(error)
-  //   }
-  // }
+  static async getVideoById(req: Request, res: Response,next:NextFunction): Promise<void> {
+    try {
+      const { videoId }= req.params
+      const videoData = await contentManagementUseCase.getVideoById(videoId)
+      sendResponse(res,HttpStatusCodes.OK,videoData,HttpStatusMessages.VideoDataRetrievedSuccessfully)
+    } catch (error: any) {
+      logger.error(`Error retrieving video data: ${error}`);
+      next(error)
+    }
+  }
 
   static async updateVideoBlockStatus(
     req: Request,

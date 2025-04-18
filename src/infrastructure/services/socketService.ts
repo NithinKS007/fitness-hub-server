@@ -56,6 +56,10 @@ export const chatSocket = (io: Server) => {
       openChats.set(userId, partnerId);
       console.log(`User ${userId} opened chat with ${partnerId}`);
       const readMessagesToUpdateUI = await chatUseCase.markMessageAsRead({userId,otherUserId:partnerId})
+
+      console.log("messagees for sending to the fornt",readMessagesToUpdateUI)
+      await chatUseCase.updateUnReadMessageCount({userId,otherUserId:partnerId,count:0})
+
       if(readMessagesToUpdateUI && readMessagesToUpdateUI.length > 0 ) {
         const messageIds = readMessagesToUpdateUI.map(msg => msg._id.toString())
         const receiverSocketId = userSocketMap.get(userId)
@@ -67,6 +71,7 @@ export const chatSocket = (io: Server) => {
               receiverId: msg.receiverId,
               message: msg.message,
               createdAt: msg.createdAt,
+              updatedAt:msg.updatedAt,
               isRead: msg.isRead,
             });
           });
@@ -97,6 +102,9 @@ export const chatSocket = (io: Server) => {
 
       await chatUseCase.updateLastMessage({userId:senderId,otherUserId:receiverId,message:message})
 
+      if(!isChatOpen){
+        await chatUseCase.incrementUnReadMessageCount({userId:senderId,otherUserId:receiverId})
+      }
       const receiverSocketId = userSocketMap.get(receiverId);
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("receiveMessage", {
@@ -105,14 +113,16 @@ export const chatSocket = (io: Server) => {
           receiverId,
           message,
           createdAt: savedMessage?.createdAt,
+          updatedAt:savedMessage.updatedAt,
           isRead: savedMessage.isRead
         });
         console.log(
           `Message emitted to socket ${receiverSocketId} for user ${receiverId}`
         );
-
+        
       } else {
         console.log(`Receiver ${receiverId} not connected`);
+       
       }
       const senderSocketId = userSocketMap.get(senderId);
 
@@ -124,6 +134,7 @@ export const chatSocket = (io: Server) => {
         receiverId,
         message,
         createdAt: savedMessage.createdAt,
+        updatedAt:savedMessage.updatedAt,
         isRead: savedMessage.isRead
       })
         console.log(`Message emitted to socket ${senderSocketId} for user ${senderId}`);
@@ -134,7 +145,7 @@ export const chatSocket = (io: Server) => {
             messageIds: [savedMessage._id.toString()],
           });
         console.log(`Notified ${senderId} of read message ${savedMessage._id}`);
-       }
+       } 
      }
     })
 

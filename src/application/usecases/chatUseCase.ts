@@ -20,7 +20,11 @@ import {
   CreateChatDTO,
   FindChatDTO,
 } from "../dtos/chatDTOs";
-import { UpdateLastMessage } from "../dtos/conversationDTO";
+import {
+  IncrementUnReadMessageCount,
+  UpdateLastMessage,
+  UpdateUnReadMessageCount,
+} from "../dtos/conversationDTO";
 import { IdDTO } from "../dtos/utilityDTOs";
 
 export class ChatUseCase {
@@ -104,14 +108,38 @@ export class ChatUseCase {
     return lastMessage;
   }
 
-  // public async countUnReadMessages({
-  //   senderId,
-  //   receiverId,
-  // }: CountUnReadMessages): Promise<number> {
-  //   if (!senderId || !receiverId) {
-  //     throw new validationError(HttpStatusMessages.FailedToRetrieveCount);
-  //   }
+  public async updateUnReadMessageCount({
+    userId,
+    otherUserId,
+    count,
+  }: UpdateUnReadMessageCount): Promise<Conversation> {
+    const updatedUnReadMessageDoc =
+      await this.conversation.updateUnReadMessageCount({
+        userId,
+        otherUserId,
+        count,
+      });
 
-  //   return this.chatRepository.countUnReadMessages({ senderId, receiverId });
-  // }
+    if (!updatedUnReadMessageDoc) {
+      throw new validationError(HttpStatusMessages.FailedtoUpdateUnReadCount);
+    }
+    return updatedUnReadMessageDoc;
+  }
+
+  public async incrementUnReadMessageCount({
+    userId,
+    otherUserId,
+  }: IncrementUnReadMessageCount): Promise<Conversation> {
+    const incrementUnReadMessageDoc =
+      await this.conversation.incrementUnReadMessageCount({
+        userId,
+        otherUserId,
+      });
+
+    if(!incrementUnReadMessageDoc){
+      throw new validationError(HttpStatusMessages.FailedtoUpdateUnReadCount)
+    }
+
+    return incrementUnReadMessageDoc
+  }
 }

@@ -1,4 +1,4 @@
-import { CreateConversation, ConversationSubscriptionUpdate, FindConversation, UpdateLastMessage } from "../../application/dtos/conversationDTO";
+import { CreateConversation, ConversationSubscriptionUpdate, FindConversation, UpdateLastMessage, UpdateUnReadMessageCount, IncrementUnReadMessageCount } from "../../application/dtos/conversationDTO";
 import { IdDTO } from "../../application/dtos/utilityDTOs";
 import { Conversation, TrainerChatList, UserChatList } from "../entities/conversationEntity";
 
@@ -9,4 +9,6 @@ export interface IConversationRepository {
  findUserChatList(userId:IdDTO):Promise<UserChatList[]>
  findTrainerChatList(trainerId:IdDTO):Promise<TrainerChatList[]>
  updateLastMessage(UpdateLastMessage:UpdateLastMessage):Promise<Conversation|null>
+ updateUnReadMessageCount(UpdateUnReadMessageCount:UpdateUnReadMessageCount):Promise<Conversation| null>
+ incrementUnReadMessageCount(incrementUnReadMessageCount:IncrementUnReadMessageCount):Promise<Conversation | null>
 }

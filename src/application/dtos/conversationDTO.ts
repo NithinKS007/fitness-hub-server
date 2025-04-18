@@ -6,12 +6,21 @@ export interface CreateConversation {
 
 export interface ConversationSubscriptionUpdate extends CreateConversation {}
 
-export type FindConversation = Omit<CreateConversation, 'stripeSubscriptionStatus'>;
-export type UpdateUnReadMessageCount = Omit<CreateConversation, 'stripeSubscriptionStatus'> & {
+export type FindConversation = Omit<
+  CreateConversation,
+  "stripeSubscriptionStatus"
+>;
+
+export interface UpdateUnReadMessageCount {
+  userId: string;
+  otherUserId: string;
   count: number;
 };
+
+export type IncrementUnReadMessageCount = Omit<UpdateUnReadMessageCount,"count">
+
 export interface UpdateLastMessage {
-  userId:string
-  otherUserId:string,
-  message:string
+  userId: string;
+  otherUserId: string;
+  message: string;
 }

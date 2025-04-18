@@ -3,7 +3,7 @@ import {
   CreateVideoCallLogDTO,
   UpdateVideoCallLogDTO,
   UpdateVideoCallDurationDTO,
-} from "../../../application/dtos/chatDTOs";
+} from "../../../application/dtos/videoCallDTOs";
 import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
 import { IVideoCallLogRepository } from "../../../domain/interfaces/IVideoCallLogRepository";
 import videoCallLogModel from "../models/videoCallLog";

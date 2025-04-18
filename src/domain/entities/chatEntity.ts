@@ -7,4 +7,5 @@ export interface Chat {
   message: string;
   isRead:boolean
   createdAt:Date
+  updatedAt:Date
 }

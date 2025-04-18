@@ -25,7 +25,7 @@ userRoutes.get("/trainer-subscription-status/:_id",authenticate,SubscriptionCont
 //CONTENT ROUTES
 userRoutes.get("/videos/:trainerId",authenticate,ContentController.gettrainerVideosUser)
 userRoutes.get("/video-playlist/:trainerId",authenticate,ContentController.getPlayListsByTrainerId)
-// userRoutes.get("/video-details/:videoId",authenticate,ContentController.getVideoById)
+userRoutes.get("/video-details/:videoId",authenticate,ContentController.getVideoById)
 
 //BOOKING ROUTES
 userRoutes.get("/booking-slots/:trainerId",authenticate,BookingController.getTrainerBookingSlots)

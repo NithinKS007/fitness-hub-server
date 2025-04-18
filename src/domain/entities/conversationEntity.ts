@@ -22,6 +22,8 @@ export interface UserChatList {
     profilePic: string;
     isBlocked: boolean;
   };
+  createdAt:Date
+  updatedAt:Date
 }
 
 export interface TrainerChatList {
@@ -38,4 +40,6 @@ export interface TrainerChatList {
     profilePic: string;
     isBlocked: boolean;
   };
+  createdAt:Date
+  updatedAt:Date
 }

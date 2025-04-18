@@ -7,6 +7,7 @@ interface Ichat extends Document {
   message: string;
   isRead:boolean
   createdAt:Date
+  updatedAt:Date
 }
 
 const chatSchema: Schema = new Schema(
