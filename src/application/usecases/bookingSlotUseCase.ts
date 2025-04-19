@@ -177,7 +177,7 @@ export class BookingSlotUseCase {
     bookingSlotId,
     action,
   }: HandleBookingRequestDTO): Promise<Appointment> {
-    if (!appointmentId || bookingSlotId || action) {
+    if (!appointmentId || !bookingSlotId || !action) {
       throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const bookingSlotData = await this.bookingSlotRepository.findSlotById(
