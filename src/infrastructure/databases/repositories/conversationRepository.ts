@@ -16,6 +16,8 @@ import {
   UserChatList,
 } from "../../../domain/entities/conversationEntity";
 import { IdDTO } from "../../../application/dtos/utilityDTOs";
+import chatModel from "../models/chatModel";
+import { GetChatListQueryDTO } from "../../../application/dtos/queryDTOs";
 
 export class MongoConversationRepository implements IConversationRepository {
   public async createChatConversation({
@@ -67,8 +69,7 @@ export class MongoConversationRepository implements IConversationRepository {
     otherUserId,
     lastMessageId,
   }: UpdateLastMessage): Promise<Conversation | null> {
-
-    console.log("message id for updating",lastMessageId)
+    console.log("message id for updating", lastMessageId);
     return await conversationModel
       .findOneAndUpdate(
         {
@@ -99,9 +100,9 @@ export class MongoConversationRepository implements IConversationRepository {
     otherUserId,
     count,
   }: UpdateUnReadMessageCount): Promise<Conversation | null> {
-    return await conversationModel
-      .findOneAndUpdate(
-        {
+    const matchResult = await conversationModel.aggregate([
+      {
+        $match: {
           $or: [
             {
               userId: new mongoose.Types.ObjectId(userId),
@@ -113,9 +114,36 @@ export class MongoConversationRepository implements IConversationRepository {
             },
           ],
         },
-        {
-          $set: { unreadCount: count },
+      },
+      {
+        $lookup: {
+          from: "chats",
+          localField: "lastMessage",
+          foreignField: "_id",
+          as: "lastMessage",
         },
+      },
+      {
+        $unwind: "$lastMessage",
+      },
+      {
+        $match: {
+          "lastMessage.receiverId": new mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $project: { _id: 1 },
+      },
+    ]);
+
+    if (!matchResult.length) return null;
+
+    const conversationId = matchResult[0]._id;
+
+    const updatedConversation = await conversationModel
+      .findOneAndUpdate(
+        { _id: conversationId },
+        { $set: { unreadCount: count } },
         { new: true }
       )
       .populate<{ lastMessage: Ichat | null }>({
@@ -124,6 +152,8 @@ export class MongoConversationRepository implements IConversationRepository {
       })
       .lean()
       .exec();
+
+    return updatedConversation;
   }
 
   public async incrementUnReadMessageCount({
@@ -158,7 +188,18 @@ export class MongoConversationRepository implements IConversationRepository {
     return updatedDoc;
   }
 
-  public async findUserChatList(userId: IdDTO): Promise<UserChatList[]> {
+  public async findUserChatList(
+    userId: IdDTO,
+    { search }: GetChatListQueryDTO
+  ): Promise<UserChatList[]> {
+    let matchQuery: any = {};
+    if (search) {
+      matchQuery.$or = [
+        { "subscribedTrainerData.fname": { $regex: search, $options: "i" } },
+        { "subscribedTrainerData.lname": { $regex: search, $options: "i" } },
+        { "subscribedTrainerData.email": { $regex: search, $options: "i" } },
+      ];
+    }
     const result = await conversationModel.aggregate([
       { $match: { userId: new mongoose.Types.ObjectId(userId) } },
       { $sort: { updatedAt: -1 } },
@@ -184,6 +225,7 @@ export class MongoConversationRepository implements IConversationRepository {
       {
         $unwind: "$subscribedTrainerData",
       },
+      { $match: matchQuery },
       {
         $lookup: {
           from: "chats",
@@ -221,8 +263,17 @@ export class MongoConversationRepository implements IConversationRepository {
     return result;
   }
   public async findTrainerChatList(
-    trainerId: IdDTO
+    trainerId: IdDTO,
+    { search }: GetChatListQueryDTO
   ): Promise<TrainerChatList[]> {
+    let matchQuery: any = {};
+    if (search) {
+      matchQuery.$or = [
+        { "subscribedUserData.fname": { $regex: search, $options: "i" } },
+        { "subscribedUserData.lname": { $regex: search, $options: "i" } },
+        { "subscribedUserData.email": { $regex: search, $options: "i" } },
+      ];
+    }
     const result = await conversationModel.aggregate([
       { $match: { trainerId: new mongoose.Types.ObjectId(trainerId) } },
       { $sort: { updatedAt: -1 } },
@@ -235,6 +286,7 @@ export class MongoConversationRepository implements IConversationRepository {
         },
       },
       { $unwind: "$subscribedUserData" },
+      { $match: matchQuery },
       {
         $lookup: {
           from: "chats",

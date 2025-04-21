@@ -70,8 +70,7 @@ export class MongoSubscriptionRepository implements ISubscriptionRepository {
     durationInWeeks,
     sessionsPerWeek,
     totalSessions,
-    stripePriceId,
-    trainerId,
+    stripePriceId
   }: UpdateSubscriptionDetailsDTO): Promise<Subscription | null> {
     return await SubscriptionModel.findByIdAndUpdate(
       subscriptionId,

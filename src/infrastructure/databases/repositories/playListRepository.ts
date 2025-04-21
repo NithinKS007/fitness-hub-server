@@ -1,12 +1,16 @@
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import {
   CreatePlayListDTO,
+  EditPlayList,
   UpdatePlayListBlockStatus,
 } from "../../../application/dtos/contentDTOs";
 import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
 import playlistModel from "../models/playListModel";
-import { Playlist } from "../../../domain/entities/playListEntity";
+import {
+  NumberOfVideoPerPlayList,
+  Playlist,
+} from "../../../domain/entities/playListEntity";
 import { GetPlayListsQueryDTO } from "../../../application/dtos/queryDTOs";
 
 export class MongoPlayListRepository implements IPlayListRepository {
@@ -31,8 +35,18 @@ export class MongoPlayListRepository implements IPlayListRepository {
       { new: true }
     );
   }
+  public async editPlayList({
+    playListId,
+    title,
+  }: EditPlayList): Promise<Playlist | null> {
+    return await playlistModel.findOneAndUpdate(
+      new mongoose.Types.ObjectId(playListId),
+      { title: title },
+      { new: true }
+    );
+  }
 
-  public async getAllPlayListsByTrainerId(
+  public async getTrainerPlaylists(
     trainerId: IdDTO,
     { page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
   ): Promise<{ playList: Playlist[]; paginationData: PaginationDTO }> {
@@ -87,16 +101,51 @@ export class MongoPlayListRepository implements IPlayListRepository {
     };
   }
 
-  public async updateManyVideoCount(playListIds: IdDTO[]): Promise<void> {
-    await playlistModel.updateMany(
-      { _id: { $in: playListIds } },
-      { $set: { videoCount: playListIds.length } }
-    );
+  public async getNumberOfVideosPerPlaylist(
+    playListIds: IdDTO[]
+  ): Promise<NumberOfVideoPerPlayList[]> {
+    const result = await playlistModel.aggregate([
+      {
+        $match: {
+          _id: {
+            $in: playListIds.map((id) => new mongoose.Types.ObjectId(id)),
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "videoplaylists",
+          localField: "_id",
+          foreignField: "playListId",
+          as: "videoLinks",
+        },
+      },
+      {
+        $project: {
+          playListId: "$_id",
+          videoCount: { $size: "$videoLinks" },
+        },
+      },
+    ]);
+
+    return result;
+  }
+  public async updateManyVideoCount(
+    numberOfVideosPerPlaylist: NumberOfVideoPerPlayList[]
+  ): Promise<void> {
+    const bulkOps = numberOfVideosPerPlaylist.map((item) => ({
+      updateOne: {
+        filter: { _id: item.playListId },
+        update: { $set: { videoCount: item.videoCount } },
+      },
+    }));
+
+    if (bulkOps.length > 0) {
+      await playlistModel.bulkWrite(bulkOps);
+    }
   }
 
-  public async getFullPlayListsOfTrainer(
-    trainerId: IdDTO
-  ): Promise<Playlist[]> {
+  public async getallTrainerPlaylists(trainerId: IdDTO): Promise<Playlist[]> {
     return await playlistModel.find({ trainerId: trainerId });
   }
 }

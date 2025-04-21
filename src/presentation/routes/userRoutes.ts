@@ -23,8 +23,8 @@ userRoutes.patch("/cancel-subscriptions",authenticate,SubscriptionController.can
 userRoutes.get("/trainer-subscription-status/:_id",authenticate,SubscriptionController.isSubscribedToTheTrainer)
 
 //CONTENT ROUTES
-userRoutes.get("/videos/:trainerId",authenticate,ContentController.gettrainerVideosUser)
-userRoutes.get("/video-playlist/:trainerId",authenticate,ContentController.getPlayListsByTrainerId)
+userRoutes.get("/videos/:trainerId",authenticate,ContentController.getTrainerVideos)
+userRoutes.get("/video-playlist/:trainerId",authenticate,ContentController.getallPlayLists)
 userRoutes.get("/video-details/:videoId",authenticate,ContentController.getVideoById)
 
 //BOOKING ROUTES

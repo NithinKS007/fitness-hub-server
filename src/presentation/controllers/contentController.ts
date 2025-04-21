@@ -15,14 +15,14 @@ import { handleLogError } from "../../shared/utils/handleLog";
 
 //MONGO REPOSITORY INSTANCES
 const mongoPlayListRepository = new MongoPlayListRepository();
-const monogVideoRepository = new MonogVideoRepository();
-const monogVideoPlayListRepository = new MonogVideoPlayListRepository();
+const mongoVideoRepository = new MonogVideoRepository();
+const mongoVideoPlayListRepository = new MonogVideoPlayListRepository();
 
 //USE CASE INSTANCES
 const contentManagementUseCase = new ContentManagementUseCase(
   mongoPlayListRepository,
-  monogVideoRepository,
-  monogVideoPlayListRepository
+  mongoVideoRepository,
+  mongoVideoPlayListRepository
 );
 
 export class ContentController {
@@ -54,7 +54,7 @@ export class ContentController {
     }
   }
 
-  static async getPlayListsTrainer(
+  static async getTrainerPlaylists(
     req: Request,
     res: Response,
     next: NextFunction
@@ -63,7 +63,7 @@ export class ContentController {
       const trainerId = req.user._id;
       const { fromDate, toDate, page, limit, search, filters } = req.query;
       const { playList, paginationData } =
-        await contentManagementUseCase.getPlayListsTrainer(trainerId, {
+        await contentManagementUseCase.getTrainerPlaylists(trainerId, {
           fromDate: fromDate as any,
           toDate: toDate as any,
           page: page as string,
@@ -81,31 +81,6 @@ export class ContentController {
       handleLogError(
         error,
         "ContentController.getPlayListsTrainer",
-        "Error getting playlists of trainer"
-      );
-      next(error);
-    }
-  }
-
-  static async getAllPlayListsTrainer(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const trainerId = req.user._id;
-      const playListData =
-        await contentManagementUseCase.getAllPlayListsOfTrainer(trainerId);
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        playListData,
-        PlayListStatusMessage.PlayListsOfTrainerRetrievedSuccessfully
-      );
-    } catch (error) {
-      handleLogError(
-        error,
-        "ContentController.getAllPlayListsTrainer",
         "Error getting playlists of trainer"
       );
       next(error);
@@ -139,16 +114,16 @@ export class ContentController {
     }
   }
 
-  static async getVideosByTrainerId(
+  static async getTrainerVideos(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const trainerId = req.user._id;
+      const trainerId = req.params.trainerId || req.user._id;
       const { fromDate, toDate, page, limit, search, filters } = req.query;
       const { videoList, paginationData } =
-        await contentManagementUseCase.getVideosByTrainerId(trainerId, {
+        await contentManagementUseCase.getTrainerVideos(trainerId, {
           fromDate: fromDate as any,
           toDate: toDate as any,
           page: page as string,
@@ -165,55 +140,22 @@ export class ContentController {
     } catch (error) {
       handleLogError(
         error,
-        "ContentController.getVideosByTrainerId",
+        "ContentController.getTrainerVideos",
         "Error getting videos of trainer"
       );
       next(error);
     }
   }
 
-  static async gettrainerVideosUser(
+  static async getallPlayLists(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const trainerId = req.params.trainerId;
-      const { fromDate, toDate, page, limit, search, filters } = req.query;
-      const { videoList, paginationData } =
-        await contentManagementUseCase.getVideosByTrainerId(trainerId, {
-          fromDate: fromDate as any,
-          toDate: toDate as any,
-          page: page as string,
-          limit: limit as string,
-          search: search as string,
-          filters: filters as string[],
-        });
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        { videoList: videoList, paginationData: paginationData },
-        VideoStatusMessage.VideoDataRetrievedSuccessfully
-      );
-    } catch (error) {
-      handleLogError(
-        error,
-        "ContentController.gettrainerVideosUser",
-        "Error getting videos of trainer"
-      );
-      next(error);
-    }
-  }
-
-  static async getPlayListsByTrainerId(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const trainerId = req.params.trainerId;
+      const trainerId = req.params.trainerId || req.user._id;
       const playListsOfTrainer =
-        await contentManagementUseCase.getAllPlayListsOfTrainer(trainerId);
+        await contentManagementUseCase.getallTrainerPlaylists(trainerId);
       sendResponse(
         res,
         HttpStatusCodes.OK,
@@ -223,21 +165,30 @@ export class ContentController {
     } catch (error) {
       handleLogError(
         error,
-        "ContentController.getPlayListsByTrainerId",
+        "ContentController.getallPlayLists",
         "Error getting trainer playlists"
       );
       next(error);
     }
   }
 
-  static async getVideoById(req: Request, res: Response,next:NextFunction): Promise<void> {
+  static async getVideoById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      const { videoId }= req.params
-      const videoData = await contentManagementUseCase.getVideoById(videoId)
-      sendResponse(res,HttpStatusCodes.OK,videoData,VideoStatusMessage.VideoDataRetrievedSuccessfully)
+      const { videoId } = req.params;
+      const videoData = await contentManagementUseCase.getVideoById(videoId);
+      sendResponse(
+        res,
+        HttpStatusCodes.OK,
+        videoData,
+        VideoStatusMessage.VideoDataRetrievedSuccessfully
+      );
     } catch (error: any) {
       logger.error(`Error retrieving video data: ${error}`);
-      next(error)
+      next(error);
     }
   }
 
@@ -341,10 +292,16 @@ export class ContentController {
   ): Promise<void> {
     try {
       const { playListId } = req.params;
+      const title = req.body.title;
+      const updatedPlayListData = await contentManagementUseCase.editPlayList({
+        playListId,
+        title,
+      });
+      console.log("updated data", updatedPlayListData);
       sendResponse(
         res,
         HttpStatusCodes.OK,
-        null,
+        updatedPlayListData,
         PlayListStatusMessage.PlayListEditedSuccessfully
       );
     } catch (error) {
@@ -352,7 +309,7 @@ export class ContentController {
         error,
         "ContentController.editPlayList",
         "Error updateing playlist data"
-      )
+      );
       next(error);
     }
   }

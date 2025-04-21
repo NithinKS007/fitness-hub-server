@@ -17,6 +17,7 @@ import {
   UpdateLastMessage,
   UpdateUnReadMessageCount,
 } from "../dtos/conversationDTO";
+import { GetChatListQueryDTO } from "../dtos/queryDTOs";
 import { IdDTO } from "../dtos/utilityDTOs";
 
 export class ChatUseCase {
@@ -59,13 +60,15 @@ export class ChatUseCase {
   }
 
   public async getTrainerChatList(
-    trainerId: IdDTO
+    trainerId: IdDTO,
+    {search}:GetChatListQueryDTO
   ): Promise<TrainerChatList[]> {
     if (!trainerId) {
       throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const trainerChatList = await this.conversation.findTrainerChatList(
-      trainerId
+      trainerId,
+      {search}
     );
     if (!trainerChatList) {
       throw new validationError(ChatStatusMessage.FailedToRetrieveChatList);
@@ -73,11 +76,11 @@ export class ChatUseCase {
     return trainerChatList;
   }
 
-  public async getUserChatList(userId: IdDTO): Promise<UserChatList[]> {
+  public async getUserChatList(userId: IdDTO,{search}:GetChatListQueryDTO): Promise<UserChatList[]> {
     if (!userId) {
       throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
-    const usersChatList = await this.conversation.findUserChatList(userId);
+    const usersChatList = await this.conversation.findUserChatList(userId,{search});
     if (!usersChatList) {
       throw new validationError(ChatStatusMessage.FailedToRetrieveChatList);
     }
@@ -104,17 +107,13 @@ export class ChatUseCase {
     userId,
     otherUserId,
     count,
-  }: UpdateUnReadMessageCount): Promise<Conversation> {
+  }: UpdateUnReadMessageCount): Promise<Conversation| null> {
     const updatedUnReadMessageDoc =
       await this.conversation.updateUnReadMessageCount({
         userId,
         otherUserId,
         count,
       });
-
-    if (!updatedUnReadMessageDoc) {
-      throw new validationError(ChatStatusMessage.FailedtoUpdateUnReadCount);
-    }
     return updatedUnReadMessageDoc;
   }
 

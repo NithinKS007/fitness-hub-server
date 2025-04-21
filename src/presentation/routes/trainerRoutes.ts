@@ -17,14 +17,14 @@ trainerRoutes.get("/subscribers",authenticate,SubscriptionController.getTrainerS
 
 //CONTENT MANAGEMENT ROUTES
 trainerRoutes.post("/create-playlist",authenticate,ContentController.addPlaylist)
-trainerRoutes.get("/playlists",authenticate,ContentController.getPlayListsTrainer)
-trainerRoutes.get("/playlist-all",authenticate,ContentController.getAllPlayListsTrainer)
+trainerRoutes.get("/playlists",authenticate,ContentController.getTrainerPlaylists)
+trainerRoutes.get("/playlist-all",authenticate,ContentController.getallPlayLists)
 trainerRoutes.post("/upload-video/",authenticate,ContentController.addVideo)
 trainerRoutes.patch("/videos/:videoId",authenticate,ContentController.updateVideoBlockStatus)
 trainerRoutes.put("/videos/:videoId",authenticate,ContentController.editVideo)
 trainerRoutes.patch("/playlist/:playListId",authenticate,ContentController.updatePlayListBlockStatus)
 trainerRoutes.put("/playlist/:playListId",authenticate,ContentController.editPlayList)
-trainerRoutes.get("/videos",authenticate,ContentController.getVideosByTrainerId)
+trainerRoutes.get("/videos",authenticate,ContentController.getTrainerVideos)
 
 //SLOT MANAGEMENT AND BOOKING ROUTES
 trainerRoutes.post("/add-slot",authenticate,BookingController.addBookingSlot)

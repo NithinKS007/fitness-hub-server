@@ -67,3 +67,8 @@ export type GetUserTrainersListQueryDTO = Omit<
   BaseQueryDTO,
   "filters" | "fromDate" | "toDate"
 >;
+
+export type GetChatListQueryDTO = Omit<
+  BaseQueryDTO,
+  "filters" | "fromDate" | "toDate" | "page" | "limit"
+>;

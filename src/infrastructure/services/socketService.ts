@@ -10,7 +10,6 @@ import { MongoBookingSlotRepository } from "../databases/repositories/bookingSlo
 import { MongoChatRepository } from "../databases/repositories/chatRepository";
 import { MongoVideoCallLogRepository } from "../databases/repositories/videoCallLogRepository";
 import { MongoConversationRepository } from "../databases/repositories/conversationRepository";
-import logger from "../logger/logger";
 import { handleLogInfo } from "../../shared/utils/handleLog";
 
 //MONGO REPOSITORY INSTANCES
@@ -79,23 +78,14 @@ export const chatSocket = (io: Server) => {
           );
           const receiverSocketId = userSocketMap.get(userId);
           if (receiverSocketId) {
-            readMessagesToUpdateUI.forEach((msg) => {
-              io.to(receiverSocketId).emit("receiveMessage", {
-                _id: msg._id.toString(),
-                senderId: msg.senderId,
-                receiverId: msg.receiverId,
-                message: msg.message,
-                createdAt: msg.createdAt,
-                updatedAt: msg.updatedAt,
-                isRead: msg.isRead,
-              });
-            });
             io.to(receiverSocketId).emit("unreadCountUpdated", updatedCountDoc);
           }
           const senderSocketId = userSocketMap.get(partnerId);
           if (senderSocketId) {
             io.to(senderSocketId).emit("messageRead", { messageIds });
-            io.to(senderSocketId).emit("unreadCountUpdated", updatedCountDoc);
+            if (updatedCountDoc) {
+              io.to(senderSocketId).emit("unreadCountUpdated", updatedCountDoc);
+            }
           }
         }
       }
@@ -141,18 +131,18 @@ export const chatSocket = (io: Server) => {
             { userId: senderId, otherUserId: receiverId }
           );
         }
+        const messageData = {
+          _id: savedMessage._id.toString(),
+          senderId,
+          receiverId,
+          message,
+          createdAt: savedMessage.createdAt,
+          updatedAt: savedMessage.updatedAt,
+          isRead: savedMessage.isRead,
+        };
         const receiverSocketId = userSocketMap.get(receiverId);
         if (receiverSocketId) {
-          io.to(receiverSocketId).emit("receiveMessage", {
-            _id: savedMessage._id,
-            senderId,
-            receiverId,
-            message,
-            createdAt: savedMessage?.createdAt,
-            updatedAt: savedMessage.updatedAt,
-            isRead: savedMessage.isRead,
-          });
-
+          io.to(receiverSocketId).emit("receiveMessage", messageData);
           if (incrementedMessageDoc) {
             io.to(receiverSocketId).emit(
               "unreadCountUpdated",
@@ -171,15 +161,7 @@ export const chatSocket = (io: Server) => {
         }
         const senderSocketId = userSocketMap.get(senderId);
         if (senderSocketId) {
-          io.to(senderSocketId).emit("receiveMessage", {
-            _id: savedMessage._id.toString(),
-            senderId,
-            receiverId,
-            message,
-            createdAt: savedMessage.createdAt,
-            updatedAt: savedMessage.updatedAt,
-            isRead: savedMessage.isRead,
-          });
+          io.to(senderSocketId).emit("receiveMessage", messageData);
 
           if (isChatOpen) {
             io.to(senderSocketId).emit("messageRead", {

@@ -46,3 +46,8 @@ export interface EditVideo {
   video: string;
   playLists: string[];
 }
+
+export interface EditPlayList{
+  playListId:string
+  title:string
+}

@@ -19,11 +19,16 @@ import {
   getSubscriptionsData,
 } from "../../infrastructure/services/stripeServices";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
-import { AuthenticationStatusMessage, BlockStatusMessage,SubscriptionStatusMessage } from "../../shared/constants/httpResponseStructure";
 import {
-  MongoUserSubscriptionsList,
+  AuthenticationStatusMessage,
+  BlockStatusMessage,
+  SubscriptionStatusMessage,
+} from "../../shared/constants/httpResponseStructure";
+import {
   Subscription,
   TrainerSubscribersList,
+  UserMyTrainersList,
+  UserSubscriptionRecord,
   UserSubscriptionsList,
 } from "../../domain/entities/subscriptionEntity";
 import { ISubscriptionRepository } from "../../domain/interfaces/ISubscriptionRepository";
@@ -37,6 +42,7 @@ import {
 } from "../dtos/queryDTOs";
 import { IRevenueRepository } from "../../domain/interfaces/IRevenueRepository";
 import { IConversationRepository } from "../../domain/interfaces/IConversationRepository";
+import { handleLogInfo } from "../../shared/utils/handleLog";
 
 export class SubscriptionUseCase {
   constructor(
@@ -81,7 +87,9 @@ export class SubscriptionUseCase {
     );
 
     if (existing) {
-      throw new validationError(SubscriptionStatusMessage.SubscriptionAlreadyExists);
+      throw new validationError(
+        SubscriptionStatusMessage.SubscriptionAlreadyExists
+      );
     }
 
     const interval = this.getInterval(subPeriod);
@@ -116,8 +124,10 @@ export class SubscriptionUseCase {
     subscriptionId,
     isBlocked,
   }: UpdateSubscriptionBlockStatusDTO): Promise<Subscription> {
-    if (!subscriptionId || !isBlocked) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+    if (!subscriptionId || typeof isBlocked !== "boolean") {
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
 
     const subscriptionData =
@@ -145,7 +155,6 @@ export class SubscriptionUseCase {
     durationInWeeks,
     price,
     sessionsPerWeek,
-    stripePriceId,
     subPeriod,
     totalSessions,
     trainerId,
@@ -155,23 +164,21 @@ export class SubscriptionUseCase {
       !durationInWeeks ||
       !price ||
       !sessionsPerWeek ||
-      !stripePriceId ||
       !subPeriod ||
       !totalSessions ||
       !trainerId
     ) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
-    }
-
-    const subscriptionData =
-      await this.subscriptionRepository.findSubscriptionById(subscriptionId);
-
-    if (!subscriptionData) {
-      throw new validationError(AuthenticationStatusMessage.InvalidId);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
 
     const existingSubData =
       await this.subscriptionRepository.findSubscriptionById(subscriptionId);
+
+    if (!existingSubData) {
+      throw new validationError(AuthenticationStatusMessage.InvalidId);
+    }
 
     const trainerData = await this.trainerRepository.getTrainerDetailsById(
       trainerId
@@ -220,7 +227,7 @@ export class SubscriptionUseCase {
           durationInWeeks,
           price,
           sessionsPerWeek,
-          stripePriceId,
+          stripePriceId: existingSubData?.stripePriceId,
           subPeriod,
           totalSessions,
           trainerId,
@@ -236,7 +243,9 @@ export class SubscriptionUseCase {
     subscriptionId: IdDTO
   ): Promise<Subscription> {
     if (!subscriptionId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
     const subscriptionData =
       await this.subscriptionRepository.findSubscriptionById(subscriptionId);
@@ -252,7 +261,9 @@ export class SubscriptionUseCase {
       await this.subscriptionRepository.deletedSubscription(subscriptionId);
 
     if (!deletedSubscription) {
-      throw new validationError(SubscriptionStatusMessage.FailedToDeleteSubscription);
+      throw new validationError(
+        SubscriptionStatusMessage.FailedToDeleteSubscription
+      );
     }
     return deletedSubscription;
   }
@@ -290,14 +301,18 @@ export class SubscriptionUseCase {
 
   private validateWebhookInput(sig: any, webhookSecret: any, body: any): void {
     if (!sig || !webhookSecret || !body) {
-      throw new validationError(SubscriptionStatusMessage.WebHookCredentialsMissing);
+      throw new validationError(
+        SubscriptionStatusMessage.WebHookCredentialsMissing
+      );
     }
   }
 
   private constructStripeEvent(body: any, sig: any, webhookSecret: any) {
     const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     if (!event) {
-      throw new validationError(SubscriptionStatusMessage.WebHookVerificationFailed);
+      throw new validationError(
+        SubscriptionStatusMessage.WebHookVerificationFailed
+      );
     }
     return event;
   }
@@ -454,12 +469,19 @@ export class SubscriptionUseCase {
   public async getSubscriptionDetailsBySessionId(
     sessionId: string
   ): Promise<SubscriptionPlanEntity & { isSubscribed: boolean }> {
+    handleLogInfo("info", `stripe session id received for verification`, {
+      sessionId,
+    });
     if (!sessionId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
     const session = await getCheckoutSession(sessionId);
     if (!session) {
-      throw new validationError(SubscriptionStatusMessage.InvalidSessionIdForStripe);
+      throw new validationError(
+        SubscriptionStatusMessage.InvalidSessionIdForStripe
+      );
     }
     const stripeSubscriptionId =
       typeof session.subscription === "string"
@@ -494,22 +516,24 @@ export class SubscriptionUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!userId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
 
-    const { mongoUserSubscriptionsList, paginationData } =
+    const { userSubscriptionRecord, paginationData } =
       await this.userSubscriptionPlanRepository.findSubscriptionsOfUser(
         userId,
         { page, limit, search, filters }
       );
-    if (!mongoUserSubscriptionsList) {
+    if (!userSubscriptionRecord) {
       throw new validationError(
         SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
       );
     }
 
     const userSubscriptionsList = await Promise.all(
-      mongoUserSubscriptionsList.map(async (sub) => {
+      userSubscriptionRecord.map(async (sub) => {
         const stripeData = await getSubscriptionsData(sub.stripeSubscriptionId);
         return {
           ...sub,
@@ -530,21 +554,23 @@ export class SubscriptionUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
-    const { mongoTrainerSubscribers, paginationData } =
+    const { trainerSubscriberRecord, paginationData } =
       await this.userSubscriptionPlanRepository.findSubscriptionsOfTrainer(
         trainerId,
         { page, limit, search, filters }
       );
-    if (!mongoTrainerSubscribers) {
+    if (!trainerSubscriberRecord) {
       throw new validationError(
         SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
       );
     }
 
     const trainerSubscribers = await Promise.all(
-      mongoTrainerSubscribers.map(async (sub) => {
+      trainerSubscriberRecord.map(async (sub) => {
         const stripeData = await getSubscriptionsData(sub.stripeSubscriptionId);
         return {
           ...sub,
@@ -565,7 +591,9 @@ export class SubscriptionUseCase {
     cancelAction: string;
   }> {
     if (!stripeSubscriptionId || !action) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
     const stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
 
@@ -591,7 +619,9 @@ export class SubscriptionUseCase {
     isSubscribed: boolean;
   }> {
     if (!userId || !trainerId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
 
     const subscriptionData =
@@ -631,7 +661,7 @@ export class SubscriptionUseCase {
     userId: IdDTO,
     { page, limit, search }: GetUserTrainersListQueryDTO
   ): Promise<{
-    userTrainersList: MongoUserSubscriptionsList[];
+    userTrainersList: UserMyTrainersList[];
     paginationData: PaginationDTO;
   }> {
     const { userTrainersList, paginationData } =

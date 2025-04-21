@@ -15,16 +15,16 @@ import {
   GetUserTrainersListQueryDTO,
 } from "../../../application/dtos/queryDTOs";
 import {
-  MongoUserSubscriptionsList,
-  MonogoTrainerSubscribersList,
-  TrainerSubscribersList,
-  UserSubscriptionsList,
+  TrainerSubscriberRecord,
+  UserMyTrainersList,
+  UserSubscriptionRecord,
 } from "../../../domain/entities/subscriptionEntity";
 import {
   TrainerChartData,
   TrainerPieChartData,
 } from "../../../domain/entities/chartEntity";
 import { Top5List } from "../../../domain/entities/trainerEntity";
+import conversationModel from "../models/conversation";
 
 export class MongoUserSubscriptionPlanRepository
   implements IUserSubscriptionPlanRepository
@@ -60,7 +60,7 @@ export class MongoUserSubscriptionPlanRepository
     userId: IdDTO,
     { page, limit, search, filters }: GetUserSubscriptionsQueryDTO
   ): Promise<{
-    mongoUserSubscriptionsList: MongoUserSubscriptionsList[];
+    userSubscriptionRecord: UserSubscriptionRecord[];
     paginationData: PaginationDTO;
   }> {
     const pageNumber = parseInt(page, 10) || 1;
@@ -182,7 +182,7 @@ export class MongoUserSubscriptionPlanRepository
 
     const totalPages = Math.ceil(totalCount / limitNumber);
     return {
-      mongoUserSubscriptionsList: userSubscriptionsList,
+      userSubscriptionRecord: userSubscriptionsList,
       paginationData: {
         currentPage: pageNumber,
         totalPages: totalPages,
@@ -193,7 +193,7 @@ export class MongoUserSubscriptionPlanRepository
     trainerId: IdDTO,
     { page, limit, search, filters }: GetTrainerSubscribersQueryDTO
   ): Promise<{
-    mongoTrainerSubscribers: MonogoTrainerSubscribersList[];
+    trainerSubscriberRecord: TrainerSubscriberRecord[];
     paginationData: PaginationDTO;
   }> {
     const pageNumber = parseInt(page, 10) || 1;
@@ -300,7 +300,7 @@ export class MongoUserSubscriptionPlanRepository
 
     const totalPages = Math.ceil(totalCount / limitNumber);
     return {
-      mongoTrainerSubscribers: trainerSubscribers,
+      trainerSubscriberRecord: trainerSubscribers,
       paginationData: {
         currentPage: pageNumber,
         totalPages: totalPages,
@@ -494,7 +494,7 @@ export class MongoUserSubscriptionPlanRepository
     userId: IdDTO,
     { page, limit, search }: GetUserTrainersListQueryDTO
   ): Promise<{
-    userTrainersList: MongoUserSubscriptionsList[];
+    userTrainersList: UserMyTrainersList[];
     paginationData: PaginationDTO;
   }> {
     const pageNumber = parseInt(page, 10) || 1;
@@ -512,17 +512,10 @@ export class MongoUserSubscriptionPlanRepository
     }
 
     const [totalCount, userTrainersList] = await Promise.all([
-      userSubscriptionPlanModel
+      conversationModel
         .aggregate([
           { $match: { userId: new mongoose.Types.ObjectId(userId) } },
           { $sort: { updatedAt: -1 } },
-          {
-            $group: {
-              _id: "$trainerId",
-              latestSubscription: { $first: "$$ROOT" },
-            },
-          },
-          { $replaceRoot: { newRoot: "$latestSubscription" } },
           {
             $lookup: {
               from: "trainers",
@@ -547,17 +540,10 @@ export class MongoUserSubscriptionPlanRepository
           { $count: "totalCount" },
         ])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      userSubscriptionPlanModel
+      conversationModel
         .aggregate([
           { $match: { userId: new mongoose.Types.ObjectId(userId) } },
           { $sort: { updatedAt: -1 } },
-          {
-            $group: {
-              _id: "$trainerId",
-              latestSubscription: { $first: "$$ROOT" },
-            },
-          },
-          { $replaceRoot: { newRoot: "$latestSubscription" } },
           {
             $lookup: {
               from: "trainers",
@@ -584,14 +570,7 @@ export class MongoUserSubscriptionPlanRepository
           {
             $project: {
               _id: 1,
-              durationInWeeks: 1,
-              price: 1,
-              sessionsPerWeek: 1,
-              stripePriceId: 1,
-              stripeSubscriptionId: 1,
               stripeSubscriptionStatus: 1,
-              subPeriod: 1,
-              totalSessions: 1,
               trainerId: 1,
               userId: 1,
               subscribedTrainerData: {
@@ -611,7 +590,6 @@ export class MongoUserSubscriptionPlanRepository
         .exec(),
     ]);
     const totalPages = Math.ceil(totalCount / limitNumber);
-
     return {
       userTrainersList: userTrainersList,
       paginationData: {

@@ -13,7 +13,7 @@ export interface Subscription {
   stripePriceId: string;
 }
 
-export interface MonogoTrainerSubscribersList {
+export interface TrainerSubscriberRecord {
   _id: string | ObjectId;
   durationInWeeks: number;
   price: number;
@@ -35,7 +35,7 @@ export interface MonogoTrainerSubscribersList {
   };
 }
 
-export interface MongoUserSubscriptionsList {
+export interface UserSubscriptionRecord {
   _id: string | ObjectId;
   durationInWeeks: number;
   price: number;
@@ -57,6 +57,20 @@ export interface MongoUserSubscriptionsList {
   };
 }
 
+export interface UserMyTrainersList {
+  _id: string | ObjectId;
+  stripeSubscriptionStatus: string;
+  trainerId: string | ObjectId;
+  userId: string | ObjectId;
+  subscribedTrainerData: {
+    _id: string | ObjectId;
+    fname: string;
+    lname: string;
+    email: string;
+    profilePic: string;
+    isBlocked: boolean;
+  };
+}
 interface SubscribedUserData {
   _id: string | ObjectId;
   fname: string;

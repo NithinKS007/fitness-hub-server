@@ -1,15 +1,20 @@
 import {
   CreatedVideoDTO,
   CreatePlayListDTO,
+  EditPlayList,
   EditVideo,
   UpdatePlayListBlockStatus,
   UpdateVideoBlockStatus,
 } from "../dtos/contentDTOs";
 import { IdDTO, PaginationDTO } from "../dtos/utilityDTOs";
 import { validationError } from "../../presentation/middlewares/errorMiddleWare";
-import { AuthenticationStatusMessage, BlockStatusMessage, VideoStatusMessage } from "../../shared/constants/httpResponseStructure";
+import {
+  AuthenticationStatusMessage,
+  BlockStatusMessage,
+  VideoStatusMessage,
+} from "../../shared/constants/httpResponseStructure";
 import { Playlist } from "../../domain/entities/playListEntity";
-import { Video } from "../../domain/entities/videoEntity";
+import { Video, VideoWithPlayLists } from "../../domain/entities/videoEntity";
 import { IPlayListRepository } from "../../domain/interfaces/IPlayListRepository";
 import { IVideoRepository } from "../../domain/interfaces/IVideoRepository";
 import { IVideoPlayListRepository } from "../../domain/interfaces/IVideoPlayListRepository";
@@ -28,11 +33,13 @@ export class ContentManagementUseCase {
     trainerId,
   }: CreatePlayListDTO): Promise<Playlist> {
     if (!title || !trainerId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
     return await this.playListRepository.createPlayList({ title, trainerId });
   }
-  public async getPlayListsTrainer(
+  public async getTrainerPlaylists(
     trainerId: IdDTO,
     { page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
   ): Promise<{ playList: Playlist[]; paginationData: PaginationDTO }> {
@@ -42,7 +49,7 @@ export class ContentManagementUseCase {
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
 
     const { playList, paginationData } =
-      await this.playListRepository.getAllPlayListsByTrainerId(trainerId, {
+      await this.playListRepository.getTrainerPlaylists(trainerId, {
         limit,
         page,
         fromDate: parsedFromDate,
@@ -72,7 +79,9 @@ export class ContentManagementUseCase {
       !title ||
       !trainerId
     ) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
     const createdVideo = await this.videoRepository.createVideo({
       video,
@@ -90,25 +99,33 @@ export class ContentManagementUseCase {
         playListId: list,
       }));
 
-      await this.playListRepository.updateManyVideoCount(playLists);
       await this.videoPlayListRepository.insertManyVideoPlayList(
         videoPlayListDocs
       );
+    
+      const videoCountWithPlayList = await this.playListRepository.getNumberOfVideosPerPlaylist(playLists)
+
+      if(videoCountWithPlayList.length > 0){
+        await this.playListRepository.updateManyVideoCount(videoCountWithPlayList);
+      }
+     
     }
     return createdVideo;
   }
 
-  public async getVideosByTrainerId(
+  public async getTrainerVideos(
     trainerId: IdDTO,
     { page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO
-  ): Promise<{ videoList: Video[]; paginationData: PaginationDTO }> {
+  ): Promise<{ videoList: VideoWithPlayLists[]; paginationData: PaginationDTO }> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
 
     const { videoList, paginationData } =
-      await this.videoRepository.getVideosOfTrainerByTrainerId(trainerId, {
+      await this.videoRepository.getTrainerVideos(trainerId, {
         page,
         limit,
         fromDate: parsedFromDate,
@@ -123,8 +140,10 @@ export class ContentManagementUseCase {
     videoId,
     privacy,
   }: UpdateVideoBlockStatus): Promise<Video> {
-    if (!videoId || !privacy) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+    if (videoId === null || privacy === null) {
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
     const updatedVideoData = await this.videoRepository.updateVideoBlockStatus({
       videoId,
@@ -141,8 +160,10 @@ export class ContentManagementUseCase {
     playListId,
     privacy,
   }: UpdatePlayListBlockStatus): Promise<Playlist> {
-    if (!playListId || !privacy) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+    if (playListId === null || privacy === null) {
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
     const updatedPlayListData =
       await this.playListRepository.updatePlayListBlockStatus({
@@ -156,12 +177,14 @@ export class ContentManagementUseCase {
     return updatedPlayListData;
   }
 
-  public async getAllPlayListsOfTrainer(trainerId: IdDTO): Promise<Playlist[]> {
+  public async getallTrainerPlaylists(trainerId: IdDTO): Promise<Playlist[]> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
     const playListData =
-      await this.playListRepository.getFullPlayListsOfTrainer(trainerId);
+      await this.playListRepository.getallTrainerPlaylists(trainerId);
 
     return playListData;
   }
@@ -186,7 +209,9 @@ export class ContentManagementUseCase {
       !trainerId ||
       !video
     ) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(
+        AuthenticationStatusMessage.AllFieldsAreRequired
+      );
     }
     const editedVideo = await this.videoRepository.editVideo({
       _id,
@@ -210,7 +235,11 @@ export class ContentManagementUseCase {
       }));
 
       const videoIdsToDelete = videoPlayListDocs.map((list) => list.videoId);
-      await this.playListRepository.updateManyVideoCount(playLists);
+      const videoCountWithPlayList = await this.playListRepository.getNumberOfVideosPerPlaylist(playLists)
+
+      if(videoCountWithPlayList.length > 0){
+        await this.playListRepository.updateManyVideoCount(videoCountWithPlayList);
+      }
       await this.videoPlayListRepository.bulkWriteAddNewDeleteUnused(
         videoPlayListDocs,
         videoIdsToDelete
@@ -219,13 +248,20 @@ export class ContentManagementUseCase {
     return editedVideo;
   }
 
-  public async getVideoById(videoId:IdDTO):Promise<Video>{
-    const videoData =  await this.videoRepository.getVideoById(videoId)
-
-    if(!videoData){
-      throw new validationError(VideoStatusMessage.FailedToGetVideo)
+  public async getVideoById(videoId: IdDTO): Promise<Video> {
+    const videoData = await this.videoRepository.getVideoById(videoId);
+    if (!videoData) {
+      throw new validationError(VideoStatusMessage.FailedToGetVideo);
     }
 
-    return videoData
+    return videoData;
+  }
+
+  public async editPlayList({playListId,title}:EditPlayList): Promise<Playlist> {
+    const playListData = await this.playListRepository.editPlayList({playListId,title});
+    if (!playListData) {
+      throw new validationError(VideoStatusMessage.FailedToGetVideo);
+    }
+    return playListData;
   }
 }

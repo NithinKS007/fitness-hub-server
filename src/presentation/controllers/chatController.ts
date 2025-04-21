@@ -16,7 +16,7 @@ import { MongoConversationRepository } from "../../infrastructure/databases/repo
 const mongoChatRepository = new MongoChatRepository();
 const monogUserSubscriptionPlanRepository =
   new MongoUserSubscriptionPlanRepository();
-const mongoConversationRepository = new MongoConversationRepository()
+const mongoConversationRepository = new MongoConversationRepository();
 
 //USE CASE INSTANCES
 const chatUseCase = new ChatUseCase(
@@ -45,8 +45,9 @@ export class ChatController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const trainerId = req.user._id
-      const trainerChatList = await chatUseCase.getTrainerChatList(trainerId);
+      const trainerId = req.user._id;
+      const { search } = req.query;
+      const trainerChatList = await chatUseCase.getTrainerChatList(trainerId,{search:search as string});
       sendResponse(
         res,
         HttpStatusCodes.OK,
@@ -69,8 +70,9 @@ export class ChatController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId = req.user._id
-      const userChatList = await chatUseCase.getUserChatList(userId);
+      const userId = req.user._id;
+      const { search } = req.query;
+      const userChatList = await chatUseCase.getUserChatList(userId,{search:search as string});
       sendResponse(
         res,
         HttpStatusCodes.OK,

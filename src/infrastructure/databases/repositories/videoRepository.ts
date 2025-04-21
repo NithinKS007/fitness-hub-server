@@ -5,11 +5,14 @@ import {
   UpdateVideoBlockStatus,
 } from "../../../application/dtos/contentDTOs";
 import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
-import { Video } from "../../../domain/entities/videoEntity";
+import {
+  Video,
+  VideoWithPlayLists,
+} from "../../../domain/entities/videoEntity";
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
 import videoModel from "../models/videoModel";
 import { GetVideoQueryDTO } from "../../../application/dtos/queryDTOs";
-import videoPlayListModel from "../models/videoPlayListModel";
+// import videoPlayListModel from "../models/videoPlayListModel";
 
 export class MonogVideoRepository implements IVideoRepository {
   public async createVideo({
@@ -47,10 +50,13 @@ export class MonogVideoRepository implements IVideoRepository {
       { new: true }
     );
   }
-  public async getVideosOfTrainerByTrainerId(
+  public async getTrainerVideos(
     trainerId: IdDTO,
     { page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO
-  ): Promise<{ videoList: Video[]; paginationData: PaginationDTO }> {
+  ): Promise<{
+    videoList: VideoWithPlayLists[];
+    paginationData: PaginationDTO;
+  }> {
     const pageNumber = parseInt(page, 10) || 1;
     const limitNumber = parseInt(limit, 10) || 10;
     const skip = (pageNumber - 1) * limitNumber;
@@ -86,24 +92,34 @@ export class MonogVideoRepository implements IVideoRepository {
       filters
         ?.filter((id) => mongoose.Types.ObjectId.isValid(id))
         .map((id) => new mongoose.Types.ObjectId(id)) || [];
-    if (playlistIds.length > 0) {
-      const videoIds = await videoPlayListModel
-        .find({ playListId: { $in: playlistIds } })
-        .distinct("videoId")
-        .lean();
-      if (videoIds.length === 0) {
-        return {
-          videoList: [],
-          paginationData: { currentPage: pageNumber, totalPages: 0 },
-        };
-      }
-      matchQuery._id = {
-        $in: videoIds.map((id) => new mongoose.Types.ObjectId(id.toString())),
-      };
-    }
 
     const basePipeline: any[] = [
       { $match: matchQuery },
+      {
+        $lookup: {
+          from: "videoplaylists",
+          localField: "_id",
+          foreignField: "videoId",
+          as: "videoplaylists",
+        },
+      },
+      ...(playlistIds.length > 0
+        ? [
+            {
+              $match: {
+                "videoplaylists.playListId": { $in: playlistIds },
+              },
+            },
+          ]
+        : []),
+      {
+        $lookup: {
+          from: "playlists",
+          localField: "videoplaylists.playListId",
+          foreignField: "_id",
+          as: "playLists",
+        },
+      },
       {
         $project: {
           _id: 1,
@@ -116,6 +132,7 @@ export class MonogVideoRepository implements IVideoRepository {
           privacy: 1,
           createdAt: 1,
           updatedAt: 1,
+          playLists: 1,
         },
       },
     ];
@@ -163,7 +180,8 @@ export class MonogVideoRepository implements IVideoRepository {
         duration: duration,
         thumbnail: thumbnail,
         video: video,
-      }
+      },
+      { new: true }
     );
   }
 }
