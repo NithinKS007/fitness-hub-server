@@ -12,7 +12,7 @@ import {
   CreateUserDTO,
   UpdateUserDetailsDTO,
 } from "../../../application/dtos/userDTOs";
-import { User } from "../../../domain/entities/userEntity";
+import { User } from "../../../domain/entities/user";
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import UserModel from "../models/userModel";
 import { GetUsersQueryDTO } from "../../../application/dtos/queryDTOs";

@@ -11,13 +11,14 @@ export const hashPassword = async (password: string): Promise<string> => {
   }
 };
 
-export const comparePassword = async (userPassword: string,hashedPassword: string): Promise<boolean> => {
+export const comparePassword = async (
+  userPassword: string,
+  hashedPassword: string
+): Promise<boolean> => {
   try {
     return await bcrypt.compare(userPassword, hashedPassword);
   } catch (error) {
     console.log(`Error while comparing the passwords: ${error}`);
-    throw new Error(PasswordStatusMessage.FailedToComparePassword)
+    throw new Error(PasswordStatusMessage.FailedToComparePassword);
   }
 };
-
-

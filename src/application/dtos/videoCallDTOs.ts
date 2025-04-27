@@ -9,7 +9,7 @@ export interface CreateVideoCallLogDTO {
 export interface UpdateVideoCallLogDTO {
   callRoomId: string;
   callEndTime: Date;
-  callStatus: string;
+  callStatus: "pending" | "completed" | "missed";
 }
 
 export interface UpdateVideoCallDurationDTO {

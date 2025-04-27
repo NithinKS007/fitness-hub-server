@@ -6,7 +6,7 @@ import {
   IncrementUnReadMessageCount,
   UpdateLastMessage,
   UpdateUnReadMessageCount,
-} from "../../../application/dtos/conversationDTO";
+} from "../../../application/dtos/conversationDTOs";
 import { IConversationRepository } from "../../../domain/interfaces/IConversationRepository";
 import conversationModel from "../models/conversation";
 import {
@@ -14,7 +14,7 @@ import {
   Ichat,
   TrainerChatList,
   UserChatList,
-} from "../../../domain/entities/conversationEntity";
+} from "../../../domain/entities/conversation";
 import { IdDTO } from "../../../application/dtos/utilityDTOs";
 import chatModel from "../models/chatModel";
 import { GetChatListQueryDTO } from "../../../application/dtos/queryDTOs";

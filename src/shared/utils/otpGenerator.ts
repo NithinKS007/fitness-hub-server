@@ -7,5 +7,5 @@ const generateOtp = (length: number): string => {
     lowerCaseAlphabets: false,
     specialChars: false,
   });
-}
-export default generateOtp
+};
+export default generateOtp;

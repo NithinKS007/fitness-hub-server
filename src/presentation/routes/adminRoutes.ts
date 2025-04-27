@@ -1,7 +1,7 @@
 import express from "express"
-import { AdminController } from "../controllers/adminController"
+import { AdminController } from "../controllers/admin/adminController"
 import { authenticate } from "../middlewares/authenticate";
-import { AdminDashboardController } from "../controllers/adminDashBoardController";
+import { AdminDashboardController } from "../controllers/dashboard/adminDashBoardController";
 
 const adminRoutes = express.Router()
 

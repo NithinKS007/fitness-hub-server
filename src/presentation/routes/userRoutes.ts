@@ -1,38 +1,45 @@
 import express from "express"
 import { authenticate } from "../middlewares/authenticate"
-import { TrainerDisplayController } from "../controllers/trainerDisplayController"
-import { SubscriptionController } from "../controllers/subscriptionController"
-import { BookingController } from "../controllers/bookingController"
-import { ContentController } from "../controllers/contentController"
-import { AuthController } from "../controllers/authController"
-import { WorkoutController } from "../controllers/workOutController"
-import { UserDashboardController } from "../controllers/userDashBoardController"
+import { TrainerDisplayController } from "../controllers/trainer/trainerDisplayController"
+import { BookingController } from "../controllers/booking/bookingController"
+import { AuthController } from "../controllers/auth/authController"
+import { WorkoutController } from "../controllers/workout/workOutController"
+import { UserDashboardController } from "../controllers/dashboard/userDashBoardController"
+import { VideoCallLogController } from "../controllers/videoCallLog/videoCallLogController"
+import { AppointmentController } from "../controllers/appointment/appointmentController"
+import { PlayListController } from "../controllers/playlist/playListController"
+import { VideoController } from "../controllers/video/videoController"
+import { WebhookController } from "../controllers/subscription/webhookController"
+import { UserSubscriptionController } from "../controllers/subscription/userSubscriptionController"
+import { PurchaseSubscriptionController } from "../controllers/subscription/purchaseSubscriptionController"
 
 const userRoutes = express.Router()
 
 //TRAINER DISPLAYING ROUTES
 userRoutes.get("/trainers",TrainerDisplayController.getApprovedTrainers)
 userRoutes.get("/trainers/:trainerId",TrainerDisplayController.getApprovedTrainerDetailsWithSub)
+userRoutes.get("/my-trainers",authenticate,TrainerDisplayController.getMyTrainers)
 
 //SUBSCRIPTION ROUTES
-userRoutes.post("/checkout-subscription-session/",authenticate,SubscriptionController.purchaseSubscription)
-userRoutes.get("/subscriptions",authenticate,SubscriptionController.getUserSubscriptions)
-userRoutes.get("/my-trainers",authenticate,SubscriptionController.getMyTrainers)
-userRoutes.get("/verify-subscriptions/:sessionId",authenticate,SubscriptionController.getSubscriptionDetailsBySessionId)
-userRoutes.patch("/cancel-subscriptions",authenticate,SubscriptionController.cancelSubscription) 
-userRoutes.get("/trainer-subscription-status/:_id",authenticate,SubscriptionController.isSubscribedToTheTrainer)
+userRoutes.post("/checkout-subscription-session/",authenticate,PurchaseSubscriptionController.purchaseSubscription)
+userRoutes.get("/subscriptions",authenticate,UserSubscriptionController.getUserSubscriptions)
+userRoutes.get("/verify-subscriptions/:sessionId",authenticate,WebhookController.getSubscriptionBySession)
+userRoutes.patch("/cancel-subscriptions",authenticate,PurchaseSubscriptionController.cancelSubscription) 
+userRoutes.get("/trainer-subscription-status/:_id",authenticate,UserSubscriptionController.isSubscribedToTheTrainer)
 
-//CONTENT ROUTES
-userRoutes.get("/videos/:trainerId",authenticate,ContentController.getTrainerVideos)
-userRoutes.get("/video-playlist/:trainerId",authenticate,ContentController.getallPlayLists)
-userRoutes.get("/video-details/:videoId",authenticate,ContentController.getVideoById)
+//VIDEO ROUTES
+userRoutes.get("/videos/:trainerId",authenticate,VideoController.getVideos)
+userRoutes.get("/video-details/:videoId",authenticate,VideoController.getVideoById)
+
+//PLAYLIST ROUTES
+userRoutes.get("/video-playlist/:trainerId",authenticate,PlayListController.getallPlayLists)
 
 //BOOKING ROUTES
 userRoutes.get("/booking-slots/:trainerId",authenticate,BookingController.getTrainerBookingSlots)
-userRoutes.post("/book-slot/:slotId",authenticate,BookingController.bookAppointment)
-userRoutes.get("/appointment-schedules",authenticate,BookingController.getUserBookingSchedules)
-userRoutes.patch("/cancel-appointment-schedule/:appointmentId",authenticate,BookingController.cancelAppointment)
-userRoutes.get("/video-call-logs",authenticate,BookingController.getUserVideoCallLogs)
+userRoutes.post("/book-slot/:slotId",authenticate,AppointmentController.bookAppointment)
+userRoutes.get("/appointment-schedules",authenticate,AppointmentController.getUserBookingSchedules)
+userRoutes.patch("/cancel-appointment-schedule/:appointmentId",authenticate,AppointmentController.cancelAppointment)
+userRoutes.get("/video-call-logs",authenticate,VideoCallLogController.getUserVideoCallLogs)
 
 //PROFILE ROUTES
 userRoutes.put("/update-profile",authenticate,AuthController.updateUserProfile)

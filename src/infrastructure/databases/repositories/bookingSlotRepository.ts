@@ -1,13 +1,10 @@
 import mongoose from "mongoose";
 import { CreateBookingSlotDTO } from "../../../application/dtos/bookingDTOs";
 import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
-import { BookingSlot } from "../../../domain/entities/bookingSlotEntity";
+import { BookingSlot } from "../../../domain/entities/bookingSlot";
 import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
 import bookingSlotModel from "../models/bookingSlot";
 import { AvailableSlotsQueryDTO } from "../../../application/dtos/queryDTOs";
-
-const today = new Date();
-today.setUTCHours(0, 0, 0, 0);
 
 export class MongoBookingSlotRepository implements IBookingSlotRepository {
   public async addBookingSlot({
@@ -30,31 +27,19 @@ export class MongoBookingSlotRepository implements IBookingSlotRepository {
     const limitNumber = parseInt(limit, 10) || 10;
     const skip = (pageNumber - 1) * limitNumber;
 
-    let matchQuery: any = { $gte: today };
+    let matchQuery: any = {};
 
-    if (fromDate) {
-      if (fromDate < today) {
-        matchQuery = { ...matchQuery, $gte: today };
-      } else {
-        matchQuery = { ...matchQuery, $gte: fromDate };
-      }
-    }
-    if (toDate) {
-      if (toDate < today) {
-        matchQuery = { ...matchQuery, $lte: today };
-      } else {
-        matchQuery = { ...matchQuery, $lte: toDate };
-      }
-    }
+    if (fromDate) matchQuery.date = { $gte: fromDate }; 
+  if (toDate) matchQuery.date = { ...matchQuery.date, $lte: toDate };
 
     const [totalCount, availableSlotsList] = await Promise.all([
       bookingSlotModel.countDocuments({
         trainerId: trainerId,
-        date: matchQuery,
+         ...matchQuery,
         status: "pending",
       }),
       bookingSlotModel
-        .find({ trainerId: trainerId, date: matchQuery, status: "pending" })
+        .find({ trainerId: trainerId,  ...matchQuery, status: "pending" })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNumber)
@@ -74,17 +59,8 @@ export class MongoBookingSlotRepository implements IBookingSlotRepository {
   public async getAvailableSlotsUser(trainerId: IdDTO): Promise<BookingSlot[]> {
     return await bookingSlotModel.find({
       trainerId: trainerId,
-      date: { $gte: today },
+      date: { $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)) },
       status: "pending",
-    });
-  }
-
-  public async getBookingSlotsOfTrainerFromTodayOnWards(
-    trainerId: IdDTO
-  ): Promise<BookingSlot[]> {
-    return await bookingSlotModel.find({
-      trainerId: trainerId,
-      $and: [{ date: { $gte: today } }, { status: "pending" }],
     });
   }
 

@@ -4,7 +4,7 @@ import {
   FindChatDTO,
 } from "../../../application/dtos/chatDTOs";
 import { IdDTO } from "../../../application/dtos/utilityDTOs";
-import { Chat } from "../../../domain/entities/chatEntity";
+import { Chat } from "../../../domain/entities/chat";
 import { IChatRepository } from "../../../domain/interfaces/IChatRepository";
 import chatModel from "../models/chatModel";
 

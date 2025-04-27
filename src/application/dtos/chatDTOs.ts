@@ -9,8 +9,3 @@ export interface FindChatDTO {
   userId: string;
   otherUserId: string;
 }
-
-export interface CountUnReadMessages {
-  senderId: string;
-  receiverId: string;
-}

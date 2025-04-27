@@ -1,16 +1,16 @@
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import {
   CreatePlayListDTO,
-  EditPlayList,
-  UpdatePlayListBlockStatus,
-} from "../../../application/dtos/contentDTOs";
+  EditPlayListDTO,
+  UpdatePlayListPrivacyDTO,
+} from "../../../application/dtos/playListDTOs";
 import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
 import playlistModel from "../models/playListModel";
 import {
   NumberOfVideoPerPlayList,
   Playlist,
-} from "../../../domain/entities/playListEntity";
+} from "../../../domain/entities/playList";
 import { GetPlayListsQueryDTO } from "../../../application/dtos/queryDTOs";
 
 export class MongoPlayListRepository implements IPlayListRepository {
@@ -25,10 +25,10 @@ export class MongoPlayListRepository implements IPlayListRepository {
     return PlayList.toObject();
   }
 
-  public async updatePlayListBlockStatus({
+  public async updatePlayListPrivacy({
     playListId,
     privacy,
-  }: UpdatePlayListBlockStatus): Promise<Playlist | null> {
+  }: UpdatePlayListPrivacyDTO): Promise<Playlist | null> {
     return await playlistModel.findByIdAndUpdate(
       { _id: new mongoose.Types.ObjectId(playListId) },
       { privacy: privacy },
@@ -38,7 +38,7 @@ export class MongoPlayListRepository implements IPlayListRepository {
   public async editPlayList({
     playListId,
     title,
-  }: EditPlayList): Promise<Playlist | null> {
+  }: EditPlayListDTO): Promise<Playlist | null> {
     return await playlistModel.findOneAndUpdate(
       new mongoose.Types.ObjectId(playListId),
       { title: title },
@@ -46,7 +46,7 @@ export class MongoPlayListRepository implements IPlayListRepository {
     );
   }
 
-  public async getTrainerPlaylists(
+  public async getPlaylists(
     trainerId: IdDTO,
     { page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
   ): Promise<{ playList: Playlist[]; paginationData: PaginationDTO }> {
@@ -145,7 +145,7 @@ export class MongoPlayListRepository implements IPlayListRepository {
     }
   }
 
-  public async getallTrainerPlaylists(trainerId: IdDTO): Promise<Playlist[]> {
+  public async getallPlaylists(trainerId: IdDTO): Promise<Playlist[]> {
     return await playlistModel.find({ trainerId: trainerId });
   }
 }

@@ -133,6 +133,7 @@ export enum SubscriptionStatusMessage {
   FailedToDeleteSubscription = "Failed to delete subscription",
   SubscriptionEditedSuccessfully = "Subscription edited successfully",
   SubscriptionDeletedSuccessfully = "Subscription deleted successfully",
+  FailedToEditSubscription = "Failed to edit subscription"
 }
 
 export enum ProfileStatusMessage {

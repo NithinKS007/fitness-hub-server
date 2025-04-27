@@ -35,6 +35,8 @@ const parseDateRange = (fromDate?: Date, toDate?: Date) => {
     parsedFromDate: fromDate ? dayjs(fromDate).toDate() : undefined,
     parsedToDate: toDate ? dayjs(toDate).toDate() : undefined,
   };
-};
+}
+
+
 
 export { getDateRange, parseDateRange };

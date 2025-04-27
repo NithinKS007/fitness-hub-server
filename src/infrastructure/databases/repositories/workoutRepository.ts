@@ -1,14 +1,13 @@
 import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
 import { IWorkoutRepository } from "../../../domain/interfaces/IWorkoutRepository";
 import {
-  WorkoutDBdto,
-  WorkoutDTO,
+  WorkoutdbDTO,
 } from "../../../application/dtos/workoutDTOs";
 import workoutModel from "../models/workoutModel";
 import {
   Workout,
   WorkoutChartData,
-} from "../../../domain/entities/workoutEntity";
+} from "../../../domain/entities/workout";
 import mongoose from "mongoose";
 import {
   CustomUserDashBoardQueryDTO,
@@ -16,7 +15,7 @@ import {
 } from "../../../application/dtos/queryDTOs";
 
 export class MongoWorkoutRepository implements IWorkoutRepository {
-  public async addWorkout(createWorkout: WorkoutDBdto[]): Promise<Workout[]> {
+  public async addWorkout(createWorkout: WorkoutdbDTO[]): Promise<Workout[]> {
     const result = await workoutModel.insertMany(createWorkout);
     return result;
   }

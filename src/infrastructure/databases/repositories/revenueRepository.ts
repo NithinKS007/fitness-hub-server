@@ -9,7 +9,7 @@ import {
   DateRangeQueryDTO,
   GetRevenueQueryDTO,
 } from "../../../application/dtos/queryDTOs";
-import { AdminChartData } from "../../../domain/entities/chartEntity";
+import { AdminChartData } from "../../../domain/entities/chart";
 import { PaginationDTO } from "../../../application/dtos/utilityDTOs";
 
 export class MongoRevenueRepository implements IRevenueRepository {
@@ -41,14 +41,14 @@ export class MongoRevenueRepository implements IRevenueRepository {
     const totalPlatFormFee = await revenueModel.aggregate([
       { $group: { _id: null, totalPlatFormFee: { $sum: "$platformRevenue" } } },
     ]);
-    return totalPlatFormFee[0].totalPlatFormFee;
+    return totalPlatFormFee[0]?.totalPlatFormFee || 0;
   }
 
   public async getTotalCommission(): Promise<number> {
     const totalcommission = await revenueModel.aggregate([
       { $group: { _id: null, totalCommission: { $sum: "$commission" } } },
     ]);
-    return totalcommission[0].totalCommission;
+    return totalcommission[0]?.totalCommission || 0;
   }
 
   public async getTotalRevenue(): Promise<number> {
@@ -60,7 +60,7 @@ export class MongoRevenueRepository implements IRevenueRepository {
         },
       },
     ]);
-    return totalRevenue[0].totalRevenue;
+    return totalRevenue[0]?.totalRevenue || 0;
   }
 
   public async getRevenueChartData({

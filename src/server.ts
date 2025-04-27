@@ -6,11 +6,11 @@ import cors from "cors";
 import trainerRoutes from "./presentation/routes/trainerRoutes";
 import { errorMiddleware } from "./presentation/middlewares/errorMiddleWare";
 import userRoutes from "./presentation/routes/userRoutes";
-import { SubscriptionController } from "./presentation/controllers/subscriptionController";
 import chatRoutes from "./presentation/routes/chatRoutes";
 import dotenv from "dotenv";
 import { Request,Response } from "express";
-import morganMiddleware from "./infrastructure/logger/morganMiddleware";
+import morganMiddleware from "./infrastructure/logging/morganMiddleware";
+import { WebhookController } from "./presentation/controllers/subscription/webhookController";
 dotenv.config();
 
 const app = express();
@@ -26,7 +26,7 @@ app.use(
 app.post(
   "/api/v1/webhook",
   express.raw({ type: "application/json" }),
-  SubscriptionController.webHookHandler
+  WebhookController.webHookHandler
 );
 app.get("/",(req:Request,res:Response)=>{
    res.json({message:"message send from server"})

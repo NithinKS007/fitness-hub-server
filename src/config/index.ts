@@ -3,7 +3,7 @@ import app from "../server";
 import connectDB from "../infrastructure/config/dbConfig";
 import { JwtPayload } from "jsonwebtoken";;
 import { Server } from "socket.io";
-import { chatSocket } from "../infrastructure/services/socketService"
+import { socketService } from "../infrastructure/services/socket/socketService"
 import { createServer } from "http";
 
 declare global {
@@ -28,7 +28,7 @@ const io = new Server(httpServer, {
   },
 });
 
-chatSocket(io)
+socketService(io)
 
 const PORT = process.env.PORT;
 httpServer.listen(PORT, () => {

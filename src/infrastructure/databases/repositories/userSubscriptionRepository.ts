@@ -5,7 +5,7 @@ import {
   UpdateSubscriptionStatusDTO,
 } from "../../../application/dtos/subscriptionDTOs";
 import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
-import { SubscriptionPlanEntity } from "../../../domain/entities/userSubscriptionPlanEntity";
+import { SubscriptionPlanEntity } from "../../../domain/entities/userSubscriptionPlan";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
 import userSubscriptionPlanModel from "../models/userSubscriptionPlan";
 import {
@@ -18,12 +18,12 @@ import {
   TrainerSubscriberRecord,
   UserMyTrainersList,
   UserSubscriptionRecord,
-} from "../../../domain/entities/subscriptionEntity";
+} from "../../../domain/entities/subscription";
 import {
   TrainerChartData,
   TrainerPieChartData,
-} from "../../../domain/entities/chartEntity";
-import { Top5List } from "../../../domain/entities/trainerEntity";
+} from "../../../domain/entities/chart";
+import { Top5List } from "../../../domain/entities/trainer";
 import conversationModel from "../models/conversation";
 
 export class MongoUserSubscriptionPlanRepository

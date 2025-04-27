@@ -8,15 +8,13 @@ import {
   Appointment,
   AppointmentRequestsTrainer,
   AppointmentRequestsUser,
-} from "../../../domain/entities/appointmentEntity";
+} from "../../../domain/entities/appointment";
 import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
 import appointmentModel from "../models/appointmentModel";
 import {
   GetBookingRequestsDTO,
   GetBookingSchedulesDTO,
 } from "../../../application/dtos/queryDTOs";
-const today = new Date();
-today.setUTCHours(0, 0, 0, 0);
 
 export class MongoAppointmentRepository implements IAppointmentRepository {
   public async createAppointment(
@@ -63,7 +61,6 @@ export class MongoAppointmentRepository implements IAppointmentRepository {
             $match: {
               trainerId: new mongoose.Types.ObjectId(trainerId),
               status: "pending",
-              appointmentDate: { $gte: today },
             },
           },
           {
@@ -99,7 +96,6 @@ export class MongoAppointmentRepository implements IAppointmentRepository {
             $match: {
               trainerId: new mongoose.Types.ObjectId(trainerId),
               status: "pending",
-              appointmentDate: { $gte: today },
             },
           },
           {
@@ -211,7 +207,6 @@ export class MongoAppointmentRepository implements IAppointmentRepository {
             $match: {
               trainerId: new mongoose.Types.ObjectId(trainerId),
               status: "approved",
-              appointmentDate: { $gte: today },
             },
           },
           {
@@ -247,7 +242,6 @@ export class MongoAppointmentRepository implements IAppointmentRepository {
             $match: {
               trainerId: new mongoose.Types.ObjectId(trainerId),
               status: "approved",
-              appointmentDate: { $gte: today },
             },
           },
           {
@@ -345,7 +339,6 @@ export class MongoAppointmentRepository implements IAppointmentRepository {
           {
             $match: {
               userId: new mongoose.Types.ObjectId(userId),
-              appointmentDate: { $gte: today },
             },
           },
           {
@@ -396,7 +389,6 @@ export class MongoAppointmentRepository implements IAppointmentRepository {
           {
             $match: {
               userId: new mongoose.Types.ObjectId(userId),
-              appointmentDate: { $gte: today },
             },
           },
           {

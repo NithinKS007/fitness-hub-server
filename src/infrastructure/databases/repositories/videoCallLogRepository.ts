@@ -11,7 +11,7 @@ import {
   TrainerVideoCallLog,
   UserVideoCallLog,
   VideoCallLog,
-} from "../../../domain/entities/videoCallLogEntity";
+} from "../../../domain/entities/videoCallLog";
 import { GetVideoCallLogQueryDTO } from "../../../application/dtos/queryDTOs";
 
 export class MongoVideoCallLogRepository implements IVideoCallLogRepository {

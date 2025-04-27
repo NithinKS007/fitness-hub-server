@@ -6,7 +6,7 @@ import {
   UpdateSubscriptionDetailsDTO,
 } from "../../../application/dtos/subscriptionDTOs";
 import { IdDTO } from "../../../application/dtos/utilityDTOs";
-import { Subscription } from "../../../domain/entities/subscriptionEntity";
+import { Subscription } from "../../../domain/entities/subscription";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
 import SubscriptionModel from "../models/subscriptionModel";
 

@@ -20,7 +20,7 @@ export interface WorkoutDTO {
   workouts: Workout[];
 }
 
-export interface WorkoutDBdto {
+export interface WorkoutdbDTO {
   userId: any
   date: Date;
   bodyPart: string;

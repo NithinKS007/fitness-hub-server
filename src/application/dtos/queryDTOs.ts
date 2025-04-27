@@ -23,6 +23,10 @@ export type GetApprovedTrainerQueryDTO = {
   Gender: string[];
   Sort: string;
 };
+export type GetUserTrainersListQueryDTO = Omit<
+  BaseQueryDTO,
+  "filters" | "fromDate" | "toDate"
+>;
 
 //User-related DTOs
 export type GetUsersQueryDTO = Omit<BaseQueryDTO, "fromDate" | "toDate">;
@@ -62,11 +66,6 @@ export type GetWorkoutQueryDTO = BaseQueryDTO;
 
 //Revenue-related DTOs
 export type GetRevenueQueryDTO = BaseQueryDTO;
-
-export type GetUserTrainersListQueryDTO = Omit<
-  BaseQueryDTO,
-  "filters" | "fromDate" | "toDate"
->;
 
 export type GetChatListQueryDTO = Omit<
   BaseQueryDTO,

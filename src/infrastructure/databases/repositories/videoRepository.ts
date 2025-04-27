@@ -1,18 +1,17 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import {
-  CreatedVideoDTO,
-  EditVideo,
-  UpdateVideoBlockStatus,
-} from "../../../application/dtos/contentDTOs";
+  CreateVideoDTO,
+  EditVideoDTO,
+  UpdateVideoPrivacyDTO,
+} from "../../../application/dtos/videoDTOs";
 import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
 import {
   Video,
   VideoWithPlayLists,
-} from "../../../domain/entities/videoEntity";
+} from "../../../domain/entities/video";
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
 import videoModel from "../models/videoModel";
 import { GetVideoQueryDTO } from "../../../application/dtos/queryDTOs";
-// import videoPlayListModel from "../models/videoPlayListModel";
 
 export class MonogVideoRepository implements IVideoRepository {
   public async createVideo({
@@ -23,7 +22,7 @@ export class MonogVideoRepository implements IVideoRepository {
     video,
     playLists,
     duration,
-  }: CreatedVideoDTO): Promise<Video> {
+  }: CreateVideoDTO): Promise<Video> {
     const trainerIdObjectId = new mongoose.Types.ObjectId(trainerId);
     const playListsObjectId = playLists.map(
       (playlist) => new mongoose.Types.ObjectId(playlist)
@@ -40,17 +39,17 @@ export class MonogVideoRepository implements IVideoRepository {
     return createdVideo.toObject();
   }
 
-  public async updateVideoBlockStatus({
+  public async updateVideoPrivacy({
     videoId,
     privacy,
-  }: UpdateVideoBlockStatus): Promise<Video | null> {
+  }: UpdateVideoPrivacyDTO): Promise<Video | null> {
     return await videoModel.findByIdAndUpdate(
       { _id: new mongoose.Types.ObjectId(videoId) },
       { privacy: privacy },
       { new: true }
     );
   }
-  public async getTrainerVideos(
+  public async getVideos(
     trainerId: IdDTO,
     { page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO
   ): Promise<{
@@ -171,7 +170,7 @@ export class MonogVideoRepository implements IVideoRepository {
     duration,
     thumbnail,
     video,
-  }: EditVideo): Promise<Video | null> {
+  }: EditVideoDTO): Promise<Video | null> {
     return await videoModel.findByIdAndUpdate(
       new mongoose.Types.ObjectId(_id),
       {
