@@ -13,6 +13,8 @@ import { LoggerService } from "../../../infrastructure/logging/logger";
 import { LoggerHelper } from "../../../shared/utils/handleLog";
 import { PurchaseSubscriptionUseCase } from "../../../application/usecases/subscription/purchaseSubscriptionUseCase";
 import { WebHookHandlerUseCase } from "../../../application/usecases/subscription/webhookHandlerUseCase";
+import { EmailService } from "../../../infrastructure/services/communication/emailService";
+import { MongoUserRepository } from "../../../infrastructure/databases/repositories/userRepository";
 
 //MONGO REPOSITORY INSTANCES
 const mongoSubscriptionRepository = new MongoSubscriptionRepository();
@@ -20,11 +22,12 @@ const monogUserSubscriptionPlanRepository =
   new MongoUserSubscriptionPlanRepository();
 const mongoRevenueRepository = new MongoRevenueRepository();
 const mongoConversationRepository = new MongoConversationRepository();
-
+const mongoUserRepository = new MongoUserRepository();
 //SERVICE INSTANCES
 const stripeService = new StripePaymentService();
 const logger = new LoggerService();
 const loggerHelper = new LoggerHelper(logger);
+const emailService = new EmailService();
 
 //USE CASE INSTANCES
 const purchaseSubscriptionUseCase = new PurchaseSubscriptionUseCase(
@@ -38,7 +41,9 @@ const webHookHandlerUseCase = new WebHookHandlerUseCase(
   monogUserSubscriptionPlanRepository,
   mongoRevenueRepository,
   mongoConversationRepository,
-  stripeService
+  stripeService,
+  emailService,
+  mongoUserRepository
 );
 
 export class WebhookController {

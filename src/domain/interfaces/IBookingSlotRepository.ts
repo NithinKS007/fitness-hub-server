@@ -12,7 +12,14 @@ export interface IBookingSlotRepository {
     availableSlotsList: BookingSlot[];
     paginationData: PaginationDTO;
   }>;
-  getAvailableSlotsUser(trainerId: IdDTO): Promise<BookingSlot[]>;
+  getAllAvailableSlotsFromToday(trainerId: IdDTO): Promise<BookingSlot[]>;
+  getAvailableSlotsFromToday(
+    trainerId: IdDTO,
+    availableSlotQueryData: AvailableSlotsQueryDTO
+  ): Promise<{
+    availableSlotsList: BookingSlot[];
+    paginationData: PaginationDTO;
+  }>;
   findSlotById(bookingSlotId: IdDTO): Promise<BookingSlot | null>;
   findBookSlotAndChangeStatusTobooked(
     bookingSlotId: IdDTO

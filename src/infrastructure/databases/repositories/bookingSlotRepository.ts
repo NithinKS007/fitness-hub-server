@@ -29,17 +29,17 @@ export class MongoBookingSlotRepository implements IBookingSlotRepository {
 
     let matchQuery: any = {};
 
-    if (fromDate) matchQuery.date = { $gte: fromDate }; 
-  if (toDate) matchQuery.date = { ...matchQuery.date, $lte: toDate };
+    if (fromDate) matchQuery.date = { $gte: fromDate };
+    if (toDate) matchQuery.date = { ...matchQuery.date, $lte: toDate };
 
     const [totalCount, availableSlotsList] = await Promise.all([
       bookingSlotModel.countDocuments({
         trainerId: trainerId,
-         ...matchQuery,
+        ...matchQuery,
         status: "pending",
       }),
       bookingSlotModel
-        .find({ trainerId: trainerId,  ...matchQuery, status: "pending" })
+        .find({ trainerId: trainerId, ...matchQuery, status: "pending" })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNumber)
@@ -56,7 +56,69 @@ export class MongoBookingSlotRepository implements IBookingSlotRepository {
     };
   }
 
-  public async getAvailableSlotsUser(trainerId: IdDTO): Promise<BookingSlot[]> {
+  public async getAvailableSlotsFromToday(
+    trainerId: IdDTO,
+    { page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
+  ): Promise<{
+    availableSlotsList: BookingSlot[];
+    paginationData: PaginationDTO;
+  }> {
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 9
+    const skip = (pageNumber - 1) * limitNumber;
+
+    let matchQuery: any = {
+      $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+    };
+
+    if (fromDate) {
+      if (fromDate < new Date(new Date().setUTCHours(0, 0, 0, 0))) {
+        matchQuery = {
+          ...matchQuery,
+          $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+        };
+      } else {
+        matchQuery = { ...matchQuery, $gte: fromDate };
+      }
+    }
+    if (toDate) {
+      if (toDate < new Date(new Date().setUTCHours(0, 0, 0, 0))) {
+        matchQuery = {
+          ...matchQuery,
+          $lte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+        };
+      } else {
+        matchQuery = { ...matchQuery, $lte: toDate };
+      }
+    }
+
+    const [totalCount, availableSlotsList] = await Promise.all([
+      bookingSlotModel.countDocuments({
+        trainerId: trainerId,
+        date: matchQuery,
+        status: "pending",
+      }),
+      bookingSlotModel
+        .find({ trainerId: trainerId, date: matchQuery, status: "pending" })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNumber)
+        .exec(),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / limitNumber);
+    return {
+      availableSlotsList,
+      paginationData: {
+        currentPage: pageNumber,
+        totalPages: totalPages,
+      },
+    };
+  }
+
+  public async getAllAvailableSlotsFromToday(
+    trainerId: IdDTO
+  ): Promise<BookingSlot[]> {
     return await bookingSlotModel.find({
       trainerId: trainerId,
       date: { $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)) },

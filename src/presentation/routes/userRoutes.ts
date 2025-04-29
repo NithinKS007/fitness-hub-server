@@ -35,7 +35,8 @@ userRoutes.get("/video-details/:videoId",authenticate,VideoController.getVideoBy
 userRoutes.get("/video-playlist/:trainerId",authenticate,PlayListController.getallPlayLists)
 
 //BOOKING ROUTES
-userRoutes.get("/booking-slots/:trainerId",authenticate,BookingController.getTrainerBookingSlots)
+userRoutes.get("/booking-slots/:trainerId",authenticate,BookingController.getAllAvailableSlotsFromToday)
+userRoutes.get("/available-slots/:trainerId",authenticate,BookingController.getAvailableSlotsFromToday)
 userRoutes.post("/book-slot/:slotId",authenticate,AppointmentController.bookAppointment)
 userRoutes.get("/appointment-schedules",authenticate,AppointmentController.getUserBookingSchedules)
 userRoutes.patch("/cancel-appointment-schedule/:appointmentId",authenticate,AppointmentController.cancelAppointment)

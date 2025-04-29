@@ -1,13 +1,13 @@
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import {
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+import { SubscriptionStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
 import stripe from "../../../infrastructure/config/stripeConfig";
 import { IRevenueRepository } from "../../../domain/interfaces/IRevenueRepository";
 import { IConversationRepository } from "../../../domain/interfaces/IConversationRepository";
 import { IPaymentService } from "../../interfaces/payments/IPaymentService";
+import { IEmailService } from "../../interfaces/communication/IEmailService";
+import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 
 export class WebHookHandlerUseCase {
   constructor(
@@ -15,7 +15,9 @@ export class WebHookHandlerUseCase {
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
     private revenueRepository: IRevenueRepository,
     private conversationRepository: IConversationRepository,
-    private paymentService: IPaymentService
+    private paymentService: IPaymentService,
+    private emailService: IEmailService,
+    private userRepository:IUserRepository
   ) {}
   private validateWebhookInput(sig: any, webhookSecret: any, body: any): void {
     if (!sig || !webhookSecret || !body) {
@@ -85,6 +87,13 @@ export class WebHookHandlerUseCase {
               newSubscriptionAdding
             );
 
+          const userData = await this.userRepository.findById(userId as string)
+          await this.emailService.sendEmail({
+            to: userData?.email as string,
+            subject: "Subscription Confirmation",
+            text: `Your subscription with Trainer ID: ${trainerId} has been successfully activated. Enjoy your training sessions!`,
+          });
+
           if (createdSubscription) {
             const adminCommission = Math.round(subscriptionData?.price * 0.1);
             const platformFee = Math.round(subscriptionData?.price * 0.05);
@@ -148,6 +157,14 @@ export class WebHookHandlerUseCase {
           await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionIdAndUpdateStatus(
             { stripeSubscriptionId, status: "canceled" }
           );
+          const userData = await this.userRepository.findById(userId as string)
+          await this.emailService.sendEmail({
+            to: userData?.email as string,
+            subject: "Payment Failed - Subscription Canceled",
+            text: `Dear user, your payment for the subscription to Trainer ID:
+            ${trainerId} has failed, and your subscription has been canceled. 
+            Please update your payment method to continue the service.`,
+          });
           console.log(
             `Subscription ${stripeSubscriptionId} cancelled due to payment failure`
           );
@@ -173,6 +190,12 @@ export class WebHookHandlerUseCase {
           await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionIdAndUpdateStatus(
             { stripeSubscriptionId: subscription.id, status: "canceled" }
           );
+          const userData = await this.userRepository.findById(userId as string)
+          await this.emailService.sendEmail({
+            to: userData?.email as string,
+            subject: "Subscription Cancelled",
+            text: `Dear user, your subscription to Trainer ID: ${trainerId} has been canceled. We hope to have you back soon!`,
+          });
           console.log(
             `Subscription ${subscription.id} cancelled due to customer cancellation`
           );

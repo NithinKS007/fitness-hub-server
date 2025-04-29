@@ -48,7 +48,7 @@ export class EmailService implements IEmailService {
         subject: subject,
         text: text,
       });
-      console.log("Email sent successfully");
+      console.log("Email sent successfully to",to, subject, text);
     } catch (error) {
       console.log(`Error sending the email:${error}`);
       throw new validationError(AuthenticationStatusMessage.FailedToSendEmail);

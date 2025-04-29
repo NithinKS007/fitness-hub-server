@@ -29,7 +29,6 @@ const getBookingSlotUseCase = new GetBookingSlotUseCase(
   mongoBookingSlotRepository
 );
 
-
 export class BookingController {
   static async addBookingSlot(
     req: Request,
@@ -91,10 +90,10 @@ export class BookingController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const trainerId = req.user._id;
+      const trainerId = req.user._id 
       const { fromDate, toDate, page, limit } = req.query;
       const { availableSlotsList, paginationData } =
-        await getBookingSlotUseCase.getAvailableSlotsTrainer(trainerId, {
+        await getBookingSlotUseCase.getAvailableSlots(trainerId, {
           fromDate: fromDate as any,
           toDate: toDate as any,
           page: page as string,
@@ -119,7 +118,41 @@ export class BookingController {
     }
   }
 
-  static async getTrainerBookingSlots(
+  static async getAvailableSlotsFromToday(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const trainerId = req.params.trainerId;
+      const { fromDate, toDate, page, limit } = req.query;
+      const { availableSlotsList, paginationData } =
+        await getBookingSlotUseCase.getAvailableSlotsFromToday(trainerId, {
+          fromDate: fromDate as any,
+          toDate: toDate as any,
+          page: page as string,
+          limit: limit as string,
+        });
+      sendResponse(
+        res,
+        HttpStatusCodes.OK,
+        {
+          availableSlotsList: availableSlotsList,
+          paginationData: paginationData,
+        },
+        SlotStatusMessage.SlotDataRetrievedSuccessfully
+      );
+    } catch (error) {
+      loggerHelper.handleLogError(
+        error,
+        "BookingController.getAvailableSlotsFromToday",
+        "Error retrieving available slot details"
+      );
+      next(error);
+    }
+  }
+
+  static async getAllAvailableSlotsFromToday(
     req: Request,
     res: Response,
     next: NextFunction
@@ -127,7 +160,7 @@ export class BookingController {
     try {
       const trainerId = req.params.trainerId;
       const bookingSlotsOfTrainer =
-        await getBookingSlotUseCase.getAvailableSlotsUser(trainerId);
+        await getBookingSlotUseCase.getAllAvailableSlotsFromToday(trainerId);
       sendResponse(
         res,
         HttpStatusCodes.OK,
@@ -137,7 +170,7 @@ export class BookingController {
     } catch (error) {
       loggerHelper.handleLogError(
         error,
-        "BookingController.getTrainerBookingSlots",
+        "BookingController.getAllAvailableSlotsFromToday",
         "Error retrieving slot list of trainer"
       );
       next(error);
