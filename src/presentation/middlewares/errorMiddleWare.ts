@@ -43,7 +43,6 @@ export class ForbiddenError extends AppError {
   }
 }
 
-
 export const errorMiddleware = (
   err: AppError,
   req: Request,
@@ -51,13 +50,8 @@ export const errorMiddleware = (
   next: NextFunction
 ) => {
   const statusCode = err.statusCode || HttpStatusCodes.InternalServerError;
-  const message = err.message || InternalServerErrorStatusMessage.InternalServerError;
-
+  const message =
+    err.message || InternalServerErrorStatusMessage.InternalServerError;
   sendResponse(res, statusCode, null, message);
+  next();
 };
-
-export const createAppError = (message: string, statusCode: number) => {
-
-  return new AppError(message, statusCode);
-};
-
