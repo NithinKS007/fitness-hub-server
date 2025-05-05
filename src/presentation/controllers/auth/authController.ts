@@ -26,7 +26,8 @@ import { GoogleAuthService } from "../../../infrastructure/services/auth/googleA
 import { EmailService } from "../../../infrastructure/services/communication/emailService";
 import { LoggerService } from "../../../infrastructure/logging/logger";
 import { LoggerHelper } from "../../../shared/utils/handleLog";
-
+import dotenv from "dotenv";
+dotenv.config();
 //MONGO REPOSITORY INSTANCES
 const mongoUserRepository = new MongoUserRepository();
 const monogTrainerRepository = new MongoTrainerRepository();
