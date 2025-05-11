@@ -6,7 +6,7 @@ import {
 import dotenv from "dotenv";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { IEmailService } from "../../../application/interfaces/communication/IEmailService";
-import { SendEmail } from "../../../application/dtos/serviceDTOs/emailServiceDTOs";
+import { SendEmail } from "../../../application/dtos/service/emailService";
 dotenv.config();
 
 export class EmailService implements IEmailService {

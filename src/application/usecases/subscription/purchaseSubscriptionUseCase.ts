@@ -65,6 +65,7 @@ export class PurchaseSubscriptionUseCase {
         ? session.subscription
         : session.subscription?.id;
 
+    console.log("stripe id",stripeSubscriptionId)
     const userTakenSubscription =
       await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionId(
         stripeSubscriptionId as string

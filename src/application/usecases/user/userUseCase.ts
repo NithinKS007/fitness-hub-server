@@ -46,7 +46,7 @@ export class UserUseCase {
     userId,
     isBlocked,
   }: UpdateBlockStatusDTO): Promise<User | null> {
-    if (!userId || !isBlocked) {
+    if (!userId ||typeof isBlocked !== "boolean") {
       throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
     }
     const userData = await this.userRepository.updateBlockStatus({

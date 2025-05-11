@@ -3,7 +3,6 @@ import {
   GetTrainerSubscribersQueryDTO,
   GetUserSubscriptionsQueryDTO,
   GetUserTrainersListQueryDTO,
-  UserDashBoardQueryDTO,
 } from "../../application/dtos/queryDTOs";
 import {
   CheckSubscriptionStatusDTO,
@@ -15,9 +14,7 @@ import { TrainerChartData, TrainerPieChartData } from "../entities/chart";
 import {
   UserSubscriptionRecord,
   TrainerSubscriberRecord,
-  TrainerSubscribersList,
   UserMyTrainersList,
-  UserSubscriptionsList,
 } from "../entities/subscription";
 import { Top5List } from "../entities/trainer";
 import { SubscriptionPlanEntity } from "../entities/userSubscriptionPlan";

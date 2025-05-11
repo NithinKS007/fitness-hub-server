@@ -27,6 +27,7 @@ import { EmailService } from "../../../infrastructure/services/communication/ema
 import { LoggerService } from "../../../infrastructure/logging/logger";
 import { LoggerHelper } from "../../../shared/utils/handleLog";
 import dotenv from "dotenv";
+import { UpdateUserDetailsDTO } from "../../../application/dtos/userDTOs";
 dotenv.config();
 //MONGO REPOSITORY INSTANCES
 const mongoUserRepository = new MongoUserRepository();
@@ -35,12 +36,12 @@ const mongoOtpRepository = new MongoOtpRepository();
 const monogPasswordResetRepository = new MonogPasswordResetRepository();
 
 //SERVICE INSTANCES
-const cloudinaryService = new CloudinaryService()
+const cloudinaryService = new CloudinaryService();
 const jwtService = new JwtService();
-const emailService = new EmailService()
+const emailService = new EmailService();
 const logger = new LoggerService();
 const loggerHelper = new LoggerHelper(logger);
-const googleAuthService = new GoogleAuthService()
+const googleAuthService = new GoogleAuthService();
 
 //USE CASE INSTANCES
 const createUserUseCase = new CreateUserUseCase(
@@ -53,14 +54,22 @@ const signinUseCase = new SigninUserUseCase(
   monogTrainerRepository,
   jwtService
 );
-const otpUseCase = new OtpUseCase(mongoOtpRepository, mongoUserRepository,emailService);
+const otpUseCase = new OtpUseCase(
+  mongoOtpRepository,
+  mongoUserRepository,
+  emailService
+);
 const passwordUseCase = new PasswordUseCase(
   mongoUserRepository,
   monogPasswordResetRepository,
   emailService
 );
 
-const googleAuthUseCase = new GoogleAuthUseCase(mongoUserRepository,jwtService,googleAuthService);
+const googleAuthUseCase = new GoogleAuthUseCase(
+  mongoUserRepository,
+  jwtService,
+  googleAuthService
+);
 const profileUseCase = new UpdateProfileUseCase(
   mongoUserRepository,
   monogTrainerRepository,
@@ -132,7 +141,7 @@ export class AuthController {
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        sameSite: "none",
+        sameSite: process.env.NODE_ENV === "PRODUCTION" ? "none" : "strict",
         secure: process.env.NODE_ENV === "PRODUCTION",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
@@ -143,7 +152,11 @@ export class AuthController {
         AuthenticationStatusMessage.LoginSuccessful
       );
     } catch (error) {
-      loggerHelper.handleLogError(error, "AuthController.signin", "Error during sign-in");
+      loggerHelper.handleLogError(
+        error,
+        "AuthController.signin",
+        "Error during sign-in"
+      );
       next(error);
     }
   }
@@ -162,7 +175,11 @@ export class AuthController {
         AuthenticationStatusMessage.RegistrationSuccessful
       );
     } catch (error) {
-      loggerHelper.handleLogError(error, "AuthController.verifyOtp", "Error verifying otp ");
+      loggerHelper.handleLogError(
+        error,
+        "AuthController.verifyOtp",
+        "Error verifying otp "
+      );
       next(error);
     }
   }
@@ -181,7 +198,11 @@ export class AuthController {
         OTPStatusMessage.OtpSendSuccessful
       );
     } catch (error) {
-      loggerHelper.handleLogError(error, "AuthController.resendOtp", "Error resending OTP");
+      loggerHelper.handleLogError(
+        error,
+        "AuthController.resendOtp",
+        "Error resending OTP"
+      );
       next(error);
     }
   }
@@ -298,8 +319,8 @@ export class AuthController {
     try {
       res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: true,
-        sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "PRODUCTION" ? "none" : "strict",
+        secure: process.env.NODE_ENV === "PRODUCTION",
       });
       sendResponse(
         res,
@@ -308,21 +329,39 @@ export class AuthController {
         AuthenticationStatusMessage.LogoutSuccessful
       );
     } catch (error) {
-      loggerHelper.handleLogError(error, "AuthController.signOut", "Error during sign-out");
+      loggerHelper.handleLogError(
+        error,
+        "AuthController.signOut",
+        "Error during sign-out"
+      );
       next(error);
     }
   }
-  static async refreshAccessToken(req: Request, res: Response): Promise<void> {
-    const refreshToken = req?.cookies?.refreshToken;
-    const newAccessToken = await refreshAccessTokenUseCase.refreshAccessToken(
-      refreshToken
-    );
-    sendResponse(
-      res,
-      HttpStatusCodes.OK,
-      { newAccessToken },
-      JWTStatusMessage.AccessTokenRefreshedSuccessFully
-    );
+  static async refreshAccessToken(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const refreshToken = req?.cookies?.refreshToken;
+      const newAccessToken = await refreshAccessTokenUseCase.refreshAccessToken(
+        refreshToken
+      );
+
+      sendResponse(
+        res,
+        HttpStatusCodes.OK,
+        { newAccessToken },
+        JWTStatusMessage.AccessTokenRefreshedSuccessFully
+      );
+    } catch (error) {
+      loggerHelper.handleLogError(
+        error,
+        "AuthController.refreshAccessToken",
+        "Error to refresh access token"
+      );
+      next(error);
+    }
   }
 
   static async updateTrainerProfile(
@@ -357,11 +396,11 @@ export class AuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId = req.user._id;
+      const { userId, ...bodyWithoutUserId } = req.body;
       const updatedUserData = await profileUseCase.updateUserProfile({
-        userId,
-        ...req.body,
-      });
+        userId: req.user._id,
+        ...bodyWithoutUserId,
+      } as UpdateUserDetailsDTO);
       sendResponse(
         res,
         HttpStatusCodes.OK,

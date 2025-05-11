@@ -16,6 +16,7 @@ import { User } from "../../../domain/entities/user";
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import UserModel from "../models/userModel";
 import { GetUsersQueryDTO } from "../../../application/dtos/queryDTOs";
+import mongoose from "mongoose";
 
 export class MongoUserRepository implements IUserRepository {
   public async create(createUser: CreateUserDTO): Promise<User> {
@@ -73,7 +74,7 @@ export class MongoUserRepository implements IUserRepository {
     otherConcerns,
   }: UpdateUserDetailsDTO): Promise<User | null> {
     return await UserModel.findByIdAndUpdate(
-      userId,
+      new mongoose.Types.ObjectId(userId),
       {
         $set: {
           fname,

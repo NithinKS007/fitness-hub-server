@@ -6,7 +6,7 @@ import {
   DeactivatePrice,
   Session,
   SubscriptionMetadata,
-} from "../../dtos/serviceDTOs/paymentServiceDTOs";
+} from "../../dtos/service/paymentService";
 import { IdDTO } from "../../dtos/utilityDTOs";
 
 export interface IPaymentService {

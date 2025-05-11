@@ -12,7 +12,7 @@ import {
   DeactivatePrice,
   Session,
   SubscriptionMetadata,
-} from "../../../application/dtos/serviceDTOs/paymentServiceDTOs";
+} from "../../../application/dtos/service/paymentService";
 import { IdDTO } from "../../../application/dtos/utilityDTOs";
 import { IPaymentService } from "../../../application/interfaces/payments/IPaymentService";
 
