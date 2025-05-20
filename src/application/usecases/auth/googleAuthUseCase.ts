@@ -3,7 +3,7 @@ import {
   ForbiddenError,
   validationError,
 } from "../../../presentation/middlewares/errorMiddleWare";
-import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { AuthStatus } from "../../../shared/constants/index-constants";
 import { User } from "../../../domain/entities/user";
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { IAuthService } from "../../interfaces/auth/IAuthService";
@@ -23,17 +23,17 @@ export class GoogleAuthUseCase {
   }> {
     const googleUserInfo = await this.googleAuthService.verifyToken(token);
     if (!googleUserInfo || !googleUserInfo.email) {
-      throw new validationError(AuthenticationStatusMessage.EmailNotFound);
+      throw new validationError(AuthStatus.EmailNotFound);
     }
     const { email } = googleUserInfo;
 
     const userData = await this.userRepository.findByEmail({ email });
     if (userData && userData.isBlocked) {
-      throw new ForbiddenError(AuthenticationStatusMessage.AccountBlocked);
+      throw new ForbiddenError(AuthStatus.AccountBlocked);
     }
     if (userData && userData.otpVerified) {
       throw new validationError(
-        AuthenticationStatusMessage.DifferentLoginMethod
+        AuthStatus.DifferentLoginMethod
       );
     }
     if (!userData) {

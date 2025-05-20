@@ -18,6 +18,11 @@ const bookingSlotSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+bookingSlotSchema.index({ trainerId: 1, date: 1, status: 1 });
+bookingSlotSchema.index(
+  { date: 1, status: 1 },
+  { partialFilterExpression: { status: "pending" } }
+);
 const bookingSlotModel = mongoose.model<IBookingSlot>("BookingSlot",bookingSlotSchema);
 
 export default bookingSlotModel;

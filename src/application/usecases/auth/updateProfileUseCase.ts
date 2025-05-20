@@ -3,9 +3,9 @@ import { User } from "../../../domain/entities/user";
 import { UpdateUserDetailsDTO } from "../../dtos/user-dtos";
 import { UpdateTrainerDetailsDTO } from "../../dtos/trainer-dtos";
 import {
-  AuthenticationStatusMessage,
-  ProfileStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  ProfileStatus,
+} from "../../../shared/constants/index-constants";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
 import { Trainer } from "../../../domain/entities/trainer";
@@ -89,7 +89,7 @@ export class UpdateProfileUseCase {
   ): Promise<User | null> {
     const { userId, ...profileData } = profileUpdationData;
     if (!userId) {
-      throw new validationError(AuthenticationStatusMessage.IdRequired);
+      throw new validationError(AuthStatus.IdRequired);
     }
     if (profileUpdationData.profilePic) {
       const url = await this.cloudinaryService.uploadImage({
@@ -103,7 +103,7 @@ export class UpdateProfileUseCase {
       ...profileData,
     });
     if (!updatedUserData) {
-      throw new validationError(ProfileStatusMessage.FailedToUpdateUserDetails);
+      throw new validationError(ProfileStatus.FailedToUpdateUserDetails);
     }
     return updatedUserData;
   }

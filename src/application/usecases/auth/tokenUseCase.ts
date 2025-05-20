@@ -1,5 +1,5 @@
 import { ForbiddenError } from "../../../presentation/middlewares/errorMiddleWare";
-import { JWTStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { JwtStatus } from "../../../shared/constants/index-constants";
 import { IAuthService } from "../../interfaces/auth/IAuthService";
 import { JwtPayload } from "jsonwebtoken";
 
@@ -7,7 +7,7 @@ export class TokenUseCase {
   constructor(private authService: IAuthService) {}
   public async refreshAccessToken(refreshToken: string): Promise<string> {
     if (!refreshToken) {
-      throw new ForbiddenError(JWTStatusMessage.NoRefreshToken);
+      throw new ForbiddenError(JwtStatus.NoRefreshToken);
     }
     const decoded = this.authService.authenticateRefreshToken(refreshToken);
     return this.authService.generateAccessToken({

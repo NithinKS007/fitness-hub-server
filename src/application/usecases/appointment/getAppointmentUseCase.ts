@@ -1,9 +1,9 @@
 import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AppointmentStatusMessage,
-  AuthenticationStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AppointmentStatus,
+  AuthStatus,
+} from "../../../shared/constants/index-constants";
 import {
   Appointment,
   AppointmentRequestsTrainer,
@@ -30,7 +30,7 @@ export class GetAppointmentUsecase {
   }> {
     if (!trainerId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
 
@@ -51,7 +51,7 @@ export class GetAppointmentUsecase {
 
     if (!bookingRequestsList) {
       throw new validationError(
-        AppointmentStatusMessage.FailedToRetrieveBookingRequests
+        AppointmentStatus.FailedToRetrieveBookingRequests
       );
     }
     return { bookingRequestsList, paginationData };
@@ -65,7 +65,7 @@ export class GetAppointmentUsecase {
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.IdRequired);
+      throw new validationError(AuthStatus.IdRequired);
     }
 
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -82,7 +82,7 @@ export class GetAppointmentUsecase {
 
     if (!trainerBookingSchedulesList) {
       throw new validationError(
-        AppointmentStatusMessage.FailedToRetrieveBookingRequests
+        AppointmentStatus.FailedToRetrieveBookingRequests
       );
     }
     return { trainerBookingSchedulesList, paginationData };
@@ -97,7 +97,7 @@ export class GetAppointmentUsecase {
   }> {
     if (!userId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
 
@@ -115,7 +115,7 @@ export class GetAppointmentUsecase {
 
     if (!appointmentList) {
       throw new validationError(
-        AppointmentStatusMessage.FailedToRetrieveBookingRequests
+        AppointmentStatus.FailedToRetrieveBookingRequests
       );
     }
     return { appointmentList, paginationData };
@@ -126,7 +126,7 @@ export class GetAppointmentUsecase {
   ): Promise<Appointment | null> {
     if (!appointmentId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const appointmentData = await this.appointmentRepository.getAppointmentById(
@@ -135,7 +135,7 @@ export class GetAppointmentUsecase {
 
     if (!appointmentData) {
       throw new validationError(
-        AppointmentStatusMessage.FailedToFindAppointment
+        AppointmentStatus.FailedToFindAppointment
       );
     }
     return appointmentData;

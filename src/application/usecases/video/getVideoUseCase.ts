@@ -1,9 +1,9 @@
 import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  VideoStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  VideoStatus,
+} from "../../../shared/constants/index-constants";
 import { Video, VideoWithPlayLists } from "../../../domain/entities/video";
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
 import { GetVideoQueryDTO } from "../../dtos/query-dtos";
@@ -21,7 +21,7 @@ export class GetVideoUseCase {
   }> {
     if (!trainerId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -41,7 +41,7 @@ export class GetVideoUseCase {
   public async getVideoById(videoId: IdDTO): Promise<Video> {
     const videoData = await this.videoRepository.getVideoById(videoId);
     if (!videoData) {
-      throw new validationError(VideoStatusMessage.FailedToGetVideo);
+      throw new validationError(VideoStatus.FailedToGetVideo);
     }
 
     return videoData;

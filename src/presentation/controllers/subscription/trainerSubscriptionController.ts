@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express-serve-static-core";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
   HttpStatusCodes,
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  SubscriptionStatus,
+} from "../../../shared/constants/index-constants";
 import { StripePaymentService } from "../../../infrastructure/services/payments/stripeServices";
 import { LoggerService } from "../../../infrastructure/logging/logger";
 import { LoggerHelper } from "../../../shared/utils/handleLog";
@@ -42,7 +42,7 @@ export class TrainerSubscriptionController {
         res,
         HttpStatusCodes.OK,
         subscriptionsData,
-        SubscriptionStatusMessage.SubscriptionsListRetrieved
+        SubscriptionStatus.SubscriptionsListRetrieved
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -76,7 +76,7 @@ export class TrainerSubscriptionController {
         res,
         HttpStatusCodes.OK,
         { trainerSubscribers, paginationData },
-        SubscriptionStatusMessage.SubscriptionsListRetrieved
+        SubscriptionStatus.SubscriptionsListRetrieved
       );
     } catch (error) {
       loggerHelper.handleLogError(

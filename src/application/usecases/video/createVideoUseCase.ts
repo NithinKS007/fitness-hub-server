@@ -1,7 +1,7 @@
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
 import { IVideoPlayListRepository } from "../../../domain/interfaces/IVideoPlayListRepository";
-import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { AuthStatus } from "../../../shared/constants/index-constants";
 import { CreateVideoDTO } from "../../dtos/video-dtos";
 import { Video } from "../../../domain/entities/video";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
@@ -32,7 +32,7 @@ export class CreateVideoUseCase {
       !trainerId
     ) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const createdVideo = await this.videoRepository.createVideo({

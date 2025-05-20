@@ -1,6 +1,6 @@
 import { CancelSubscriptionDTO } from "../../dtos/subscription-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { AuthStatus } from "../../../shared/constants/index-constants";
 import { IPaymentService } from "../../interfaces/payments/IPaymentService";
 
 export class CancelSubscriptionUseCase {
@@ -16,7 +16,7 @@ export class CancelSubscriptionUseCase {
   }> {
     if (!stripeSubscriptionId || !action) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const stripeSub = await this.paymentService.getSubscription(
@@ -24,7 +24,7 @@ export class CancelSubscriptionUseCase {
     );
 
     if (!stripeSub) {
-      throw new validationError(AuthenticationStatusMessage.InvalidId);
+      throw new validationError(AuthStatus.InvalidId);
     }
     if (action === "cancelImmediately") {
       const stripeSub = await this.paymentService.cancelSubscription(

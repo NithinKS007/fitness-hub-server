@@ -1,6 +1,6 @@
 import { OAuth2Client, TokenPayload } from "google-auth-library";
 import dotenv from "dotenv";
-import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { AuthStatus } from "../../../shared/constants/index-constants";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { IGoogleAuthService } from "../../../application/interfaces/auth/IGoogleAuthService";
 dotenv.config();
@@ -16,11 +16,11 @@ export class GoogleAuthService implements IGoogleAuthService {
       });
       const payload = ticket.getPayload();
       if (!payload) {
-        throw new validationError(AuthenticationStatusMessage.GoogleAuthFailed);
+        throw new validationError(AuthStatus.GoogleAuthFailed);
       }
       return payload;
     } catch (error) {
-      throw new validationError(AuthenticationStatusMessage.GoogleAuthFailed);
+      throw new validationError(AuthStatus.GoogleAuthFailed);
     }
   }
 }

@@ -1,6 +1,6 @@
 import { EditPlayListDTO } from "../../dtos/playlist-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import { VideoStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { VideoStatus} from "../../../shared/constants/index-constants";
 import { Playlist } from "../../../domain/entities/playList";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
 
@@ -16,7 +16,7 @@ export class EditPlayListUseCase {
       title,
     });
     if (!playListData) {
-      throw new validationError(VideoStatusMessage.FailedToGetVideo);
+      throw new validationError(VideoStatus.FailedToGetVideo);
     }
     return playListData;
   }

@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express-serve-static-core";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
   HttpStatusCodes,
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  SubscriptionStatus,
+} from "../../../shared/constants/index-constants";
 import { MongoUserSubscriptionPlanRepository } from "../../../infrastructure/databases/repositories/userSubscriptionRepository";
 import { StripePaymentService } from "../../../infrastructure/services/payments/stripeServices";
 import { LoggerService } from "../../../infrastructure/logging/logger";
@@ -52,7 +52,7 @@ export class UserSubscriptionController {
         res,
         HttpStatusCodes.OK,
         { userSubscriptionsList, paginationData },
-        SubscriptionStatusMessage.SubscriptionListOfUserRetrievedSuccessfully
+        SubscriptionStatus.SubscriptionListOfUserRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -81,7 +81,7 @@ export class UserSubscriptionController {
         res,
         HttpStatusCodes.OK,
         { isUserSubscribedToTheTrainer },
-        SubscriptionStatusMessage.UserIsSubscribed
+        SubscriptionStatus.UserIsSubscribed
       );
     } catch (error) {
       loggerHelper.handleLogError(

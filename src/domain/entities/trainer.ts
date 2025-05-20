@@ -1,5 +1,10 @@
 import { ObjectId } from "mongoose";
 import { AdminChartData } from "./chart";
+import { Subscription } from "./subscription";
+
+export interface TrainerWithSubscription extends Trainer {
+  subscriptionDetails: Subscription[];
+}
 
 export interface Trainer {
   fname: string;

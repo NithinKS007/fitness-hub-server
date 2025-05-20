@@ -1,8 +1,8 @@
 import nodemailer, { Transporter } from "nodemailer";
 import {
-  AuthenticationStatusMessage,
-  EnvironmentVariableStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  ApplicationStatus,
+} from "../../../shared/constants/index-constants";
 import dotenv from "dotenv";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { IEmailService } from "../../../application/interfaces/communication/IEmailService";
@@ -35,7 +35,7 @@ export class EmailService implements IEmailService {
   private validateEnv(): void {
     if (!this.emailUser || !this.emailPass) {
       throw new validationError(
-        EnvironmentVariableStatusMessage.MissingEmailEnvironmentVariables
+        ApplicationStatus.MissingEmailEnvironmentVariables
       );
     }
   }
@@ -51,7 +51,7 @@ export class EmailService implements IEmailService {
       console.log("Email sent successfully to",to, subject, text);
     } catch (error) {
       console.log(`Error sending the email:${error}`);
-      throw new validationError(AuthenticationStatusMessage.FailedToSendEmail);
+      throw new validationError(AuthStatus.FailedToSendEmail);
     }
   }
 }

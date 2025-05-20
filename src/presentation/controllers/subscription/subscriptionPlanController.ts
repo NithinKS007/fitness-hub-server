@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express-serve-static-core";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
   HttpStatusCodes,
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  SubscriptionStatus,
+} from "../../../shared/constants/index-constants";
 import { MongoTrainerRepository } from "../../../infrastructure/databases/repositories/trainerRepository";
 import { MongoSubscriptionRepository } from "../../../infrastructure/databases/repositories/subscriptionRepository";
 import { StripePaymentService } from "../../../infrastructure/services/payments/stripeServices";
@@ -63,7 +63,7 @@ export class SubscriptionPlanController {
         res,
         HttpStatusCodes.OK,
         subscriptionData,
-        SubscriptionStatusMessage.SubscriptionCreated
+        SubscriptionStatus.SubscriptionCreated
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -91,7 +91,7 @@ export class SubscriptionPlanController {
         res,
         HttpStatusCodes.OK,
         updatedSubscriptionStatus,
-        SubscriptionStatusMessage.SubscriptionBlockStatusUpdated
+        SubscriptionStatus.SubscriptionBlockStatusUpdated
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -120,7 +120,7 @@ export class SubscriptionPlanController {
         res,
         HttpStatusCodes.OK,
         editSubscriptionData,
-        SubscriptionStatusMessage.SubscriptionEditedSuccessfully
+        SubscriptionStatus.SubscriptionEditedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -144,7 +144,7 @@ export class SubscriptionPlanController {
         res,
         HttpStatusCodes.OK,
         deletedSubscriptionData,
-        SubscriptionStatusMessage.SubscriptionDeletedSuccessfully
+        SubscriptionStatus.SubscriptionDeletedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(

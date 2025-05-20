@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  AppointmentStatusMessage,
+  AppointmentStatus,
   HttpStatusCodes,
-} from "../../../shared/constants/httpResponseStructure";
+} from "../../../shared/constants/index-constants";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import { MongoBookingSlotRepository } from "../../../infrastructure/databases/repositories/bookingSlotRepository";
 import { MongoAppointmentRepository } from "../../../infrastructure/databases/repositories/appointmentRepository";
@@ -50,7 +50,7 @@ export class AppointmentController {
         res,
         HttpStatusCodes.OK,
         cancelledAppointmentData,
-        AppointmentStatusMessage.AppointmentCancelledSuccessfully
+        AppointmentStatus.AppointmentCancelledSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -86,7 +86,7 @@ export class AppointmentController {
           trainerBookingSchedulesList: trainerBookingSchedulesList,
           paginationData: paginationData,
         },
-        AppointmentStatusMessage.AppointmentsListRetrievedSuccessfully
+        AppointmentStatus.AppointmentsListRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -115,14 +115,14 @@ export class AppointmentController {
           res,
           HttpStatusCodes.OK,
           appointmentData,
-          AppointmentStatusMessage.BookingApproved
+          AppointmentStatus.BookingApproved
         );
       } else if (appointmentData.status === "rejected") {
         sendResponse(
           res,
           HttpStatusCodes.OK,
           appointmentData,
-          AppointmentStatusMessage.BookingRejected
+          AppointmentStatus.BookingRejected
         );
       }
     } catch (error) {
@@ -156,7 +156,7 @@ export class AppointmentController {
         res,
         HttpStatusCodes.OK,
         { bookingRequestsList, paginationData },
-        AppointmentStatusMessage.BookingRequestsRetrievedSuccessfully
+        AppointmentStatus.BookingRequestsRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -184,7 +184,7 @@ export class AppointmentController {
         res,
         HttpStatusCodes.OK,
         bookedSlotData,
-        AppointmentStatusMessage.SlotBookedSuccessfully
+        AppointmentStatus.SlotBookedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -217,7 +217,7 @@ export class AppointmentController {
         res,
         HttpStatusCodes.OK,
         { appointmentList: appointmentList, paginationData: paginationData },
-        AppointmentStatusMessage.AppointmentsListRetrievedSuccessfully
+        AppointmentStatus.AppointmentsListRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(

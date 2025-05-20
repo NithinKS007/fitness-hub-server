@@ -1,7 +1,7 @@
 import { TrainerVideoCallLog, UserVideoCallLog, VideoCallLog } from "../../../domain/entities/videoCallLog";
 import { IVideoCallLogRepository } from "../../../domain/interfaces/IVideoCallLogRepository";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import { AuthenticationStatusMessage, VideoCallStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { AuthStatus, AppointmentStatus } from "../../../shared/constants/index-constants";
 import { parseDateRange } from "../../../shared/utils/dayjs";
 import { GetVideoCallLogQueryDTO } from "../../dtos/query-dtos";
 import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
@@ -28,7 +28,7 @@ export class VideoCallLogUseCase {
       !receiverId
     ) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     await this.videoCallLogRepository.createCallLog({
@@ -46,7 +46,7 @@ export class VideoCallLogUseCase {
   }: UpdateVideoCallLogDTO): Promise<VideoCallLog> {
     if (!callEndTime || !callRoomId || !callStatus) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     return await this.videoCallLogRepository.updateVideoCallLog({
@@ -61,7 +61,7 @@ export class VideoCallLogUseCase {
   }: UpdateVideoCallDurationDTO): Promise<void> {
     if (typeof callDuration !== "number" || !callRoomId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     await this.videoCallLogRepository.updateVideoCallDuration({
@@ -78,7 +78,7 @@ export class VideoCallLogUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(AuthStatus.AllFieldsAreRequired);
     }
 
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -95,7 +95,7 @@ export class VideoCallLogUseCase {
 
     if (!trainerVideoCallLogList) {
       throw new validationError(
-        VideoCallStatusMessage.FailedToRetrieveVideoCallLogs
+        AppointmentStatus.FailedToRetrieveVideoCallLogs
       );
     }
     return { trainerVideoCallLogList, paginationData };
@@ -109,7 +109,7 @@ export class VideoCallLogUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!userId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(AuthStatus.AllFieldsAreRequired);
     }
 
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -126,7 +126,7 @@ export class VideoCallLogUseCase {
 
     if (!userVideoCallLogList) {
       throw new validationError(
-        VideoCallStatusMessage.FailedToRetrieveVideoCallLogs
+        AppointmentStatus.FailedToRetrieveVideoCallLogs
       );
     }
     return { userVideoCallLogList, paginationData };

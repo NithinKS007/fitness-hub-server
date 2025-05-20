@@ -1,7 +1,7 @@
-import { v2 as cloudinary } from 'cloudinary'; 
-import dotenv from 'dotenv';
-import { EnvironmentVariableStatusMessage } from '../../shared/constants/httpResponseStructure';
-import { validationError } from '../../presentation/middlewares/errorMiddleWare';
+import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
+import { ApplicationStatus } from "../../shared/constants/index-constants";
+import { validationError } from "../../presentation/middlewares/errorMiddleWare";
 dotenv.config();
 interface CloudinaryConfig {
   CLOUDINARY_NAME: string;
@@ -9,10 +9,11 @@ interface CloudinaryConfig {
   CLOUDINARY_API_SECRET: string;
 }
 
-const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env as unknown as CloudinaryConfig;
+const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } =
+  process.env as unknown as CloudinaryConfig;
 
 if (!CLOUDINARY_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
-  throw new validationError(EnvironmentVariableStatusMessage.MissingCloudinaryCredentials);
+  throw new validationError(ApplicationStatus.MissingCloudinaryCredentials);
 }
 
 cloudinary.config({

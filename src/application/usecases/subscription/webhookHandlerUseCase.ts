@@ -1,5 +1,5 @@
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import { SubscriptionStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { SubscriptionStatus } from "../../../shared/constants/index-constants";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
 import stripe from "../../../infrastructure/config/stripeConfig";
@@ -22,7 +22,7 @@ export class WebHookHandlerUseCase {
   private validateWebhookInput(sig: any, webhookSecret: any, body: any): void {
     if (!sig || !webhookSecret || !body) {
       throw new validationError(
-        SubscriptionStatusMessage.WebHookCredentialsMissing
+        SubscriptionStatus.WebHookCredentialsMissing
       );
     }
   }
@@ -69,7 +69,7 @@ export class WebHookHandlerUseCase {
     const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     if (!event) {
       throw new validationError(
-        SubscriptionStatusMessage.WebHookVerificationFailed
+        SubscriptionStatus.WebHookVerificationFailed
       );
     }
     return event;
@@ -88,20 +88,20 @@ export class WebHookHandlerUseCase {
 
       if (!subscription) {
         throw new validationError(
-          SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
+          SubscriptionStatus.FailedToRetrieveSubscriptionDetails
         );
       }
 
       if (!subscriptionId || !trainerId) {
         throw new validationError(
-          SubscriptionStatusMessage.SubscriptionIdAndTraineIdMissing
+          SubscriptionStatus.SubscriptionIdAndTraineIdMissing
         );
       }
       const subscriptionData =
         await this.subscriptionRepository.findSubscriptionById(subscriptionId);
       if (!subscriptionData) {
         throw new validationError(
-          SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
+          SubscriptionStatus.FailedToRetrieveSubscriptionDetails
         );
       }
       const newSubscriptionAdding = {

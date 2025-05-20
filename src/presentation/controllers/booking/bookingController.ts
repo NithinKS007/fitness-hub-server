@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import {
   HttpStatusCodes,
-  SlotStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  SlotStatus,
+} from "../../../shared/constants/index-constants";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import { MongoBookingSlotRepository } from "../../../infrastructure/databases/repositories/bookingSlotRepository";
 import { LoggerService } from "../../../infrastructure/logging/logger";
@@ -46,7 +46,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         createdSlotData,
-        SlotStatusMessage.SlotCreatedSuccessfully
+        SlotStatus.SlotCreatedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -72,7 +72,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         deletedSlotData,
-        SlotStatusMessage.SlotDeletedSuccessfully
+        SlotStatus.SlotDeletedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -106,7 +106,7 @@ export class BookingController {
           availableSlotsList: availableSlotsList,
           paginationData: paginationData,
         },
-        SlotStatusMessage.SlotDataRetrievedSuccessfully
+        SlotStatus.SlotDataRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -140,7 +140,7 @@ export class BookingController {
           availableSlotsList: availableSlotsList,
           paginationData: paginationData,
         },
-        SlotStatusMessage.SlotDataRetrievedSuccessfully
+        SlotStatus.SlotDataRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -165,7 +165,7 @@ export class BookingController {
         res,
         HttpStatusCodes.OK,
         bookingSlotsOfTrainer,
-        SlotStatusMessage.SlotDataRetrievedSuccessfully
+        SlotStatus.SlotDataRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(

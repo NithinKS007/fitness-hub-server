@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
-  DashboardStatusMessage,
+  DashboardStatus,
   HttpStatusCodes,
-} from "../../../shared/constants/httpResponseStructure";
+} from "../../../shared/constants/index-constants";
 import { MongoUserSubscriptionPlanRepository } from "../../../infrastructure/databases/repositories/userSubscriptionRepository";
 import { TrainerDashBoardUseCase } from "../../../application/usecases/dashboard/trainerDashBoardUseCase";
 import { LoggerService } from "../../../infrastructure/logging/logger";
@@ -51,7 +51,7 @@ export class TrainerDashboardController {
           chartData,
           pieChartData,
         },
-        DashboardStatusMessage.TrainerDashBoardRetrievedSuccessfully
+        DashboardStatus.TrainerDashBoardRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(

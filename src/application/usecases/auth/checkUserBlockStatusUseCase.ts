@@ -1,6 +1,6 @@
 import { IdDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { AuthStatus} from "../../../shared/constants/index-constants";
 import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 
@@ -12,14 +12,14 @@ export class CheckUserBlockStatus {
 
   public async checkUserBlockStatus(_id: IdDTO): Promise<boolean> {
     if (!_id) {
-      throw new validationError(AuthenticationStatusMessage.IdRequired);
+      throw new validationError(AuthStatus.IdRequired);
     }
     const userData = await this.userRepository.findById(_id);
     const trainerData = await this.trainerRepository.getTrainerDetailsById(
       _id.toString()
     );
     if (!userData && !trainerData) {
-      throw new validationError(AuthenticationStatusMessage.InvalidId);
+      throw new validationError(AuthStatus.InvalidId);
     }
 
     if (userData) return userData.isBlocked;

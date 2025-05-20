@@ -2,7 +2,7 @@ import { IOtpRepository } from "../../../domain/interfaces/IOtpRepository";
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { Otp } from "../../../domain/entities/otp";
 import { OtpDTO } from "../../dtos/auth-dtos";
-import { OTPStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { OTPStatus } from "../../../shared/constants/index-constants";
 import generateOtp from "../../../shared/utils/otpGenerator";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { IEmailService } from "../../interfaces/communication/IEmailService";
@@ -21,7 +21,7 @@ export class OtpUseCase {
     const otpData = await this.otpRepository.verifyOtpByEmail({ email, otp });
 
     if (!otpData) {
-      throw new validationError(OTPStatusMessage.InvalidOtp);
+      throw new validationError(OTPStatus.InvalidOtp);
     }
     const { email: userEmail } = otpData;
     await this.userRepository.updateUserVerificationStatus({
@@ -33,7 +33,7 @@ export class OtpUseCase {
     const userData = await this.userRepository.findByEmail({ email });
 
     if (userData?.otpVerified) {
-      throw new validationError(OTPStatusMessage.AlreadyUserVerifiedByOtp);
+      throw new validationError(OTPStatus.AlreadyUserVerifiedByOtp);
     }
     const otpData = generateOtp(6);
     await this.otpRepository.createOtp({ email, otp: otpData });

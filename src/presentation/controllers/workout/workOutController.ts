@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
   HttpStatusCodes,
-  WorkoutStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  WorkoutStatus,
+} from "../../../shared/constants/index-constants";
 import { WorkOutUseCase } from "../../../application/usecases/workout/workoutUseCase";
 import { MongoWorkoutRepository } from "../../../infrastructure/databases/repositories/workoutRepository";
 import { LoggerService } from "../../../infrastructure/logging/logger";
@@ -32,7 +32,7 @@ export class WorkoutController {
         res,
         HttpStatusCodes.OK,
         addedWorkOut,
-        WorkoutStatusMessage.workoutAddedSuccessfully
+        WorkoutStatus.workoutAddedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -65,7 +65,7 @@ export class WorkoutController {
         res,
         HttpStatusCodes.OK,
         { workoutList: workoutList, paginationData: paginationData },
-        WorkoutStatusMessage.WorkoutListRetrievedSuccessfully
+        WorkoutStatus.WorkoutListRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -89,14 +89,14 @@ export class WorkoutController {
         res,
         HttpStatusCodes.OK,
         deletedWorkoutSet,
-        WorkoutStatusMessage.WorkoutSetDeleted
+        WorkoutStatus.WorkoutSetDeleted
       );
     } catch (error) {
       loggerHelper.handleLogError(
         error,
         "WorkoutController.deleteWorkoutSet",
         "Error to delete workout set"
-      )
+      );
       next(error);
     }
   }
@@ -115,14 +115,14 @@ export class WorkoutController {
         res,
         HttpStatusCodes.OK,
         completedWorkoutSet,
-        WorkoutStatusMessage.WorkoutSetCompleted
+        WorkoutStatus.WorkoutSetCompleted
       );
     } catch (error) {
       loggerHelper.handleLogError(
         error,
         "WorkoutController.markSetAsCompleted",
         "Error to mark workout as completed"
-      )
+      );
       next(error);
     }
   }

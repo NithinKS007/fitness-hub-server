@@ -28,6 +28,7 @@ const videoSchema: Schema = new Schema(
   },
   { timestamps: true }
 );
+videoSchema.index({ trainerId: 1});
 
 const videoModel = mongoose.model<IVideo>("Video", videoSchema);
 

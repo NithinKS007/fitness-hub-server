@@ -15,8 +15,8 @@ import { TrainerVerificationDTO } from "../../../application/dtos/trainer-dtos";
 import {
   Trainer,
   TrainerSpecific,
+  TrainerWithSubscription
 } from "../../../domain/entities/trainer";
-import { TrainerWithSubscription } from "../../../domain/entities/trainerWithSubscription";
 import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
 import TrainerModel from "../models/trainerModel";
 

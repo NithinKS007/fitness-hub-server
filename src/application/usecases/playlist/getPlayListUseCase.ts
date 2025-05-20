@@ -1,6 +1,6 @@
 import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { AuthStatus } from "../../../shared/constants/index-constants";
 import { Playlist } from "../../../domain/entities/playList";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
 import { GetPlayListsQueryDTO } from "../../dtos/query-dtos";
@@ -14,7 +14,7 @@ export class GetPlayListUseCase {
     { page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
   ): Promise<{ playList: Playlist[]; paginationData: PaginationDTO }> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.IdRequired);
+      throw new validationError(AuthStatus.IdRequired);
     }
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
 

@@ -1,8 +1,8 @@
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  SubscriptionStatus,
+} from "../../../shared/constants/index-constants";
 import { Subscription, TrainerSubscribersList } from "../../../domain/entities/subscription";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
@@ -23,7 +23,7 @@ export class GetTrainerSubscriptionUseCase {
     trainerId: IdDTO
   ): Promise<Subscription[]> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.IdRequired);
+      throw new validationError(AuthStatus.IdRequired);
     }
     return await this.subscriptionRepository.findAllSubscription(trainerId);
   }
@@ -37,7 +37,7 @@ export class GetTrainerSubscriptionUseCase {
   }> {
     if (!trainerId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const { trainerSubscriberRecord, paginationData } =
@@ -47,7 +47,7 @@ export class GetTrainerSubscriptionUseCase {
       );
     if (!trainerSubscriberRecord) {
       throw new validationError(
-        SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
+        SubscriptionStatus.FailedToRetrieveSubscriptionDetails
       );
     }
 

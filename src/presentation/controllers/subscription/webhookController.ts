@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express-serve-static-core";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
   HttpStatusCodes,
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  SubscriptionStatus,
+} from "../../../shared/constants/index-constants";
 import { MongoUserSubscriptionPlanRepository } from "../../../infrastructure/databases/repositories/userSubscriptionRepository";
 import { MongoSubscriptionRepository } from "../../../infrastructure/databases/repositories/subscriptionRepository";
 import { MongoRevenueRepository } from "../../../infrastructure/databases/repositories/revenueRepository";
@@ -64,7 +64,7 @@ export class WebhookController {
         res,
         HttpStatusCodes.OK,
         null,
-        SubscriptionStatusMessage.SubscriptionAddedSuccessfully
+        SubscriptionStatus.SubscriptionAddedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -89,7 +89,7 @@ export class WebhookController {
         res,
         HttpStatusCodes.OK,
         { subscriptionData: subscriptionData },
-        SubscriptionStatusMessage.SubscriptionAddedSuccessfully
+        SubscriptionStatus.SubscriptionAddedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(

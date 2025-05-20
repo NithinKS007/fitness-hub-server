@@ -1,6 +1,8 @@
 import { CreatePlayListDTO } from "../../dtos/playlist-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import {
+  AuthStatus,
+} from "../../../shared/constants/index-constants";
 import { Playlist } from "../../../domain/entities/playList";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
 
@@ -12,7 +14,7 @@ export class CreatePlayListUseCase {
   }: CreatePlayListDTO): Promise<Playlist> {
     if (!title || !trainerId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     return await this.playListRepository.createPlayList({ title, trainerId });

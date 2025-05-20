@@ -3,9 +3,9 @@ import { Workout } from "../../../domain/entities/workout";
 import { IWorkoutRepository } from "../../../domain/interfaces/IWorkoutRepository";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  WorkoutStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  WorkoutStatus,
+} from "../../../shared/constants/index-constants";
 import { GetWorkoutQueryDTO } from "../../dtos/query-dtos";
 import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 import { WorkoutdbDTO, WorkoutDTO } from "../../dtos/workout-dtos";
@@ -37,7 +37,7 @@ export class WorkOutUseCase {
     );
     const addedWorkout = await this.workoutRepository.addWorkout(workoutItems);
     if (!addedWorkout) {
-      throw new validationError(WorkoutStatusMessage.FailedToAddWorkout);
+      throw new validationError(WorkoutStatus.FailedToAddWorkout);
     }
     return addedWorkout;
   }
@@ -47,7 +47,7 @@ export class WorkOutUseCase {
     { page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
   ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }> {
     if (!userId) {
-      throw new validationError(AuthenticationStatusMessage.IdRequired);
+      throw new validationError(AuthStatus.IdRequired);
     }
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
 
@@ -70,7 +70,7 @@ export class WorkOutUseCase {
     );
 
     if (!deletedWorkoutSet) {
-      throw new validationError(WorkoutStatusMessage.FailedToDeletWorkoutSet);
+      throw new validationError(WorkoutStatus.FailedToDeletWorkoutSet);
     }
 
     return deletedWorkoutSet;
@@ -80,11 +80,11 @@ export class WorkOutUseCase {
     const workout = await this.workoutRepository.getWorkoutBySetId(setId);
 
     if (!workout) {
-      throw new validationError(WorkoutStatusMessage.FailedToGetWorkoutData);
+      throw new validationError(WorkoutStatus.FailedToGetWorkoutData);
     }
     if (workout.date > new Date()) {
       throw new validationError(
-        WorkoutStatusMessage.cannotCompleteFutureWorkouts
+        WorkoutStatus.cannotCompleteFutureWorkouts
       );
     }
     const completeWorkoutSet = await this.workoutRepository.markAsCompleted(
@@ -93,7 +93,7 @@ export class WorkOutUseCase {
 
     if (!completeWorkoutSet) {
       throw new validationError(
-        WorkoutStatusMessage.FailedToMarkCompletionSetStatus
+        WorkoutStatus.FailedToMarkCompletionSetStatus
       );
     }
 

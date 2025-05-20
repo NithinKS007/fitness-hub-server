@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  BlockStatusMessage,
+  BlockStatus,
   HttpStatusCodes,
-  PlayListStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  PlayListStatus,
+} from "../../../shared/constants/index-constants";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import { MongoPlayListRepository } from "../../../infrastructure/databases/repositories/playListRepository";
 import { LoggerService } from "../../../infrastructure/logging/logger";
@@ -52,7 +52,7 @@ export class PlayListController {
         res,
         HttpStatusCodes.OK,
         createdPlayList,
-        PlayListStatusMessage.PlayListCreated
+        PlayListStatus.PlayListCreated
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -85,7 +85,7 @@ export class PlayListController {
         res,
         HttpStatusCodes.OK,
         { playList: playList, paginationData: paginationData },
-        PlayListStatusMessage.PlayListsOfTrainerRetrievedSuccessfully
+        PlayListStatus.PlayListsOfTrainerRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -110,7 +110,7 @@ export class PlayListController {
         res,
         HttpStatusCodes.OK,
         playListsOfTrainer,
-        PlayListStatusMessage.PlayListsOfTrainerRetrievedSuccessfully
+        PlayListStatus.PlayListsOfTrainerRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -139,7 +139,7 @@ export class PlayListController {
         res,
         HttpStatusCodes.OK,
         playListData,
-        BlockStatusMessage.BlockStatusUpdated
+        BlockStatus.BlockStatusUpdated
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -167,7 +167,7 @@ export class PlayListController {
         res,
         HttpStatusCodes.OK,
         updatedPlayListData,
-        PlayListStatusMessage.PlayListEditedSuccessfully
+        PlayListStatus.PlayListEditedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(

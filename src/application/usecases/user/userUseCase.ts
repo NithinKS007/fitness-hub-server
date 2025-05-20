@@ -1,7 +1,7 @@
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { User } from "../../../domain/entities/user";
 import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
-import { AuthenticationStatusMessage, BlockStatusMessage, ProfileStatusMessage, UserStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { AuthStatus, BlockStatus, ProfileStatus, UserStatus } from "../../../shared/constants/index-constants";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { UpdateBlockStatusDTO } from "../../dtos/auth-dtos";
 import { GetUsersQueryDTO } from "../../dtos/query-dtos";
@@ -25,7 +25,7 @@ export class UserUseCase {
       filters,
     });
     if (!usersList) {
-      throw new validationError(UserStatusMessage.failedToRetrieveUsersList);
+      throw new validationError(UserStatus.failedToRetrieveUsersList);
     }
 
     return { usersList, paginationData };
@@ -33,11 +33,11 @@ export class UserUseCase {
 
   public async getUserDetails(userId: IdDTO): Promise<User | null> {
     if (!userId) {
-      throw new validationError(AuthenticationStatusMessage.IdRequired);
+      throw new validationError(AuthStatus.IdRequired);
     }
     const userData = await this.userRepository.findById(userId);
     if (!userData) {
-      throw new validationError(ProfileStatusMessage.FailedToRetrieveUserDetails);
+      throw new validationError(ProfileStatus.FailedToRetrieveUserDetails);
     }
     return userData;
   }
@@ -47,14 +47,14 @@ export class UserUseCase {
     isBlocked,
   }: UpdateBlockStatusDTO): Promise<User | null> {
     if (!userId ||typeof isBlocked !== "boolean") {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(AuthStatus.AllFieldsAreRequired);
     }
     const userData = await this.userRepository.updateBlockStatus({
       userId,
       isBlocked,
     });
     if (!userData) {
-      throw new validationError(BlockStatusMessage.FailedToUpdateBlockStatus);
+      throw new validationError(BlockStatus.FailedToUpdateBlockStatus);
     }
     return userData;
   }

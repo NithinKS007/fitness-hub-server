@@ -1,10 +1,9 @@
 import { UpdateSubscriptionDetailsDTO } from "../../dtos/subscription-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  BlockStatusMessage,
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  SubscriptionStatus,
+} from "../../../shared/constants/index-constants";
 import { Subscription } from "../../../domain/entities/subscription";
 import { SubPeriod } from "../../../infrastructure/databases/models/subscriptionModel";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
@@ -51,7 +50,7 @@ export class EditSubscriptionUseCase {
       !trainerId
     ) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
 
@@ -59,7 +58,7 @@ export class EditSubscriptionUseCase {
       await this.subscriptionRepository.findSubscriptionById(subscriptionId);
 
     if (!existingSubData) {
-      throw new validationError(AuthenticationStatusMessage.InvalidId);
+      throw new validationError(AuthStatus.InvalidId);
     }
 
     const trainerData = await this.trainerRepository.getTrainerDetailsById(
@@ -117,7 +116,7 @@ export class EditSubscriptionUseCase {
         },
       });
     if (!updatedSubscriptionData) {
-      throw new validationError(SubscriptionStatusMessage.FailedToEditSubscription);
+      throw new validationError(SubscriptionStatus.FailedToEditSubscription);
     }
     return updatedSubscriptionData;
   }

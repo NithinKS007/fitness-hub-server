@@ -17,7 +17,7 @@ import {
   UserMyTrainersList,
 } from "../entities/subscription";
 import { Top5List } from "../entities/trainer";
-import { SubscriptionPlanEntity } from "../entities/userSubscriptionPlan";
+import { SubscriptionPlanEntity } from "../entities/SubscriptionPlan";
 
 export interface IUserSubscriptionPlanRepository {
   create(

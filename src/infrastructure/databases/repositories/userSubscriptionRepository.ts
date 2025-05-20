@@ -5,7 +5,7 @@ import {
   UpdateSubscriptionStatusDTO,
 } from "../../../application/dtos/subscription-dtos";
 import { IdDTO, PaginationDTO } from "../../../application/dtos/utility-dtos";
-import { SubscriptionPlanEntity } from "../../../domain/entities/userSubscriptionPlan";
+import { SubscriptionPlanEntity } from "../../../domain/entities/SubscriptionPlan";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
 import userSubscriptionPlanModel from "../models/userSubscriptionPlan";
 import {
@@ -353,8 +353,6 @@ export class MongoUserSubscriptionPlanRepository
         },
       },
     ]);
-
-    console.log("result", result);
     return result[0];
   }
   public async findSubscriptionsOfUserwithUserIdAndTrainerId({

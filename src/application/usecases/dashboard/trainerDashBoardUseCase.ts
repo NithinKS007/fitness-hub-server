@@ -1,6 +1,8 @@
 import { IdDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import {
+  AuthStatus,
+} from "../../../shared/constants/index-constants";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
 import { TrainerDashboardStats } from "../../../domain/entities/trainer";
 import { DashBoardChartFilterDTO } from "../../dtos/query-dtos";
@@ -15,7 +17,7 @@ export class TrainerDashBoardUseCase {
     period: DashBoardChartFilterDTO
   ): Promise<TrainerDashboardStats> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(AuthStatus.AllFieldsAreRequired);
     }
 
     const [
@@ -42,7 +44,7 @@ export class TrainerDashBoardUseCase {
 
   private async getTotalSubscriptionsCount(trainerId: IdDTO): Promise<number> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(AuthStatus.AllFieldsAreRequired);
     }
     const totalCount =
       await this.userSubscriptionPlanRepository.countAllTrainerSubscribers(
@@ -53,7 +55,7 @@ export class TrainerDashBoardUseCase {
 
   private async getActiveSubscriptionsCount(trainerId: IdDTO): Promise<number> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(AuthStatus.AllFieldsAreRequired);
     }
     const activeCount =
       await this.userSubscriptionPlanRepository.countAllActiveSubscribers(
@@ -66,7 +68,7 @@ export class TrainerDashBoardUseCase {
     trainerId: IdDTO
   ): Promise<number> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(AuthStatus.AllFieldsAreRequired);
     }
 
     const canceledCount =

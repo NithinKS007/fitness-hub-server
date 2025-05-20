@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  BlockStatusMessage,
   HttpStatusCodes,
-  VideoStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  VideoStatus,
+  BlockStatus
+} from "../../../shared/constants/index-constants";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import { MonogVideoPlayListRepository } from "../../../infrastructure/databases/repositories/videoPlayList";
 import { MongoPlayListRepository } from "../../../infrastructure/databases/repositories/playListRepository";
@@ -59,7 +59,7 @@ export class VideoController {
         res,
         HttpStatusCodes.OK,
         createdVideo,
-        VideoStatusMessage.VideoUploadedSuccessfully
+        VideoStatus.VideoUploadedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -92,7 +92,7 @@ export class VideoController {
         res,
         HttpStatusCodes.OK,
         { videoList: videoList, paginationData: paginationData },
-        VideoStatusMessage.VideoDataRetrievedSuccessfully
+        VideoStatus.VideoDataRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -116,7 +116,7 @@ export class VideoController {
         res,
         HttpStatusCodes.OK,
         videoData,
-        VideoStatusMessage.VideoDataRetrievedSuccessfully
+        VideoStatus.VideoDataRetrievedSuccessfully
       );
     } catch (error: any) {
       loggerHelper.handleLogError(
@@ -144,7 +144,7 @@ export class VideoController {
         res,
         HttpStatusCodes.OK,
         videoData,
-        BlockStatusMessage.BlockStatusUpdated
+        BlockStatus.BlockStatusUpdated
       );
     } catch (error: any) {
       loggerHelper.handleLogError(
@@ -180,7 +180,7 @@ export class VideoController {
         res,
         HttpStatusCodes.OK,
         editedVideoData,
-        VideoStatusMessage.videoEditedSuccessfully
+        VideoStatus.videoEditedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(

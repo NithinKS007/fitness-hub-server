@@ -1,6 +1,8 @@
 import { IdDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import {
+  AuthStatus,
+} from "../../../shared/constants/index-constants";
 import { Playlist } from "../../../domain/entities/playList";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
 
@@ -9,7 +11,7 @@ export class GetallPlaylistUseCase {
   public async getallPlaylists(trainerId: IdDTO): Promise<Playlist[]> {
     if (!trainerId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const playListData = await this.playListRepository.getallPlaylists(

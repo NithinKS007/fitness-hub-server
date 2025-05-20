@@ -1,9 +1,9 @@
 import Stripe from "stripe";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  SubscriptionStatus,
+} from "../../../shared/constants/index-constants";
 import stripe from "../../config/stripeConfig";
 import {
   CreatePrice,
@@ -84,7 +84,7 @@ export class StripePaymentService implements IPaymentService {
     } catch (error) {
       console.log("error occured in stripe service layer", error);
       throw new validationError(
-        SubscriptionStatusMessage.FailedToCreateSubscriptionSession
+        SubscriptionStatus.FailedToCreateSubscriptionSession
       );
     }
   }
@@ -94,13 +94,13 @@ export class StripePaymentService implements IPaymentService {
   ): Promise<Stripe.Checkout.Session> {
     if (!sessionId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (!session) {
       throw new validationError(
-        SubscriptionStatusMessage.InvalidSessionIdForStripe
+        SubscriptionStatus.InvalidSessionIdForStripe
       );
     }
     return session;
@@ -110,13 +110,13 @@ export class StripePaymentService implements IPaymentService {
     stripeSubscriptionId: IdDTO
   ): Promise<Stripe.Subscription> {
     if (!stripeSubscriptionId) {
-      throw new validationError(AuthenticationStatusMessage.InvalidId);
+      throw new validationError(AuthStatus.InvalidId);
     }
     const subscription = await stripe.subscriptions.retrieve(
       stripeSubscriptionId
     );
     if (!subscription) {
-      throw new validationError(AuthenticationStatusMessage.InvalidId);
+      throw new validationError(AuthStatus.InvalidId);
     }
     return subscription;
   }
@@ -124,7 +124,7 @@ export class StripePaymentService implements IPaymentService {
     stripeSubscriptionId: IdDTO
   ): Promise<Stripe.Subscription> {
     if (!stripeSubscriptionId) {
-      throw new validationError(AuthenticationStatusMessage.InvalidId);
+      throw new validationError(AuthStatus.InvalidId);
     }
     const canceledSub = await stripe.subscriptions.cancel(stripeSubscriptionId);
     return canceledSub;

@@ -1,7 +1,7 @@
 import {
   HttpStatusCodes,
-  NotFoundStatusMessage,
-} from "../../shared/constants/httpResponseStructure";
+  ApplicationStatus,
+} from "../../shared/constants/index-constants";
 import { sendResponse } from "../../shared/utils/httpResponse";
 import { Request, Response } from "express";
 export const notFoundMiddleware = (req: Request, res: Response): void => {
@@ -9,6 +9,7 @@ export const notFoundMiddleware = (req: Request, res: Response): void => {
     res,
     HttpStatusCodes.NotFound,
     null,
-    NotFoundStatusMessage.NotFound
+    ApplicationStatus.ResourceNotFound
   );
 };
+ 

@@ -22,6 +22,9 @@ const appointmentSchema: Schema = new Schema(
   { timestamps: true } 
 );
 
+appointmentSchema.index({ userId: 1, appointmentDate: 1, status: 1 });
+appointmentSchema.index({ trainerId: 1, appointmentDate: 1 }); 
+
 const appointmentModel = mongoose.model<IAppointment>("Appointment", appointmentSchema);
 
 export default appointmentModel;

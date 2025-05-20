@@ -1,8 +1,8 @@
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  SubscriptionStatus,
+} from "../../../shared/constants/index-constants";
 import { UserMyTrainersList, UserSubscriptionsList } from "../../../domain/entities/subscription";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
 import {
@@ -27,7 +27,7 @@ export class GetUserSubscriptionUseCase {
   }> {
     if (!userId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
 
@@ -38,7 +38,7 @@ export class GetUserSubscriptionUseCase {
       );
     if (!userSubscriptionRecord) {
       throw new validationError(
-        SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
+        SubscriptionStatus.FailedToRetrieveSubscriptionDetails
       );
     }
 

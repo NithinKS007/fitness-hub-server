@@ -2,9 +2,9 @@ import { HandleBookingRequestDTO } from "../../dtos/booking-dtos";
 import { IdDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AppointmentStatusMessage,
-  AuthenticationStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AppointmentStatus,
+  AuthStatus,
+} from "../../../shared/constants/index-constants";
 import { Appointment } from "../../../domain/entities/appointment";
 import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
 import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
@@ -22,7 +22,7 @@ export class UpdateAppointmentUseCase {
   }: HandleBookingRequestDTO): Promise<Appointment> {
     if (!appointmentId || !bookingSlotId || !action) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const bookingSlotData = await this.bookingSlotRepository.findSlotById(
@@ -30,7 +30,7 @@ export class UpdateAppointmentUseCase {
     );
 
     if (!bookingSlotData) {
-      throw new validationError(AppointmentStatusMessage.BookingSlotNotFound);
+      throw new validationError(AppointmentStatus.BookingSlotNotFound);
     }
 
     if (action === "approved") {
@@ -51,7 +51,7 @@ export class UpdateAppointmentUseCase {
 
     if (!appointmentData) {
       throw new validationError(
-        AppointmentStatusMessage.FailedToApproveRejectBookingStatus
+        AppointmentStatus.FailedToApproveRejectBookingStatus
       );
     }
     return appointmentData;
@@ -60,7 +60,7 @@ export class UpdateAppointmentUseCase {
   public async cancelAppointment(appointmentId: IdDTO): Promise<Appointment> {
     if (!appointmentId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const cancelledAppointment =
@@ -68,7 +68,7 @@ export class UpdateAppointmentUseCase {
 
     if (!cancelledAppointment) {
       throw new validationError(
-        AppointmentStatusMessage.FailedToCancelAppointmentStatus
+        AppointmentStatus.FailedToCancelAppointmentStatus
       );
     }
 
@@ -78,7 +78,7 @@ export class UpdateAppointmentUseCase {
       );
     if (!makingbookingSlotAvailableAgain) {
       throw new validationError(
-        AppointmentStatusMessage.FailedToCancelAppointmentStatus
+        AppointmentStatus.FailedToCancelAppointmentStatus
       );
     }
 

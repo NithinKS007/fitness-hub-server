@@ -1,10 +1,11 @@
 import { IdDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AppointmentStatusMessage,
-  AuthenticationStatusMessage,
-  SlotStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  SlotStatus,
+  AppointmentStatus
+} from "../../../shared/constants/index-constants";
+
 import { BookingSlot } from "../../../domain/entities/bookingSlot";
 import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
 
@@ -14,7 +15,7 @@ export class DeleteBookingSlotUseCase {
   public async deleteBookingSlot(bookingSlotId: IdDTO): Promise<BookingSlot> {
     if (!bookingSlotId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const slotData = await this.bookingSlotRepository.findSlotById(
@@ -23,14 +24,14 @@ export class DeleteBookingSlotUseCase {
 
     if (slotData?.status === "booked" || slotData?.status === "completed") {
       throw new validationError(
-        AppointmentStatusMessage.SlotCurrentlyUnavailable
+        AppointmentStatus.SlotCurrentlyUnavailable
       );
     }
     const deletedSlotData =
       await this.bookingSlotRepository.findByIdAndDeleteSlot(bookingSlotId);
 
     if (!deletedSlotData) {
-      throw new validationError(SlotStatusMessage.FailedToDeleteSlot);
+      throw new validationError(SlotStatus.FailedToDeleteSlot);
     }
     return deletedSlotData;
   }

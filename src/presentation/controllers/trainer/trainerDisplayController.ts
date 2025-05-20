@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
   HttpStatusCodes,
-  TrainerStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  TrainerStatus,
+} from "../../../shared/constants/index-constants";
 import { TrainerUseCase } from "../../../application/usecases/trainer/trainerUseCase";
 import { MongoTrainerRepository } from "../../../infrastructure/databases/repositories/trainerRepository";
 import { LoggerService } from "../../../infrastructure/logging/logger";
@@ -54,7 +54,7 @@ export class TrainerDisplayController {
         res,
         HttpStatusCodes.OK,
         { trainersList, paginationData },
-        TrainerStatusMessage.TrainersList
+        TrainerStatus.TrainersList
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -79,7 +79,7 @@ export class TrainerDisplayController {
         res,
         HttpStatusCodes.OK,
         trainersData,
-        TrainerStatusMessage.TrainersList
+        TrainerStatus.TrainersList
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -109,7 +109,7 @@ export class TrainerDisplayController {
         res,
         HttpStatusCodes.OK,
         { userTrainersList, paginationData },
-        TrainerStatusMessage.TrainersListRetrieved
+        TrainerStatus.TrainersListRetrieved
       );
     } catch (error) {
       loggerHelper.handleLogError(

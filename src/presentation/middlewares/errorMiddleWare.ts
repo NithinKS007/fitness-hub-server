@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import {
   HttpStatusCodes,
-  InternalServerErrorStatusMessage,
-} from "../../shared/constants/httpResponseStructure";
+  ApplicationStatus,
+} from "../../shared/constants/index-constants";
 import { sendResponse } from "../../shared/utils/httpResponse";
 
 class AppError extends Error {
@@ -51,7 +51,7 @@ export const errorMiddleware = (
 ) => {
   const statusCode = err.statusCode || HttpStatusCodes.InternalServerError;
   const message =
-    err.message || InternalServerErrorStatusMessage.InternalServerError;
+    err.message || ApplicationStatus.InternalServerError;
   sendResponse(res, statusCode, null, message);
   next();
 };

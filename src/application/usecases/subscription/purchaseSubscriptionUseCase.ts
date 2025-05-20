@@ -1,12 +1,12 @@
 import { PurchaseSubscriptionDTO } from "../../dtos/subscription-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  SubscriptionStatus,
+} from "../../../shared/constants/index-constants";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
-import { SubscriptionPlanEntity } from "../../../domain/entities/userSubscriptionPlan";
+import { SubscriptionPlanEntity } from "../../../domain/entities/SubscriptionPlan";
 import { IPaymentService } from "../../interfaces/payments/IPaymentService";
 
 export class PurchaseSubscriptionUseCase {
@@ -23,13 +23,13 @@ export class PurchaseSubscriptionUseCase {
       await this.subscriptionRepository.findSubscriptionById(subscriptionId);
     if (!subscriptionData) {
       throw new validationError(
-        SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
+        SubscriptionStatus.FailedToRetrieveSubscriptionDetails
       );
     }
 
     if (subscriptionData.isBlocked) {
       throw new validationError(
-        SubscriptionStatusMessage.SubscriptionBlockedUnavailabe
+        SubscriptionStatus.SubscriptionBlockedUnavailabe
       );
     }
     const sessionId = await this.paymentService.createSubscriptionSession({
@@ -40,7 +40,7 @@ export class PurchaseSubscriptionUseCase {
     });
     if (!sessionId) {
       throw new validationError(
-        SubscriptionStatusMessage.FailedToCreateSubscriptionSession
+        SubscriptionStatus.FailedToCreateSubscriptionSession
       );
     }
     return sessionId.sessionId;
@@ -51,13 +51,13 @@ export class PurchaseSubscriptionUseCase {
   ): Promise<SubscriptionPlanEntity & { isSubscribed: boolean }> {
     if (!sessionId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const session = await this.paymentService.getCheckoutSession(sessionId);
     if (!session) {
       throw new validationError(
-        SubscriptionStatusMessage.InvalidSessionIdForStripe
+        SubscriptionStatus.InvalidSessionIdForStripe
       );
     }
     const stripeSubscriptionId =
@@ -73,7 +73,7 @@ export class PurchaseSubscriptionUseCase {
 
     if (!userTakenSubscription) {
       throw new validationError(
-        SubscriptionStatusMessage.FailedToRetrieveSubscriptionDetails
+        SubscriptionStatus.FailedToRetrieveSubscriptionDetails
       );
     }
     const stripeSubscription = await this.paymentService.getSubscription(

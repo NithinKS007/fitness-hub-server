@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import {
   HttpStatusCodes,
-  VideoCallStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AppointmentStatus,
+} from "../../../shared/constants/index-constants";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import { MongoVideoCallLogRepository } from "../../../infrastructure/databases/repositories/videoCallLogRepository";
 import { LoggerService } from "../../../infrastructure/logging/logger";
@@ -44,7 +44,7 @@ export class VideoCallLogController {
         res,
         HttpStatusCodes.OK,
         { trainerVideoCallLogList, paginationData },
-        VideoCallStatusMessage.VideoCallLogsRetrievedSuccessfully
+        AppointmentStatus.VideoCallLogsRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -77,7 +77,7 @@ export class VideoCallLogController {
         res,
         HttpStatusCodes.OK,
         { userVideoCallLogList, paginationData },
-        VideoCallStatusMessage.VideoCallLogsRetrievedSuccessfully
+        AppointmentStatus.VideoCallLogsRetrievedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(

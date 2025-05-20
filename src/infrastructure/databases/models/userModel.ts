@@ -1,13 +1,13 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IUser extends Document {
-  _id:string
+  _id: string;
   fname: string;
   lname: string;
   email: string;
   isBlocked: boolean;
   role: "user" | "trainer" | "admin";
-  password:string
+  password: string;
   otpVerified: boolean;
   googleVerified: boolean;
   phone: string;
@@ -17,37 +17,41 @@ export interface IUser extends Document {
   height: string;
   weight: string;
   gender: "male" | "female";
-  bloodGroup: string
-  medicalConditions: string
-  otherConcerns: string
+  bloodGroup: string;
+  medicalConditions: string;
+  otherConcerns: string;
 }
 
-const userSchema = new Schema<IUser>({
-  fname: { type: String, required: true },
-  lname: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  isBlocked: { type: Boolean, default: false },
-  role: {
-    type: String,
-    enum: ["user", "trainer", "admin"],
-    required: true,
-    default: "user",
+const userSchema = new Schema<IUser>(
+  {
+    fname: { type: String, required: true },
+    lname: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    isBlocked: { type: Boolean, default: false },
+    role: {
+      type: String,
+      enum: ["user", "trainer", "admin"],
+      required: true,
+      default: "user",
+    },
+    otpVerified: { type: Boolean, default: false },
+    googleVerified: { type: Boolean, default: false },
+    password: { type: String },
+    phone: { type: String },
+    dateOfBirth: { type: Date },
+    profilePic: { type: String },
+    age: { type: String },
+    height: { type: String },
+    weight: { type: String },
+    gender: { type: String },
+    bloodGroup: { type: String },
+    medicalConditions: { type: String },
+    otherConcerns: { type: String },
   },
-  otpVerified: { type: Boolean, default: false },
-  googleVerified: { type: Boolean, default: false },
-  password:{type: String },
-  phone: { type: String },
-  dateOfBirth: { type: Date },
-  profilePic: { type: String },
-  age: { type: String },
-  height: { type: String },
-  weight: { type: String },
-  gender: { type: String },
-  bloodGroup: { type: String },
-  medicalConditions: { type: String },
-  otherConcerns: { type: String },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
+userSchema.index({ role: 1, isBlocked: 1, email: 1 });
 const UserModel = mongoose.model<IUser>("User", userSchema);
 
 export default UserModel;

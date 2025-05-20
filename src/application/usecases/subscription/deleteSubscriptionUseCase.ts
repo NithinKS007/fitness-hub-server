@@ -1,8 +1,8 @@
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  SubscriptionStatus,
+} from "../../../shared/constants/index-constants";
 import { Subscription } from "../../../domain/entities/subscription";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
 import { IPaymentService } from "../../interfaces/payments/IPaymentService";
@@ -19,14 +19,14 @@ export class DeleteSubscription {
   ): Promise<Subscription> {
     if (!subscriptionId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const subscriptionData =
       await this.subscriptionRepository.findSubscriptionById(subscriptionId);
 
     if (!subscriptionData) {
-      throw new validationError(AuthenticationStatusMessage.InvalidId);
+      throw new validationError(AuthStatus.InvalidId);
     }
     const stripePriceId = subscriptionData.stripePriceId;
     if (stripePriceId) {
@@ -37,7 +37,7 @@ export class DeleteSubscription {
 
     if (!deletedSubscription) {
       throw new validationError(
-        SubscriptionStatusMessage.FailedToDeleteSubscription
+        SubscriptionStatus.FailedToDeleteSubscription
       );
     }
     return deletedSubscription;

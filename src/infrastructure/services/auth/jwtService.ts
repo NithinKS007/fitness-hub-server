@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import ms from "ms";
-import { EnvironmentVariableStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { ApplicationStatus } from "../../../shared/constants/index-constants";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import dotenv from "dotenv";
 import { IAuthService } from "../../../application/interfaces/auth/IAuthService";
@@ -24,7 +24,7 @@ export class JwtService implements IAuthService {
       !this.jwtRefreshSecret ||
       !this.jwtRefreshExpiration
     ) {
-      throw new validationError(EnvironmentVariableStatusMessage.MissingJwtEnvironmentVariables);
+      throw new validationError(ApplicationStatus.MissingJwtEnvironmentVariables);
     }
   }
 

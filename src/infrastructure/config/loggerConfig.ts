@@ -18,11 +18,11 @@ const devFormat = combine(
 const prodFormat = combine(timestamp(), errors({ stack: true }), json());
 
 export const createWinstonLogger = (): Logger => {
-   const logger =  createLogger({
+  const logger = createLogger({
     level: isProduction ? "info" : "debug",
     format: isProduction ? prodFormat : devFormat,
     defaultMeta: { service: "fitness-hub-backend" },
     transports: [new transports.Console()],
   });
-  return logger as Logger
+  return logger as Logger;
 };

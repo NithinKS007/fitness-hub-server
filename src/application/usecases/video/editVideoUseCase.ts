@@ -1,9 +1,9 @@
 import { EditVideoDTO } from "../../dtos/video-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  VideoStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  VideoStatus,
+} from "../../../shared/constants/index-constants";
 import { Video } from "../../../domain/entities/video";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
@@ -37,7 +37,7 @@ export class EditVideoUseCase {
       !video
     ) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const editedVideo = await this.videoRepository.editVideo({
@@ -52,7 +52,7 @@ export class EditVideoUseCase {
     });
 
     if (!editedVideo) {
-      throw new validationError(VideoStatusMessage.FailedToEditVideo);
+      throw new validationError(VideoStatus.FailedToEditVideo);
     }
 
     if (editedVideo && playLists && playLists.length > 0) {
@@ -75,6 +75,7 @@ export class EditVideoUseCase {
         videoIdsToDelete
       );
     }
+    
     return editedVideo;
   }
 }

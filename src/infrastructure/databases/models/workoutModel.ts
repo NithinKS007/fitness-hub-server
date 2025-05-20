@@ -50,5 +50,8 @@ const WorkoutSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+WorkoutSchema.index({ userId: 1, date: -1, isCompleted: 1 });
+WorkoutSchema.index({ userId: 1, bodyPart: 1, exerciseName: 1 });
+
 const WorkoutModel = mongoose.model<IWorkout>("Workout", WorkoutSchema);
 export default WorkoutModel;

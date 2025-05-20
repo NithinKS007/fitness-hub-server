@@ -1,9 +1,9 @@
 import { CreateBookingSlotDTO } from "../../dtos/booking-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  SlotStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  SlotStatus,
+} from "../../../shared/constants/index-constants";
 
 import { BookingSlot } from "../../../domain/entities/bookingSlot";
 import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
@@ -17,7 +17,7 @@ export class CreateBookingSlotUseCase {
     const { date, ...otherSlotData } = slotData;
     if (!slotData) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const createdSlotData = await this.bookingSlotRepository.addBookingSlot({
@@ -26,7 +26,7 @@ export class CreateBookingSlotUseCase {
     });
 
     if (!createdSlotData) {
-      throw new validationError(SlotStatusMessage.FailedToCreateBookingSlot);
+      throw new validationError(SlotStatus.FailedToCreateBookingSlot);
     }
     return createdSlotData;
   }

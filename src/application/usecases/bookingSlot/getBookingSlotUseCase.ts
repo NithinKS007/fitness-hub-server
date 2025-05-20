@@ -1,9 +1,9 @@
 import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  SlotStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  SlotStatus,
+} from "../../../shared/constants/index-constants";
 import { BookingSlot } from "../../../domain/entities/bookingSlot";
 import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
 import { AvailableSlotsQueryDTO } from "../../dtos/query-dtos";
@@ -20,7 +20,7 @@ export class GetBookingSlotUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.IdRequired);
+      throw new validationError(AuthStatus.IdRequired);
     }
 
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -33,7 +33,7 @@ export class GetBookingSlotUseCase {
         toDate: parsedToDate,
       });
     if (!availableSlotsList) {
-      throw new validationError(SlotStatusMessage.FailedToGetAvailableSlotData);
+      throw new validationError(SlotStatus.FailedToGetAvailableSlotData);
     }
     return { availableSlotsList, paginationData };
   }
@@ -46,7 +46,7 @@ export class GetBookingSlotUseCase {
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.IdRequired);
+      throw new validationError(AuthStatus.IdRequired);
     }
 
     const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
@@ -59,7 +59,7 @@ export class GetBookingSlotUseCase {
         toDate: parsedToDate,
       });
     if (!availableSlotsList) {
-      throw new validationError(SlotStatusMessage.FailedToGetAvailableSlotData);
+      throw new validationError(SlotStatus.FailedToGetAvailableSlotData);
     }
     return { availableSlotsList, paginationData };
   }
@@ -68,12 +68,12 @@ export class GetBookingSlotUseCase {
     trainerId: IdDTO
   ): Promise<BookingSlot[]> {
     if (!trainerId) {
-      throw new validationError(AuthenticationStatusMessage.IdRequired);
+      throw new validationError(AuthStatus.IdRequired);
     }
     const availableSlotData =
       await this.bookingSlotRepository.getAllAvailableSlotsFromToday(trainerId);
     if (!availableSlotData) {
-      throw new validationError(SlotStatusMessage.FailedToGetAvailableSlotData);
+      throw new validationError(SlotStatus.FailedToGetAvailableSlotData);
     }
     return availableSlotData;
   }

@@ -1,9 +1,9 @@
 import { UpdatePlayListPrivacyDTO } from "../../dtos/playlist-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
-  AuthenticationStatusMessage,
-  BlockStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  BlockStatus,
+} from "../../../shared/constants/index-constants";
 import { Playlist } from "../../../domain/entities/playList";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
 
@@ -15,7 +15,7 @@ export class UpdatePlayListPrivacyUseCase {
   }: UpdatePlayListPrivacyDTO): Promise<Playlist> {
     if (playListId === null || privacy === null) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
     const updatedPlayListData =
@@ -24,7 +24,7 @@ export class UpdatePlayListPrivacyUseCase {
         privacy,
       });
     if (!updatedPlayListData) {
-      throw new validationError(BlockStatusMessage.FailedToUpdateBlockStatus);
+      throw new validationError(BlockStatus.FailedToUpdateBlockStatus);
     }
 
     return updatedPlayListData;

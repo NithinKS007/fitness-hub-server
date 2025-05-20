@@ -2,10 +2,10 @@ import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { User } from "../../../domain/entities/user";
 import { comparePassword } from "../../../shared/utils/hashPassword";
 import {
-  AuthenticationStatusMessage,
-  PasswordStatusMessage,
-  TrainerStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  AuthStatus,
+  PasswordStatus,
+  TrainerStatus,
+} from "../../../shared/constants/index-constants";
 import { SignInDTO } from "../../dtos/auth-dtos";
 import {
   ForbiddenError,
@@ -29,22 +29,22 @@ export class SigninUserUseCase {
   }> {
     const userData = await this.userRepository.findByEmail({ email: email });
     if (!userData) {
-      throw new validationError(AuthenticationStatusMessage.EmailNotFound);
+      throw new validationError(AuthStatus.EmailNotFound);
     }
     if (userData && userData?.googleVerified) {
       throw new validationError(
-        AuthenticationStatusMessage.DifferentLoginMethod
+        AuthStatus.DifferentLoginMethod
       );
     }
     if (!userData?.otpVerified) {
-      throw new ForbiddenError(AuthenticationStatusMessage.AccountNotVerified);
+      throw new ForbiddenError(AuthStatus.AccountNotVerified);
     }
     if (userData?.isBlocked) {
-      throw new ForbiddenError(AuthenticationStatusMessage.AccountBlocked);
+      throw new ForbiddenError(AuthStatus.AccountBlocked);
     }
     const isValidPassword = await comparePassword(password, userData?.password);
     if (!isValidPassword) {
-      throw new validationError(PasswordStatusMessage.IncorrectPassword);
+      throw new validationError(PasswordStatus.IncorrectPassword);
     }
     if (userData?.role === "trainer") {
       const trainerData =
@@ -53,7 +53,7 @@ export class SigninUserUseCase {
         );
       if (!trainerData) {
         throw new validationError(
-          TrainerStatusMessage.FailedToRetrieveTrainerDetails
+          TrainerStatus.FailedToRetrieveTrainerDetails
         );
       }
       const accessToken = this.authService.generateAccessToken({

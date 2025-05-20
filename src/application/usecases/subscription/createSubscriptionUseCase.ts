@@ -1,8 +1,6 @@
 import { SubPeriod } from "../../../infrastructure/databases/models/subscriptionModel";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import {
-  SubscriptionStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+import { SubscriptionStatus } from "../../../shared/constants/index-constants";
 import {
   Subscription,
 } from "../../../domain/entities/subscription";
@@ -51,7 +49,7 @@ export class CreateSubscriptionUseCase {
 
     if (existing) {
       throw new validationError(
-        SubscriptionStatusMessage.SubscriptionAlreadyExists
+        SubscriptionStatus.SubscriptionAlreadyExists
       );
     }
 

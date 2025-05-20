@@ -1,6 +1,6 @@
 import { CheckSubscriptionStatusDTO } from "../../dtos/subscription-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { AuthStatus } from "../../../shared/constants/index-constants";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
 import { IPaymentService } from "../../interfaces/payments/IPaymentService";
 
@@ -19,7 +19,7 @@ export class CheckSubscriptionStatusUseCase {
   }> {
     if (!userId || !trainerId) {
       throw new validationError(
-        AuthenticationStatusMessage.AllFieldsAreRequired
+        AuthStatus.AllFieldsAreRequired
       );
     }
 

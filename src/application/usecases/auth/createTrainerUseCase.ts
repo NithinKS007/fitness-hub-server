@@ -2,7 +2,7 @@ import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { IOtpRepository } from "../../../domain/interfaces/IOtpRepository";
 import { CreateTrainerDTO } from "../../dtos/trainer-dtos";
 import { hashPassword } from "../../../shared/utils/hashPassword";
-import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
+import { AuthStatus} from "../../../shared/constants/index-constants";
 import generateOtp from "../../../shared/utils/otpGenerator";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { Trainer } from "../../../domain/entities/trainer";
@@ -38,21 +38,21 @@ export class CreateTrainerUseCase {
       !dateOfBirth ||
       !phone
     ) {
-      throw new validationError(AuthenticationStatusMessage.AllFieldsAreRequired);
+      throw new validationError(AuthStatus.AllFieldsAreRequired);
     }
 
     const existinguser = await this.userRepository.findByEmail({
       email: email,
     });
     if (existinguser && existinguser.otpVerified) {
-      throw new validationError(AuthenticationStatusMessage.EmailConflict);
+      throw new validationError(AuthStatus.EmailConflict);
     }
     if (
       existinguser &&
       !existinguser.otpVerified &&
       existinguser.googleVerified
     ) {
-      throw new validationError(AuthenticationStatusMessage.DifferentLoginMethod);
+      throw new validationError(AuthStatus.DifferentLoginMethod);
     }
     if (existinguser && !existinguser.otpVerified) {
       const otp = generateOtp(6);

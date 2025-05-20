@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
-  BlockStatusMessage,
+  BlockStatus,
+  ProfileStatus,
+  RevenueStatus,
+  SubscriptionStatus,
+  TrainerStatus,
+  UserStatus,
   HttpStatusCodes,
-  ProfileStatusMessage,
-  RevenueStatusMessage,
-  SubscriptionStatusMessage,
-  TrainerStatusMessage,
-  UserStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+} from "../../../shared/constants/index-constants";
 import { UserUseCase } from "../../../application/usecases/user/userUseCase";
 import { TrainerUseCase } from "../../../application/usecases/trainer/trainerUseCase";
 import { MongoUserRepository } from "../../../infrastructure/databases/repositories/userRepository";
@@ -64,7 +64,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         { usersList: usersList, paginationData: paginationData },
-        UserStatusMessage.UserList
+        UserStatus.UserList
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -88,7 +88,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         userData,
-        ProfileStatusMessage.UserDataRetrieved
+        ProfileStatus.UserDataRetrieved
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -119,7 +119,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         { trainersList: trainersList, paginationData },
-        TrainerStatusMessage.TrainersListRetrieved
+        TrainerStatus.TrainersListRetrieved
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -142,7 +142,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         trainerData,
-        TrainerStatusMessage.TrainerDetailsRetrieved
+        TrainerStatus.TrainerDetailsRetrieved
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -169,7 +169,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         updatedData,
-        BlockStatusMessage.BlockStatusUpdated
+        BlockStatus.BlockStatusUpdated
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -201,7 +201,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         { trainersList: trainersList, paginationData: paginationData },
-        TrainerStatusMessage.TrainersListRetrieved
+        TrainerStatus.TrainersListRetrieved
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -230,14 +230,14 @@ export class AdminController {
           res,
           HttpStatusCodes.OK,
           updatedTrainerData,
-          TrainerStatusMessage.TrainerApproved
+          TrainerStatus.TrainerApproved
         );
       } else {
         sendResponse(
           res,
           HttpStatusCodes.OK,
           updatedTrainerData,
-          TrainerStatusMessage.TrainerRejected
+          TrainerStatus.TrainerRejected
         );
       }
     } catch (error) {
@@ -262,7 +262,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         subscriptionsData,
-        SubscriptionStatusMessage.SubscriptionsListRetrieved
+        SubscriptionStatus.SubscriptionsListRetrieved
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -294,7 +294,7 @@ export class AdminController {
         res,
         HttpStatusCodes.OK,
         { revenueData: revenueData, paginationData: paginationData },
-        RevenueStatusMessage.SuccessFullyFetchedRevenueHistory
+        RevenueStatus.SuccessFullyFetchedRevenueHistory
       );
     } catch (error) {
       loggerHelper.handleLogError(

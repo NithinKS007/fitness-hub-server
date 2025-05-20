@@ -32,7 +32,7 @@ const playlistSchema: Schema = new Schema(
   },
   { timestamps: true }
 );
-
+playlistSchema.index({ title: "text" });
 const playListModel = mongoose.model<IPlayList>("PlayList", playlistSchema);
 
 export default playListModel;

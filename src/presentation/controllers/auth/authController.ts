@@ -1,13 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
-  AuthenticationStatusMessage,
+  AuthStatus,
   HttpStatusCodes,
-  JWTStatusMessage,
-  OTPStatusMessage,
-  PasswordStatusMessage,
-  ProfileStatusMessage,
-} from "../../../shared/constants/httpResponseStructure";
+  JwtStatus,
+  OTPStatus,
+  PasswordStatus,
+  ProfileStatus,
+} from "../../../shared/constants/index-constants";
+
 import { CreateUserUseCase } from "../../../application/usecases/auth/createUserUseCase";
 import { SigninUserUseCase } from "../../../application/usecases/auth/signInUserUseCase";
 import { OtpUseCase } from "../../../application/usecases/auth/otpUseCase";
@@ -95,7 +96,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         createdUser,
-        AuthenticationStatusMessage.UserCreatedSuccessfully
+        AuthStatus.UserCreatedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -118,7 +119,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         createdTrainer,
-        AuthenticationStatusMessage.UserCreatedSuccessfully
+        AuthStatus.UserCreatedSuccessfully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -149,7 +150,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         { userData, accessToken },
-        AuthenticationStatusMessage.LoginSuccessful
+        AuthStatus.LoginSuccessful
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -172,7 +173,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         null,
-        AuthenticationStatusMessage.RegistrationSuccessful
+        AuthStatus.RegistrationSuccessful
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -195,7 +196,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         null,
-        OTPStatusMessage.OtpSendSuccessful
+        OTPStatus.OtpSendSuccessful
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -218,7 +219,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         tokenData.email,
-        AuthenticationStatusMessage.LinkSentToEmail
+        AuthStatus.LinkSentToEmail
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -246,7 +247,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         null,
-        PasswordStatusMessage.PassWordResetSuccess
+        PasswordStatus.PassWordResetSuccess
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -276,7 +277,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         { userData, accessToken },
-        AuthenticationStatusMessage.LoginSuccessful
+        AuthStatus.LoginSuccessful
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -300,7 +301,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         null,
-        PasswordStatusMessage.PasswordUpdated
+        PasswordStatus.PasswordUpdated
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -326,7 +327,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         null,
-        AuthenticationStatusMessage.LogoutSuccessful
+        AuthStatus.LogoutSuccessful
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -352,7 +353,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         { newAccessToken },
-        JWTStatusMessage.AccessTokenRefreshedSuccessFully
+        JwtStatus.AccessTokenRefreshedSuccessFully
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -379,7 +380,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         updatedTrainerData,
-        ProfileStatusMessage.UserDetailsUpdated
+        ProfileStatus.UserDetailsUpdated
       );
     } catch (error) {
       loggerHelper.handleLogError(
@@ -405,7 +406,7 @@ export class AuthController {
         res,
         HttpStatusCodes.OK,
         updatedUserData,
-        ProfileStatusMessage.UserDetailsUpdated
+        ProfileStatus.UserDetailsUpdated
       );
     } catch (error) {
       loggerHelper.handleLogError(

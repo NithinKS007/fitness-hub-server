@@ -44,6 +44,10 @@ const userSubscriptionPlanSchema: Schema = new Schema(
   { timestamps: true }
 );
 
+userSubscriptionPlanSchema.index({ userId: 1, stripeSubscriptionStatus: 1, createdAt: -1 });
+userSubscriptionPlanSchema.index({ trainerId: 1, stripeSubscriptionStatus: 1, createdAt: -1 });
+userSubscriptionPlanSchema.index({ stripeSubscriptionId: 1 }, { unique: true });
+
 const userSubscriptionPlanModel = mongoose.model<IUserSubscriptionPlan>(
   "UserSubscriptionPlan",
   userSubscriptionPlanSchema
