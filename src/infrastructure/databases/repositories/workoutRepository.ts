@@ -1,8 +1,8 @@
-import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
+import { IdDTO, PaginationDTO } from "../../../application/dtos/utility-dtos";
 import { IWorkoutRepository } from "../../../domain/interfaces/IWorkoutRepository";
 import {
   WorkoutdbDTO,
-} from "../../../application/dtos/workoutDTOs";
+} from "../../../application/dtos/workout-dtos";
 import workoutModel from "../models/workoutModel";
 import {
   Workout,
@@ -12,7 +12,7 @@ import mongoose from "mongoose";
 import {
   CustomUserDashBoardQueryDTO,
   GetWorkoutQueryDTO,
-} from "../../../application/dtos/queryDTOs";
+} from "../../../application/dtos/query-dtos";
 
 export class MongoWorkoutRepository implements IWorkoutRepository {
   public async addWorkout(createWorkout: WorkoutdbDTO[]): Promise<Workout[]> {

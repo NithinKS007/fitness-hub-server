@@ -1,4 +1,4 @@
-import { OtpDTO } from "../../application/dtos/authDTOs";
+import { OtpDTO } from "../../application/dtos/auth-dtos";
 import { Otp } from "../entities/otp";
 
 export interface IOtpRepository {

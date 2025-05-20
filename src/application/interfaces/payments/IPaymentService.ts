@@ -6,8 +6,8 @@ import {
   DeactivatePrice,
   Session,
   SubscriptionMetadata,
-} from "../../dtos/service/paymentService";
-import { IdDTO } from "../../dtos/utilityDTOs";
+} from "../../dtos/service/payment-service";
+import { IdDTO } from "../../dtos/utility-dtos";
 
 export interface IPaymentService {
   createProduct(createProduct: CreateProduct): Promise<string>;

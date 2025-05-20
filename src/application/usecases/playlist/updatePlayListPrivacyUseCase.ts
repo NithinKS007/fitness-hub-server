@@ -1,4 +1,4 @@
-import { UpdatePlayListPrivacyDTO } from "../../dtos/playListDTOs";
+import { UpdatePlayListPrivacyDTO } from "../../dtos/playlist-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
   AuthenticationStatusMessage,

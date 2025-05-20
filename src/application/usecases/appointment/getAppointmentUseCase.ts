@@ -1,4 +1,4 @@
-import { IdDTO, PaginationDTO } from "../../dtos/utilityDTOs";
+import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
   AppointmentStatusMessage,
@@ -13,7 +13,7 @@ import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentR
 import {
   GetBookingRequestsDTO,
   GetBookingSchedulesDTO,
-} from "../../dtos/queryDTOs";
+} from "../../dtos/query-dtos";
 import { parseDateRange } from "../../../shared/utils/dayjs";
 
 export class GetAppointmentUsecase {

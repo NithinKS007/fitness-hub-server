@@ -1,5 +1,5 @@
-import { HandleBookingRequestDTO } from "../../dtos/bookingDTOs";
-import { IdDTO } from "../../dtos/utilityDTOs";
+import { HandleBookingRequestDTO } from "../../dtos/booking-dtos";
+import { IdDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
   AppointmentStatusMessage,

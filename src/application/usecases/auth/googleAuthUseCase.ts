@@ -1,4 +1,4 @@
-import { GoogleTokenDTO } from "../../dtos/authDTOs";
+import { GoogleTokenDTO } from "../../dtos/auth-dtos";
 import {
   ForbiddenError,
   validationError,

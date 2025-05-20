@@ -1,21 +1,21 @@
-import { UpdateBlockStatusDTO } from "../../../application/dtos/authDTOs";
+import { UpdateBlockStatusDTO } from "../../../application/dtos/auth-dtos";
 
 import {
   ChangePasswordDTO,
   FindEmailDTO,
   UpdatePasswordDTO,
-} from "../../../application/dtos/authDTOs";
-import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
+} from "../../../application/dtos/auth-dtos";
+import { IdDTO, PaginationDTO } from "../../../application/dtos/utility-dtos";
 
 import {
   CreateGoogleUserDTO,
   CreateUserDTO,
   UpdateUserDetailsDTO,
-} from "../../../application/dtos/userDTOs";
+} from "../../../application/dtos/user-dtos";
 import { User } from "../../../domain/entities/user";
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import UserModel from "../models/userModel";
-import { GetUsersQueryDTO } from "../../../application/dtos/queryDTOs";
+import { GetUsersQueryDTO } from "../../../application/dtos/query-dtos";
 import mongoose from "mongoose";
 
 export class MongoUserRepository implements IUserRepository {

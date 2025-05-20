@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 import {
   CreateChatDTO,
   FindChatDTO,
-} from "../../../application/dtos/chatDTOs";
-import { IdDTO } from "../../../application/dtos/utilityDTOs";
+} from "../../../application/dtos/chat-dtos";
+import { IdDTO } from "../../../application/dtos/utility-dtos";
 import { Chat } from "../../../domain/entities/chat";
 import { IChatRepository } from "../../../domain/interfaces/IChatRepository";
 import chatModel from "../models/chatModel";

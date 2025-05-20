@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 import {
   HandleBookingRequestDTO,
   CreateAppointmentDTO,
-} from "../../../application/dtos/bookingDTOs";
-import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
+} from "../../../application/dtos/booking-dtos";
+import { IdDTO, PaginationDTO } from "../../../application/dtos/utility-dtos";
 import {
   Appointment,
   AppointmentRequestsTrainer,
@@ -14,7 +14,7 @@ import appointmentModel from "../models/appointmentModel";
 import {
   GetBookingRequestsDTO,
   GetBookingSchedulesDTO,
-} from "../../../application/dtos/queryDTOs";
+} from "../../../application/dtos/query-dtos";
 
 export class MongoAppointmentRepository implements IAppointmentRepository {
   public async createAppointment(
@@ -22,6 +22,7 @@ export class MongoAppointmentRepository implements IAppointmentRepository {
   ): Promise<Appointment> {
     return await appointmentModel.create(appointmentData);
   }
+  
   public async getBookingAppointmentRequests(
     trainerId: IdDTO,
     { page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO

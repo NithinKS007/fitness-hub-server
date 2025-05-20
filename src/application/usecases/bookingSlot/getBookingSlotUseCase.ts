@@ -1,4 +1,4 @@
-import { IdDTO, PaginationDTO } from "../../dtos/utilityDTOs";
+import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
   AuthenticationStatusMessage,
@@ -6,7 +6,7 @@ import {
 } from "../../../shared/constants/httpResponseStructure";
 import { BookingSlot } from "../../../domain/entities/bookingSlot";
 import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
-import { AvailableSlotsQueryDTO } from "../../dtos/queryDTOs";
+import { AvailableSlotsQueryDTO } from "../../dtos/query-dtos";
 import { parseDateRange } from "../../../shared/utils/dayjs";
 
 export class GetBookingSlotUseCase {

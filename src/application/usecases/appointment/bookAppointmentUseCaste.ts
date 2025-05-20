@@ -1,4 +1,4 @@
-import { BookAppointmentDTO } from "../../dtos/bookingDTOs";
+import { BookAppointmentDTO } from "../../dtos/booking-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
   AppointmentStatusMessage,

@@ -2,9 +2,9 @@ import {
   CreateVideoCallLogDTO,
   UpdateVideoCallLogDTO,
   UpdateVideoCallDurationDTO,
-} from "../../application/dtos/videoCallDTOs";
-import { GetVideoCallLogQueryDTO } from "../../application/dtos/queryDTOs";
-import { IdDTO, PaginationDTO } from "../../application/dtos/utilityDTOs";
+} from "../../application/dtos/video-call-dtos";
+import { GetVideoCallLogQueryDTO } from "../../application/dtos/query-dtos";
+import { IdDTO, PaginationDTO } from "../../application/dtos/utility-dtos";
 import {
   TrainerVideoCallLog,
   UserVideoCallLog,

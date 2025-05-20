@@ -3,8 +3,8 @@ import {
   CheckSubscriptionStatusDTO,
   CreateUserSubscriptionPlanDTO,
   UpdateSubscriptionStatusDTO,
-} from "../../../application/dtos/subscriptionDTOs";
-import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
+} from "../../../application/dtos/subscription-dtos";
+import { IdDTO, PaginationDTO } from "../../../application/dtos/utility-dtos";
 import { SubscriptionPlanEntity } from "../../../domain/entities/userSubscriptionPlan";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
 import userSubscriptionPlanModel from "../models/userSubscriptionPlan";
@@ -13,7 +13,7 @@ import {
   GetTrainerSubscribersQueryDTO,
   GetUserSubscriptionsQueryDTO,
   GetUserTrainersListQueryDTO,
-} from "../../../application/dtos/queryDTOs";
+} from "../../../application/dtos/query-dtos";
 import {
   TrainerSubscriberRecord,
   UserMyTrainersList,

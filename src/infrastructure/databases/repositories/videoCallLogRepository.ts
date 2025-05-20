@@ -3,8 +3,8 @@ import {
   CreateVideoCallLogDTO,
   UpdateVideoCallLogDTO,
   UpdateVideoCallDurationDTO,
-} from "../../../application/dtos/videoCallDTOs";
-import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
+} from "../../../application/dtos/video-call-dtos";
+import { IdDTO, PaginationDTO } from "../../../application/dtos/utility-dtos";
 import { IVideoCallLogRepository } from "../../../domain/interfaces/IVideoCallLogRepository";
 import videoCallLogModel from "../models/videoCallLog";
 import {
@@ -12,7 +12,7 @@ import {
   UserVideoCallLog,
   VideoCallLog,
 } from "../../../domain/entities/videoCallLog";
-import { GetVideoCallLogQueryDTO } from "../../../application/dtos/queryDTOs";
+import { GetVideoCallLogQueryDTO } from "../../../application/dtos/query-dtos";
 
 export class MongoVideoCallLogRepository implements IVideoCallLogRepository {
   public async createCallLog({

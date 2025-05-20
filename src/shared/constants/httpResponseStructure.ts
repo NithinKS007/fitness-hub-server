@@ -6,6 +6,7 @@ export enum HttpStatusCodes {
   Forbidden = 403,
   NotFound = 404,
   InternalServerError = 500,
+  RateLimit = 429,
 }
 
 export enum UserStatusMessage {
@@ -201,4 +202,12 @@ export enum AppointmentStatusMessage {
   AppointmentCancelledSuccessfully = "Appointment cancelled successfully",
   FailedToCancelAppointmentStatus = "Failed to cancel appointment schedule",
   FailedToFindAppointment = "Failed to find appointment data",
+}
+
+export enum RateLimitStatusMessage {
+  TooMany = "Too many requests, please try again later.",
+}
+
+export enum NotFoundStatusMessage {
+  NotFound = "Resource not found",
 }

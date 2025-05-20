@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
-import { IdDTO } from "../../../application/dtos/utilityDTOs";
+import { IdDTO } from "../../../application/dtos/utility-dtos";
 import {
   CreateTrainerCollectionDTO,
   TrainerDTO,
-} from "../../../application/dtos/trainerDTOs";
+} from "../../../application/dtos/trainer-dtos";
 import {
   GetApprovedTrainerQueryDTO,
   GetTrainersApprovalQueryDTO,
   GetTrainersQueryDTO,
-} from "../../../application/dtos/queryDTOs";
-import { PaginationDTO } from "../../../application/dtos/utilityDTOs";
-import { TrainerVerificationDTO } from "../../../application/dtos/trainerDTOs";
+} from "../../../application/dtos/query-dtos";
+import { PaginationDTO } from "../../../application/dtos/utility-dtos";
+import { TrainerVerificationDTO } from "../../../application/dtos/trainer-dtos";
 
 import {
   Trainer,

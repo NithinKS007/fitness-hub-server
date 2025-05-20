@@ -2,7 +2,7 @@ import {
   ChangePasswordDTO,
   CreatePassResetTokenDTO,
   PasswordResetDTO,
-} from "../../dtos/authDTOs";
+} from "../../dtos/auth-dtos";
 import { AuthenticationStatusMessage, PasswordStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { IPasswordResetRepository } from "../../../domain/interfaces/IPasswordResetTokenRepository";

@@ -1,4 +1,4 @@
-import { EditPlayListDTO } from "../../dtos/playListDTOs";
+import { EditPlayListDTO } from "../../dtos/playlist-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { VideoStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { Playlist } from "../../../domain/entities/playList";

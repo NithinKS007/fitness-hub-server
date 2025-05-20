@@ -1,4 +1,4 @@
-import { OtpDTO } from "../../../application/dtos/authDTOs";
+import { OtpDTO } from "../../../application/dtos/auth-dtos";
 import { Otp } from "../../../domain/entities/otp";
 import { IOtpRepository } from "../../../domain/interfaces/IOtpRepository";
 import otpModel from "../models/otpModel";

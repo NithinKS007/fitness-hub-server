@@ -1,10 +1,10 @@
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { User } from "../../../domain/entities/user";
-import { IdDTO, PaginationDTO } from "../../dtos/utilityDTOs";
+import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 import { AuthenticationStatusMessage, BlockStatusMessage, ProfileStatusMessage, UserStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
-import { UpdateBlockStatusDTO } from "../../dtos/authDTOs";
-import { GetUsersQueryDTO } from "../../dtos/queryDTOs";
+import { UpdateBlockStatusDTO } from "../../dtos/auth-dtos";
+import { GetUsersQueryDTO } from "../../dtos/query-dtos";
 
 export class UserUseCase {
   constructor(private userRepository: IUserRepository) {}

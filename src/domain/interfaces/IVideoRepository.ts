@@ -2,9 +2,9 @@ import {
   CreateVideoDTO,
   EditVideoDTO,
   UpdateVideoPrivacyDTO,
-} from "../../application/dtos/videoDTOs";
-import { GetVideoQueryDTO } from "../../application/dtos/queryDTOs";
-import { IdDTO, PaginationDTO } from "../../application/dtos/utilityDTOs";
+} from "../../application/dtos/video-dtos";
+import { GetVideoQueryDTO } from "../../application/dtos/query-dtos";
+import { IdDTO, PaginationDTO } from "../../application/dtos/utility-dtos";
 import { Video, VideoWithPlayLists } from "../entities/video";
 
 export interface IVideoRepository {

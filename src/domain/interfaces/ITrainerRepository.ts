@@ -2,14 +2,14 @@ import {
   GetApprovedTrainerQueryDTO,
   GetTrainersApprovalQueryDTO,
   GetTrainersQueryDTO,
-} from "../../application/dtos/queryDTOs";
-import { IdDTO } from "../../application/dtos/utilityDTOs";
-import { PaginationDTO } from "../../application/dtos/utilityDTOs";
+} from "../../application/dtos/query-dtos";
+import { IdDTO } from "../../application/dtos/utility-dtos";
+import { PaginationDTO } from "../../application/dtos/utility-dtos";
 import {
   CreateTrainerCollectionDTO,
   TrainerDTO,
-} from "../../application/dtos/trainerDTOs";
-import { TrainerVerificationDTO } from "../../application/dtos/trainerDTOs";
+} from "../../application/dtos/trainer-dtos";
+import { TrainerVerificationDTO } from "../../application/dtos/trainer-dtos";
 import { Trainer, TrainerSpecific } from "../entities/trainer";
 import { TrainerWithSubscription } from "../entities/trainerWithSubscription";
 

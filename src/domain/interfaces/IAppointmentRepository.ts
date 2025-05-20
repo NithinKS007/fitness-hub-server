@@ -1,12 +1,12 @@
 import {
   HandleBookingRequestDTO,
   CreateAppointmentDTO,
-} from "../../application/dtos/bookingDTOs";
+} from "../../application/dtos/booking-dtos";
 import {
   GetBookingRequestsDTO,
   GetBookingSchedulesDTO,
-} from "../../application/dtos/queryDTOs";
-import { IdDTO, PaginationDTO } from "../../application/dtos/utilityDTOs";
+} from "../../application/dtos/query-dtos";
+import { IdDTO, PaginationDTO } from "../../application/dtos/utility-dtos";
 import {
   Appointment,
   AppointmentRequestsTrainer,

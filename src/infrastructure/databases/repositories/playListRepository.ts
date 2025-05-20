@@ -3,15 +3,15 @@ import {
   CreatePlayListDTO,
   EditPlayListDTO,
   UpdatePlayListPrivacyDTO,
-} from "../../../application/dtos/playListDTOs";
-import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
+} from "../../../application/dtos/playlist-dtos";
+import { IdDTO, PaginationDTO } from "../../../application/dtos/utility-dtos";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
 import playlistModel from "../models/playListModel";
 import {
   NumberOfVideoPerPlayList,
   Playlist,
 } from "../../../domain/entities/playList";
-import { GetPlayListsQueryDTO } from "../../../application/dtos/queryDTOs";
+import { GetPlayListsQueryDTO } from "../../../application/dtos/query-dtos";
 
 export class MongoPlayListRepository implements IPlayListRepository {
   public async createPlayList({

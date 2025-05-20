@@ -5,9 +5,9 @@ import {
   UpdateLastMessage,
   UpdateUnReadMessageCount,
   IncrementUnReadMessageCount,
-} from "../../application/dtos/conversationDTOs";
-import { GetChatListQueryDTO } from "../../application/dtos/queryDTOs";
-import { IdDTO } from "../../application/dtos/utilityDTOs";
+} from "../../application/dtos/conversation-dtos";
+import { GetChatListQueryDTO } from "../../application/dtos/query-dtos";
+import { IdDTO } from "../../application/dtos/utility-dtos";
 import {
   Conversation,
   TrainerChatList,

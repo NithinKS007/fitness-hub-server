@@ -1,4 +1,4 @@
-import { IdDTO } from "../../dtos/utilityDTOs";
+import { IdDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";

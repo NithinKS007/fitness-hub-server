@@ -3,7 +3,7 @@ import cloudinary from "../../config/cloudinaryConfig";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { CloudinaryStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { ICloudStorageService } from "../../../application/interfaces/storage/ICloudStorageService";
-import { UploadImage } from "../../../application/dtos/service/cloudStorageService";
+import { UploadImage } from "../../../application/dtos/service/cloud-storage-service";
 
 export class CloudinaryService implements ICloudStorageService {
   public async uploadImage(uploadImage: UploadImage): Promise<string> {

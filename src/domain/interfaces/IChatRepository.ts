@@ -1,5 +1,5 @@
-import { CreateChatDTO, FindChatDTO } from "../../application/dtos/chatDTOs";
-import { IdDTO } from "../../application/dtos/utilityDTOs";
+import { CreateChatDTO, FindChatDTO } from "../../application/dtos/chat-dtos";
+import { IdDTO } from "../../application/dtos/utility-dtos";
 import { Chat } from "../entities/chat";
 
 export interface IChatRepository {

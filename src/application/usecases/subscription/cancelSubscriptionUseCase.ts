@@ -1,4 +1,4 @@
-import { CancelSubscriptionDTO } from "../../dtos/subscriptionDTOs";
+import { CancelSubscriptionDTO } from "../../dtos/subscription-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { IPaymentService } from "../../interfaces/payments/IPaymentService";

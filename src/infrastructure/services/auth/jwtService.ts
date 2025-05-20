@@ -4,7 +4,7 @@ import { EnvironmentVariableStatusMessage } from "../../../shared/constants/http
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import dotenv from "dotenv";
 import { IAuthService } from "../../../application/interfaces/auth/IAuthService";
-import { TokenPayload } from "../../../application/dtos/service/authService";
+import { TokenPayload } from "../../../application/dtos/service/auth-service";
 dotenv.config();
 
 export class JwtService implements IAuthService {

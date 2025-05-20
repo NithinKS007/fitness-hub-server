@@ -1,7 +1,7 @@
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { User } from "../../../domain/entities/user";
-import { UpdateUserDetailsDTO } from "../../dtos/userDTOs";
-import { UpdateTrainerDetailsDTO } from "../../dtos/trainerDTOs";
+import { UpdateUserDetailsDTO } from "../../dtos/user-dtos";
+import { UpdateTrainerDetailsDTO } from "../../dtos/trainer-dtos";
 import {
   AuthenticationStatusMessage,
   ProfileStatusMessage,

@@ -2,15 +2,15 @@ import mongoose from "mongoose";
 import {
   AdminRevenueHistory,
   CreateRevenueDTO,
-} from "../../../application/dtos/revenueDTOs";
+} from "../../../application/dtos/revenue-dtos";
 import { IRevenueRepository } from "../../../domain/interfaces/IRevenueRepository";
 import revenueModel from "../models/revenueModel";
 import {
   DateRangeQueryDTO,
   GetRevenueQueryDTO,
-} from "../../../application/dtos/queryDTOs";
+} from "../../../application/dtos/query-dtos";
 import { AdminChartData } from "../../../domain/entities/chart";
-import { PaginationDTO } from "../../../application/dtos/utilityDTOs";
+import { PaginationDTO } from "../../../application/dtos/utility-dtos";
 
 export class MongoRevenueRepository implements IRevenueRepository {
   public async create({

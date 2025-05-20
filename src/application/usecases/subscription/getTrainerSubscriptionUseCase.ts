@@ -8,9 +8,9 @@ import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptio
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
 import {
   GetTrainerSubscribersQueryDTO,
-} from "../../dtos/queryDTOs";
+} from "../../dtos/query-dtos";
 import { IPaymentService } from "../../interfaces/payments/IPaymentService";
-import { IdDTO, PaginationDTO } from "../../dtos/utilityDTOs";
+import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 
 export class GetTrainerSubscriptionUseCase {
   constructor(

@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import { CreateBookingSlotDTO } from "../../../application/dtos/bookingDTOs";
-import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
+import { CreateBookingSlotDTO } from "../../../application/dtos/booking-dtos";
+import { IdDTO, PaginationDTO } from "../../../application/dtos/utility-dtos";
 import { BookingSlot } from "../../../domain/entities/bookingSlot";
 import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
 import bookingSlotModel from "../models/bookingSlot";
-import { AvailableSlotsQueryDTO } from "../../../application/dtos/queryDTOs";
+import { AvailableSlotsQueryDTO } from "../../../application/dtos/query-dtos";
 
 export class MongoBookingSlotRepository implements IBookingSlotRepository {
   public async addBookingSlot({

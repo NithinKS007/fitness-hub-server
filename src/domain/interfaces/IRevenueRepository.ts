@@ -1,12 +1,12 @@
 import {
   DateRangeQueryDTO,
   GetRevenueQueryDTO,
-} from "../../application/dtos/queryDTOs";
+} from "../../application/dtos/query-dtos";
 import {
   AdminRevenueHistory,
   CreateRevenueDTO,
-} from "../../application/dtos/revenueDTOs";
-import { PaginationDTO } from "../../application/dtos/utilityDTOs";
+} from "../../application/dtos/revenue-dtos";
+import { PaginationDTO } from "../../application/dtos/utility-dtos";
 import { AdminChartData } from "../entities/chart";
 
 export interface IRevenueRepository {

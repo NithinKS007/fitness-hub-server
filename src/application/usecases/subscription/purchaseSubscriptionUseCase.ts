@@ -1,4 +1,4 @@
-import { PurchaseSubscriptionDTO } from "../../dtos/subscriptionDTOs";
+import { PurchaseSubscriptionDTO } from "../../dtos/subscription-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
   AuthenticationStatusMessage,

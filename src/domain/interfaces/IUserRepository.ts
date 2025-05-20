@@ -2,16 +2,16 @@ import {
   ChangePasswordDTO,
   FindEmailDTO,
   UpdatePasswordDTO,
-} from "../../application/dtos/authDTOs";
-import { IdDTO, PaginationDTO } from "../../application/dtos/utilityDTOs";
+} from "../../application/dtos/auth-dtos";
+import { IdDTO, PaginationDTO } from "../../application/dtos/utility-dtos";
 import {
   CreateGoogleUserDTO,
   UpdateUserDetailsDTO,
   CreateUserDTO,
-} from "../../application/dtos/userDTOs";
-import { UpdateBlockStatusDTO } from "../../application/dtos/authDTOs";
+} from "../../application/dtos/user-dtos";
+import { UpdateBlockStatusDTO } from "../../application/dtos/auth-dtos";
 import { User } from "../entities/user";
-import { GetUsersQueryDTO } from "../../application/dtos/queryDTOs";
+import { GetUsersQueryDTO } from "../../application/dtos/query-dtos";
 
 export interface IUserRepository {
   create(data: CreateUserDTO): Promise<User>;

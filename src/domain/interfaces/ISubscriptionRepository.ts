@@ -3,8 +3,8 @@ import {
   FindExistingSubscriptionDTO,
   UpdateSubscriptionBlockStatusDTO,
   UpdateSubscriptionDetailsDTO,
-} from "../../application/dtos/subscriptionDTOs";
-import { IdDTO } from "../../application/dtos/utilityDTOs";
+} from "../../application/dtos/subscription-dtos";
+import { IdDTO } from "../../application/dtos/utility-dtos";
 import { Subscription } from "../entities/subscription";
 
 export interface ISubscriptionRepository {

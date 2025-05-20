@@ -6,9 +6,9 @@ import {
   AuthenticationStatusMessage,
   WorkoutStatusMessage,
 } from "../../../shared/constants/httpResponseStructure";
-import { GetWorkoutQueryDTO } from "../../dtos/queryDTOs";
-import { IdDTO, PaginationDTO } from "../../dtos/utilityDTOs";
-import { WorkoutdbDTO, WorkoutDTO } from "../../dtos/workoutDTOs";
+import { GetWorkoutQueryDTO } from "../../dtos/query-dtos";
+import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
+import { WorkoutdbDTO, WorkoutDTO } from "../../dtos/workout-dtos";
 import { parseDateRange } from "../../../shared/utils/dayjs";
 
 export class WorkOutUseCase {

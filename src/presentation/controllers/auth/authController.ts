@@ -27,7 +27,7 @@ import { EmailService } from "../../../infrastructure/services/communication/ema
 import { LoggerService } from "../../../infrastructure/logging/logger";
 import { LoggerHelper } from "../../../shared/utils/handleLog";
 import dotenv from "dotenv";
-import { UpdateUserDetailsDTO } from "../../../application/dtos/userDTOs";
+import { UpdateUserDetailsDTO } from "../../../application/dtos/user-dtos";
 dotenv.config();
 //MONGO REPOSITORY INSTANCES
 const mongoUserRepository = new MongoUserRepository();

@@ -1,9 +1,9 @@
-import { IdDTO } from "../../dtos/utilityDTOs";
+import { IdDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
 import { TrainerDashboardStats } from "../../../domain/entities/trainer";
-import { DashBoardChartFilterDTO } from "../../dtos/queryDTOs";
+import { DashBoardChartFilterDTO } from "../../dtos/query-dtos";
 import { getDateRange } from "../../../shared/utils/dayjs";
 
 export class TrainerDashBoardUseCase {

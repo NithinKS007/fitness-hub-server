@@ -1,7 +1,7 @@
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { IOtpRepository } from "../../../domain/interfaces/IOtpRepository";
 import { User } from "../../../domain/entities/user";
-import { CreateUserDTO } from "../../dtos/userDTOs";
+import { CreateUserDTO } from "../../dtos/user-dtos";
 import { hashPassword } from "../../../shared/utils/hashPassword";
 import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import generateOtp from "../../../shared/utils/otpGenerator";

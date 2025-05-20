@@ -2,7 +2,7 @@ import {
   BulkWriteAddVideoPlayListDTO,
   BulkWriteDeleteVideoPlayListDTO,
   CreateVideoPlayListDTO,
-} from "../../../application/dtos/playListDTOs";
+} from "../../../application/dtos/playlist-dtos";
 import { VideoPlayList } from "../../../domain/entities/videoPlayList";
 import { IVideoPlayListRepository } from "../../../domain/interfaces/IVideoPlayListRepository";
 import videoPlayListModel from "../models/videoPlayListModel";

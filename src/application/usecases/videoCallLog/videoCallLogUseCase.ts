@@ -3,13 +3,13 @@ import { IVideoCallLogRepository } from "../../../domain/interfaces/IVideoCallLo
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { AuthenticationStatusMessage, VideoCallStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { parseDateRange } from "../../../shared/utils/dayjs";
-import { GetVideoCallLogQueryDTO } from "../../dtos/queryDTOs";
-import { IdDTO, PaginationDTO } from "../../dtos/utilityDTOs";
+import { GetVideoCallLogQueryDTO } from "../../dtos/query-dtos";
+import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 import {
   CreateVideoCallLogDTO,
   UpdateVideoCallLogDTO,
   UpdateVideoCallDurationDTO,
-} from "../../dtos/videoCallDTOs";
+} from "../../dtos/video-call-dtos";
 
 export class VideoCallLogUseCase {
   constructor(private videoCallLogRepository: IVideoCallLogRepository) {}

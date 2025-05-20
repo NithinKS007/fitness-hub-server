@@ -2,7 +2,7 @@ import { IPlayListRepository } from "../../../domain/interfaces/IPlayListReposit
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
 import { IVideoPlayListRepository } from "../../../domain/interfaces/IVideoPlayListRepository";
 import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
-import { CreateVideoDTO } from "../../dtos/videoDTOs";
+import { CreateVideoDTO } from "../../dtos/video-dtos";
 import { Video } from "../../../domain/entities/video";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 

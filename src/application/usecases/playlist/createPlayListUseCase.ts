@@ -1,4 +1,4 @@
-import { CreatePlayListDTO } from "../../dtos/playListDTOs";
+import { CreatePlayListDTO } from "../../dtos/playlist-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { Playlist } from "../../../domain/entities/playList";

@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { DashBoardChartFilterDTO } from "../../application/dtos/queryDTOs";
+import { DashBoardChartFilterDTO } from "../../application/dtos/query-dtos";
 
 const getDateRange = (
   data: DashBoardChartFilterDTO

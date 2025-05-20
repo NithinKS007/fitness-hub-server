@@ -1,6 +1,6 @@
-import { CreateBookingSlotDTO } from "../../application/dtos/bookingDTOs";
-import { AvailableSlotsQueryDTO } from "../../application/dtos/queryDTOs";
-import { IdDTO, PaginationDTO } from "../../application/dtos/utilityDTOs";
+import { CreateBookingSlotDTO } from "../../application/dtos/booking-dtos";
+import { AvailableSlotsQueryDTO } from "../../application/dtos/query-dtos";
+import { IdDTO, PaginationDTO } from "../../application/dtos/utility-dtos";
 import { BookingSlot } from "../entities/bookingSlot";
 
 export interface IBookingSlotRepository {

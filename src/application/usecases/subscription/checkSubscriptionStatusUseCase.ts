@@ -1,4 +1,4 @@
-import { CheckSubscriptionStatusDTO } from "../../dtos/subscriptionDTOs";
+import { CheckSubscriptionStatusDTO } from "../../dtos/subscription-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";

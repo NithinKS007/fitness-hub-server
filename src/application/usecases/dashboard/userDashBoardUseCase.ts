@@ -2,7 +2,7 @@ import { UserDashBoard } from "../../../domain/entities/user";
 import { WorkoutChartData } from "../../../domain/entities/workout";
 import { IWorkoutRepository } from "../../../domain/interfaces/IWorkoutRepository";
 import { getDateRange } from "../../../shared/utils/dayjs";
-import { UserDashBoardQueryDTO } from "../../dtos/queryDTOs";
+import { UserDashBoardQueryDTO } from "../../dtos/query-dtos";
 
 export class UserDashBoardUseCase {
   constructor(private workoutRepository: IWorkoutRepository) {}

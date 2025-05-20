@@ -1,9 +1,9 @@
-import { IdDTO, PaginationDTO } from "../../dtos/utilityDTOs";
+import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { Playlist } from "../../../domain/entities/playList";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
-import { GetPlayListsQueryDTO } from "../../dtos/queryDTOs";
+import { GetPlayListsQueryDTO } from "../../dtos/query-dtos";
 import { parseDateRange } from "../../../shared/utils/dayjs";
 
 export class GetPlayListUseCase {

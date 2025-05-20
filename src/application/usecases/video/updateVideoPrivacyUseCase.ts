@@ -1,4 +1,4 @@
-import { UpdateVideoPrivacyDTO } from "../../dtos/videoDTOs";
+import { UpdateVideoPrivacyDTO } from "../../dtos/video-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
   AuthenticationStatusMessage,

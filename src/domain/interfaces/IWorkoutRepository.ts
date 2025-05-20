@@ -1,9 +1,9 @@
 import {
   CustomUserDashBoardQueryDTO,
   GetWorkoutQueryDTO,
-} from "../../application/dtos/queryDTOs";
-import { IdDTO, PaginationDTO } from "../../application/dtos/utilityDTOs";
-import { WorkoutdbDTO } from "../../application/dtos/workoutDTOs";
+} from "../../application/dtos/query-dtos";
+import { IdDTO, PaginationDTO } from "../../application/dtos/utility-dtos";
+import { WorkoutdbDTO } from "../../application/dtos/workout-dtos";
 import { Workout, WorkoutChartData } from "../entities/workout";
 
 export interface IWorkoutRepository {

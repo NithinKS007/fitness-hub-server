@@ -2,9 +2,9 @@ import { IRevenueRepository } from "../../../domain/interfaces/IRevenueRepositor
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { RevenueStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { parseDateRange } from "../../../shared/utils/dayjs";
-import { GetRevenueQueryDTO } from "../../dtos/queryDTOs";
-import { AdminRevenueHistory } from "../../dtos/revenueDTOs";
-import { PaginationDTO } from "../../dtos/utilityDTOs";
+import { GetRevenueQueryDTO } from "../../dtos/query-dtos";
+import { AdminRevenueHistory } from "../../dtos/revenue-dtos";
+import { PaginationDTO } from "../../dtos/utility-dtos";
 export class RevenueUseCase {
   constructor(private revenueRepository: IRevenueRepository) {}
   public async getAdminRevenueHistory({

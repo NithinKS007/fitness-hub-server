@@ -1,7 +1,7 @@
 import { IOtpRepository } from "../../../domain/interfaces/IOtpRepository";
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { Otp } from "../../../domain/entities/otp";
-import { OtpDTO } from "../../dtos/authDTOs";
+import { OtpDTO } from "../../dtos/auth-dtos";
 import { OTPStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import generateOtp from "../../../shared/utils/otpGenerator";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";

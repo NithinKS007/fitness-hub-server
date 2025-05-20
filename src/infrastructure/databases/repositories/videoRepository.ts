@@ -3,15 +3,15 @@ import {
   CreateVideoDTO,
   EditVideoDTO,
   UpdateVideoPrivacyDTO,
-} from "../../../application/dtos/videoDTOs";
-import { IdDTO, PaginationDTO } from "../../../application/dtos/utilityDTOs";
+} from "../../../application/dtos/video-dtos";
+import { IdDTO, PaginationDTO } from "../../../application/dtos/utility-dtos";
 import {
   Video,
   VideoWithPlayLists,
 } from "../../../domain/entities/video";
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
 import videoModel from "../models/videoModel";
-import { GetVideoQueryDTO } from "../../../application/dtos/queryDTOs";
+import { GetVideoQueryDTO } from "../../../application/dtos/query-dtos";
 
 export class MonogVideoRepository implements IVideoRepository {
   public async createVideo({

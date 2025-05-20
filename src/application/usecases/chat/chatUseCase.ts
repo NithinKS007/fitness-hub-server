@@ -11,14 +11,14 @@ import { AuthenticationStatusMessage, ChatStatusMessage } from "../../../shared/
 import {
   CreateChatDTO,
   FindChatDTO,
-} from "../../dtos/chatDTOs";
+} from "../../dtos/chat-dtos";
 import {
   IncrementUnReadMessageCount,
   UpdateLastMessage,
   UpdateUnReadMessageCount,
-} from "../../dtos/conversationDTOs";
-import { GetChatListQueryDTO } from "../../dtos/queryDTOs";
-import { IdDTO } from "../../dtos/utilityDTOs";
+} from "../../dtos/conversation-dtos";
+import { GetChatListQueryDTO } from "../../dtos/query-dtos";
+import { IdDTO } from "../../dtos/utility-dtos";
 
 export class ChatUseCase {
   constructor(

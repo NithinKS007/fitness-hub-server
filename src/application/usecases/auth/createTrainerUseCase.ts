@@ -1,6 +1,6 @@
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { IOtpRepository } from "../../../domain/interfaces/IOtpRepository";
-import { CreateTrainerDTO } from "../../dtos/trainerDTOs";
+import { CreateTrainerDTO } from "../../dtos/trainer-dtos";
 import { hashPassword } from "../../../shared/utils/hashPassword";
 import { AuthenticationStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import generateOtp from "../../../shared/utils/otpGenerator";

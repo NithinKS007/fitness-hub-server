@@ -1,4 +1,4 @@
-import { CreateBookingSlotDTO } from "../../dtos/bookingDTOs";
+import { CreateBookingSlotDTO } from "../../dtos/booking-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
   AuthenticationStatusMessage,

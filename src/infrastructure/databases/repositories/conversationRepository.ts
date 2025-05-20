@@ -6,7 +6,7 @@ import {
   IncrementUnReadMessageCount,
   UpdateLastMessage,
   UpdateUnReadMessageCount,
-} from "../../../application/dtos/conversationDTOs";
+} from "../../../application/dtos/conversation-dtos";
 import { IConversationRepository } from "../../../domain/interfaces/IConversationRepository";
 import conversationModel from "../models/conversation";
 import {
@@ -15,9 +15,9 @@ import {
   TrainerChatList,
   UserChatList,
 } from "../../../domain/entities/conversation";
-import { IdDTO } from "../../../application/dtos/utilityDTOs";
+import { IdDTO } from "../../../application/dtos/utility-dtos";
 import chatModel from "../models/chatModel";
-import { GetChatListQueryDTO } from "../../../application/dtos/queryDTOs";
+import { GetChatListQueryDTO } from "../../../application/dtos/query-dtos";
 
 export class MongoConversationRepository implements IConversationRepository {
   public async createChatConversation({

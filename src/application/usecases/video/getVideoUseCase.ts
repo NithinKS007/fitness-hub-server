@@ -1,4 +1,4 @@
-import { IdDTO, PaginationDTO } from "../../dtos/utilityDTOs";
+import { IdDTO, PaginationDTO } from "../../dtos/utility-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
   AuthenticationStatusMessage,
@@ -6,7 +6,7 @@ import {
 } from "../../../shared/constants/httpResponseStructure";
 import { Video, VideoWithPlayLists } from "../../../domain/entities/video";
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
-import { GetVideoQueryDTO } from "../../dtos/queryDTOs";
+import { GetVideoQueryDTO } from "../../dtos/query-dtos";
 import { parseDateRange } from "../../../shared/utils/dayjs";
 
 export class GetVideoUseCase {

@@ -2,7 +2,7 @@ import {
   BulkWriteAddVideoPlayListDTO,
   BulkWriteDeleteVideoPlayListDTO,
   CreateVideoPlayListDTO,
-} from "../../application/dtos/playListDTOs";
+} from "../../application/dtos/playlist-dtos";
 import { VideoPlayList } from "../entities/videoPlayList";
 
 export interface IVideoPlayListRepository {

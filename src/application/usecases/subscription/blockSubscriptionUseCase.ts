@@ -1,4 +1,4 @@
-import { UpdateSubscriptionBlockStatusDTO } from "../../dtos/subscriptionDTOs";
+import { UpdateSubscriptionBlockStatusDTO } from "../../dtos/subscription-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
   AuthenticationStatusMessage,

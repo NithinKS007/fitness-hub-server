@@ -6,7 +6,7 @@ import {
   PasswordStatusMessage,
   TrainerStatusMessage,
 } from "../../../shared/constants/httpResponseStructure";
-import { SignInDTO } from "../../dtos/authDTOs";
+import { SignInDTO } from "../../dtos/auth-dtos";
 import {
   ForbiddenError,
   validationError,

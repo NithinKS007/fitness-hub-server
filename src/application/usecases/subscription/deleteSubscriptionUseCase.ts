@@ -6,7 +6,7 @@ import {
 import { Subscription } from "../../../domain/entities/subscription";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
 import { IPaymentService } from "../../interfaces/payments/IPaymentService";
-import { IdDTO } from "../../dtos/utilityDTOs";
+import { IdDTO } from "../../dtos/utility-dtos";
 
 export class DeleteSubscription {
   constructor(

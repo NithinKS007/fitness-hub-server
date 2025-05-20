@@ -1,4 +1,4 @@
-import { EditVideoDTO } from "../../dtos/videoDTOs";
+import { EditVideoDTO } from "../../dtos/video-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import {
   AuthenticationStatusMessage,

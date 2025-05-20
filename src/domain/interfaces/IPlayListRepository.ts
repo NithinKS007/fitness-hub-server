@@ -2,9 +2,9 @@ import {
   CreatePlayListDTO,
   EditPlayListDTO,
   UpdatePlayListPrivacyDTO,
-} from "../../application/dtos/playListDTOs";
-import { GetPlayListsQueryDTO } from "../../application/dtos/queryDTOs";
-import { IdDTO, PaginationDTO } from "../../application/dtos/utilityDTOs";
+} from "../../application/dtos/playlist-dtos";
+import { GetPlayListsQueryDTO } from "../../application/dtos/query-dtos";
+import { IdDTO, PaginationDTO } from "../../application/dtos/utility-dtos";
 import { NumberOfVideoPerPlayList, Playlist } from "../entities/playList";
 
 export interface IPlayListRepository {

@@ -2,10 +2,10 @@ import {
   GetApprovedTrainerQueryDTO,
   GetTrainersApprovalQueryDTO,
   GetTrainersQueryDTO,
-} from "../../dtos/queryDTOs";
-import { IdDTO } from "../../dtos/utilityDTOs";
-import { PaginationDTO } from "../../dtos/utilityDTOs";
-import { TrainerVerificationDTO } from "../../dtos/trainerDTOs";
+} from "../../dtos/query-dtos";
+import { IdDTO } from "../../dtos/utility-dtos";
+import { PaginationDTO } from "../../dtos/utility-dtos";
+import { TrainerVerificationDTO } from "../../dtos/trainer-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { AuthenticationStatusMessage, TrainerStatusMessage } from "../../../shared/constants/httpResponseStructure";
 import { Trainer } from "../../../domain/entities/trainer";

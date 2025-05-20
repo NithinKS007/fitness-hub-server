@@ -1,9 +1,9 @@
 import dotenv from "dotenv";
 import app from "../server";
 import connectDB from "../infrastructure/config/dbConfig";
-import { JwtPayload } from "jsonwebtoken";;
+import { JwtPayload } from "jsonwebtoken";
 import { Server } from "socket.io";
-import { socketService } from "../infrastructure/services/socket/socketService"
+import { socketService } from "../infrastructure/services/socket/socketService";
 import { createServer } from "http";
 
 declare global {
@@ -28,7 +28,7 @@ const io = new Server(httpServer, {
   },
 });
 
-socketService(io)
+socketService(io);
 
 const PORT = process.env.PORT;
 httpServer.listen(PORT, () => {

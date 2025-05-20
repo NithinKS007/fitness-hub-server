@@ -12,8 +12,8 @@ import {
   DeactivatePrice,
   Session,
   SubscriptionMetadata,
-} from "../../../application/dtos/service/paymentService";
-import { IdDTO } from "../../../application/dtos/utilityDTOs";
+} from "../../../application/dtos/service/payment-service";
+import { IdDTO } from "../../../application/dtos/utility-dtos";
 import { IPaymentService } from "../../../application/interfaces/payments/IPaymentService";
 
 export class StripePaymentService implements IPaymentService {
