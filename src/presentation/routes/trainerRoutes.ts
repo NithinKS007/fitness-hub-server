@@ -12,7 +12,7 @@ import { TrainerSubscriptionController } from "../controllers/subscription/train
 const trainerRoutes = express.Router()
 
 // SUBSCRIPTION ROUTES
-trainerRoutes.post("/add-subscription",authenticate,SubscriptionPlanController.addSubscription)
+trainerRoutes.post("/subscriptions",authenticate,SubscriptionPlanController.addSubscription)
 trainerRoutes.get("/subscriptions",authenticate,TrainerSubscriptionController.getTrainerSubscriptions)
 trainerRoutes.patch("/subscriptions/:subscriptionId",authenticate,SubscriptionPlanController.updateSubscriptionBlockStatus)
 trainerRoutes.put("/subscriptions/:subscriptionId",authenticate,SubscriptionPlanController.editSubscription)
@@ -20,31 +20,37 @@ trainerRoutes.delete("/subscriptions/:subscriptionId",authenticate,SubscriptionP
 trainerRoutes.get("/subscribers",authenticate,TrainerSubscriptionController.getTrainerSubscribedUsers)
 
 //PLAYLIST MANAGEMENT ROUTES
-trainerRoutes.post("/create-playlist",authenticate,PlayListController.addPlaylist)
+trainerRoutes.post("/playlists",authenticate,PlayListController.addPlaylist)
 trainerRoutes.get("/playlists",authenticate,PlayListController.getPlaylists)
-trainerRoutes.get("/playlist-all",authenticate,PlayListController.getallPlayLists)
-trainerRoutes.patch("/playlist/:playListId",authenticate,PlayListController.updatePlayListPrivacy)
-trainerRoutes.put("/playlist/:playListId",authenticate,PlayListController.editPlayList)
+trainerRoutes.get("/playlists/all",authenticate,PlayListController.getallPlayLists)
+trainerRoutes.patch("/playlists/:playListId",authenticate,PlayListController.updatePlayListPrivacy)
+trainerRoutes.put("/playlists/:playListId",authenticate,PlayListController.editPlayList)
 
 //VIDEO MANAGEMENT ROUTES
-trainerRoutes.post("/upload-video/",authenticate,VideoController.addVideo)
+trainerRoutes.post("/videos/",authenticate,VideoController.addVideo)
 trainerRoutes.patch("/videos/:videoId",authenticate,VideoController.updateVideoPrivacy)
 trainerRoutes.put("/videos/:videoId",authenticate,VideoController.editVideo)
 trainerRoutes.get("/videos",authenticate,VideoController.getVideos)
 
-//SLOT MANAGEMENT AND BOOKING ROUTES
-trainerRoutes.post("/add-slot",authenticate,BookingController.addBookingSlot)
-trainerRoutes.get("/available-slots",authenticate,BookingController.getAvailableSlots)
-trainerRoutes.get("/booking-requests",authenticate,AppointmentController.getBookingRequests)
-trainerRoutes.patch("/approve-reject-booking",authenticate,AppointmentController.handleBookingRequest)
-trainerRoutes.get("/appointment-schedules",authenticate,AppointmentController.getTrainerBookingSchedules)
-trainerRoutes.patch("/cancel-appointment-schedule/:appointmentId",authenticate,AppointmentController.cancelAppointment)
-trainerRoutes.delete("/delete-booking-slot/:bookingSlotId",authenticate,BookingController.deleteBookingSlot)
+//SLOT MANAGEMENT
+trainerRoutes.post("/slots",authenticate,BookingController.addBookingSlot)
+trainerRoutes.get("/slots",authenticate,BookingController.getAvailableSlots)
+trainerRoutes.delete("/slots/:bookingSlotId",authenticate,BookingController.deleteBookingSlot)
+
+//BOOKING ROUTES
+trainerRoutes.get("/bookings",authenticate,AppointmentController.getBookingRequests)
+trainerRoutes.patch("/bookings",authenticate,AppointmentController.handleBookingRequest)
+
+//APPOINTMENT ROUTES
+trainerRoutes.get("/appointments",authenticate,AppointmentController.getTrainerBookingSchedules)
+trainerRoutes.patch("/appointments/:appointmentId",authenticate,AppointmentController.cancelAppointment)
 trainerRoutes.get("/video-call-logs",authenticate,VideoCallLogController.getVideoCallLogsTrainer)
+
+//DASHBOARD ROUTES
 trainerRoutes.get("/dashboard",authenticate,TrainerDashboardController.getTrainerDashBoardData)
 
 //PROFILE UPDATION ROUTES
-trainerRoutes.put("/update-profile",authenticate,AuthController.updateTrainerProfile)
+trainerRoutes.put("/profile",authenticate,AuthController.updateTrainerProfile)
 
 
 export default trainerRoutes

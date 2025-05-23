@@ -21,35 +21,39 @@ userRoutes.get("/trainers/:trainerId",TrainerDisplayController.getApprovedTraine
 userRoutes.get("/my-trainers",authenticate,TrainerDisplayController.getMyTrainers)
 
 //SUBSCRIPTION ROUTES
-userRoutes.post("/checkout-subscription-session/",authenticate,PurchaseSubscriptionController.purchaseSubscription)
+userRoutes.post("/subscriptions/checkout",authenticate,PurchaseSubscriptionController.purchaseSubscription)
 userRoutes.get("/subscriptions",authenticate,UserSubscriptionController.getUserSubscriptions)
-userRoutes.get("/verify-subscriptions/:sessionId",authenticate,WebhookController.getSubscriptionBySession)
-userRoutes.patch("/cancel-subscriptions",authenticate,PurchaseSubscriptionController.cancelSubscription) 
-userRoutes.get("/trainer-subscription-status/:_id",authenticate,UserSubscriptionController.isSubscribedToTheTrainer)
+userRoutes.get("/subscriptions/verify/:sessionId",authenticate,WebhookController.getSubscriptionBySession)
+userRoutes.patch("/subscriptions/cancel",authenticate,PurchaseSubscriptionController.cancelSubscription) 
+userRoutes.get("/subscriptions/status/:_id",authenticate,UserSubscriptionController.isSubscribedToTheTrainer)
 
 //VIDEO ROUTES
-userRoutes.get("/videos/:trainerId",authenticate,VideoController.getVideos)
-userRoutes.get("/video-details/:videoId",authenticate,VideoController.getVideoById)
+userRoutes.get("/trainer/videos/:trainerId",authenticate,VideoController.getVideos)
+userRoutes.get("/videos/:videoId",authenticate,VideoController.getVideoById)
 
 //PLAYLIST ROUTES
-userRoutes.get("/video-playlist/:trainerId",authenticate,PlayListController.getallPlayLists)
+userRoutes.get("/playlists/all/:trainerId",authenticate,PlayListController.getallPlayLists)
 
 //BOOKING ROUTES
-userRoutes.get("/booking-slots/:trainerId",authenticate,BookingController.getAllAvailableSlotsFromToday)
-userRoutes.get("/available-slots/:trainerId",authenticate,BookingController.getAvailableSlotsFromToday)
-userRoutes.post("/book-slot/:slotId",authenticate,AppointmentController.bookAppointment)
-userRoutes.get("/appointment-schedules",authenticate,AppointmentController.getUserBookingSchedules)
-userRoutes.patch("/cancel-appointment-schedule/:appointmentId",authenticate,AppointmentController.cancelAppointment)
+userRoutes.get("/slots/all/:trainerId",authenticate,BookingController.getAllAvailableSlotsFromToday)
+userRoutes.get("/slots/:trainerId",authenticate,BookingController.getAvailableSlotsFromToday)
+userRoutes.post("/slots/:slotId",authenticate,AppointmentController.bookAppointment)
+
+//APPOINTMENT ROUTES
+userRoutes.get("/appointments",authenticate,AppointmentController.getUserBookingSchedules)
+userRoutes.patch("/appointments/:appointmentId",authenticate,AppointmentController.cancelAppointment)
 userRoutes.get("/video-call-logs",authenticate,VideoCallLogController.getUserVideoCallLogs)
 
 //PROFILE ROUTES
-userRoutes.put("/update-profile",authenticate,AuthController.updateUserProfile)
+userRoutes.put("/profile",authenticate,AuthController.updateUserProfile)
 
 //WORKOUT ROUTES
-userRoutes.post("/add-workout",authenticate,WorkoutController.addWorkout)
+userRoutes.post("/workouts",authenticate,WorkoutController.addWorkout)
 userRoutes.get("/workouts",authenticate,WorkoutController.getWorkoutsByUserId)
-userRoutes.delete("/delete-workout-set/:setId",authenticate,WorkoutController.deleteWorkoutSet)
-userRoutes.patch("/complete-workout-set/:setId",authenticate,WorkoutController.markSetAsCompleted)
+userRoutes.delete("/workouts/:setId",authenticate,WorkoutController.deleteWorkoutSet)
+userRoutes.patch("/workouts/:setId",authenticate,WorkoutController.markSetAsCompleted)
+
+//DASHBOARD ROUTES
 userRoutes.get("/dashBoard",authenticate,UserDashboardController.getUserDashBoardData)
 
 

@@ -6,7 +6,7 @@ import {
 import { sendResponse } from "../../shared/utils/httpResponse";
 
 const rateLimiter = rateLimit({
- windowMs: 1 * 60 * 1000,
+  windowMs: 1 * 60 * 1000,
   max: 150,
   message: ApplicationStatus.TooManyRequests,
   statusCode: HttpStatusCodes.RateLimit,

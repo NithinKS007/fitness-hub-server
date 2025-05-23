@@ -50,8 +50,6 @@ export const errorMiddleware = (
   next: NextFunction
 ) => {
   const statusCode = err.statusCode || HttpStatusCodes.InternalServerError;
-  const message =
-    err.message || ApplicationStatus.InternalServerError;
+  const message = err.message || ApplicationStatus.InternalServerError;
   sendResponse(res, statusCode, null, message);
-  next();
 };

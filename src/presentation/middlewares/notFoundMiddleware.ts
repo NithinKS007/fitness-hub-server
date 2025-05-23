@@ -3,8 +3,12 @@ import {
   ApplicationStatus,
 } from "../../shared/constants/index-constants";
 import { sendResponse } from "../../shared/utils/httpResponse";
-import { Request, Response } from "express";
-export const notFoundMiddleware = (req: Request, res: Response): void => {
+import { NextFunction, Request, Response } from "express";
+export const notFoundMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   sendResponse(
     res,
     HttpStatusCodes.NotFound,
@@ -12,4 +16,3 @@ export const notFoundMiddleware = (req: Request, res: Response): void => {
     ApplicationStatus.ResourceNotFound
   );
 };
- 
