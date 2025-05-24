@@ -28,7 +28,7 @@ userRoutes.patch("/subscriptions/cancel",authenticate,PurchaseSubscriptionContro
 userRoutes.get("/subscriptions/status/:_id",authenticate,UserSubscriptionController.isSubscribedToTheTrainer)
 
 //VIDEO ROUTES
-userRoutes.get("/trainer/videos/:trainerId",authenticate,VideoController.getVideos)
+userRoutes.get("/trainer/videos/:trainerId",authenticate,VideoController.getPublicVideos)
 userRoutes.get("/videos/:videoId",authenticate,VideoController.getVideoById)
 
 //PLAYLIST ROUTES

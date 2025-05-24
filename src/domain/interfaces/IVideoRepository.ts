@@ -16,6 +16,13 @@ export interface IVideoRepository {
     videoList: VideoWithPlayLists[];
     paginationData: PaginationDTO;
   }>;
+  getPublicVideos(
+    trainerId: IdDTO,
+    data: GetVideoQueryDTO
+  ): Promise<{
+    videoList: VideoWithPlayLists[];
+    paginationData: PaginationDTO;
+  }>;
   getVideoById(videoId: IdDTO): Promise<Video | null>;
   updateVideoPrivacy(
     updateVideoBlockStatus: UpdateVideoPrivacyDTO

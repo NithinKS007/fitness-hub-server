@@ -77,7 +77,7 @@ export class VideoController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const trainerId = req.params.trainerId || req.user._id;
+      const trainerId = req.user._id;
       const { fromDate, toDate, page, limit, search, filters } = req.query;
       const { videoList, paginationData } =
         await getVideoUseCase.getVideos(trainerId, {
@@ -98,6 +98,39 @@ export class VideoController {
       loggerHelper.handleLogError(
         error,
         "VideoController.getVideos",
+        "Error getting videos of trainer"
+      );
+      next(error);
+    }
+  }
+
+    static async getPublicVideos(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const trainerId = req.params.trainerId
+      const { fromDate, toDate, page, limit, search, filters } = req.query;
+      const { videoList, paginationData } =
+        await getVideoUseCase.getPublicVideos(trainerId, {
+          fromDate: fromDate as any,
+          toDate: toDate as any,
+          page: page as string,
+          limit: limit as string,
+          search: search as string,
+          filters: filters as string[],
+        });
+      sendResponse(
+        res,
+        HttpStatusCodes.OK,
+        { videoList: videoList, paginationData: paginationData },
+        VideoStatus.VideoDataRetrievedSuccessfully
+      );
+    } catch (error) {
+      loggerHelper.handleLogError(
+        error,
+        "VideoController.getPublicVideos",
         "Error getting videos of trainer"
       );
       next(error);

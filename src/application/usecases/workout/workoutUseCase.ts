@@ -83,18 +83,14 @@ export class WorkOutUseCase {
       throw new validationError(WorkoutStatus.FailedToGetWorkoutData);
     }
     if (workout.date > new Date()) {
-      throw new validationError(
-        WorkoutStatus.cannotCompleteFutureWorkouts
-      );
+      throw new validationError(WorkoutStatus.cannotCompleteFutureWorkouts);
     }
     const completeWorkoutSet = await this.workoutRepository.markAsCompleted(
       setId
     );
 
     if (!completeWorkoutSet) {
-      throw new validationError(
-        WorkoutStatus.FailedToMarkCompletionSetStatus
-      );
+      throw new validationError(WorkoutStatus.FailedToMarkCompletionSetStatus);
     }
 
     return completeWorkoutSet;

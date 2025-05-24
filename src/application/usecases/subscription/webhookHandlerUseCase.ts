@@ -21,9 +21,7 @@ export class WebHookHandlerUseCase {
   ) {}
   private validateWebhookInput(sig: any, webhookSecret: any, body: any): void {
     if (!sig || !webhookSecret || !body) {
-      throw new validationError(
-        SubscriptionStatus.WebHookCredentialsMissing
-      );
+      throw new validationError(SubscriptionStatus.WebHookCredentialsMissing);
     }
   }
 
@@ -35,7 +33,8 @@ export class WebHookHandlerUseCase {
     await this.emailService.sendEmail({
       to: userData?.email as string,
       subject: "Subscription Confirmation",
-      text: `Your subscription with Trainer ID: ${trainerId} has been successfully activated. Enjoy your training sessions!`,
+      text: `Your subscription with Trainer ID: ${trainerId} has been successfully activated.
+             Enjoy your training sessions!`,
     });
   }
 
@@ -61,16 +60,15 @@ export class WebHookHandlerUseCase {
     await this.emailService.sendEmail({
       to: userData?.email as string,
       subject: "Subscription Cancelled",
-      text: `Dear user, your subscription to Trainer ID: ${trainerId} has been canceled. We hope to have you back soon!`,
+      text: `Dear user, your subscription to Trainer ID: ${trainerId} has been canceled.
+             We hope to have you back soon!`,
     });
   }
 
   private constructStripeEvent(body: any, sig: any, webhookSecret: any) {
     const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     if (!event) {
-      throw new validationError(
-        SubscriptionStatus.WebHookVerificationFailed
-      );
+      throw new validationError(SubscriptionStatus.WebHookVerificationFailed);
     }
     return event;
   }
@@ -248,7 +246,7 @@ export class WebHookHandlerUseCase {
       );
     }
   }
-  
+
   public async webHookHandler(
     sig: string,
     webhookSecret: string,

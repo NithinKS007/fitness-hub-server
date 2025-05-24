@@ -38,6 +38,32 @@ export class GetVideoUseCase {
     return { videoList, paginationData };
   }
 
+   public async getPublicVideos(
+    trainerId: IdDTO,
+    { page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO
+  ): Promise<{
+    videoList: VideoWithPlayLists[];
+    paginationData: PaginationDTO;
+  }> {
+    if (!trainerId) {
+      throw new validationError(
+        AuthStatus.AllFieldsAreRequired
+      );
+    }
+    const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
+
+    const { videoList, paginationData } =
+      await this.videoRepository.getPublicVideos(trainerId, {
+        page,
+        limit,
+        fromDate: parsedFromDate,
+        toDate: parsedToDate,
+        search,
+        filters,
+      });
+    return { videoList, paginationData };
+  }
+
   public async getVideoById(videoId: IdDTO): Promise<Video> {
     const videoData = await this.videoRepository.getVideoById(videoId);
     if (!videoData) {
@@ -46,4 +72,5 @@ export class GetVideoUseCase {
 
     return videoData;
   }
+  
 }

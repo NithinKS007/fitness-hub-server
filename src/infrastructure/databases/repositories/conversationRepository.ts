@@ -69,7 +69,6 @@ export class MongoConversationRepository implements IConversationRepository {
     otherUserId,
     lastMessageId,
   }: UpdateLastMessage): Promise<Conversation | null> {
-    console.log("message id for updating", lastMessageId);
     return await conversationModel
       .findOneAndUpdate(
         {
@@ -202,7 +201,7 @@ export class MongoConversationRepository implements IConversationRepository {
     }
     const result = await conversationModel.aggregate([
       { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-      { $sort: { updatedAt: -1 } },
+      { $sort: { createdAt: -1 } },
       {
         $lookup: {
           from: "trainers",
@@ -276,7 +275,7 @@ export class MongoConversationRepository implements IConversationRepository {
     }
     const result = await conversationModel.aggregate([
       { $match: { trainerId: new mongoose.Types.ObjectId(trainerId) } },
-      { $sort: { updatedAt: -1 } },
+      { $sort: { createdAt: -1 } },
       {
         $lookup: {
           from: "users",
