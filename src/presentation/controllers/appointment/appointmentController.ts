@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import {
   AppointmentStatus,
   HttpStatusCodes,
@@ -6,8 +6,6 @@ import {
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import { MongoBookingSlotRepository } from "../../../infrastructure/databases/repositories/bookingSlotRepository";
 import { MongoAppointmentRepository } from "../../../infrastructure/databases/repositories/appointmentRepository";
-import { LoggerService } from "../../../infrastructure/logging/logger";
-import { LoggerHelper } from "../../../shared/utils/handleLog";
 import { BookAppointmentUseCase } from "../../../application/usecases/appointment/bookAppointmentUseCaste";
 import { UpdateAppointmentUseCase } from "../../../application/usecases/appointment/updateAppointmentUseCase";
 import { GetAppointmentUsecase } from "../../../application/usecases/appointment/getAppointmentUseCase";
@@ -15,10 +13,6 @@ import { GetAppointmentUsecase } from "../../../application/usecases/appointment
 //MONGO REPOSITORY INSTANCES
 const mongoBookingSlotRepository = new MongoBookingSlotRepository();
 const mongoAppointmentRepository = new MongoAppointmentRepository();
-
-//SERVICE INSTANCES
-const logger = new LoggerService();
-const loggerHelper = new LoggerHelper(logger);
 
 //USE CASE INSTANCES
 const bookAppointmentUseCase = new BookAppointmentUseCase(
@@ -35,197 +29,127 @@ const getAppointmentUseCase = new GetAppointmentUsecase(
   mongoAppointmentRepository
 );
 
-
 export class AppointmentController {
-  static async cancelAppointment(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const appointmentId = req.params.appointmentId;
-      const cancelledAppointmentData =
-        await updateAppointmentUseCase.cancelAppointment(appointmentId);
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        cancelledAppointmentData,
-        AppointmentStatus.AppointmentCancelledSuccessfully
-      );
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "AppointmentController.cancelAppointment",
-        "Error cancelling appointment"
-      );
-      next(error);
-    }
+  static async cancelAppointment(req: Request, res: Response): Promise<void> {
+    const appointmentId = req.params.appointmentId;
+    const cancelledAppointmentData =
+      await updateAppointmentUseCase.cancelAppointment(appointmentId);
+    sendResponse(
+      res,
+      HttpStatusCodes.OK,
+      cancelledAppointmentData,
+      AppointmentStatus.AppointmentCancelledSuccessfully
+    );
   }
 
   static async getTrainerBookingSchedules(
     req: Request,
-    res: Response,
-    next: NextFunction
+    res: Response
   ): Promise<void> {
-    try {
-      const trainerId = req.user._id;
-      const { fromDate, toDate, page, limit, search, filters } = req.query;
-      const { trainerBookingSchedulesList, paginationData } =
-        await getAppointmentUseCase.getTrainerBookingSchedules(trainerId, {
-          fromDate: fromDate as any,
-          toDate: toDate as any,
-          page: page as string,
-          limit: limit as string,
-          search: search as string,
-          filters: filters as string[],
-        });
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        {
-          trainerBookingSchedulesList: trainerBookingSchedulesList,
-          paginationData: paginationData,
-        },
-        AppointmentStatus.AppointmentsListRetrievedSuccessfully
-      );
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "AppointmentController.getTrainerBookingSchedules",
-        "Error retrieving booking schedules for trainer"
-      );
-      next(error);
-    }
+    const trainerId = req.user._id;
+    const { fromDate, toDate, page, limit, search, filters } = req.query;
+    const { trainerBookingSchedulesList, paginationData } =
+      await getAppointmentUseCase.getTrainerBookingSchedules(trainerId, {
+        fromDate: fromDate as any,
+        toDate: toDate as any,
+        page: page as string,
+        limit: limit as string,
+        search: search as string,
+        filters: filters as string[],
+      });
+    sendResponse(
+      res,
+      HttpStatusCodes.OK,
+      {
+        trainerBookingSchedulesList: trainerBookingSchedulesList,
+        paginationData: paginationData,
+      },
+      AppointmentStatus.AppointmentsListRetrievedSuccessfully
+    );
   }
   static async handleBookingRequest(
     req: Request,
-    res: Response,
-    next: NextFunction
+    res: Response
   ): Promise<void> {
-    try {
-      const { appointmentId, bookingSlotId, action } = req.body;
-      const appointmentData =
-        await updateAppointmentUseCase.approveOrRejectBooking({
-          appointmentId,
-          bookingSlotId,
-          action,
-        });
-      if (appointmentData.status === "approved") {
-        sendResponse(
-          res,
-          HttpStatusCodes.OK,
-          appointmentData,
-          AppointmentStatus.BookingApproved
-        );
-      } else if (appointmentData.status === "rejected") {
-        sendResponse(
-          res,
-          HttpStatusCodes.OK,
-          appointmentData,
-          AppointmentStatus.BookingRejected
-        );
-      }
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "AppointmentController.handleBookingRequest",
-        "Error changing booking status"
-      );
-      next(error);
-    }
-  }
-
-  static async getBookingRequests(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const trainerId = req.user._id;
-      const { fromDate, toDate, page, limit, search, filters } = req.query
-      const { bookingRequestsList, paginationData } =
-        await getAppointmentUseCase.getBookingRequests(trainerId, {
-          fromDate: fromDate as any,
-          toDate: toDate as any,
-          page: page as string,
-          limit: limit as string,
-          search: search as string,
-          filters: filters as string[],
-        });
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        { bookingRequestsList, paginationData },
-        AppointmentStatus.BookingRequestsRetrievedSuccessfully
-      );
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "AppointmentController.getBookingRequests",
-        "Error retrieving booking requests"
-      );
-      next(error);
-    }
-  }
-
-  static async bookAppointment(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const slotId = req.params.slotId;
-      const { _id } = req.user;
-      const bookedSlotData = await bookAppointmentUseCase.bookSlotAppointment({
-        slotId,
-        userId: _id,
+    const { appointmentId, bookingSlotId, action } = req.body;
+    const appointmentData =
+      await updateAppointmentUseCase.approveOrRejectBooking({
+        appointmentId,
+        bookingSlotId,
+        action,
       });
+    if (appointmentData.status === "approved") {
       sendResponse(
         res,
         HttpStatusCodes.OK,
-        bookedSlotData,
-        AppointmentStatus.SlotBookedSuccessfully
+        appointmentData,
+        AppointmentStatus.BookingApproved
       );
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "AppointmentController.bookAppointment",
-        "Error booking slot"
+    } else if (appointmentData.status === "rejected") {
+      sendResponse(
+        res,
+        HttpStatusCodes.OK,
+        appointmentData,
+        AppointmentStatus.BookingRejected
       );
-      next(error);
     }
+  }
+
+  static async getBookingRequests(req: Request, res: Response): Promise<void> {
+    const trainerId = req.user._id;
+    const { fromDate, toDate, page, limit, search, filters } = req.query;
+    const { bookingRequestsList, paginationData } =
+      await getAppointmentUseCase.getBookingRequests(trainerId, {
+        fromDate: fromDate as any,
+        toDate: toDate as any,
+        page: page as string,
+        limit: limit as string,
+        search: search as string,
+        filters: filters as string[],
+      });
+    sendResponse(
+      res,
+      HttpStatusCodes.OK,
+      { bookingRequestsList, paginationData },
+      AppointmentStatus.BookingRequestsRetrievedSuccessfully
+    );
+  }
+
+  static async bookAppointment(req: Request, res: Response): Promise<void> {
+    const slotId = req.params.slotId;
+    const { _id } = req.user;
+    const bookedSlotData = await bookAppointmentUseCase.bookSlotAppointment({
+      slotId,
+      userId: _id,
+    });
+    sendResponse(
+      res,
+      HttpStatusCodes.OK,
+      bookedSlotData,
+      AppointmentStatus.SlotBookedSuccessfully
+    );
   }
 
   static async getUserBookingSchedules(
     req: Request,
-    res: Response,
-    next: NextFunction
+    res: Response
   ): Promise<void> {
-    try {
-      const userId = req.user._id;
-      const { fromDate, toDate, page, limit, search, filters } = req.query;
-      const { appointmentList, paginationData } =
-        await getAppointmentUseCase.getUserBookingSchedules(userId, {
-          fromDate: fromDate as any,
-          toDate: toDate as any,
-          page: page as string,
-          limit: limit as string,
-          search: search as string,
-          filters: filters as string[],
-        });
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        { appointmentList: appointmentList, paginationData: paginationData },
-        AppointmentStatus.AppointmentsListRetrievedSuccessfully
-      );
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "AppointmentController.getUserBookingSchedules",
-        "Error retrieving appointments for user"
-      );
-      next(error);
-    }
+    const userId = req.user._id;
+    const { fromDate, toDate, page, limit, search, filters } = req.query;
+    const { appointmentList, paginationData } =
+      await getAppointmentUseCase.getUserBookingSchedules(userId, {
+        fromDate: fromDate as any,
+        toDate: toDate as any,
+        page: page as string,
+        limit: limit as string,
+        search: search as string,
+        filters: filters as string[],
+      });
+    sendResponse(
+      res,
+      HttpStatusCodes.OK,
+      { appointmentList: appointmentList, paginationData: paginationData },
+      AppointmentStatus.AppointmentsListRetrievedSuccessfully
+    );
   }
 }

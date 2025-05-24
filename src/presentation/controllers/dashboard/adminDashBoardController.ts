@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
   DashboardStatus,
@@ -9,7 +9,7 @@ import { AdminDashBoardUseCase } from "../../../application/usecases/dashboard/a
 import { MongoTrainerRepository } from "../../../infrastructure/databases/repositories/trainerRepository";
 import { MongoUserRepository } from "../../../infrastructure/databases/repositories/userRepository";
 import { MongoRevenueRepository } from "../../../infrastructure/databases/repositories/revenueRepository";
-import {  LoggerHelper } from "../../../shared/utils/handleLog";
+import { LoggerHelper } from "../../../shared/utils/handleLog";
 import { LoggerService } from "../../../infrastructure/logging/logger";
 
 //MONGO REPOSITORY INSTANCES
@@ -34,43 +34,33 @@ const adminDashBoardUseCase = new AdminDashBoardUseCase(
 export class AdminDashboardController {
   static async getAdminDashBoardData(
     req: Request,
-    res: Response,
-    next: NextFunction
+    res: Response
   ): Promise<void> {
-    try {
-      const { period } = req.query;
-      const {
-        totalUsersCount,
-        totalTrainersCount,
-        pendingTrainerApprovalCount,
-        totalPlatFormFee,
-        totalCommission,
-        totalRevenue,
-        chartData,
-        top5List,
-      } = await adminDashBoardUseCase.getAdminDashBoardData(period as string);
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        {
-          totalUsersCount: totalUsersCount,
-          totalTrainersCount: totalTrainersCount,
-          pendingTrainerApprovalCount: pendingTrainerApprovalCount,
-          totalPlatFormFee: totalPlatFormFee,
-          totalCommission: totalCommission,
-          totalRevenue: totalRevenue,
-          chartData: chartData,
-          topTrainersList: top5List,
-        },
-        DashboardStatus.AdminDashBoardRetrievedSuccessfully
-      );
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "AdminDashboardController.getAdminDashBoardData",
-        "Error retrieving admin dashboard data"
-      );
-      next(error);
-    }
+    const { period } = req.query;
+    const {
+      totalUsersCount,
+      totalTrainersCount,
+      pendingTrainerApprovalCount,
+      totalPlatFormFee,
+      totalCommission,
+      totalRevenue,
+      chartData,
+      top5List,
+    } = await adminDashBoardUseCase.getAdminDashBoardData(period as string);
+    sendResponse(
+      res,
+      HttpStatusCodes.OK,
+      {
+        totalUsersCount: totalUsersCount,
+        totalTrainersCount: totalTrainersCount,
+        pendingTrainerApprovalCount: pendingTrainerApprovalCount,
+        totalPlatFormFee: totalPlatFormFee,
+        totalCommission: totalCommission,
+        totalRevenue: totalRevenue,
+        chartData: chartData,
+        topTrainersList: top5List,
+      },
+      DashboardStatus.AdminDashBoardRetrievedSuccessfully
+    );
   }
 }

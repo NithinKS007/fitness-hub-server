@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import {
   BlockStatus,
   HttpStatusCodes,
@@ -6,8 +6,6 @@ import {
 } from "../../../shared/constants/index-constants";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import { MongoPlayListRepository } from "../../../infrastructure/databases/repositories/playListRepository";
-import { LoggerService } from "../../../infrastructure/logging/logger";
-import { LoggerHelper } from "../../../shared/utils/handleLog";
 import { CreatePlayListUseCase } from "../../../application/usecases/playlist/createPlayListUseCase";
 import { EditPlayListUseCase } from "../../../application/usecases/playlist/editPlayListUseCase";
 import { GetallPlaylistUseCase } from "../../../application/usecases/playlist/getAllPlayListUseCase";
@@ -16,10 +14,6 @@ import { UpdatePlayListPrivacyUseCase } from "../../../application/usecases/play
 
 //MONGO REPOSITORY INSTANCES
 const mongoPlayListRepository = new MongoPlayListRepository();
-
-//SERVICE INSTANCES
-const logger = new LoggerService();
-const loggerHelper = new LoggerHelper(logger);
 
 //USE CASE INSTANCES
 const createPlayListUseCase = new CreatePlayListUseCase(
@@ -36,146 +30,87 @@ const updatePlayListPrivacyUseCase = new UpdatePlayListPrivacyUseCase(
 );
 
 export class PlayListController {
-  static async addPlaylist(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const trainerId = req.user._id;
-      const { title } = req.body;
-      const createdPlayList = await createPlayListUseCase.createPlayList({
-        trainerId: trainerId,
-        title,
-      });
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        createdPlayList,
-        PlayListStatus.PlayListCreated
-      );
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "PlayListController.addPlaylist",
-        "Error creating playlist"
-      );
-      next(error);
-    }
+  static async addPlaylist(req: Request, res: Response): Promise<void> {
+    const trainerId = req.user._id;
+    const { title } = req.body;
+    const createdPlayList = await createPlayListUseCase.createPlayList({
+      trainerId: trainerId,
+      title,
+    });
+    sendResponse(
+      res,
+      HttpStatusCodes.OK,
+      createdPlayList,
+      PlayListStatus.PlayListCreated
+    );
   }
 
-  static async getPlaylists(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const trainerId = req.user._id;
-      const { fromDate, toDate, page, limit, search, filters } = req.query;
-      const { playList, paginationData } =
-        await getPlayListUseCase.getPlaylists(trainerId, {
-          fromDate: fromDate as any,
-          toDate: toDate as any,
-          page: page as string,
-          limit: limit as string,
-          search: search as string,
-          filters: filters as string[],
-        });
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        { playList: playList, paginationData: paginationData },
-        PlayListStatus.PlayListsOfTrainerRetrievedSuccessfully
-      );
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "PlayListController.getPlayLists",
-        "Error getting playlists of trainer"
-      );
-      next(error);
-    }
+  static async getPlaylists(req: Request, res: Response): Promise<void> {
+    const trainerId = req.user._id;
+    const { fromDate, toDate, page, limit, search, filters } = req.query;
+    const { playList, paginationData } = await getPlayListUseCase.getPlaylists(
+      trainerId,
+      {
+        fromDate: fromDate as any,
+        toDate: toDate as any,
+        page: page as string,
+        limit: limit as string,
+        search: search as string,
+        filters: filters as string[],
+      }
+    );
+    sendResponse(
+      res,
+      HttpStatusCodes.OK,
+      { playList: playList, paginationData: paginationData },
+      PlayListStatus.PlayListsOfTrainerRetrievedSuccessfully
+    );
   }
 
-  static async getallPlayLists(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const trainerId = req.params.trainerId || req.user._id;
-      const playListsOfTrainer =
-        await getallPlaylistUseCase.getallPlaylists(trainerId);
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        playListsOfTrainer,
-        PlayListStatus.PlayListsOfTrainerRetrievedSuccessfully
-      );
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "PlayListController.getallPlayLists",
-        "Error getting trainer playlists"
-      );
-      next(error);
-    }
+  static async getallPlayLists(req: Request, res: Response): Promise<void> {
+    const trainerId = req.params.trainerId || req.user._id;
+    const playListsOfTrainer = await getallPlaylistUseCase.getallPlaylists(
+      trainerId
+    );
+    sendResponse(
+      res,
+      HttpStatusCodes.OK,
+      playListsOfTrainer,
+      PlayListStatus.PlayListsOfTrainerRetrievedSuccessfully
+    );
   }
 
   static async updatePlayListPrivacy(
     req: Request,
-    res: Response,
-    next: NextFunction
+    res: Response
   ): Promise<void> {
-    try {
-      const playListId = req.params.playListId;
-      const { privacy } = req.body;
-      const playListData =
-        await updatePlayListPrivacyUseCase.updatePlayListPrivacy({
-          playListId,
-          privacy,
-        });
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        playListData,
-        BlockStatus.BlockStatusUpdated
-      );
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "PlayListController.updatePlayListPrivacy",
-        "Error updateing playlist block status"
-      );
-      next(error);
-    }
+    const playListId = req.params.playListId;
+    const { privacy } = req.body;
+    const playListData =
+      await updatePlayListPrivacyUseCase.updatePlayListPrivacy({
+        playListId,
+        privacy,
+      });
+    sendResponse(
+      res,
+      HttpStatusCodes.OK,
+      playListData,
+      BlockStatus.BlockStatusUpdated
+    );
   }
 
-  static async editPlayList(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { playListId } = req.params;
-      const title = req.body.title;
-      const updatedPlayListData = await editPlayListUseCase.editPlayList({
-        playListId,
-        title,
-      });
-      sendResponse(
-        res,
-        HttpStatusCodes.OK,
-        updatedPlayListData,
-        PlayListStatus.PlayListEditedSuccessfully
-      );
-    } catch (error) {
-      loggerHelper.handleLogError(
-        error,
-        "PlayListController.editPlayList",
-        "Error updateing playlist data"
-      );
-      next(error);
-    }
+  static async editPlayList(req: Request, res: Response): Promise<void> {
+    const { playListId } = req.params;
+    const title = req.body.title;
+    const updatedPlayListData = await editPlayListUseCase.editPlayList({
+      playListId,
+      title,
+    });
+    sendResponse(
+      res,
+      HttpStatusCodes.OK,
+      updatedPlayListData,
+      PlayListStatus.PlayListEditedSuccessfully
+    );
   }
 }

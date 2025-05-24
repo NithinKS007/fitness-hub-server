@@ -9,48 +9,50 @@ import { PlayListController } from "../controllers/playlist/playListController"
 import { VideoController } from "../controllers/video/videoController"
 import { SubscriptionPlanController } from "../controllers/subscription/subscriptionPlanController"
 import { TrainerSubscriptionController } from "../controllers/subscription/trainerSubscriptionController"
+import expressAsyncHandler from "express-async-handler";
+
 const trainerRoutes = express.Router()
 
 // SUBSCRIPTION ROUTES
-trainerRoutes.post("/subscriptions",authenticate,SubscriptionPlanController.addSubscription)
-trainerRoutes.get("/subscriptions",authenticate,TrainerSubscriptionController.getTrainerSubscriptions)
-trainerRoutes.patch("/subscriptions/:subscriptionId",authenticate,SubscriptionPlanController.updateSubscriptionBlockStatus)
-trainerRoutes.put("/subscriptions/:subscriptionId",authenticate,SubscriptionPlanController.editSubscription)
-trainerRoutes.delete("/subscriptions/:subscriptionId",authenticate,SubscriptionPlanController.deleteSubscription)
-trainerRoutes.get("/subscribers",authenticate,TrainerSubscriptionController.getTrainerSubscribedUsers)
+trainerRoutes.post("/subscriptions",authenticate,expressAsyncHandler(SubscriptionPlanController.addSubscription))
+trainerRoutes.get("/subscriptions",authenticate,expressAsyncHandler(TrainerSubscriptionController.getTrainerSubscriptions))
+trainerRoutes.patch("/subscriptions/:subscriptionId",authenticate,expressAsyncHandler(SubscriptionPlanController.updateSubscriptionBlockStatus))
+trainerRoutes.put("/subscriptions/:subscriptionId",authenticate,expressAsyncHandler(SubscriptionPlanController.editSubscription))
+trainerRoutes.delete("/subscriptions/:subscriptionId",authenticate,expressAsyncHandler(SubscriptionPlanController.deleteSubscription))
+trainerRoutes.get("/subscribers",authenticate,expressAsyncHandler(TrainerSubscriptionController.getTrainerSubscribedUsers))
 
 //PLAYLIST MANAGEMENT ROUTES
-trainerRoutes.post("/playlists",authenticate,PlayListController.addPlaylist)
-trainerRoutes.get("/playlists",authenticate,PlayListController.getPlaylists)
-trainerRoutes.get("/playlists/all",authenticate,PlayListController.getallPlayLists)
-trainerRoutes.patch("/playlists/:playListId",authenticate,PlayListController.updatePlayListPrivacy)
-trainerRoutes.put("/playlists/:playListId",authenticate,PlayListController.editPlayList)
+trainerRoutes.post("/playlists",authenticate,expressAsyncHandler(PlayListController.addPlaylist))
+trainerRoutes.get("/playlists",authenticate,expressAsyncHandler(PlayListController.getPlaylists))
+trainerRoutes.get("/playlists/all",authenticate,expressAsyncHandler(PlayListController.getallPlayLists))
+trainerRoutes.patch("/playlists/:playListId",authenticate,expressAsyncHandler(PlayListController.updatePlayListPrivacy))
+trainerRoutes.put("/playlists/:playListId",authenticate,expressAsyncHandler(PlayListController.editPlayList))
 
 //VIDEO MANAGEMENT ROUTES
-trainerRoutes.post("/videos/",authenticate,VideoController.addVideo)
-trainerRoutes.patch("/videos/:videoId",authenticate,VideoController.updateVideoPrivacy)
-trainerRoutes.put("/videos/:videoId",authenticate,VideoController.editVideo)
-trainerRoutes.get("/videos",authenticate,VideoController.getVideos)
+trainerRoutes.post("/videos/",authenticate,expressAsyncHandler(VideoController.addVideo))
+trainerRoutes.patch("/videos/:videoId",authenticate,expressAsyncHandler(VideoController.updateVideoPrivacy))
+trainerRoutes.put("/videos/:videoId",authenticate,expressAsyncHandler(VideoController.editVideo))
+trainerRoutes.get("/videos",authenticate,expressAsyncHandler(VideoController.getVideos))
 
 //SLOT MANAGEMENT
-trainerRoutes.post("/slots",authenticate,BookingController.addBookingSlot)
-trainerRoutes.get("/slots",authenticate,BookingController.getAvailableSlots)
-trainerRoutes.delete("/slots/:bookingSlotId",authenticate,BookingController.deleteBookingSlot)
+trainerRoutes.post("/slots",authenticate,expressAsyncHandler(BookingController.addBookingSlot))
+trainerRoutes.get("/slots",authenticate,expressAsyncHandler(BookingController.getAvailableSlots))
+trainerRoutes.delete("/slots/:bookingSlotId",authenticate,expressAsyncHandler(BookingController.deleteBookingSlot))
 
 //BOOKING ROUTES
-trainerRoutes.get("/bookings",authenticate,AppointmentController.getBookingRequests)
-trainerRoutes.patch("/bookings",authenticate,AppointmentController.handleBookingRequest)
+trainerRoutes.get("/bookings",authenticate,expressAsyncHandler(AppointmentController.getBookingRequests))
+trainerRoutes.patch("/bookings",authenticate,expressAsyncHandler(AppointmentController.handleBookingRequest))
 
 //APPOINTMENT ROUTES
-trainerRoutes.get("/appointments",authenticate,AppointmentController.getTrainerBookingSchedules)
-trainerRoutes.patch("/appointments/:appointmentId",authenticate,AppointmentController.cancelAppointment)
-trainerRoutes.get("/video-call-logs",authenticate,VideoCallLogController.getVideoCallLogsTrainer)
+trainerRoutes.get("/appointments",authenticate,expressAsyncHandler(AppointmentController.getTrainerBookingSchedules))
+trainerRoutes.patch("/appointments/:appointmentId",authenticate,expressAsyncHandler(AppointmentController.cancelAppointment))
+trainerRoutes.get("/video-call-logs",authenticate,expressAsyncHandler(VideoCallLogController.getVideoCallLogsTrainer))
 
 //DASHBOARD ROUTES
-trainerRoutes.get("/dashboard",authenticate,TrainerDashboardController.getTrainerDashBoardData)
+trainerRoutes.get("/dashboard",authenticate,expressAsyncHandler(TrainerDashboardController.getTrainerDashBoardData))
 
 //PROFILE UPDATION ROUTES
-trainerRoutes.put("/profile",authenticate,AuthController.updateTrainerProfile)
+trainerRoutes.put("/profile",authenticate,expressAsyncHandler(AuthController.updateTrainerProfile))
 
 
 export default trainerRoutes
