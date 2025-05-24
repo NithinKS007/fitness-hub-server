@@ -4,7 +4,7 @@ import { AuthStatus} from "../../../shared/constants/index-constants";
 import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 
-export class CheckUserBlockStatus {
+export class CheckUserBlockStatusUseCase {
   constructor(
     private userRepository: IUserRepository,
     private trainerRepository: ITrainerRepository

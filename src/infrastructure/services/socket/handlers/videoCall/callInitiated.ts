@@ -1,9 +1,9 @@
 import { Socket, Server } from "socket.io";
 import { LoggerHelper } from "../../../../../shared/utils/handleLog";
-import { TrainerUseCase } from "../../../../../application/usecases/trainer/trainerUseCase";
+import { TrainerGetUseCase } from "../../../../../application/usecases/trainer/trainerGetUseCase";
 import { GetAppointmentUsecase } from "../../../../../application/usecases/appointment/getAppointmentUseCase";
 import { validationError } from "../../../../../presentation/middlewares/errorMiddleWare";
-import { VideoCallLogUseCase } from "../../../../../application/usecases/videoCallLog/videoCallLogUseCase";
+import { CreateVideoCallLogUseCase } from "../../../../../application/usecases/videoCallLog/createVideoCallLogUseCase";
 import { socketStore } from "../../socketStore/socketStore";
 
 interface InitiateVideoCall {
@@ -14,18 +14,18 @@ interface InitiateVideoCall {
   roomId: string;
   appointmentId: string;
   loggerHelper: LoggerHelper;
-  trainerUseCase: TrainerUseCase;
+  trainerGetUseCase: TrainerGetUseCase;
   getAppointmentUseCase: GetAppointmentUsecase;
-  videoCallLogUseCase: VideoCallLogUseCase;
+  createVideoCallLogUseCase: CreateVideoCallLogUseCase;
 }
 
 export const handleInitiateCall = async ({
   io,
   socket,
   loggerHelper,
-  trainerUseCase,
+  trainerGetUseCase,
   getAppointmentUseCase,
-  videoCallLogUseCase,
+  createVideoCallLogUseCase,
   callerId,
   receiverId,
   roomId,
@@ -36,7 +36,7 @@ export const handleInitiateCall = async ({
     `video call initiated by ${callerId} to ${receiverId} in room ${roomId}`,
     { socketId: socket.id }
   );
-  const trainerData = await trainerUseCase.getTrainerDetailsById(callerId);
+  const trainerData = await trainerGetUseCase.getTrainerDetailsById(callerId);
   const appointmentData = await getAppointmentUseCase.getAppointmentById(
     appointmentId
   );
@@ -53,7 +53,7 @@ export const handleInitiateCall = async ({
   const trainerName = `${trainerData.fname} ${trainerData.lname}`;
   const appointmentTime = appointmentData?.appointmentTime;
   const appointmentDate = appointmentData?.appointmentDate;
-  await videoCallLogUseCase.createVideoCallLog({
+  await createVideoCallLogUseCase.createVideoCallLog({
     callerId: callerId,
     receiverId: receiverId,
     callRoomId: roomId,

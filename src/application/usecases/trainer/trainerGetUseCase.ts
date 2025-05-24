@@ -1,18 +1,15 @@
 import {
   GetApprovedTrainerQueryDTO,
-  GetTrainersApprovalQueryDTO,
   GetTrainersQueryDTO,
 } from "../../dtos/query-dtos";
 import { IdDTO } from "../../dtos/utility-dtos";
 import { PaginationDTO } from "../../dtos/utility-dtos";
-import { TrainerVerificationDTO } from "../../dtos/trainer-dtos";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";
 import { AuthStatus, TrainerStatus } from "../../../shared/constants/index-constants";
 import { Trainer ,TrainerWithSubscription } from "../../../domain/entities/trainer";
 import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import { parseDateRange } from "../../../shared/utils/dayjs";
 
-export class TrainerUseCase {
+export class TrainerGetUseCase {
   constructor(private trainerRepository: ITrainerRepository) {}
 
   public async getTrainers({
@@ -51,49 +48,7 @@ export class TrainerUseCase {
     }
     return trainerDetails;
   }
-  public async getApprovalPendingList({
-    page,
-    limit,
-    fromDate,
-    toDate,
-    search,
-  }: GetTrainersApprovalQueryDTO): Promise<{
-    trainersList: Trainer[];
-    paginationData: PaginationDTO;
-  }> {
-    const { parsedFromDate, parsedToDate } = parseDateRange(fromDate, toDate);
 
-    const { trainersList, paginationData } =
-      await this.trainerRepository.getApprovalPendingList({
-        page,
-        limit,
-        fromDate: parsedFromDate,
-        toDate: parsedToDate,
-        search,
-      });
-    if (!trainersList) {
-      throw new validationError(
-        TrainerStatus.FailedToRetrieveTrainersList
-      );
-    }
-    return {
-      trainersList,
-      paginationData,
-    };
-  }
-
-  public async approveRejectTrainerVerification({
-    trainerId,
-    action,
-  }: TrainerVerificationDTO): Promise<Trainer | null> {
-    if (!trainerId || !action) {
-      throw new validationError(AuthStatus.AllFieldsAreRequired);
-    }
-    return await this.trainerRepository.approveRejectTrainerVerification({
-      trainerId,
-      action,
-    });
-  }
 
   public async getApprovedTrainers({
     page,

@@ -1,7 +1,6 @@
 import { Server, Socket } from "socket.io";
-import { VideoCallLogUseCase } from "../../../application/usecases/videoCallLog/videoCallLogUseCase";
 import { ChatUseCase } from "../../../application/usecases/chat/chatUseCase";
-import { TrainerUseCase } from "../../../application/usecases/trainer/trainerUseCase";
+import { TrainerGetUseCase } from "../../../application/usecases/trainer/trainerGetUseCase";
 import { MongoTrainerRepository } from "../../databases/repositories/trainerRepository";
 import { MongoAppointmentRepository } from "../../databases/repositories/appointmentRepository";
 import { MongoChatRepository } from "../../databases/repositories/chatRepository";
@@ -26,6 +25,8 @@ import { handleAcceptCall } from "./handlers/videoCall/callAccepted";
 import { handleCallRejected } from "./handlers/videoCall/callRejected";
 import { handleCallEnded } from "./handlers/videoCall/callEnded";
 import { GetAppointmentUsecase } from "../../../application/usecases/appointment/getAppointmentUseCase";
+import { CreateVideoCallLogUseCase } from "../../../application/usecases/videoCallLog/createVideoCallLogUseCase";
+import { UpdateVideoCallLogUseCase } from "../../../application/usecases/videoCallLog/updateVideoCallLogUseCase";
 
 //MONGO REPOSITORY INSTANCES
 const mongoChatRepository = new MongoChatRepository();
@@ -35,13 +36,18 @@ const mongoAppointmentRepository = new MongoAppointmentRepository();
 const mongoConversationRepository = new MongoConversationRepository();
 
 //USE CASE INSTANCES
-const trainerUseCase = new TrainerUseCase(mongoTrainerRepository);
+const trainerGetUseCase = new TrainerGetUseCase(mongoTrainerRepository);
 const chatUseCase = new ChatUseCase(
   mongoChatRepository,
   mongoConversationRepository
 );
-const videoCallLogUseCase = new VideoCallLogUseCase(mongoVideoCallLogRepository);
 
+const createVideoCallLogUseCase = new CreateVideoCallLogUseCase(
+  mongoVideoCallLogRepository
+);
+const updateVideoCallLogUseCase = new UpdateVideoCallLogUseCase(
+  mongoVideoCallLogRepository
+);
 const getAppointmentUseCase = new GetAppointmentUsecase(
   mongoAppointmentRepository
 );
@@ -96,13 +102,19 @@ export const socketService = (io: Server) => {
       }
     );
 
-    socket.on("typing", ({ senderId, receiverId }: {senderId:string,receiverId:string}) => {
-      handleTyping({io, senderId, receiverId});
-    });
+    socket.on(
+      "typing",
+      ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
+        handleTyping({ io, senderId, receiverId });
+      }
+    );
 
-    socket.on("stopTyping", ({ senderId, receiverId }: {senderId:string,receiverId:string}) => {
-      handleStopTyping({io, senderId, receiverId});
-    });
+    socket.on(
+      "stopTyping",
+      ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
+        handleStopTyping({ io, senderId, receiverId });
+      }
+    );
 
     //VIDEO CALL BASED SOCKETS
     socket.on(
@@ -112,9 +124,9 @@ export const socketService = (io: Server) => {
           socket,
           io,
           loggerHelper,
-          trainerUseCase,
+          trainerGetUseCase,
           getAppointmentUseCase,
-          videoCallLogUseCase,
+          createVideoCallLogUseCase,
           callerId,
           receiverId,
           roomId,
@@ -128,11 +140,11 @@ export const socketService = (io: Server) => {
     });
 
     socket.on("rejectVideoCall", async ({ roomId }) => {
-      handleCallRejected({ roomId, io, loggerHelper, videoCallLogUseCase });
+      handleCallRejected({ roomId, io, loggerHelper, updateVideoCallLogUseCase });
     });
 
     socket.on("videoCallEnded", async ({ roomId }) => {
-      handleCallEnded({ io, loggerHelper, videoCallLogUseCase, roomId });
+      handleCallEnded({ io, loggerHelper, updateVideoCallLogUseCase, roomId });
     });
 
     //DISCONNECTION BASED SOCKET

@@ -10,7 +10,7 @@ import {
   HttpStatusCodes,
 } from "../../../shared/constants/index-constants";
 import { UserUseCase } from "../../../application/usecases/user/userUseCase";
-import { TrainerUseCase } from "../../../application/usecases/trainer/trainerUseCase";
+import { TrainerGetUseCase } from "../../../application/usecases/trainer/trainerGetUseCase";
 import { MongoUserRepository } from "../../../infrastructure/databases/repositories/userRepository";
 import { MongoTrainerRepository } from "../../../infrastructure/databases/repositories/trainerRepository";
 import { MongoSubscriptionRepository } from "../../../infrastructure/databases/repositories/subscriptionRepository";
@@ -19,6 +19,7 @@ import { MongoRevenueRepository } from "../../../infrastructure/databases/reposi
 import { RevenueUseCase } from "../../../application/usecases/revenue/revenueUseCase";
 import { StripePaymentService } from "../../../infrastructure/services/payments/stripeServices";
 import { GetTrainerSubscriptionUseCase } from "../../../application/usecases/subscription/getTrainerSubscriptionUseCase";
+import { TrainerApprovalUseCase } from "../../../application/usecases/trainer/trainerApprovalUseCase";
 
 //MONGO REPOSITORY INSTANCES
 const mongouserRepository = new MongoUserRepository();
@@ -30,7 +31,7 @@ const mongoRevenueRepository = new MongoRevenueRepository();
 
 //USE CASE INSTANCES
 const userUseCase = new UserUseCase(mongouserRepository);
-const trainerUsecase = new TrainerUseCase(mongoTrainerRepository);
+const trainerGetUseCase = new TrainerGetUseCase(mongoTrainerRepository);
 const revenueUseCase = new RevenueUseCase(mongoRevenueRepository);
 const stripeService = new StripePaymentService();
 
@@ -39,7 +40,9 @@ const getTrainerSubscriptionUseCase = new GetTrainerSubscriptionUseCase(
   monogUserSubscriptionPlanRepository,
   stripeService
 );
-
+const trainerApprovalUseCase = new TrainerApprovalUseCase(
+  mongoTrainerRepository
+);
 export class AdminController {
   static async getUsers(req: Request, res: Response): Promise<void> {
     const { page, limit, search, filters } = req.query;
@@ -70,7 +73,7 @@ export class AdminController {
 
   static async getTrainers(req: Request, res: Response): Promise<void> {
     const { page, limit, search, filters } = req.query;
-    const { trainersList, paginationData } = await trainerUsecase.getTrainers({
+    const { trainersList, paginationData } = await trainerGetUseCase.getTrainers({
       page: page as string,
       limit: limit as string,
       search: search as string,
@@ -85,7 +88,7 @@ export class AdminController {
   }
   static async getTrainerDetails(req: Request, res: Response): Promise<void> {
     const trainerId = req.params.trainerId;
-    const trainerData = await trainerUsecase.getTrainerDetailsById(trainerId);
+    const trainerData = await trainerGetUseCase.getTrainerDetailsById(trainerId);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -114,7 +117,7 @@ export class AdminController {
   ): Promise<void> {
     const { search, fromDate, toDate, page, limit } = req.query;
     const { trainersList, paginationData } =
-      await trainerUsecase.getApprovalPendingList({
+      await trainerApprovalUseCase.getPendingList({
         search: search as string,
         fromDate: fromDate as any,
         toDate: toDate as any,
@@ -136,7 +139,7 @@ export class AdminController {
     const trainerId = req.params.trainerId;
     const { action } = req.body;
     const updatedTrainerData =
-      await trainerUsecase.approveRejectTrainerVerification({
+      await trainerApprovalUseCase.approveRejectTrainerVerification({
         trainerId,
         action,
       });

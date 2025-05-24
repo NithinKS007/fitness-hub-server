@@ -496,7 +496,7 @@ export class MongoTrainerRepository implements ITrainerRepository {
     };
   }
 
-  public async getApprovalPendingList({
+  public async getPendingList({
     page,
     limit,
     fromDate,

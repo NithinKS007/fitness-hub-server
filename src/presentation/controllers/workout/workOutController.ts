@@ -4,19 +4,23 @@ import {
   HttpStatusCodes,
   WorkoutStatus,
 } from "../../../shared/constants/index-constants";
-import { WorkOutUseCase } from "../../../application/usecases/workout/workoutUseCase";
 import { MongoWorkoutRepository } from "../../../infrastructure/databases/repositories/workoutRepository";
+import { CreateWorkoutUseCase } from "../../../application/usecases/workout/createWorkoutUseCase";
+import { GetWorkoutUseCase } from "../../../application/usecases/workout/getWorkoutUseCase";
+import { UpdateWorkoutUseCase } from "../../../application/usecases/workout/updateWorkoutUseCase";
 
 //MONGO REPOSITORY INSTANCES
 const mongoWorkoutRepository = new MongoWorkoutRepository();
 
 //USE CASE INSTANCES
-const workoutUseCase = new WorkOutUseCase(mongoWorkoutRepository);
+const createWorkoutUseCase = new CreateWorkoutUseCase(mongoWorkoutRepository)
+const getWorkoutUseCase = new GetWorkoutUseCase(mongoWorkoutRepository)
+const updateWorkoutUseCase = new UpdateWorkoutUseCase(mongoWorkoutRepository)
 
 export class WorkoutController {
   static async addWorkout(req: Request, res: Response): Promise<void> {
     const userId = req.user._id;
-    const addedWorkOut = await workoutUseCase.addWorkout(userId, req.body);
+    const addedWorkOut = await createWorkoutUseCase.addWorkout(userId, req.body);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -29,7 +33,7 @@ export class WorkoutController {
     const userId = req.user._id;
     const { fromDate, toDate, page, limit, search, filters } = req.query;
     const { workoutList, paginationData } =
-      await workoutUseCase.getWorkoutsByUserId(userId, {
+      await getWorkoutUseCase.getWorkoutsByUserId(userId, {
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,
@@ -47,7 +51,7 @@ export class WorkoutController {
 
   static async deleteWorkoutSet(req: Request, res: Response): Promise<void> {
     const { setId } = req.params;
-    const deletedWorkoutSet = await workoutUseCase.deleteWorkoutSet(setId);
+    const deletedWorkoutSet = await updateWorkoutUseCase.deleteWorkoutSet(setId);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -58,7 +62,7 @@ export class WorkoutController {
 
   static async markSetAsCompleted(req: Request, res: Response): Promise<void> {
     const { setId } = req.params;
-    const completedWorkoutSet = await workoutUseCase.markSetAsCompleted(setId);
+    const completedWorkoutSet = await updateWorkoutUseCase.markSetAsCompleted(setId);
     sendResponse(
       res,
       HttpStatusCodes.OK,

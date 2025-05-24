@@ -4,7 +4,7 @@ import {
   JwtStatus,
 } from "../../shared/constants/index-constants";
 import { JwtPayload } from "jsonwebtoken";
-import { CheckUserBlockStatus } from "../../application/usecases/auth/checkUserBlockStatusUseCase";
+import { CheckUserBlockStatusUseCase } from "../../application/usecases/auth/checkUserBlockStatusUseCase";
 import { MongoUserRepository } from "../../infrastructure/databases/repositories/userRepository";
 import { ForbiddenError, UnauthorizedError } from "./errorMiddleWare";
 import { MongoTrainerRepository } from "../../infrastructure/databases/repositories/trainerRepository";
@@ -14,7 +14,7 @@ import { JwtService } from "../../infrastructure/services/auth/jwtService";
 const mongouserRepository = new MongoUserRepository();
 const mongoTrainerRepository = new MongoTrainerRepository();
 const jwtService = new JwtService();
-const checkBlockStatusUseCase = new CheckUserBlockStatus(
+const checkBlockStatusUseCase = new CheckUserBlockStatusUseCase(
   mongouserRepository,
   mongoTrainerRepository
 );

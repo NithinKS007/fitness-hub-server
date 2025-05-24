@@ -8,7 +8,7 @@ import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptio
 import { IPaymentService } from "../../interfaces/payments/IPaymentService";
 import { IdDTO } from "../../dtos/utility-dtos";
 
-export class DeleteSubscription {
+export class DeleteSubscriptionUseCase {
   constructor(
     private subscriptionRepository: ISubscriptionRepository,
     private paymentService: IPaymentService

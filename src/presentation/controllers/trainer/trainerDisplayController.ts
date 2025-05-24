@@ -4,7 +4,7 @@ import {
   HttpStatusCodes,
   TrainerStatus,
 } from "../../../shared/constants/index-constants";
-import { TrainerUseCase } from "../../../application/usecases/trainer/trainerUseCase";
+import { TrainerGetUseCase } from "../../../application/usecases/trainer/trainerGetUseCase";
 import { MongoTrainerRepository } from "../../../infrastructure/databases/repositories/trainerRepository";
 import { GetUserSubscriptionUseCase } from "../../../application/usecases/subscription/getUserSubscriptionUseCase";
 import { MongoUserSubscriptionPlanRepository } from "../../../infrastructure/databases/repositories/userSubscriptionRepository";
@@ -19,7 +19,7 @@ const mongoTrainerRepository = new MongoTrainerRepository();
 const stripeService = new StripePaymentService();
 
 //USE CASE INSTANCES
-const trainerUseCase = new TrainerUseCase(mongoTrainerRepository);
+const trainerGetUseCase = new TrainerGetUseCase(mongoTrainerRepository);
 const getUserSubscriptionUseCase = new GetUserSubscriptionUseCase(
   monogUserSubscriptionPlanRepository,
   stripeService
@@ -31,7 +31,7 @@ export class TrainerDisplayController {
       req.query;
 
     const { trainersList, paginationData } =
-      await trainerUseCase.getApprovedTrainers({
+      await trainerGetUseCase.getApprovedTrainers({
         page: page as string,
         limit: limit as string,
         Search: Search as string,
@@ -53,7 +53,7 @@ export class TrainerDisplayController {
     res: Response
   ): Promise<void> {
     const trainerId = req.params.trainerId;
-    const trainersData = await trainerUseCase.getApprovedTrainerDetailsWithSub(
+    const trainersData = await trainerGetUseCase.getApprovedTrainerDetailsWithSub(
       trainerId
     );
     sendResponse(

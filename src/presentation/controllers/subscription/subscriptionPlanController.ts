@@ -9,7 +9,7 @@ import { MongoSubscriptionRepository } from "../../../infrastructure/databases/r
 import { StripePaymentService } from "../../../infrastructure/services/payments/stripeServices";
 import { CreateSubscriptionUseCase } from "../../../application/usecases/subscription/createSubscriptionUseCase";
 import { EditSubscriptionUseCase } from "../../../application/usecases/subscription/editSubscriptionUseCase";
-import { DeleteSubscription } from "../../../application/usecases/subscription/deleteSubscriptionUseCase";
+import { DeleteSubscriptionUseCase } from "../../../application/usecases/subscription/deleteSubscriptionUseCase";
 import { SubscriptionBlockUseCase } from "../../../application/usecases/subscription/blockSubscriptionUseCase";
 
 //MONGO REPOSITORY INSTANCES
@@ -32,7 +32,7 @@ const editSubscriptionUseCase = new EditSubscriptionUseCase(
   stripeService
 );
 
-const deleteSubscriptionUseCase = new DeleteSubscription(
+const deleteSubscriptionUseCase = new DeleteSubscriptionUseCase(
   mongoSubscriptionRepository,
   stripeService
 );

@@ -1,23 +1,23 @@
 import { Server } from "socket.io";
 import { LoggerHelper } from "../../../../../shared/utils/handleLog";
-import { VideoCallLogUseCase } from "../../../../../application/usecases/videoCallLog/videoCallLogUseCase";
+import { UpdateVideoCallLogUseCase } from "../../../../../application/usecases/videoCallLog/updateVideoCallLogUseCase";
 
 interface EndVideoCall {
   io: Server;
   loggerHelper: LoggerHelper;
-  videoCallLogUseCase: VideoCallLogUseCase;
+  updateVideoCallLogUseCase: UpdateVideoCallLogUseCase;
   roomId: string;
 }
 
 export const handleCallEnded = async ({
   io,
   loggerHelper,
-  videoCallLogUseCase,
+  updateVideoCallLogUseCase,
   roomId,
 }: EndVideoCall) => {
   loggerHelper.handleLogInfo("info", `call ended in room ${roomId}`,{});
   const endTime = new Date();
-  const videoCallLogData = await videoCallLogUseCase.updateVideoCallLog({
+  const videoCallLogData = await updateVideoCallLogUseCase.updateVideoCallLog({
     callRoomId: roomId,
     callEndTime: endTime,
     callStatus: "completed",
@@ -28,7 +28,7 @@ export const handleCallEnded = async ({
         videoCallLogData.callStartTime.getTime()) /
         1000
     );
-    await videoCallLogUseCase.updateVideoCallDuration({
+    await updateVideoCallLogUseCase.updateVideoCallDuration({
       callRoomId: roomId,
       callDuration: duration,
     });

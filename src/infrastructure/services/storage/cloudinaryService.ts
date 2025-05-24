@@ -17,9 +17,7 @@ export class CloudinaryService implements ICloudStorageService {
       return result.secure_url;
     } catch (error: any) {
       console.log("Error while uploading to cloudinary:", error.message);
-      throw new validationError(
-        ApplicationStatus.FailedToUploadToCloudinary
-      );
+      throw new validationError(ApplicationStatus.FailedToUploadToCloudinary);
     }
   }
 }

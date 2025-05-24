@@ -5,13 +5,16 @@ import {
 } from "../../../shared/constants/index-constants";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import { MongoVideoCallLogRepository } from "../../../infrastructure/databases/repositories/videoCallLogRepository";
-import { VideoCallLogUseCase } from "../../../application/usecases/videoCallLog/videoCallLogUseCase";
-
+import { TrainerVideoCallLogUseCase } from "../../../application/usecases/videoCallLog/trainerVideoCallLogUseCase";
+import { UserVideoCallLogUseCase } from "../../../application/usecases/videoCallLog/userCallLogUseCase";
 //MONGO REPOSITORY INSTANCES
 const mongoVideoCallLogRepository = new MongoVideoCallLogRepository();
 
 //USE CASE INSTANCES
-const videoCallLogUseCase = new VideoCallLogUseCase(
+const trainerVideoCallLogUseCase = new TrainerVideoCallLogUseCase(
+  mongoVideoCallLogRepository
+);
+const userVideoCallLogUseCase = new UserVideoCallLogUseCase(
   mongoVideoCallLogRepository
 );
 
@@ -23,7 +26,7 @@ export class VideoCallLogController {
     const trainerId = req.user._id;
     const { fromDate, toDate, page, limit, search, filters } = req.query;
     const { trainerVideoCallLogList, paginationData } =
-      await videoCallLogUseCase.getTrainerVideoCallLogs(trainerId, {
+      await trainerVideoCallLogUseCase.getTrainerVideoCallLogs(trainerId, {
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,
@@ -46,7 +49,7 @@ export class VideoCallLogController {
     const userId = req.user._id;
     const { fromDate, toDate, page, limit, search, filters } = req.query;
     const { userVideoCallLogList, paginationData } =
-      await videoCallLogUseCase.getUserVideoCallLogs(userId, {
+      await userVideoCallLogUseCase.getUserVideoCallLogs(userId, {
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,
