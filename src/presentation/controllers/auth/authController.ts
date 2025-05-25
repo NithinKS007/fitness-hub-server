@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import dotenv from "dotenv";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
   AuthStatus,
@@ -16,73 +17,24 @@ import { PasswordUseCase } from "../../../application/usecases/auth/passwordUseC
 import { GoogleAuthUseCase } from "../../../application/usecases/auth/googleAuthUseCase";
 import { CreateTrainerUseCase } from "../../../application/usecases/auth/createTrainerUseCase";
 import { UpdateProfileUseCase } from "../../../application/usecases/auth/updateProfileUseCase";
-import { MongoTrainerRepository } from "../../../infrastructure/databases/repositories/trainerRepository";
-import { MonogPasswordResetRepository } from "../../../infrastructure/databases/repositories/passwordResetRepository";
-import { MongoUserRepository } from "../../../infrastructure/databases/repositories/userRepository";
-import { MongoOtpRepository } from "../../../infrastructure/databases/repositories/otpRepository";
-import { JwtService } from "../../../infrastructure/services/auth/jwtService";
 import { TokenUseCase } from "../../../application/usecases/auth/tokenUseCase";
-import { CloudinaryService } from "../../../infrastructure/services/storage/cloudinaryService";
-import { GoogleAuthService } from "../../../infrastructure/services/auth/googleAuthService";
-import { EmailService } from "../../../infrastructure/services/communication/emailService";
-import dotenv from "dotenv";
 import { UpdateUserDetailsDTO } from "../../../application/dtos/user-dtos";
 dotenv.config();
-//MONGO REPOSITORY INSTANCES
-const mongoUserRepository = new MongoUserRepository();
-const monogTrainerRepository = new MongoTrainerRepository();
-const mongoOtpRepository = new MongoOtpRepository();
-const monogPasswordResetRepository = new MonogPasswordResetRepository();
-
-//SERVICE INSTANCES
-const cloudinaryService = new CloudinaryService();
-const jwtService = new JwtService();
-const emailService = new EmailService();
-const googleAuthService = new GoogleAuthService();
-
-//USE CASE INSTANCES
-const createUserUseCase = new CreateUserUseCase(
-  mongoUserRepository,
-  mongoOtpRepository,
-  emailService
-);
-const signinUseCase = new SigninUserUseCase(
-  mongoUserRepository,
-  monogTrainerRepository,
-  jwtService
-);
-const otpUseCase = new OtpUseCase(
-  mongoOtpRepository,
-  mongoUserRepository,
-  emailService
-);
-const passwordUseCase = new PasswordUseCase(
-  mongoUserRepository,
-  monogPasswordResetRepository,
-  emailService
-);
-
-const googleAuthUseCase = new GoogleAuthUseCase(
-  mongoUserRepository,
-  jwtService,
-  googleAuthService
-);
-const profileUseCase = new UpdateProfileUseCase(
-  mongoUserRepository,
-  monogTrainerRepository,
-  cloudinaryService
-);
-const createTrainerUseCase = new CreateTrainerUseCase(
-  mongoUserRepository,
-  mongoOtpRepository,
-  monogTrainerRepository,
-  emailService
-);
-const refreshAccessTokenUseCase = new TokenUseCase(jwtService);
 
 export class AuthController {
-  static async createUser(req: Request, res: Response): Promise<void> {
-    const createdUser = await createUserUseCase.create(req.body);
+  constructor(
+    private createUserUseCase: CreateUserUseCase,
+    private signinUseCase: SigninUserUseCase,
+    private otpUseCase: OtpUseCase,
+    private passwordUseCase: PasswordUseCase,
+    private googleAuthUseCase: GoogleAuthUseCase,
+    private profileUseCase: UpdateProfileUseCase,
+    private createTrainerUseCase: CreateTrainerUseCase,
+    private refreshAccessTokenUseCase: TokenUseCase
+  ) {}
+
+  public async createUser(req: Request, res: Response): Promise<void> {
+    const createdUser = await this.createUserUseCase.create(req.body);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -91,8 +43,8 @@ export class AuthController {
     );
   }
 
-  static async createTrainer(req: Request, res: Response): Promise<void> {
-    const createdTrainer = await createTrainerUseCase.create(req.body);
+  public async createTrainer(req: Request, res: Response): Promise<void> {
+    const createdTrainer = await this.createTrainerUseCase.create(req.body);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -101,8 +53,8 @@ export class AuthController {
     );
   }
 
-  static async signin(req: Request, res: Response): Promise<void> {
-    const { userData, accessToken, refreshToken } = await signinUseCase.signIn(
+  public async signin(req: Request, res: Response): Promise<void> {
+    const { userData, accessToken, refreshToken } = await this.signinUseCase.signIn(
       req.body
     );
 
@@ -120,8 +72,8 @@ export class AuthController {
     );
   }
 
-  static async verifyOtp(req: Request, res: Response): Promise<void> {
-    await otpUseCase.verifyOtpByEmail(req.body);
+  public async verifyOtp(req: Request, res: Response): Promise<void> {
+    await this.otpUseCase.verifyOtpByEmail(req.body);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -130,16 +82,16 @@ export class AuthController {
     );
   }
 
-  static async resendOtp(req: Request, res: Response): Promise<void> {
-    await otpUseCase.resendOtp(req.body);
+  public async resendOtp(req: Request, res: Response): Promise<void> {
+    await this.otpUseCase.resendOtp(req.body);
     sendResponse(res, HttpStatusCodes.OK, null, OTPStatus.OtpSendSuccessful);
   }
 
-  static async generatePassResetLink(
+  public async generatePassResetLink(
     req: Request,
     res: Response
   ): Promise<void> {
-    const tokenData = await passwordUseCase.generatePassResetLink(req.body);
+    const tokenData = await this.passwordUseCase.generatePassResetLink(req.body);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -148,10 +100,10 @@ export class AuthController {
     );
   }
 
-  static async forgotPassword(req: Request, res: Response): Promise<void> {
+  public async forgotPassword(req: Request, res: Response): Promise<void> {
     const { token } = req.params;
     const { password } = req.body;
-    await passwordUseCase.forgotPassword({
+    await this.passwordUseCase.forgotPassword({
       resetToken: token,
       password: password,
     });
@@ -163,9 +115,9 @@ export class AuthController {
     );
   }
 
-  static async createGoogleUser(req: Request, res: Response): Promise<void> {
+  public async createGoogleUser(req: Request, res: Response): Promise<void> {
     const { userData, accessToken, refreshToken } =
-      await googleAuthUseCase.createGoogleUser(req.body);
+      await this.googleAuthUseCase.createGoogleUser(req.body);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       sameSite: "strict",
@@ -180,12 +132,12 @@ export class AuthController {
     );
   }
 
-  static async changePassword(req: Request, res: Response): Promise<void> {
+  public async changePassword(req: Request, res: Response): Promise<void> {
     const userId = req.user._id;
-    await passwordUseCase.changePassword({ userId, ...req.body });
+    await this.passwordUseCase.changePassword({ userId, ...req.body });
     sendResponse(res, HttpStatusCodes.OK, null, PasswordStatus.PasswordUpdated);
   }
-  static async signOut(req: Request, res: Response): Promise<void> {
+  public async signOut(req: Request, res: Response): Promise<void> {
     res.clearCookie("refreshToken", {
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "PRODUCTION" ? "none" : "strict",
@@ -193,9 +145,9 @@ export class AuthController {
     });
     sendResponse(res, HttpStatusCodes.OK, null, AuthStatus.LogoutSuccessful);
   }
-  static async refreshAccessToken(req: Request, res: Response): Promise<void> {
+  public async refreshAccessToken(req: Request, res: Response): Promise<void> {
     const refreshToken = req?.cookies?.refreshToken;
-    const newAccessToken = await refreshAccessTokenUseCase.refreshAccessToken(
+    const newAccessToken = await this.refreshAccessTokenUseCase.refreshAccessToken(
       refreshToken
     );
 
@@ -207,12 +159,12 @@ export class AuthController {
     );
   }
 
-  static async updateTrainerProfile(
+  public async updateTrainerProfile(
     req: Request,
     res: Response
   ): Promise<void> {
     const trainerId = req.user._id;
-    const updatedTrainerData = await profileUseCase.updateTrainerProfile({
+    const updatedTrainerData = await this.profileUseCase.updateTrainerProfile({
       trainerId,
       ...req.body,
     });
@@ -223,9 +175,9 @@ export class AuthController {
       ProfileStatus.UserDetailsUpdated
     );
   }
-  static async updateUserProfile(req: Request, res: Response): Promise<void> {
+  public async updateUserProfile(req: Request, res: Response): Promise<void> {
     const { userId, ...bodyWithoutUserId } = req.body;
-    const updatedUserData = await profileUseCase.updateUserProfile({
+    const updatedUserData = await this.profileUseCase.updateUserProfile({
       userId: req.user._id,
       ...bodyWithoutUserId,
     } as UpdateUserDetailsDTO);

@@ -9,25 +9,19 @@ import { CreateBookingSlotUseCase } from "../../../application/usecases/bookingS
 import { DeleteBookingSlotUseCase } from "../../../application/usecases/bookingSlot/deleteBookingSlotUseCase";
 import { GetBookingSlotUseCase } from "../../../application/usecases/bookingSlot/getBookingSlotUseCase";
 
-//MONGO REPOSITORY INSTANCES
-const mongoBookingSlotRepository = new MongoBookingSlotRepository();
 
-//USE CASE INSTANCES
-const createBookingSlotUseCase = new CreateBookingSlotUseCase(
-  mongoBookingSlotRepository
-);
-const deleteBookingSlotUseCase = new DeleteBookingSlotUseCase(
-  mongoBookingSlotRepository
-);
-const getBookingSlotUseCase = new GetBookingSlotUseCase(
-  mongoBookingSlotRepository
-);
 
 export class BookingController {
-  static async addBookingSlot(req: Request, res: Response): Promise<void> {
+  constructor(
+    private createBookingSlotUseCase: CreateBookingSlotUseCase,
+    private deleteBookingSlotUseCase: DeleteBookingSlotUseCase,
+    private getBookingSlotUseCase: GetBookingSlotUseCase
+  ) {}
+
+  public async addBookingSlot(req: Request, res: Response): Promise<void> {
     const trainerId = req.user._id;
     const slotData = req.body;
-    const createdSlotData = await createBookingSlotUseCase.addBookingSlot({
+    const createdSlotData = await this.createBookingSlotUseCase.addBookingSlot({
       trainerId: trainerId,
       ...slotData,
     });
@@ -39,9 +33,9 @@ export class BookingController {
     );
   }
 
-  static async deleteBookingSlot(req: Request, res: Response): Promise<void> {
+  public async deleteBookingSlot(req: Request, res: Response): Promise<void> {
     const bookingSlotId = req.params.bookingSlotId;
-    const deletedSlotData = await deleteBookingSlotUseCase.deleteBookingSlot(
+    const deletedSlotData = await this.deleteBookingSlotUseCase.deleteBookingSlot(
       bookingSlotId
     );
     sendResponse(
@@ -52,11 +46,11 @@ export class BookingController {
     );
   }
 
-  static async getAvailableSlots(req: Request, res: Response): Promise<void> {
+  public async getAvailableSlots(req: Request, res: Response): Promise<void> {
     const trainerId = req.user._id;
     const { fromDate, toDate, page, limit } = req.query;
     const { availableSlotsList, paginationData } =
-      await getBookingSlotUseCase.getAvailableSlots(trainerId, {
+      await this.getBookingSlotUseCase.getAvailableSlots(trainerId, {
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,
@@ -73,14 +67,14 @@ export class BookingController {
     );
   }
 
-  static async getAvailableSlotsFromToday(
+  public async getAvailableSlotsFromToday(
     req: Request,
     res: Response
   ): Promise<void> {
     const trainerId = req.params.trainerId;
     const { fromDate, toDate, page, limit } = req.query;
     const { availableSlotsList, paginationData } =
-      await getBookingSlotUseCase.getAvailableSlotsFromToday(trainerId, {
+      await this.getBookingSlotUseCase.getAvailableSlotsFromToday(trainerId, {
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,
@@ -97,13 +91,13 @@ export class BookingController {
     );
   }
 
-  static async getAllAvailableSlotsFromToday(
+  public async getAllAvailableSlotsFromToday(
     req: Request,
     res: Response
   ): Promise<void> {
     const trainerId = req.params.trainerId;
     const bookingSlotsOfTrainer =
-      await getBookingSlotUseCase.getAllAvailableSlotsFromToday(trainerId);
+      await this.getBookingSlotUseCase.getAllAvailableSlotsFromToday(trainerId);
     sendResponse(
       res,
       HttpStatusCodes.OK,

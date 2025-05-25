@@ -11,42 +11,22 @@ import {
 } from "../../../shared/constants/index-constants";
 import { UserUseCase } from "../../../application/usecases/user/userUseCase";
 import { TrainerGetUseCase } from "../../../application/usecases/trainer/trainerGetUseCase";
-import { MongoUserRepository } from "../../../infrastructure/databases/repositories/userRepository";
-import { MongoTrainerRepository } from "../../../infrastructure/databases/repositories/trainerRepository";
-import { MongoSubscriptionRepository } from "../../../infrastructure/databases/repositories/subscriptionRepository";
-import { MongoUserSubscriptionPlanRepository } from "../../../infrastructure/databases/repositories/userSubscriptionRepository";
-import { MongoRevenueRepository } from "../../../infrastructure/databases/repositories/revenueRepository";
 import { RevenueUseCase } from "../../../application/usecases/revenue/revenueUseCase";
-import { StripePaymentService } from "../../../infrastructure/services/payments/stripeServices";
 import { GetTrainerSubscriptionUseCase } from "../../../application/usecases/subscription/getTrainerSubscriptionUseCase";
 import { TrainerApprovalUseCase } from "../../../application/usecases/trainer/trainerApprovalUseCase";
 
-//MONGO REPOSITORY INSTANCES
-const mongouserRepository = new MongoUserRepository();
-const mongoTrainerRepository = new MongoTrainerRepository();
-const mongoSubscriptionRepository = new MongoSubscriptionRepository();
-const monogUserSubscriptionPlanRepository =
-  new MongoUserSubscriptionPlanRepository();
-const mongoRevenueRepository = new MongoRevenueRepository();
 
-//USE CASE INSTANCES
-const userUseCase = new UserUseCase(mongouserRepository);
-const trainerGetUseCase = new TrainerGetUseCase(mongoTrainerRepository);
-const revenueUseCase = new RevenueUseCase(mongoRevenueRepository);
-const stripeService = new StripePaymentService();
-
-const getTrainerSubscriptionUseCase = new GetTrainerSubscriptionUseCase(
-  mongoSubscriptionRepository,
-  monogUserSubscriptionPlanRepository,
-  stripeService
-);
-const trainerApprovalUseCase = new TrainerApprovalUseCase(
-  mongoTrainerRepository
-);
 export class AdminController {
-  static async getUsers(req: Request, res: Response): Promise<void> {
+  constructor(
+    private userUseCase: UserUseCase,
+    private trainerGetUseCase: TrainerGetUseCase,
+    private revenueUseCase: RevenueUseCase,
+    private getTrainerSubscriptionUseCase: GetTrainerSubscriptionUseCase,
+    private trainerApprovalUseCase: TrainerApprovalUseCase
+  ) {}
+  public async getUsers(req: Request, res: Response): Promise<void> {
     const { page, limit, search, filters } = req.query;
-    const { usersList, paginationData } = await userUseCase.getUsers({
+    const { usersList, paginationData } = await this.userUseCase.getUsers({
       page: page as string,
       limit: limit as string,
       search: search as string,
@@ -60,9 +40,9 @@ export class AdminController {
     );
   }
 
-  static async getUserDetails(req: Request, res: Response): Promise<void> {
+  public async getUserDetails(req: Request, res: Response): Promise<void> {
     const userId = req.params.userId;
-    const userData = await userUseCase.getUserDetails(userId);
+    const userData = await this.userUseCase.getUserDetails(userId);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -71,14 +51,15 @@ export class AdminController {
     );
   }
 
-  static async getTrainers(req: Request, res: Response): Promise<void> {
+  public async getTrainers(req: Request, res: Response): Promise<void> {
     const { page, limit, search, filters } = req.query;
-    const { trainersList, paginationData } = await trainerGetUseCase.getTrainers({
-      page: page as string,
-      limit: limit as string,
-      search: search as string,
-      filters: filters as string[],
-    });
+    const { trainersList, paginationData } =
+      await this.trainerGetUseCase.getTrainers({
+        page: page as string,
+        limit: limit as string,
+        search: search as string,
+        filters: filters as string[],
+      });
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -86,9 +67,11 @@ export class AdminController {
       TrainerStatus.TrainersListRetrieved
     );
   }
-  static async getTrainerDetails(req: Request, res: Response): Promise<void> {
+  public async getTrainerDetails(req: Request, res: Response): Promise<void> {
     const trainerId = req.params.trainerId;
-    const trainerData = await trainerGetUseCase.getTrainerDetailsById(trainerId);
+    const trainerData = await this.trainerGetUseCase.getTrainerDetailsById(
+      trainerId
+    );
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -96,10 +79,10 @@ export class AdminController {
       TrainerStatus.TrainerDetailsRetrieved
     );
   }
-  static async updateBlockStatus(req: Request, res: Response): Promise<void> {
+  public async updateBlockStatus(req: Request, res: Response): Promise<void> {
     const { userId } = req.params;
     const { isBlocked } = req.body;
-    const updatedData = await userUseCase.updateBlockStatus({
+    const updatedData = await this.userUseCase.updateBlockStatus({
       userId,
       isBlocked,
     });
@@ -111,13 +94,13 @@ export class AdminController {
     );
   }
 
-  static async getPendingTrainerApprovals(
+  public async getPendingList(
     req: Request,
     res: Response
   ): Promise<void> {
     const { search, fromDate, toDate, page, limit } = req.query;
     const { trainersList, paginationData } =
-      await trainerApprovalUseCase.getPendingList({
+      await this.trainerApprovalUseCase.getPendingList({
         search: search as string,
         fromDate: fromDate as any,
         toDate: toDate as any,
@@ -132,14 +115,14 @@ export class AdminController {
       TrainerStatus.TrainersListRetrieved
     );
   }
-  static async approveRejectTrainerVerification(
+  public async handleVerification(
     req: Request,
     res: Response
   ): Promise<void> {
     const trainerId = req.params.trainerId;
     const { action } = req.body;
     const updatedTrainerData =
-      await trainerApprovalUseCase.approveRejectTrainerVerification({
+      await this.trainerApprovalUseCase.handleVerification({
         trainerId,
         action,
       });
@@ -159,13 +142,13 @@ export class AdminController {
       );
     }
   }
-  static async getTrainerSubscriptions(
+  public async getTrainerSubscriptions(
     req: Request,
     res: Response
   ): Promise<void> {
     const trainerId = req.params.trainerId;
     const subscriptionsData =
-      await getTrainerSubscriptionUseCase.getTrainerSubscriptions(trainerId);
+      await this.getTrainerSubscriptionUseCase.getTrainerSubscriptions(trainerId);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -174,13 +157,13 @@ export class AdminController {
     );
   }
 
-  static async getAdminRevenueHistory(
+  public async getAdminRevenueHistory(
     req: Request,
     res: Response
   ): Promise<void> {
     const { fromDate, toDate, page, limit, search, filters } = req.query;
     const { revenueData, paginationData } =
-      await revenueUseCase.getAdminRevenueHistory({
+      await this.revenueUseCase.getAdminRevenueHistory({
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,

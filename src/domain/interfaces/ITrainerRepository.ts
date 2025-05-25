@@ -23,7 +23,7 @@ export interface ITrainerRepository {
     searchFilterQuery: GetTrainersQueryDTO
   ): Promise<{ trainersList: Trainer[]; paginationData: PaginationDTO }>;
   getTrainerDetailsByUserIdRef(userId: IdDTO): Promise<Trainer>;
-  approveRejectTrainerVerification(
+  handleVerification(
     verificationData: TrainerVerificationDTO
   ): Promise<Trainer | null>;
   getApprovedTrainers(

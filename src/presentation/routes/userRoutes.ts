@@ -1,61 +1,50 @@
 import express from "express"
 import { authenticate } from "../middlewares/authenticate"
-import { TrainerDisplayController } from "../controllers/trainer/trainerDisplayController"
-import { BookingController } from "../controllers/booking/bookingController"
-import { AuthController } from "../controllers/auth/authController"
-import { WorkoutController } from "../controllers/workout/workOutController"
-import { UserDashboardController } from "../controllers/dashboard/userDashBoardController"
-import { VideoCallLogController } from "../controllers/videoCallLog/videoCallLogController"
-import { AppointmentController } from "../controllers/appointment/appointmentController"
-import { PlayListController } from "../controllers/playlist/playListController"
-import { VideoController } from "../controllers/video/videoController"
-import { WebhookController } from "../controllers/subscription/webhookController"
-import { UserSubscriptionController } from "../controllers/subscription/userSubscriptionController"
-import { PurchaseSubscriptionController } from "../controllers/subscription/purchaseSubscriptionController"
 import expressAsyncHandler from "express-async-handler"
+import { appointmentController, authController, bookingController, playListController, purchaseSubscriptionController, trainerDisplayController, userDashBoardController, userSubscriptionController, videoCallLogController, videoController, webhookController, workoutController } from "../../di/di"
 
 const userRoutes = express.Router()
 
 //TRAINER DISPLAYING ROUTES
-userRoutes.get("/trainers",expressAsyncHandler(TrainerDisplayController.getApprovedTrainers))
-userRoutes.get("/trainers/:trainerId",expressAsyncHandler(TrainerDisplayController.getApprovedTrainerDetailsWithSub))
-userRoutes.get("/my-trainers",authenticate,expressAsyncHandler(TrainerDisplayController.getMyTrainers))
+userRoutes.get("/trainers",expressAsyncHandler(trainerDisplayController.getApprovedTrainers))
+userRoutes.get("/trainers/:trainerId",expressAsyncHandler(trainerDisplayController.getApprovedTrainerDetailsWithSub))
+userRoutes.get("/my-trainers",authenticate,expressAsyncHandler(trainerDisplayController.getMyTrainers))
 
 //SUBSCRIPTION ROUTES
-userRoutes.post("/subscriptions/checkout",authenticate,expressAsyncHandler(PurchaseSubscriptionController.purchaseSubscription))
-userRoutes.get("/subscriptions",authenticate,expressAsyncHandler(UserSubscriptionController.getUserSubscriptions))
-userRoutes.get("/subscriptions/verify/:sessionId",authenticate,expressAsyncHandler(WebhookController.getSubscriptionBySession))
-userRoutes.patch("/subscriptions/cancel",authenticate,expressAsyncHandler(PurchaseSubscriptionController.cancelSubscription)) 
-userRoutes.get("/subscriptions/status/:_id",authenticate,expressAsyncHandler(UserSubscriptionController.isSubscribedToTheTrainer))
+userRoutes.post("/subscriptions/checkout",authenticate,expressAsyncHandler(purchaseSubscriptionController.purchaseSubscription))
+userRoutes.get("/subscriptions",authenticate,expressAsyncHandler(userSubscriptionController.getUserSubscriptions))
+userRoutes.get("/subscriptions/verify/:sessionId",authenticate,expressAsyncHandler(webhookController.getSubscriptionBySession))
+userRoutes.patch("/subscriptions/cancel",authenticate,expressAsyncHandler(purchaseSubscriptionController.cancelSubscription)) 
+userRoutes.get("/subscriptions/status/:_id",authenticate,expressAsyncHandler(userSubscriptionController.isSubscribedToTheTrainer))
 
 //VIDEO ROUTES
-userRoutes.get("/trainer/videos/:trainerId",authenticate,expressAsyncHandler(VideoController.getPublicVideos))
-userRoutes.get("/videos/:videoId",authenticate,expressAsyncHandler(VideoController.getVideoById))
+userRoutes.get("/trainer/videos/:trainerId",authenticate,expressAsyncHandler(videoController.getPublicVideos))
+userRoutes.get("/videos/:videoId",authenticate,expressAsyncHandler(videoController.getVideoById))
 
 //PLAYLIST ROUTES
-userRoutes.get("/playlists/all/:trainerId",authenticate,expressAsyncHandler(PlayListController.getallPlayLists))
+userRoutes.get("/playlists/all/:trainerId",authenticate,expressAsyncHandler(playListController.getallPlayLists))
 
 //BOOKING ROUTES
-userRoutes.get("/slots/all/:trainerId",authenticate,expressAsyncHandler(BookingController.getAllAvailableSlotsFromToday))
-userRoutes.get("/slots/:trainerId",authenticate,expressAsyncHandler(BookingController.getAvailableSlotsFromToday))
-userRoutes.post("/slots/:slotId",authenticate,expressAsyncHandler(AppointmentController.bookAppointment))
+userRoutes.get("/slots/all/:trainerId",authenticate,expressAsyncHandler(bookingController.getAllAvailableSlotsFromToday))
+userRoutes.get("/slots/:trainerId",authenticate,expressAsyncHandler(bookingController.getAvailableSlotsFromToday))
+userRoutes.post("/slots/:slotId",authenticate,expressAsyncHandler(appointmentController.bookAppointment))
 
 //APPOINTMENT ROUTES
-userRoutes.get("/appointments",authenticate,expressAsyncHandler(AppointmentController.getUserBookingSchedules))
-userRoutes.patch("/appointments/:appointmentId",authenticate,expressAsyncHandler(AppointmentController.cancelAppointment))
-userRoutes.get("/video-call-logs",authenticate,expressAsyncHandler(VideoCallLogController.getUserVideoCallLogs))
+userRoutes.get("/appointments",authenticate,expressAsyncHandler(appointmentController.getUserBookingSchedules))
+userRoutes.patch("/appointments/:appointmentId",authenticate,expressAsyncHandler(appointmentController.cancelAppointment))
+userRoutes.get("/video-call-logs",authenticate,expressAsyncHandler(videoCallLogController.getUserVideoCallLogs))
 
 //PROFILE ROUTES
-userRoutes.put("/profile",authenticate,expressAsyncHandler(AuthController.updateUserProfile))
+userRoutes.put("/profile",authenticate,expressAsyncHandler(authController.updateUserProfile))
 
 //WORKOUT ROUTES
-userRoutes.post("/workouts",authenticate,expressAsyncHandler(WorkoutController.addWorkout))
-userRoutes.get("/workouts",authenticate,expressAsyncHandler(WorkoutController.getWorkoutsByUserId))
-userRoutes.delete("/workouts/:setId",authenticate,expressAsyncHandler(WorkoutController.deleteWorkoutSet))
-userRoutes.patch("/workouts/:setId",authenticate,expressAsyncHandler(WorkoutController.markSetAsCompleted))
+userRoutes.post("/workouts",authenticate,expressAsyncHandler(workoutController.addWorkout))
+userRoutes.get("/workouts",authenticate,expressAsyncHandler(workoutController.getWorkoutsByUserId))
+userRoutes.delete("/workouts/:setId",authenticate,expressAsyncHandler(workoutController.deleteWorkoutSet))
+userRoutes.patch("/workouts/:setId",authenticate,expressAsyncHandler(workoutController.markSetAsCompleted))
 
 //DASHBOARD ROUTES
-userRoutes.get("/dashBoard",authenticate,expressAsyncHandler(UserDashboardController.getUserDashBoardData))
+userRoutes.get("/dashBoard",authenticate,expressAsyncHandler(userDashBoardController.getUserDashBoardData))
 
 
 export default userRoutes

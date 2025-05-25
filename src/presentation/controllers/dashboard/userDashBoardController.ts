@@ -5,16 +5,10 @@ import {
   HttpStatusCodes,
 } from "../../../shared/constants/index-constants";
 import { UserDashBoardUseCase } from "../../../application/usecases/dashboard/userDashBoardUseCase";
-import { MongoWorkoutRepository } from "../../../infrastructure/databases/repositories/workoutRepository";
-
-//MONGO INSTANCES
-const mongoWorkoutRepository = new MongoWorkoutRepository();
-
-//USE CASE INSTANCES
-const userDashBoardUseCase = new UserDashBoardUseCase(mongoWorkoutRepository);
 
 export class UserDashboardController {
-  static async getUserDashBoardData(
+  constructor(private userDashBoardUseCase: UserDashBoardUseCase) {}
+  public async getUserDashBoardData(
     req: Request,
     res: Response
   ): Promise<void> {
@@ -25,7 +19,7 @@ export class UserDashboardController {
       todaysTotalCompletedWorkouts,
       todaysTotalPendingWorkouts,
       totalWorkoutTime,
-    } = await userDashBoardUseCase.getUserDashBoardData({
+    } = await this.userDashBoardUseCase.getUserDashBoardData({
       userId: userId,
       period: period as string,
       bodyPart: bodyPart as string,

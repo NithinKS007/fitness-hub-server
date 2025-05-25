@@ -41,14 +41,14 @@ export class TrainerApprovalUseCase {
     };
   }
 
-  public async approveRejectTrainerVerification({
+  public async handleVerification({
     trainerId,
     action,
   }: TrainerVerificationDTO): Promise<Trainer | null> {
     if (!trainerId || !action) {
       throw new validationError(AuthStatus.AllFieldsAreRequired);
     }
-    return await this.trainerRepository.approveRejectTrainerVerification({
+    return await this.trainerRepository.handleVerification({
       trainerId,
       action,
     });

@@ -1,4 +1,4 @@
-import { Request, Response } from "express-serve-static-core";
+import { Request, Response } from "express";
 import { sendResponse } from "../../../shared/utils/httpResponse";
 import {
   HttpStatusCodes,
@@ -12,39 +12,17 @@ import { EditSubscriptionUseCase } from "../../../application/usecases/subscript
 import { DeleteSubscriptionUseCase } from "../../../application/usecases/subscription/deleteSubscriptionUseCase";
 import { SubscriptionBlockUseCase } from "../../../application/usecases/subscription/blockSubscriptionUseCase";
 
-//MONGO REPOSITORY INSTANCES
-const mongoSubscriptionRepository = new MongoSubscriptionRepository();
-const mongoTrainerRepository = new MongoTrainerRepository();
-
-//SERVICE INSTANCES
-const stripeService = new StripePaymentService();
-
-//USE CASE INSTANCES
-const createSubscriptionUseCase = new CreateSubscriptionUseCase(
-  mongoSubscriptionRepository,
-  mongoTrainerRepository,
-  stripeService
-);
-
-const editSubscriptionUseCase = new EditSubscriptionUseCase(
-  mongoSubscriptionRepository,
-  mongoTrainerRepository,
-  stripeService
-);
-
-const deleteSubscriptionUseCase = new DeleteSubscriptionUseCase(
-  mongoSubscriptionRepository,
-  stripeService
-);
-
-const subscriptionBlockUseCase = new SubscriptionBlockUseCase(
-  mongoSubscriptionRepository
-);
-
 export class SubscriptionPlanController {
-  static async addSubscription(req: Request, res: Response): Promise<void> {
+  constructor(
+    private createSubscriptionUseCase: CreateSubscriptionUseCase,
+    private editSubscriptionUseCase: EditSubscriptionUseCase,
+    private deleteSubscriptionUseCase: DeleteSubscriptionUseCase,
+    private subscriptionBlockUseCase: SubscriptionBlockUseCase
+  ) {}
+
+  public async addSubscription(req: Request, res: Response): Promise<void> {
     const _id = req.user._id;
-    const subscriptionData = await createSubscriptionUseCase.createSubscription(
+    const subscriptionData = await this.createSubscriptionUseCase.createSubscription(
       {
         trainerId: _id,
         ...req.body,
@@ -57,14 +35,14 @@ export class SubscriptionPlanController {
       SubscriptionStatus.SubscriptionCreated
     );
   }
-  static async updateSubscriptionBlockStatus(
+  public async updateSubscriptionBlockStatus(
     req: Request,
     res: Response
   ): Promise<void> {
     const subscriptionId = req.params.subscriptionId;
     const { isBlocked } = req.body;
     const updatedSubscriptionStatus =
-      await subscriptionBlockUseCase.updateSubscriptionBlockStatus({
+      await this.subscriptionBlockUseCase.updateSubscriptionBlockStatus({
         subscriptionId: subscriptionId,
         isBlocked,
       });
@@ -75,10 +53,10 @@ export class SubscriptionPlanController {
       SubscriptionStatus.SubscriptionBlockStatusUpdated
     );
   }
-  static async editSubscription(req: Request, res: Response): Promise<void> {
+  public async editSubscription(req: Request, res: Response): Promise<void> {
     const subscriptionId = req.params.subscriptionId;
     const trainerId = req.user._id;
-    const editSubscriptionData = await editSubscriptionUseCase.editSubscription(
+    const editSubscriptionData = await this.editSubscriptionUseCase.editSubscription(
       {
         trainerId: trainerId,
         subscriptionId,
@@ -92,10 +70,10 @@ export class SubscriptionPlanController {
       SubscriptionStatus.SubscriptionEditedSuccessfully
     );
   }
-  static async deleteSubscription(req: Request, res: Response): Promise<void> {
+  public async deleteSubscription(req: Request, res: Response): Promise<void> {
     const subscriptionId = req.params.subscriptionId;
     const deletedSubscriptionData =
-      await deleteSubscriptionUseCase.deleteSubscription(subscriptionId);
+      await this.deleteSubscriptionUseCase.deleteSubscription(subscriptionId);
     sendResponse(
       res,
       HttpStatusCodes.OK,

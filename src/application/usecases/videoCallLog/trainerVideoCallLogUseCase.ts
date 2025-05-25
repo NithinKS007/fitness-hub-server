@@ -1,6 +1,5 @@
 import {
   TrainerVideoCallLog,
-  UserVideoCallLog,
 } from "../../../domain/entities/videoCallLog";
 import { IVideoCallLogRepository } from "../../../domain/interfaces/IVideoCallLogRepository";
 import { validationError } from "../../../presentation/middlewares/errorMiddleWare";

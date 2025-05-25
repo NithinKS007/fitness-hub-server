@@ -5,33 +5,20 @@ import {
   TrainerStatus,
 } from "../../../shared/constants/index-constants";
 import { TrainerGetUseCase } from "../../../application/usecases/trainer/trainerGetUseCase";
-import { MongoTrainerRepository } from "../../../infrastructure/databases/repositories/trainerRepository";
 import { GetUserSubscriptionUseCase } from "../../../application/usecases/subscription/getUserSubscriptionUseCase";
-import { MongoUserSubscriptionPlanRepository } from "../../../infrastructure/databases/repositories/userSubscriptionRepository";
-import { StripePaymentService } from "../../../infrastructure/services/payments/stripeServices";
-
-//MONGO REPOSITORY INSTANCES
-const monogUserSubscriptionPlanRepository =
-  new MongoUserSubscriptionPlanRepository();
-const mongoTrainerRepository = new MongoTrainerRepository();
-
-//SERVICE INSTANCES
-const stripeService = new StripePaymentService();
-
-//USE CASE INSTANCES
-const trainerGetUseCase = new TrainerGetUseCase(mongoTrainerRepository);
-const getUserSubscriptionUseCase = new GetUserSubscriptionUseCase(
-  monogUserSubscriptionPlanRepository,
-  stripeService
-);
 
 export class TrainerDisplayController {
-  static async getApprovedTrainers(req: Request, res: Response): Promise<void> {
+  constructor(
+    private trainerGetUseCase: TrainerGetUseCase,
+    private getUserSubscriptionUseCase: GetUserSubscriptionUseCase
+  ) {}
+
+  public async getApprovedTrainers(req: Request, res: Response): Promise<void> {
     const { page, limit, Search, Specialization, Experience, Gender, sort } =
       req.query;
 
     const { trainersList, paginationData } =
-      await trainerGetUseCase.getApprovedTrainers({
+      await this.trainerGetUseCase.getApprovedTrainers({
         page: page as string,
         limit: limit as string,
         Search: Search as string,
@@ -48,14 +35,13 @@ export class TrainerDisplayController {
     );
   }
 
-  static async getApprovedTrainerDetailsWithSub(
+  public async getApprovedTrainerDetailsWithSub(
     req: Request,
     res: Response
   ): Promise<void> {
     const trainerId = req.params.trainerId;
-    const trainersData = await trainerGetUseCase.getApprovedTrainerDetailsWithSub(
-      trainerId
-    );
+    const trainersData =
+      await this.trainerGetUseCase.getApprovedTrainerDetailsWithSub(trainerId);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -64,11 +50,11 @@ export class TrainerDisplayController {
     );
   }
 
-  static async getMyTrainers(req: Request, res: Response): Promise<void> {
+  public async getMyTrainers(req: Request, res: Response): Promise<void> {
     const userId = req.user._id;
     const { page, limit, search } = req.query;
     const { userTrainersList, paginationData } =
-      await getUserSubscriptionUseCase.userMyTrainersList(userId, {
+      await this.getUserSubscriptionUseCase.userMyTrainersList(userId, {
         page: page as string,
         search: search as string,
         limit: limit as string,

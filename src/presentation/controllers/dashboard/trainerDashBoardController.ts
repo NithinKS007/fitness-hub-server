@@ -4,20 +4,11 @@ import {
   DashboardStatus,
   HttpStatusCodes,
 } from "../../../shared/constants/index-constants";
-import { MongoUserSubscriptionPlanRepository } from "../../../infrastructure/databases/repositories/userSubscriptionRepository";
 import { TrainerDashBoardUseCase } from "../../../application/usecases/dashboard/trainerDashBoardUseCase";
 
-//MONGO REPOSITORY INSTANCES
-const mongoUserSubscriptionRepository =
-  new MongoUserSubscriptionPlanRepository();
-
-//USE CASE INSTANCES
-const trainerDashBoardUseCase = new TrainerDashBoardUseCase(
-  mongoUserSubscriptionRepository
-);
-
 export class TrainerDashboardController {
-  static async getTrainerDashBoardData(
+  constructor(private trainerDashBoardUseCase: TrainerDashBoardUseCase) {}
+  public async getTrainerDashBoardData(
     req: Request,
     res: Response
   ): Promise<void> {
@@ -29,7 +20,7 @@ export class TrainerDashboardController {
       canceledSubscribersCount,
       chartData,
       pieChartData,
-    } = await trainerDashBoardUseCase.getTrainerDashBoardData(
+    } = await this.trainerDashBoardUseCase.getTrainerDashBoardData(
       _id,
       period as string
     );

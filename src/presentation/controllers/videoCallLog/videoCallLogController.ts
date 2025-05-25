@@ -4,29 +4,23 @@ import {
   AppointmentStatus,
 } from "../../../shared/constants/index-constants";
 import { sendResponse } from "../../../shared/utils/httpResponse";
-import { MongoVideoCallLogRepository } from "../../../infrastructure/databases/repositories/videoCallLogRepository";
 import { TrainerVideoCallLogUseCase } from "../../../application/usecases/videoCallLog/trainerVideoCallLogUseCase";
-import { UserVideoCallLogUseCase } from "../../../application/usecases/videoCallLog/userCallLogUseCase";
-//MONGO REPOSITORY INSTANCES
-const mongoVideoCallLogRepository = new MongoVideoCallLogRepository();
-
-//USE CASE INSTANCES
-const trainerVideoCallLogUseCase = new TrainerVideoCallLogUseCase(
-  mongoVideoCallLogRepository
-);
-const userVideoCallLogUseCase = new UserVideoCallLogUseCase(
-  mongoVideoCallLogRepository
-);
+import { UserVideoCallLogUseCase } from "../../../application/usecases/videoCallLog/userVideoCallLogUseCase";
 
 export class VideoCallLogController {
-  static async getVideoCallLogsTrainer(
+  constructor(
+    private trainerVideoCallLogUseCase: TrainerVideoCallLogUseCase,
+    private userVideoCallLogUseCase: UserVideoCallLogUseCase
+  ) {}
+
+  public async getVideoCallLogsTrainer(
     req: Request,
     res: Response
   ): Promise<void> {
     const trainerId = req.user._id;
     const { fromDate, toDate, page, limit, search, filters } = req.query;
     const { trainerVideoCallLogList, paginationData } =
-      await trainerVideoCallLogUseCase.getTrainerVideoCallLogs(trainerId, {
+      await this.trainerVideoCallLogUseCase.getTrainerVideoCallLogs(trainerId, {
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,
@@ -42,14 +36,14 @@ export class VideoCallLogController {
     );
   }
 
-  static async getUserVideoCallLogs(
+  public async getUserVideoCallLogs(
     req: Request,
     res: Response
   ): Promise<void> {
     const userId = req.user._id;
     const { fromDate, toDate, page, limit, search, filters } = req.query;
     const { userVideoCallLogList, paginationData } =
-      await userVideoCallLogUseCase.getUserVideoCallLogs(userId, {
+      await this.userVideoCallLogUseCase.getUserVideoCallLogs(userId, {
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,

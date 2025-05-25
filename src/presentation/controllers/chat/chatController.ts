@@ -7,23 +7,12 @@ import {
   UserStatus,
 } from "../../../shared/constants/index-constants";
 import { ChatUseCase } from "../../../application/usecases/chat/chatUseCase";
-import { MongoChatRepository } from "../../../infrastructure/databases/repositories/chatRepository";
-import { MongoConversationRepository } from "../../../infrastructure/databases/repositories/conversationRepository";
-
-//MONGO REPOSITORY INSTANCES
-const mongoChatRepository = new MongoChatRepository();
-const mongoConversationRepository = new MongoConversationRepository();
-
-//USE CASE INSTANCES
-const chatUseCase = new ChatUseCase(
-  mongoChatRepository,
-  mongoConversationRepository
-);
 
 export class ChatController {
-  static async getMessages(req: Request, res: Response): Promise<void> {
+  constructor(private chatUseCase: ChatUseCase) {}
+  public async getMessages(req: Request, res: Response): Promise<void> {
     const { senderId, receiverId } = req.params;
-    const messages = await chatUseCase.getMessages({
+    const messages = await this.chatUseCase.getMessages({
       userId: senderId as string,
       otherUserId: receiverId as string,
     });
@@ -35,12 +24,15 @@ export class ChatController {
     );
   }
 
-  static async getTrainerChatList(req: Request, res: Response): Promise<void> {
+  public async getTrainerChatList(req: Request, res: Response): Promise<void> {
     const trainerId = req.user._id;
     const { search } = req.query;
-    const trainerChatList = await chatUseCase.getTrainerChatList(trainerId, {
-      search: search as string,
-    });
+    const trainerChatList = await this.chatUseCase.getTrainerChatList(
+      trainerId,
+      {
+        search: search as string,
+      }
+    );
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -49,10 +41,10 @@ export class ChatController {
     );
   }
 
-  static async getUserChatList(req: Request, res: Response): Promise<void> {
+  public async getUserChatList(req: Request, res: Response): Promise<void> {
     const userId = req.user._id;
     const { search } = req.query;
-    const userChatList = await chatUseCase.getUserChatList(userId, {
+    const userChatList = await this.chatUseCase.getUserChatList(userId, {
       search: search as string,
     });
     sendResponse(res, HttpStatusCodes.OK, userChatList, UserStatus.UserList);

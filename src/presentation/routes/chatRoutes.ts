@@ -1,13 +1,13 @@
 import express from "express"
 import { authenticate } from "../middlewares/authenticate"
-import { ChatController } from "../controllers/chat/chatController"
 import expressAsyncHandler from "express-async-handler";
+import { chatController } from "../../di/di";
 
 const chatRoutes = express.Router()
 
 //CHAT ROUTES
-chatRoutes.get("/messages/:senderId/:receiverId", authenticate, expressAsyncHandler (ChatController.getMessages))
-chatRoutes.get("/trainer",authenticate,expressAsyncHandler(ChatController.getTrainerChatList))
-chatRoutes.get("/user",authenticate,expressAsyncHandler(ChatController.getUserChatList))
+chatRoutes.get("/messages/:senderId/:receiverId", authenticate, expressAsyncHandler (chatController.getMessages))
+chatRoutes.get("/trainer",authenticate,expressAsyncHandler(chatController.getTrainerChatList))
+chatRoutes.get("/user",authenticate,expressAsyncHandler(chatController.getUserChatList))
 
 export default chatRoutes

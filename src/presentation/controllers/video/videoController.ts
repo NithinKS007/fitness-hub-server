@@ -5,41 +5,21 @@ import {
   BlockStatus,
 } from "../../../shared/constants/index-constants";
 import { sendResponse } from "../../../shared/utils/httpResponse";
-import { MonogVideoPlayListRepository } from "../../../infrastructure/databases/repositories/videoPlayList";
-import { MongoPlayListRepository } from "../../../infrastructure/databases/repositories/playListRepository";
-import { MonogVideoRepository } from "../../../infrastructure/databases/repositories/videoRepository";
 import { CreateVideoUseCase } from "../../../application/usecases/video/createVideoUseCase";
 import { EditVideoUseCase } from "../../../application/usecases/video/editVideoUseCase";
 import { UpdateVideoPrivacyUseCase } from "../../../application/usecases/video/updateVideoPrivacyUseCase";
 import { GetVideoUseCase } from "../../../application/usecases/video/getVideoUseCase";
 
-//MONGO REPOSITORY INSTANCES
-const mongoPlayListRepository = new MongoPlayListRepository();
-const mongoVideoRepository = new MonogVideoRepository();
-const mongoVideoPlayListRepository = new MonogVideoPlayListRepository();
-
-//USE CASE INSTANCES
-const editVideoUseCase = new EditVideoUseCase(
-  mongoPlayListRepository,
-  mongoVideoRepository,
-  mongoVideoPlayListRepository
-);
-
-const createVideoUseCase = new CreateVideoUseCase(
-  mongoPlayListRepository,
-  mongoVideoRepository,
-  mongoVideoPlayListRepository
-);
-
-const updateVideoPrivacyUseCase = new UpdateVideoPrivacyUseCase(
-  mongoVideoRepository
-);
-const getVideoUseCase = new GetVideoUseCase(mongoVideoRepository);
-
 export class VideoController {
-  static async addVideo(req: Request, res: Response): Promise<void> {
+  constructor(
+    private createVideoUseCase: CreateVideoUseCase,
+    private editVideoUseCase: EditVideoUseCase,
+    private updateVideoPrivacyUseCase: UpdateVideoPrivacyUseCase,
+    private getVideoUseCase: GetVideoUseCase
+  ) {}
+  public async addVideo(req: Request, res: Response): Promise<void> {
     const trainerId = req.user._id;
-    const createdVideo = await createVideoUseCase.createdVideo({
+    const createdVideo = await this.createVideoUseCase.createdVideo({
       trainerId: trainerId,
       ...req.body,
     });
@@ -51,10 +31,10 @@ export class VideoController {
     );
   }
 
-  static async getVideos(req: Request, res: Response): Promise<void> {
+  public async getVideos(req: Request, res: Response): Promise<void> {
     const trainerId = req.user._id;
     const { fromDate, toDate, page, limit, search, filters } = req.query;
-    const { videoList, paginationData } = await getVideoUseCase.getVideos(
+    const { videoList, paginationData } = await this.getVideoUseCase.getVideos(
       trainerId,
       {
         fromDate: fromDate as any,
@@ -73,20 +53,18 @@ export class VideoController {
     );
   }
 
-  static async getPublicVideos(req: Request, res: Response): Promise<void> {
+  public async getPublicVideos(req: Request, res: Response): Promise<void> {
     const trainerId = req.params.trainerId;
     const { fromDate, toDate, page, limit, search, filters } = req.query;
-    const { videoList, paginationData } = await getVideoUseCase.getPublicVideos(
-      trainerId,
-      {
+    const { videoList, paginationData } =
+      await this.getVideoUseCase.getPublicVideos(trainerId, {
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,
         limit: limit as string,
         search: search as string,
         filters: filters as string[],
-      }
-    );
+      });
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -95,9 +73,9 @@ export class VideoController {
     );
   }
 
-  static async getVideoById(req: Request, res: Response): Promise<void> {
+  public async getVideoById(req: Request, res: Response): Promise<void> {
     const { videoId } = req.params;
-    const videoData = await getVideoUseCase.getVideoById(videoId);
+    const videoData = await this.getVideoUseCase.getVideoById(videoId);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -106,10 +84,10 @@ export class VideoController {
     );
   }
 
-  static async updateVideoPrivacy(req: Request, res: Response): Promise<void> {
+  public async updateVideoPrivacy(req: Request, res: Response): Promise<void> {
     const { videoId } = req.params;
     const { privacy } = req.body;
-    const videoData = await updateVideoPrivacyUseCase.updateVideoPrivacy({
+    const videoData = await this.updateVideoPrivacyUseCase.updateVideoPrivacy({
       videoId,
       privacy,
     });
@@ -121,12 +99,12 @@ export class VideoController {
     );
   }
 
-  static async editVideo(req: Request, res: Response): Promise<void> {
+  public async editVideo(req: Request, res: Response): Promise<void> {
     const videoId = req.params.videoId;
     const trainerId = req.user._id;
     const { title, description, video, thumbnail, playLists, duration } =
       req.body;
-    const editedVideoData = await editVideoUseCase.editVideo({
+    const editedVideoData = await this.editVideoUseCase.editVideo({
       trainerId: trainerId as string,
       _id: videoId as string,
       title: title as string,

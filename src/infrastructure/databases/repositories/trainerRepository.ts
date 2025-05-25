@@ -160,7 +160,7 @@ export class MongoTrainerRepository implements ITrainerRepository {
     return result[0];
   }
 
-  public async approveRejectTrainerVerification({
+  public async handleVerification({
     trainerId,
     action,
   }: TrainerVerificationDTO): Promise<Trainer | null> {

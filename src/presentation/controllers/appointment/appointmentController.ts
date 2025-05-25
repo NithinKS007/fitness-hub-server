@@ -4,36 +4,20 @@ import {
   HttpStatusCodes,
 } from "../../../shared/constants/index-constants";
 import { sendResponse } from "../../../shared/utils/httpResponse";
-import { MongoBookingSlotRepository } from "../../../infrastructure/databases/repositories/bookingSlotRepository";
-import { MongoAppointmentRepository } from "../../../infrastructure/databases/repositories/appointmentRepository";
 import { BookAppointmentUseCase } from "../../../application/usecases/appointment/bookAppointmentUseCaste";
 import { UpdateAppointmentUseCase } from "../../../application/usecases/appointment/updateAppointmentUseCase";
 import { GetAppointmentUsecase } from "../../../application/usecases/appointment/getAppointmentUseCase";
 
-//MONGO REPOSITORY INSTANCES
-const mongoBookingSlotRepository = new MongoBookingSlotRepository();
-const mongoAppointmentRepository = new MongoAppointmentRepository();
-
-//USE CASE INSTANCES
-const bookAppointmentUseCase = new BookAppointmentUseCase(
-  mongoBookingSlotRepository,
-  mongoAppointmentRepository
-);
-
-const updateAppointmentUseCase = new UpdateAppointmentUseCase(
-  mongoBookingSlotRepository,
-  mongoAppointmentRepository
-);
-
-const getAppointmentUseCase = new GetAppointmentUsecase(
-  mongoAppointmentRepository
-);
-
 export class AppointmentController {
-  static async cancelAppointment(req: Request, res: Response): Promise<void> {
+  constructor(
+    private bookAppointmentUseCase: BookAppointmentUseCase,
+    private updateAppointmentUseCase: UpdateAppointmentUseCase,
+    private getAppointmentUseCase: GetAppointmentUsecase
+  ) {}
+  public async cancelAppointment(req: Request, res: Response): Promise<void> {
     const appointmentId = req.params.appointmentId;
     const cancelledAppointmentData =
-      await updateAppointmentUseCase.cancelAppointment(appointmentId);
+      await this.updateAppointmentUseCase.cancelAppointment(appointmentId);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -42,14 +26,14 @@ export class AppointmentController {
     );
   }
 
-  static async getTrainerBookingSchedules(
+  public async getTrainerBookingSchedules(
     req: Request,
     res: Response
   ): Promise<void> {
     const trainerId = req.user._id;
     const { fromDate, toDate, page, limit, search, filters } = req.query;
     const { trainerBookingSchedulesList, paginationData } =
-      await getAppointmentUseCase.getTrainerBookingSchedules(trainerId, {
+      await this.getAppointmentUseCase.getTrainerBookingSchedules(trainerId, {
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,
@@ -67,13 +51,13 @@ export class AppointmentController {
       AppointmentStatus.AppointmentsListRetrievedSuccessfully
     );
   }
-  static async handleBookingRequest(
+  public async handleBookingRequest(
     req: Request,
     res: Response
   ): Promise<void> {
     const { appointmentId, bookingSlotId, action } = req.body;
     const appointmentData =
-      await updateAppointmentUseCase.approveOrRejectBooking({
+      await this.updateAppointmentUseCase.approveOrRejectBooking({
         appointmentId,
         bookingSlotId,
         action,
@@ -95,11 +79,11 @@ export class AppointmentController {
     }
   }
 
-  static async getBookingRequests(req: Request, res: Response): Promise<void> {
+  public async getBookingRequests(req: Request, res: Response): Promise<void> {
     const trainerId = req.user._id;
     const { fromDate, toDate, page, limit, search, filters } = req.query;
     const { bookingRequestsList, paginationData } =
-      await getAppointmentUseCase.getBookingRequests(trainerId, {
+      await this.getAppointmentUseCase.getBookingRequests(trainerId, {
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,
@@ -115,10 +99,10 @@ export class AppointmentController {
     );
   }
 
-  static async bookAppointment(req: Request, res: Response): Promise<void> {
+  public async bookAppointment(req: Request, res: Response): Promise<void> {
     const slotId = req.params.slotId;
     const { _id } = req.user;
-    const bookedSlotData = await bookAppointmentUseCase.bookSlotAppointment({
+    const bookedSlotData = await this.bookAppointmentUseCase.bookSlotAppointment({
       slotId,
       userId: _id,
     });
@@ -130,14 +114,14 @@ export class AppointmentController {
     );
   }
 
-  static async getUserBookingSchedules(
+  public async getUserBookingSchedules(
     req: Request,
     res: Response
   ): Promise<void> {
     const userId = req.user._id;
     const { fromDate, toDate, page, limit, search, filters } = req.query;
     const { appointmentList, paginationData } =
-      await getAppointmentUseCase.getUserBookingSchedules(userId, {
+      await this.getAppointmentUseCase.getUserBookingSchedules(userId, {
         fromDate: fromDate as any,
         toDate: toDate as any,
         page: page as string,

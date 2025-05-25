@@ -12,28 +12,20 @@ import { GetallPlaylistUseCase } from "../../../application/usecases/playlist/ge
 import { GetPlayListUseCase } from "../../../application/usecases/playlist/getPlayListUseCase";
 import { UpdatePlayListPrivacyUseCase } from "../../../application/usecases/playlist/updatePlayListPrivacyUseCase";
 
-//MONGO REPOSITORY INSTANCES
-const mongoPlayListRepository = new MongoPlayListRepository();
-
-//USE CASE INSTANCES
-const createPlayListUseCase = new CreatePlayListUseCase(
-  mongoPlayListRepository
-);
-
-const editPlayListUseCase = new EditPlayListUseCase(mongoPlayListRepository);
-const getallPlaylistUseCase = new GetallPlaylistUseCase(
-  mongoPlayListRepository
-);
-const getPlayListUseCase = new GetPlayListUseCase(mongoPlayListRepository);
-const updatePlayListPrivacyUseCase = new UpdatePlayListPrivacyUseCase(
-  mongoPlayListRepository
-);
 
 export class PlayListController {
-  static async addPlaylist(req: Request, res: Response): Promise<void> {
+  constructor(
+    private createPlayListUseCase: CreatePlayListUseCase,
+    private editPlayListUseCase: EditPlayListUseCase,
+    private getallPlaylistUseCase: GetallPlaylistUseCase,
+    private getPlayListUseCase: GetPlayListUseCase,
+    private updatePlayListPrivacyUseCase: UpdatePlayListPrivacyUseCase
+  ) {}
+
+  public async addPlaylist(req: Request, res: Response): Promise<void> {
     const trainerId = req.user._id;
     const { title } = req.body;
-    const createdPlayList = await createPlayListUseCase.createPlayList({
+    const createdPlayList = await this.createPlayListUseCase.createPlayList({
       trainerId: trainerId,
       title,
     });
@@ -45,10 +37,10 @@ export class PlayListController {
     );
   }
 
-  static async getPlaylists(req: Request, res: Response): Promise<void> {
+  public async getPlaylists(req: Request, res: Response): Promise<void> {
     const trainerId = req.user._id;
     const { fromDate, toDate, page, limit, search, filters } = req.query;
-    const { playList, paginationData } = await getPlayListUseCase.getPlaylists(
+    const { playList, paginationData } = await this.getPlayListUseCase.getPlaylists(
       trainerId,
       {
         fromDate: fromDate as any,
@@ -67,9 +59,9 @@ export class PlayListController {
     );
   }
 
-  static async getallPlayLists(req: Request, res: Response): Promise<void> {
+  public async getallPlayLists(req: Request, res: Response): Promise<void> {
     const trainerId = req.params.trainerId || req.user._id;
-    const playListsOfTrainer = await getallPlaylistUseCase.getallPlaylists(
+    const playListsOfTrainer = await this.getallPlaylistUseCase.getallPlaylists(
       trainerId
     );
     sendResponse(
@@ -80,14 +72,14 @@ export class PlayListController {
     );
   }
 
-  static async updatePlayListPrivacy(
+  public async updatePlayListPrivacy(
     req: Request,
     res: Response
   ): Promise<void> {
     const playListId = req.params.playListId;
     const { privacy } = req.body;
     const playListData =
-      await updatePlayListPrivacyUseCase.updatePlayListPrivacy({
+      await this.updatePlayListPrivacyUseCase.updatePlayListPrivacy({
         playListId,
         privacy,
       });
@@ -99,10 +91,10 @@ export class PlayListController {
     );
   }
 
-  static async editPlayList(req: Request, res: Response): Promise<void> {
+  public async editPlayList(req: Request, res: Response): Promise<void> {
     const { playListId } = req.params;
     const title = req.body.title;
-    const updatedPlayListData = await editPlayListUseCase.editPlayList({
+    const updatedPlayListData = await this.editPlayListUseCase.editPlayList({
       playListId,
       title,
     });
