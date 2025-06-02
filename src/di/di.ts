@@ -1,88 +1,122 @@
-import { UserUseCase } from "../application/usecases/user/userUseCase";
-import { TrainerGetUseCase } from "../application/usecases/trainer/trainerGetUseCase";
-import { MongoUserRepository } from "../infrastructure/databases/repositories/userRepository";
-import { MongoTrainerRepository } from "../infrastructure/databases/repositories/trainerRepository";
-import { MongoSubscriptionRepository } from "../infrastructure/databases/repositories/subscriptionRepository";
-import { MongoUserSubscriptionPlanRepository } from "../infrastructure/databases/repositories/userSubscriptionRepository";
-import { MongoRevenueRepository } from "../infrastructure/databases/repositories/revenueRepository";
-import { RevenueUseCase } from "../application/usecases/revenue/revenueUseCase";
-import { StripePaymentService } from "../infrastructure/services/payments/stripeServices";
-import { GetTrainerSubscriptionUseCase } from "../application/usecases/subscription/getTrainerSubscriptionUseCase";
-import { TrainerApprovalUseCase } from "../application/usecases/trainer/trainerApprovalUseCase";
-import { AdminDashBoardUseCase } from "../application/usecases/dashboard/adminDashBoardUseCase";
-import { CreateUserUseCase } from "../application/usecases/auth/createUserUseCase";
-import { SigninUserUseCase } from "../application/usecases/auth/signInUserUseCase";
-import { OtpUseCase } from "../application/usecases/auth/otpUseCase";
-import { PasswordUseCase } from "../application/usecases/auth/passwordUseCase";
-import { GoogleAuthUseCase } from "../application/usecases/auth/googleAuthUseCase";
-import { CreateTrainerUseCase } from "../application/usecases/auth/createTrainerUseCase";
-import { UpdateProfileUseCase } from "../application/usecases/auth/updateProfileUseCase";
-import { MonogPasswordResetRepository } from "../infrastructure/databases/repositories/passwordResetRepository";
-import { MongoOtpRepository } from "../infrastructure/databases/repositories/otpRepository";
-import { JwtService } from "../infrastructure/services/auth/jwtService";
-import { TokenUseCase } from "../application/usecases/auth/tokenUseCase";
-import { CloudinaryService } from "../infrastructure/services/storage/cloudinaryService";
-import { GoogleAuthService } from "../infrastructure/services/auth/googleAuthService";
-import { EmailService } from "../infrastructure/services/communication/emailService";
-import { AdminController } from "../presentation/controllers/admin/adminController";
-import { AdminDashboardController } from "../presentation/controllers/dashboard/adminDashBoardController";
-import { AuthController } from "../presentation/controllers/auth/authController";
-import { ChatUseCase } from "../application/usecases/chat/chatUseCase";
-import { MongoChatRepository } from "../infrastructure/databases/repositories/chatRepository";
-import { MongoConversationRepository } from "../infrastructure/databases/repositories/conversationRepository";
-import { ChatController } from "../presentation/controllers/chat/chatController";
-import { GetUserSubscriptionUseCase } from "../application/usecases/subscription/getUserSubscriptionUseCase";
-import { TrainerDisplayController } from "../presentation/controllers/trainer/trainerDisplayController";
-import { PurchaseSubscriptionController } from "../presentation/controllers/subscription/purchaseSubscriptionController";
-import { PurchaseSubscriptionUseCase } from "../application/usecases/subscription/purchaseSubscriptionUseCase";
-import { CancelSubscriptionUseCase } from "../application/usecases/subscription/cancelSubscriptionUseCase";
-import { UserSubscriptionController } from "../presentation/controllers/subscription/userSubscriptionController";
-import { CheckSubscriptionStatusUseCase } from "../application/usecases/subscription/checkSubscriptionStatusUseCase";
-import { WebhookController } from "../presentation/controllers/subscription/webhookController";
-import { WebHookHandlerUseCase } from "../application/usecases/subscription/webhookHandlerUseCase";
-import { MongoPlayListRepository } from "../infrastructure/databases/repositories/playListRepository";
-import { MonogVideoRepository } from "../infrastructure/databases/repositories/videoRepository";
-import { MonogVideoPlayListRepository } from "../infrastructure/databases/repositories/videoPlayList";
-import { EditVideoUseCase } from "../application/usecases/video/editVideoUseCase";
-import { CreateVideoUseCase } from "../application/usecases/video/createVideoUseCase";
-import { UpdateVideoPrivacyUseCase } from "../application/usecases/video/updateVideoPrivacyUseCase";
-import { GetVideoUseCase } from "../application/usecases/video/getVideoUseCase";
-import { VideoController } from "../presentation/controllers/video/videoController";
-import { WorkoutController } from "../presentation/controllers/workout/workOutController";
-import { MongoWorkoutRepository } from "../infrastructure/databases/repositories/workoutRepository";
-import { CreateWorkoutUseCase } from "../application/usecases/workout/createWorkoutUseCase";
-import { GetWorkoutUseCase } from "../application/usecases/workout/getWorkoutUseCase";
-import { UpdateWorkoutUseCase } from "../application/usecases/workout/updateWorkoutUseCase";
-import { MongoBookingSlotRepository } from "../infrastructure/databases/repositories/bookingSlotRepository";
-import { MongoAppointmentRepository } from "../infrastructure/databases/repositories/appointmentRepository";
-import { BookAppointmentUseCase } from "../application/usecases/appointment/bookAppointmentUseCaste";
-import { UpdateAppointmentUseCase } from "../application/usecases/appointment/updateAppointmentUseCase";
-import { GetAppointmentUsecase } from "../application/usecases/appointment/getAppointmentUseCase";
-import { AppointmentController } from "../presentation/controllers/appointment/appointmentController";
-import { UserDashBoardUseCase } from "../application/usecases/dashboard/userDashBoardUseCase";
-import { UserDashboardController } from "../presentation/controllers/dashboard/userDashBoardController";
-import { CreatePlayListUseCase } from "../application/usecases/playlist/createPlayListUseCase";
-import { EditPlayListUseCase } from "../application/usecases/playlist/editPlayListUseCase";
-import { GetallPlaylistUseCase } from "../application/usecases/playlist/getAllPlayListUseCase";
-import { GetPlayListUseCase } from "../application/usecases/playlist/getPlayListUseCase";
-import { UpdatePlayListPrivacyUseCase } from "../application/usecases/playlist/updatePlayListPrivacyUseCase";
-import { PlayListController } from "../presentation/controllers/playlist/playListController";
-import { GetBookingSlotUseCase } from "../application/usecases/bookingSlot/getBookingSlotUseCase";
-import { DeleteBookingSlotUseCase } from "../application/usecases/bookingSlot/deleteBookingSlotUseCase";
-import { CreateBookingSlotUseCase } from "../application/usecases/bookingSlot/createBookingSlotUseCase";
-import { BookingController } from "../presentation/controllers/booking/bookingController";
-import { TrainerDashBoardUseCase } from "../application/usecases/dashboard/trainerDashBoardUseCase";
-import { TrainerDashboardController } from "../presentation/controllers/dashboard/trainerDashBoardController";
-import { MongoVideoCallLogRepository } from "../infrastructure/databases/repositories/videoCallLogRepository";
-import { TrainerVideoCallLogUseCase } from "../application/usecases/videoCallLog/trainerVideoCallLogUseCase";
-import { UserVideoCallLogUseCase } from "../application/usecases/videoCallLog/userVideoCallLogUseCase";
-import { VideoCallLogController } from "../presentation/controllers/videoCallLog/videoCallLogController";
-import { CreateSubscriptionUseCase } from "../application/usecases/subscription/createSubscriptionUseCase";
-import { EditSubscriptionUseCase } from "../application/usecases/subscription/editSubscriptionUseCase";
-import { DeleteSubscriptionUseCase } from "../application/usecases/subscription/deleteSubscriptionUseCase";
-import { SubscriptionBlockUseCase } from "../application/usecases/subscription/blockSubscriptionUseCase";
-import { SubscriptionPlanController } from "../presentation/controllers/subscription/subscriptionPlanController";
-import { TrainerSubscriptionController } from "../presentation/controllers/subscription/trainerSubscriptionController";
+import { UserUseCase } from "../application/usecases/user/user.usecase";
+import { TrainerGetUseCase } from "../application/usecases/trainer/get-trainer.usecase";
+import { UserRepository } from "../infrastructure/databases/repositories/user.repository";
+import { TrainerRepository } from "../infrastructure/databases/repositories/trainer.repository";
+import { SubscriptionRepository } from "../infrastructure/databases/repositories/subscription.repository";
+import { UserSubscriptionPlanRepository } from "../infrastructure/databases/repositories/user-subscription.repository";
+import { RevenueRepository } from "../infrastructure/databases/repositories/revenue.repository";
+import { GetPlatformEarningsUsecase } from "../application/usecases/platform/get-platfrom-earnings.usecase";
+import { StripePaymentService } from "../infrastructure/services/payments/stripe.service";
+import { GetTrainerSubscriptionUseCase } from "../application/usecases/subscription/get-trainer-subscription.usecase";
+import { TrainerApprovalUseCase } from "../application/usecases/trainer/trainer-approval.usecase";
+import { AdminDashBoardUseCase } from "../application/usecases/dashboard/admin-dashboard.usecase";
+import { CreateUserUseCase } from "../application/usecases/auth/create-user.usecase";
+import { SigninUserUseCase } from "../application/usecases/auth/signin-user.usecase";
+import { OtpUseCase } from "../application/usecases/auth/otp.usecase";
+import { PasswordUseCase } from "../application/usecases/auth/password.usecase";
+import { GoogleAuthUseCase } from "../application/usecases/auth/google-auth.usecase";
+import { CreateTrainerUseCase } from "../application/usecases/auth/create-trainer.usecase";
+import { UpdateProfileUseCase } from "../application/usecases/auth/update-profile.usecase";
+import { PasswordResetRepository } from "../infrastructure/databases/repositories/passwordreset.repository";
+import { OtpRepository } from "../infrastructure/databases/repositories/otp.repository";
+import { JwtService } from "../infrastructure/services/auth/jwt.service";
+import { TokenUseCase } from "../application/usecases/auth/token.usecase";
+import { CloudinaryService } from "../infrastructure/services/storage/cloudinary.service";
+import { GoogleAuthService } from "../infrastructure/services/auth/google.auth.service";
+import { EmailService } from "../infrastructure/services/communication/email.service";
+import { AdminDashboardController } from "../presentation/controllers/dashboard/admin-dashboard.controller";
+import { UserSessionController } from "../presentation/controllers/auth/user-session.controller";
+import { ChatUseCase } from "../application/usecases/chat/chat.usecase";
+import { ChatRepository } from "../infrastructure/databases/repositories/chat.repository";
+import { ConversationRepository } from "../infrastructure/databases/repositories/conversation.repository";
+import { ChatController } from "../presentation/controllers/chat/chat.controller";
+import { GetUserSubscriptionUseCase } from "../application/usecases/subscription/get-user-subscription.usecase";
+import { GetApprovedTrainersController } from "../presentation/controllers/trainer/get-approved-trainers.controller";
+import { PurchaseSubscriptionController } from "../presentation/controllers/subscription/purchase-subscription.controller";
+import { PurchaseSubscriptionUseCase } from "../application/usecases/subscription/purchase-subscription.usecase";
+import { CancelSubscriptionUseCase } from "../application/usecases/subscription/cancel-subscription.usecase";
+import { UserSubscriptionController } from "../presentation/controllers/subscription/user-subscription.controller";
+import { CheckSubscriptionStatusUseCase } from "../application/usecases/subscription/check-subscription-status.usecase";
+import { WebhookController } from "../presentation/controllers/subscription/webhook.controller";
+import { WebHookHandlerUseCase } from "../application/usecases/subscription/webhook-handler.usecase";
+import { PlayListRepository } from "../infrastructure/databases/repositories/playlist.repository";
+import { VideoRepository } from "../infrastructure/databases/repositories/video.repository";
+import { VideoPlayListRepository } from "../infrastructure/databases/repositories/video-playlist.repository";
+import { EditVideoUseCase } from "../application/usecases/video/edit-video.usecase";
+import { CreateVideoUseCase } from "../application/usecases/video/create-video.usecase";
+import { UpdateVideoPrivacyUseCase } from "../application/usecases/video/update-video.privacy.usecase";
+import { GetVideoUseCase } from "../application/usecases/video/get-video.usecase";
+import { WorkoutRepository } from "../infrastructure/databases/repositories/workout.repository";
+import { CreateWorkoutUseCase } from "../application/usecases/workout/create-workout.usecase";
+import { GetWorkoutUseCase } from "../application/usecases/workout/get-workout.usecase";
+import { UpdateWorkoutUseCase } from "../application/usecases/workout/update-workout.usecase";
+import { BookingSlotRepository } from "../infrastructure/databases/repositories/bookingslot.repository";
+import { AppointmentRepository } from "../infrastructure/databases/repositories/appointment.repository";
+import { BookAppointmentUseCase } from "../application/usecases/appointment/book-appointment-usecase";
+import { BookAppointmentController } from "../presentation/controllers/appointment/book-appointment.controller";
+import { UserDashBoardUseCase } from "../application/usecases/dashboard/user-dashboard.usecase";
+import { UserDashboardController } from "../presentation/controllers/dashboard/user-dashboard.controller";
+import { CreatePlayListUseCase } from "../application/usecases/playlist/create-playlist.usecase";
+import { EditPlayListUseCase } from "../application/usecases/playlist/edit-playlist.usecase";
+import { GetallPlaylistUseCase } from "../application/usecases/playlist/get-all-playlist.usecase";
+import { GetPlayListUseCase } from "../application/usecases/playlist/get-playlist.usecase";
+import { UpdatePlayListPrivacyUseCase } from "../application/usecases/playlist/update-playlist-privacy.usecase";
+import { GetBookingSlotUseCase } from "../application/usecases/bookingSlot/get-booking-slot.usecase";
+import { DeleteBookingSlotUseCase } from "../application/usecases/bookingSlot/delete-booking-slot.usecase";
+import { CreateBookingSlotUseCase } from "../application/usecases/bookingSlot/create-booking-slot.usecase";
+import { TrainerDashBoardUseCase } from "../application/usecases/dashboard/trainer-dashboard.usecase";
+import { TrainerDashboardController } from "../presentation/controllers/dashboard/trainer-dashboard.controller";
+import { VideoCallLogRepository } from "../infrastructure/databases/repositories/video-calllog.repository";
+import { TrainerVideoCallLogUseCase } from "../application/usecases/videoCallLog/trainer-videocalllog.usecase";
+import { UserVideoCallLogUseCase } from "../application/usecases/videoCallLog/user-videocalllog.usecase";
+import { CreateSubscriptionUseCase } from "../application/usecases/subscription/create-subscription.usecase";
+import { EditSubscriptionUseCase } from "../application/usecases/subscription/edit-subscription.usecase";
+import { DeleteSubscriptionUseCase } from "../application/usecases/subscription/delete-subscription.usecase";
+import { SubscriptionBlockUseCase } from "../application/usecases/subscription/block-subscription.usecase";
+import { SubscriptionPlanController } from "../presentation/controllers/subscription/subscription-plan.controller";
+import { TrainerSubscriptionController } from "../presentation/controllers/subscription/trainer-subscription.controller";
+import { UpdateAppointmentController } from "../presentation/controllers/appointment/update-appointment.controller";
+import { GetAppointmentController } from "../presentation/controllers/appointment/get-appointment.controller";
+import { ProfileController } from "../presentation/controllers/auth/profile.controller";
+import { PasswordController } from "../presentation/controllers/auth/password.controller";
+import { OtpController } from "../presentation/controllers/auth/otp.controller";
+import { GoogleAuthController } from "../presentation/controllers/auth/google-auth.controller";
+import { CreateController } from "../presentation/controllers/auth/create.controller";
+import { AddVideoController } from "../presentation/controllers/video/add-video.controller";
+import { EditVideoController } from "../presentation/controllers/video/edit-video.controller";
+import { GetVideoController } from "../presentation/controllers/video/get-video.controller";
+import { UpdateVideoStatusController } from "../presentation/controllers/video/update-video-status.controller";
+import { UserVideoCallController } from "../presentation/controllers/videoCallLog/user-calllogs.controller";
+import { TrainerVideoCallController } from "../presentation/controllers/videoCallLog/trainer-calllogs.controller";
+import { GetBookingSlotController } from "../presentation/controllers/booking/get-booking.controller";
+import { DeleteBookingSlotController } from "../presentation/controllers/booking/deleting-booking.controller";
+import { CreateBookingSlotController } from "../presentation/controllers/booking/create-booking.controller";
+import { OTPService } from "../infrastructure/services/security/otp.service";
+import { PasswordService } from "../infrastructure/services/security/password.service";
+import { TokenService } from "../infrastructure/services/security/token.service";
+import { CreatePlaylistController } from "../presentation/controllers/playlist/create-playlist.controller";
+import { EditPlaylistController } from "../presentation/controllers/playlist/edit-playlist.controller";
+import { GetPlaylistController } from "../presentation/controllers/playlist/get-playlist.controller";
+import { UpdatePlaylistcontroller } from "../presentation/controllers/playlist/update-playlist-status.controller";
+import { GetPlatformEarningsController } from "../presentation/controllers/platform/get-platform-earnings.controller";
+import { VerifyTrainerController } from "../presentation/controllers/trainer/verify-trainer.controller";
+import { GetUserController } from "../presentation/controllers/user/get-user.controller";
+import { UpdateUserBlockStatusController } from "../presentation/controllers/user/update-user-block-status.controller";
+import { GetVerifyTrainerController } from "../presentation/controllers/trainer/get-verify-trainer.controller";
+import { GetUserMyTrainersController } from "../presentation/controllers/trainer/get-user-my-trainerslist.controller";
+import { GetTrainerWithSubController } from "../presentation/controllers/trainer/get-trainer-with-sub.controller";
+import { GetallTrainersController } from "../presentation/controllers/trainer/get-all-trainers.controller";
+import { GetTrainerDetailsController } from "../presentation/controllers/trainer/get-trainer-details.controller";
+import { AddWorkoutController } from "../presentation/controllers/workout/add-workout.controller";
+import { GetWorkoutController } from "../presentation/controllers/workout/get-workout.controller";
+import { DeleteWorkoutController } from "../presentation/controllers/workout/delete-workout.controller";
+import { UpdateWorkoutController } from "../presentation/controllers/workout/update-workout.controller";
+import { DateService } from "../infrastructure/services/date/date.service";
+import { GetAppointmentRequestUseCase } from "../application/usecases/appointment/get-appointment-req.usecase";
+import { CancelAppointmentUseCase } from "../application/usecases/appointment/cancel-appointment.usecase";
+import { HandleBookingApprovalUseCase } from "../application/usecases/appointment/handle-booking.usecase";
+import { GetTrainerSchedulesUseCase } from "../application/usecases/appointment/get-trainer-schedules";
+import { GetUserSchedulesUseCase } from "../application/usecases/appointment/get-user-schedules";
 
 //SERVICE INSTANCES
 const cloudinaryService = new CloudinaryService();
@@ -90,233 +124,252 @@ const jwtService = new JwtService();
 const emailService = new EmailService();
 const googleAuthService = new GoogleAuthService();
 
-//MONGO REPOSITORY INSTANCES
-const mongouserRepository = new MongoUserRepository();
-const mongoTrainerRepository = new MongoTrainerRepository();
-const mongoSubscriptionRepository = new MongoSubscriptionRepository();
-const monogUserSubscriptionPlanRepository =
-  new MongoUserSubscriptionPlanRepository();
-const mongoRevenueRepository = new MongoRevenueRepository();
-const mongoUserSubscriptionRepository =
-  new MongoUserSubscriptionPlanRepository();
-const mongoUserRepository = new MongoUserRepository();
-const mongoOtpRepository = new MongoOtpRepository();
-const monogPasswordResetRepository = new MonogPasswordResetRepository();
-const mongoChatRepository = new MongoChatRepository();
-const mongoConversationRepository = new MongoConversationRepository();
-const mongoPlayListRepository = new MongoPlayListRepository();
-const mongoVideoRepository = new MonogVideoRepository();
-const mongoVideoPlayListRepository = new MonogVideoPlayListRepository();
-const mongoWorkoutRepository = new MongoWorkoutRepository();
-const mongoBookingSlotRepository = new MongoBookingSlotRepository();
-const mongoAppointmentRepository = new MongoAppointmentRepository();
-const mongoVideoCallLogRepository = new MongoVideoCallLogRepository();
+//REPOSITORY INSTANCES
+const trainerRepository = new TrainerRepository();
+const subscriptionRepository = new SubscriptionRepository();
+const userSubscriptionPlanRepository = new UserSubscriptionPlanRepository();
+const revenueRepository = new RevenueRepository();
+const userRepository = new UserRepository();
+const otpRepository = new OtpRepository();
+const passwordResetRepository = new PasswordResetRepository();
+const chatRepository = new ChatRepository();
+const conversationRepository = new ConversationRepository();
+const playListRepository = new PlayListRepository();
+const videoRepository = new VideoRepository();
+const videoPlayListRepository = new VideoPlayListRepository();
+const workoutRepository = new WorkoutRepository();
+const bookingSlotRepository = new BookingSlotRepository();
+const appointmentRepository = new AppointmentRepository();
+const videoCallLogRepository = new VideoCallLogRepository();
 
 //USE CASE INSTANCES
-const userUseCase = new UserUseCase(mongouserRepository);
-const trainerGetUseCase = new TrainerGetUseCase(mongoTrainerRepository);
-const revenueUseCase = new RevenueUseCase(mongoRevenueRepository);
+const userUseCase = new UserUseCase(userRepository);
+const trainerGetUseCase = new TrainerGetUseCase(trainerRepository);
 const stripeService = new StripePaymentService();
+const otpService = new OTPService();
+const passwordService = new PasswordService();
+const tokenService = new TokenService();
+const dateService = new DateService();
 
 const getTrainerSubscriptionUseCase = new GetTrainerSubscriptionUseCase(
-  mongoSubscriptionRepository,
-  monogUserSubscriptionPlanRepository,
+  subscriptionRepository,
+  userSubscriptionPlanRepository,
   stripeService
 );
-const trainerApprovalUseCase = new TrainerApprovalUseCase(
-  mongoTrainerRepository
-);
+const trainerApprovalUseCase = new TrainerApprovalUseCase(trainerRepository);
 const adminDashBoardUseCase = new AdminDashBoardUseCase(
-  mongoUserSubscriptionRepository,
-  mongoUserRepository,
-  mongoTrainerRepository,
-  mongoRevenueRepository
+  userSubscriptionPlanRepository,
+  userRepository,
+  trainerRepository,
+  revenueRepository,
+  dateService
 );
 
 const createUserUseCase = new CreateUserUseCase(
-  mongoUserRepository,
-  mongoOtpRepository,
-  emailService
+  userRepository,
+  otpRepository,
+  emailService,
+  otpService,
+  passwordService
 );
 const signinUseCase = new SigninUserUseCase(
-  mongoUserRepository,
-  mongoTrainerRepository,
-  jwtService
+  userRepository,
+  trainerRepository,
+  jwtService,
+  passwordService
 );
 const otpUseCase = new OtpUseCase(
-  mongoOtpRepository,
-  mongoUserRepository,
-  emailService
+  otpRepository,
+  userRepository,
+  emailService,
+  otpService
 );
 const passwordUseCase = new PasswordUseCase(
-  mongoUserRepository,
-  monogPasswordResetRepository,
-  emailService
+  userRepository,
+  passwordResetRepository,
+  emailService,
+  passwordService,
+  tokenService
 );
 
 const googleAuthUseCase = new GoogleAuthUseCase(
-  mongoUserRepository,
+  userRepository,
   jwtService,
   googleAuthService
 );
 const profileUseCase = new UpdateProfileUseCase(
-  mongoUserRepository,
-  mongoTrainerRepository,
+  userRepository,
+  trainerRepository,
   cloudinaryService
 );
 const createTrainerUseCase = new CreateTrainerUseCase(
-  mongoUserRepository,
-  mongoOtpRepository,
-  mongoTrainerRepository,
-  emailService
+  userRepository,
+  otpRepository,
+  trainerRepository,
+  emailService,
+  otpService,
+  passwordService
 );
 const refreshAccessTokenUseCase = new TokenUseCase(jwtService);
-const chatUseCase = new ChatUseCase(
-  mongoChatRepository,
-  mongoConversationRepository
-);
+const chatUseCase = new ChatUseCase(chatRepository, conversationRepository);
 
 const getUserSubscriptionUseCase = new GetUserSubscriptionUseCase(
-  monogUserSubscriptionPlanRepository,
+  userSubscriptionPlanRepository,
   stripeService
 );
 
 const purchaseSubscriptionUseCase = new PurchaseSubscriptionUseCase(
-  mongoSubscriptionRepository,
-  monogUserSubscriptionPlanRepository,
+  subscriptionRepository,
+  userSubscriptionPlanRepository,
   stripeService
 );
 const cancelSubscriptionUseCase = new CancelSubscriptionUseCase(stripeService);
 
 const checkSubscriptionStatusUseCase = new CheckSubscriptionStatusUseCase(
-  monogUserSubscriptionPlanRepository,
+  userSubscriptionPlanRepository,
   stripeService
 );
 const webHookHandlerUseCase = new WebHookHandlerUseCase(
-  mongoSubscriptionRepository,
-  monogUserSubscriptionPlanRepository,
-  mongoRevenueRepository,
-  mongoConversationRepository,
+  subscriptionRepository,
+  userSubscriptionPlanRepository,
+  revenueRepository,
+  conversationRepository,
   stripeService,
   emailService,
-  mongoUserRepository
+  userRepository
 );
 
 const editVideoUseCase = new EditVideoUseCase(
-  mongoPlayListRepository,
-  mongoVideoRepository,
-  mongoVideoPlayListRepository
+  playListRepository,
+  videoRepository,
+  videoPlayListRepository
 );
 
 const createVideoUseCase = new CreateVideoUseCase(
-  mongoPlayListRepository,
-  mongoVideoRepository,
-  mongoVideoPlayListRepository
+  playListRepository,
+  videoRepository,
+  videoPlayListRepository
 );
 
 const updateVideoPrivacyUseCase = new UpdateVideoPrivacyUseCase(
-  mongoVideoRepository
+  videoRepository
 );
-const getVideoUseCase = new GetVideoUseCase(mongoVideoRepository);
-const createWorkoutUseCase = new CreateWorkoutUseCase(mongoWorkoutRepository);
-const getWorkoutUseCase = new GetWorkoutUseCase(mongoWorkoutRepository);
-const updateWorkoutUseCase = new UpdateWorkoutUseCase(mongoWorkoutRepository);
+const getVideoUseCase = new GetVideoUseCase(videoRepository);
+const createWorkoutUseCase = new CreateWorkoutUseCase(workoutRepository);
+const getWorkoutUseCase = new GetWorkoutUseCase(workoutRepository);
+const updateWorkoutUseCase = new UpdateWorkoutUseCase(workoutRepository);
 const bookAppointmentUseCase = new BookAppointmentUseCase(
-  mongoBookingSlotRepository,
-  mongoAppointmentRepository
+  bookingSlotRepository,
+  appointmentRepository
 );
 
-const updateAppointmentUseCase = new UpdateAppointmentUseCase(
-  mongoBookingSlotRepository,
-  mongoAppointmentRepository
+const getTrainerSchedulesUseCase = new GetTrainerSchedulesUseCase(
+  appointmentRepository
 );
 
-const getAppointmentUseCase = new GetAppointmentUsecase(
-  mongoAppointmentRepository
+const handleBookingApprovalUseCase = new HandleBookingApprovalUseCase(
+  bookingSlotRepository,
+  appointmentRepository
 );
 
-const userDashBoardUseCase = new UserDashBoardUseCase(mongoWorkoutRepository);
-
-const createPlayListUseCase = new CreatePlayListUseCase(
-  mongoPlayListRepository
+const cancelAppointmentUseCase = new CancelAppointmentUseCase(
+  bookingSlotRepository,
+  appointmentRepository
 );
 
-const editPlayListUseCase = new EditPlayListUseCase(mongoPlayListRepository);
-const getallPlaylistUseCase = new GetallPlaylistUseCase(
-  mongoPlayListRepository
+const userDashBoardUseCase = new UserDashBoardUseCase(
+  workoutRepository,
+  dateService
 );
-const getPlayListUseCase = new GetPlayListUseCase(mongoPlayListRepository);
+
+const createPlayListUseCase = new CreatePlayListUseCase(playListRepository);
+
+const editPlayListUseCase = new EditPlayListUseCase(playListRepository);
+const getallPlaylistUseCase = new GetallPlaylistUseCase(playListRepository);
+const getPlayListUseCase = new GetPlayListUseCase(playListRepository);
 const updatePlayListPrivacyUseCase = new UpdatePlayListPrivacyUseCase(
-  mongoPlayListRepository
+  playListRepository
 );
 const createBookingSlotUseCase = new CreateBookingSlotUseCase(
-  mongoBookingSlotRepository
+  bookingSlotRepository
 );
 const deleteBookingSlotUseCase = new DeleteBookingSlotUseCase(
-  mongoBookingSlotRepository
+  bookingSlotRepository
 );
-const getBookingSlotUseCase = new GetBookingSlotUseCase(
-  mongoBookingSlotRepository
-);
+const getBookingSlotUseCase = new GetBookingSlotUseCase(bookingSlotRepository);
 const trainerDashBoardUseCase = new TrainerDashBoardUseCase(
-  mongoUserSubscriptionRepository
+  userSubscriptionPlanRepository,
+  dateService
 );
 const trainerVideoCallLogUseCase = new TrainerVideoCallLogUseCase(
-  mongoVideoCallLogRepository
+  videoCallLogRepository
 );
 const userVideoCallLogUseCase = new UserVideoCallLogUseCase(
-  mongoVideoCallLogRepository
+  videoCallLogRepository
 );
 
 const createSubscriptionUseCase = new CreateSubscriptionUseCase(
-  mongoSubscriptionRepository,
-  mongoTrainerRepository,
+  subscriptionRepository,
+  trainerRepository,
   stripeService
 );
 
 const editSubscriptionUseCase = new EditSubscriptionUseCase(
-  mongoSubscriptionRepository,
-  mongoTrainerRepository,
+  subscriptionRepository,
+  trainerRepository,
   stripeService
 );
 
 const deleteSubscriptionUseCase = new DeleteSubscriptionUseCase(
-  mongoSubscriptionRepository,
+  subscriptionRepository,
   stripeService
 );
 
 const subscriptionBlockUseCase = new SubscriptionBlockUseCase(
-  mongoSubscriptionRepository
+  subscriptionRepository
 );
-//controller instances
-export const adminController = new AdminController(
-  userUseCase,
-  trainerGetUseCase,
-  revenueUseCase,
-  getTrainerSubscriptionUseCase,
+//CONTROLLER INSTANCES
+
+export const getallTrainersController = new GetallTrainersController(
+  trainerGetUseCase
+);
+
+export const getTrainerDetailsController = new GetTrainerDetailsController(
+  trainerGetUseCase
+);
+export const getPlatformEarningsUsecase = new GetPlatformEarningsUsecase(
+  revenueRepository
+);
+export const getPlatformEarningsController = new GetPlatformEarningsController(
+  getPlatformEarningsUsecase
+);
+
+export const verifyTrainerController = new VerifyTrainerController(
   trainerApprovalUseCase
 );
+
+export const getUserController = new GetUserController(userUseCase);
+export const updateUserBlockStatusController =
+  new UpdateUserBlockStatusController(userUseCase);
 
 export const adminDashboardController = new AdminDashboardController(
   adminDashBoardUseCase
 );
-export const authController = new AuthController(
-  createUserUseCase,
+export const userSessionController = new UserSessionController(
   signinUseCase,
-  otpUseCase,
-  passwordUseCase,
-  googleAuthUseCase,
-  profileUseCase,
-  createTrainerUseCase,
   refreshAccessTokenUseCase
 );
+export const createController = new CreateController(
+  createUserUseCase,
+  createTrainerUseCase
+);
+export const googleAuthController = new GoogleAuthController(googleAuthUseCase);
+export const profileController = new ProfileController(profileUseCase);
 
+export const passwordController = new PasswordController(passwordUseCase);
 export const chatController = new ChatController(chatUseCase);
 
-export const trainerDisplayController = new TrainerDisplayController(
-  trainerGetUseCase,
-  getUserSubscriptionUseCase
-);
+export const otpController = new OtpController(otpUseCase);
 export const purchaseSubscriptionController =
   new PurchaseSubscriptionController(
     purchaseSubscriptionUseCase,
@@ -332,52 +385,110 @@ export const webhookController = new WebhookController(
   purchaseSubscriptionUseCase
 );
 
-export const videoController = new VideoController(
-  createVideoUseCase,
-  editVideoUseCase,
-  updateVideoPrivacyUseCase,
-  getVideoUseCase
+export const getTrainerWithSubController = new GetTrainerWithSubController(
+  trainerGetUseCase
 );
 
-export const workoutController = new WorkoutController(
-  createWorkoutUseCase,
-  getWorkoutUseCase,
+export const getApprovedTrainersController = new GetApprovedTrainersController(
+  trainerGetUseCase
+);
+
+export const getVerifyTrainerController = new GetVerifyTrainerController(
+  trainerGetUseCase
+);
+export const addVideoController = new AddVideoController(createVideoUseCase);
+export const editVideoController = new EditVideoController(editVideoUseCase);
+export const getVideoController = new GetVideoController(getVideoUseCase);
+export const updateVideoStatusController = new UpdateVideoStatusController(
+  updateVideoPrivacyUseCase
+);
+
+export const getUserMyTrainersController = new GetUserMyTrainersController(
+  getUserSubscriptionUseCase
+);
+// export const workoutController = new WorkoutController(
+//   createWorkoutUseCase,
+//   getWorkoutUseCase,
+//   updateWorkoutUseCase
+// );
+
+export const addWorkoutController = new AddWorkoutController(
+  createWorkoutUseCase
+);
+
+export const getWorkoutController = new GetWorkoutController(getWorkoutUseCase);
+
+export const deleteWorkoutController = new DeleteWorkoutController(
   updateWorkoutUseCase
 );
 
-export const appointmentController = new AppointmentController(
-  bookAppointmentUseCase,
-  updateAppointmentUseCase,
-  getAppointmentUseCase
+export const updateWorkoutController = new UpdateWorkoutController(
+  updateWorkoutUseCase
+);
+
+export const bookAppointmentController = new BookAppointmentController(
+  bookAppointmentUseCase
+);
+export const updateAppointmentController = new UpdateAppointmentController(
+  cancelAppointmentUseCase,
+  handleBookingApprovalUseCase
+);
+const getAppointmentRequestUseCase = new GetAppointmentRequestUseCase(
+  appointmentRepository
+);
+
+const getUserSchedulesUseCase = new GetUserSchedulesUseCase(
+  appointmentRepository
+);
+export const getAppointmentController = new GetAppointmentController(
+  getAppointmentRequestUseCase,
+  getTrainerSchedulesUseCase,
+  getUserSchedulesUseCase
 );
 
 export const userDashBoardController = new UserDashboardController(
   userDashBoardUseCase
 );
 
-export const playListController = new PlayListController(
-  createPlayListUseCase,
-  editPlayListUseCase,
+export const addPlaylistController = new CreatePlaylistController(
+  createPlayListUseCase
+);
+
+export const editPlaylistController = new EditPlaylistController(
+  editPlayListUseCase
+);
+
+export const getPlaylistController = new GetPlaylistController(
   getallPlaylistUseCase,
-  getPlayListUseCase,
+  getPlayListUseCase
+);
+
+export const updatePlaylistcontroller = new UpdatePlaylistcontroller(
   updatePlayListPrivacyUseCase
 );
 
-export const bookingController = new BookingController(
-  createBookingSlotUseCase,
-  deleteBookingSlotUseCase,
+export const getBookingSlotController = new GetBookingSlotController(
   getBookingSlotUseCase
+);
+
+export const deleteBookingSlotController = new DeleteBookingSlotController(
+  deleteBookingSlotUseCase
+);
+
+export const createBookingSlotController = new CreateBookingSlotController(
+  createBookingSlotUseCase
 );
 
 export const trainerDashboardController = new TrainerDashboardController(
   trainerDashBoardUseCase
 );
 
-export const videoCallLogController = new VideoCallLogController(
-  trainerVideoCallLogUseCase,
+export const userVideoCallController = new UserVideoCallController(
   userVideoCallLogUseCase
 );
-
+export const trainerVideoCallController = new TrainerVideoCallController(
+  trainerVideoCallLogUseCase
+);
 export const subscriptionPlanController = new SubscriptionPlanController(
   createSubscriptionUseCase,
   editSubscriptionUseCase,

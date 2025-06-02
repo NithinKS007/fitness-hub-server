@@ -1,18 +1,13 @@
 import dotenv from "dotenv";
 import app from "../server";
-import connectDB from "../infrastructure/config/dbConfig";
-import { JwtPayload } from "jsonwebtoken";
+import connectDB from "../infrastructure/config/db.config";
 import { Server } from "socket.io";
-import { socketService } from "../infrastructure/services/socket/socketService";
+import { socketService } from "../infrastructure/services/socket/socket.service";
 import { createServer } from "http";
-
-declare global {
-  namespace Express {
-    interface Request {
-      user: JwtPayload;
-    }
-  }
-}
+// Importing the type augmentation for the global 'Request' interface to ensure
+// TypeScript recognizes the custom properties on the request object.
+// This import is necessary to make sure the global type changes are applied.
+import types from "../types/express";
 
 dotenv.config();
 connectDB();

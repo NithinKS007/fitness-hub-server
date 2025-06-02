@@ -9,36 +9,36 @@ import {
   CreateUserSubscriptionPlanDTO,
   UpdateSubscriptionStatusDTO,
 } from "../../application/dtos/subscription-dtos";
-import { IdDTO, PaginationDTO } from "../../application/dtos/utility-dtos";
-import { TrainerChartData, TrainerPieChartData } from "../entities/chart";
+import { PaginationDTO } from "../../application/dtos/utility-dtos";
+import { TrainerChartData, TrainerPieChartData } from "../entities/chart.entities";
 import {
   UserSubscriptionRecord,
   TrainerSubscriberRecord,
   UserMyTrainersList,
-} from "../entities/subscription";
-import { Top5List } from "../entities/trainer";
-import { SubscriptionPlanEntity } from "../entities/SubscriptionPlan";
+} from "../entities/subscription.entities";
+import { Top5List } from "../entities/trainer.entities";
+import { SubscriptionPlanEntity } from "../entities/subscription-plan.entities";
 
 export interface IUserSubscriptionPlanRepository {
   create(
     createUserSubscription: CreateUserSubscriptionPlanDTO
   ): Promise<SubscriptionPlanEntity>;
   findSubscriptionsOfUser(
-    userId: IdDTO,
+    userId: string,
     searchFilterQuery: GetUserSubscriptionsQueryDTO
   ): Promise<{
     userSubscriptionRecord: UserSubscriptionRecord[];
     paginationData: PaginationDTO;
   }>;
   findSubscriptionsOfTrainer(
-    trainerId: IdDTO,
+    trainerId: string,
     searchFilterQuery: GetTrainerSubscribersQueryDTO
   ): Promise<{
     trainerSubscriberRecord: TrainerSubscriberRecord[];
     paginationData: PaginationDTO;
   }>;
   findSubscriptionByStripeSubscriptionId(
-    stripeSubscriptionId: IdDTO
+    stripeSubscriptionId: string
   ): Promise<SubscriptionPlanEntity>;
   findSubscriptionsOfUserwithUserIdAndTrainerId(
     data: CheckSubscriptionStatusDTO
@@ -46,20 +46,20 @@ export interface IUserSubscriptionPlanRepository {
   findSubscriptionByStripeSubscriptionIdAndUpdateStatus(
     updateSubscriptionStatus: UpdateSubscriptionStatusDTO
   ): Promise<SubscriptionPlanEntity | null>;
-  countAllTrainerSubscribers(trainerId: IdDTO): Promise<number>;
-  countAllActiveSubscribers(trainerId: IdDTO): Promise<number>;
-  countCanceledSubscribers(trainerId: IdDTO): Promise<number>;
+  countAllTrainerSubscribers(trainerId: string): Promise<number>;
+  countAllActiveSubscribers(trainerId: string): Promise<number>;
+  countCanceledSubscribers(trainerId: string): Promise<number>;
   trainerChartDataFilter(
-    trainerId: IdDTO,
+    trainerId: string,
     dateFilterQuery: DateRangeQueryDTO
   ): Promise<TrainerChartData[]>;
   trainerPieChartDataFilter(
-    trainerId: IdDTO,
+    trainerId: string,
     dateFilterQuery: DateRangeQueryDTO
   ): Promise<TrainerPieChartData[]>;
   findTop5TrainersWithHighestSubscribers(): Promise<Top5List[]>;
   usersMyTrainersList(
-    userId: IdDTO,
+    userId: string,
     searchFilterQuery: GetUserTrainersListQueryDTO
   ): Promise<{
     userTrainersList: UserMyTrainersList[];

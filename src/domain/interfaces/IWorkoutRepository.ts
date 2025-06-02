@@ -2,18 +2,18 @@ import {
   CustomUserDashBoardQueryDTO,
   GetWorkoutQueryDTO,
 } from "../../application/dtos/query-dtos";
-import { IdDTO, PaginationDTO } from "../../application/dtos/utility-dtos";
+import { PaginationDTO } from "../../application/dtos/utility-dtos";
 import { WorkoutdbDTO } from "../../application/dtos/workout-dtos";
-import { Workout, WorkoutChartData } from "../entities/workout";
+import { Workout, WorkoutChartData } from "../entities/workout.entities";
 
 export interface IWorkoutRepository {
   addWorkout(createWorkout: WorkoutdbDTO[]): Promise<Workout[]>;
   getWorkoutsByUserId(
-    userId: IdDTO,
+    userId: string,
     searchFilterQuery: GetWorkoutQueryDTO
   ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }>;
-  deleteWorkoutSet(setId: IdDTO): Promise<Workout | null>;
-  markAsCompleted(setId: IdDTO): Promise<Workout | null>;
+  deleteWorkoutSet(setId: string): Promise<Workout | null>;
+  markAsCompleted(setId: string): Promise<Workout | null>;
   getUserDashBoardChartData(
     searchFilterQuery: CustomUserDashBoardQueryDTO
   ): Promise<WorkoutChartData[]>;
@@ -28,5 +28,5 @@ export interface IWorkoutRepository {
     startDate: Date,
     endDate: Date
   ): Promise<number>;
-  getWorkoutBySetId(setId: IdDTO): Promise<Workout | null>;
+  getWorkoutBySetId(setId: string): Promise<Workout | null>;
 }

@@ -1,0 +1,53 @@
+import { HandleBookingRequestDTO } from "../../dtos/booking-dtos";
+import { validationError } from "../../../presentation/middlewares/error.middleware";
+import {
+  ApplicationStatus,
+  AppointmentStatus,
+} from "../../../shared/constants/index.constants";
+import { Appointment } from "../../../domain/entities/appointment.entities";
+import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
+import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
+
+/*  
+    Purpose: Approve or reject a booking request, and update the booking slot and appointment status accordingly
+    Incoming: { appointmentId, bookingSlotId, action } (Appointment ID, Booking Slot ID, and action to approve/reject)
+    Returns: { appointmentData } (Updated appointment data after approval/rejection)
+    Throws: Error if any required fields are missing, booking slot not found, or updating appointment/slot fails
+*/
+
+export class HandleBookingApprovalUseCase {
+  constructor(
+    private bookingSlotRepository: IBookingSlotRepository,
+    private appointmentRepository: IAppointmentRepository
+  ) {}
+  async execute({
+    appointmentId,
+    bookingSlotId,
+    action,
+  }: HandleBookingRequestDTO): Promise<Appointment> {
+    if (!appointmentId || !bookingSlotId || !action) {
+      throw new validationError(ApplicationStatus.AllFieldsAreRequired);
+    }
+    const bookingSlotData = await this.bookingSlotRepository.findSlotById(
+      bookingSlotId
+    );
+    if (!bookingSlotData) {
+      throw new validationError(AppointmentStatus.BookingSlotNotFound);
+    }
+    const status = action === "approved" ? "completed" : "pending";
+    await this.bookingSlotRepository.changeStatus(bookingSlotId, status);
+    const appointmentData =
+      await this.appointmentRepository.handleBookingRequest({
+        appointmentId,
+        action,
+        bookingSlotId,
+      });
+
+    if (!appointmentData) {
+      throw new validationError(
+        AppointmentStatus.FailedToApproveRejectBookingStatus
+      );
+    }
+    return appointmentData;
+  }
+}

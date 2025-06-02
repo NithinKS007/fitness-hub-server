@@ -1,9 +1,8 @@
 import { CreateChatDTO, FindChatDTO } from "../../application/dtos/chat-dtos";
-import { IdDTO } from "../../application/dtos/utility-dtos";
-import { Chat } from "../entities/chat";
+import { Chat } from "../entities/chat.entities";
 
 export interface IChatRepository {
   saveChat(createChat: CreateChatDTO): Promise<Chat>;
   getMessagesBetween2users(findChatDetails: FindChatDTO): Promise<Chat[]>;
-  markAsRead(senderId: IdDTO, receiverId: IdDTO): Promise<Chat[] | null>;
+  markAsRead(senderId: string, receiverId: string): Promise<Chat[] | null>;
 }

@@ -1,8 +1,8 @@
 // Base-query DTOs
 export interface BaseQueryDTO {
   search: string;
-  page: string;
-  limit: string;
+  page: number;
+  limit: number;
   filters: string[];
   fromDate: Date | undefined;
   toDate: Date | undefined;
@@ -14,15 +14,16 @@ export type GetTrainerSubscribersQueryDTO = Omit<
   BaseQueryDTO,
   "fromDate" | "toDate"
 >;
-export type GetApprovedTrainerQueryDTO = {
-  page: string;
-  limit: string;
-  Search: string;
-  Specialization: string[];
-  Experience: string[];
-  Gender: string[];
-  Sort: string;
+export type GetApprovedTrainerQueryDTO = Omit<
+  BaseQueryDTO,
+  "fromDate" | "toDate" | "filters"
+> & {
+  specialization: string[];
+  experience: string[];
+  gender: string[];
+  sort: string;
 };
+
 export type GetUserTrainersListQueryDTO = Omit<
   BaseQueryDTO,
   "filters" | "fromDate" | "toDate"

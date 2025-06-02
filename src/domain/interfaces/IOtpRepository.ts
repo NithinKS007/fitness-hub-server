@@ -1,5 +1,5 @@
 import { OtpDTO } from "../../application/dtos/auth-dtos";
-import { Otp } from "../entities/otp";
+import { Otp } from "../entities/otp.entities";
 
 export interface IOtpRepository {
   createOtp(createOTP: OtpDTO): Promise<Otp>;

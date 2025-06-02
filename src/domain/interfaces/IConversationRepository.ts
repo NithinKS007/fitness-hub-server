@@ -7,12 +7,11 @@ import {
   IncrementUnReadMessageCount,
 } from "../../application/dtos/conversation-dtos";
 import { GetChatListQueryDTO } from "../../application/dtos/query-dtos";
-import { IdDTO } from "../../application/dtos/utility-dtos";
 import {
   Conversation,
   TrainerChatList,
   UserChatList,
-} from "../entities/conversation";
+} from "../entities/conversation.entities";
 
 export interface IConversationRepository {
   createChatConversation({
@@ -30,11 +29,11 @@ export interface IConversationRepository {
     trainerId,
   }: FindConversation): Promise<Conversation | null>;
   findUserChatList(
-    userId: IdDTO,
+    userId: string,
     { search }: GetChatListQueryDTO
   ): Promise<UserChatList[]>;
   findTrainerChatList(
-    trainerId: IdDTO,
+    trainerId: string,
     { search }: GetChatListQueryDTO
   ): Promise<TrainerChatList[]>;
   updateLastMessage(

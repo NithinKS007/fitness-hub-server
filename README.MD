@@ -205,7 +205,7 @@ server/
 │   │
 │   ├── shared/             # Shared utilities and constants
 │   │   ├── constants/      # Application-wide constants
-│   │   └── utils/          # Utility functions (e.g.,password hashing,send response )
+│   │   └── utils/          # Utility functions (e.g. send response )
 │   │
 │   └── server.ts           # server entry point
 │

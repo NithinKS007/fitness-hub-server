@@ -1,6 +1,6 @@
 import { Logger } from "winston";
-import { createWinstonLogger } from "../config/loggerConfig";
-import { ILoggerService } from "../../application/interfaces/logging/ILogger";
+import { createWinstonLogger } from "../config/logger.config";
+import { ILoggerService } from "../../application/interfaces/logging/ILogger.service";
 
 export class LoggerService implements ILoggerService {
   private logger: Logger;

@@ -3,7 +3,7 @@ import {
   DeletePasswordResetTokenDTO,
   PasswordResetDTO,
 } from "../../application/dtos/auth-dtos";
-import { PassResetTokenEntity } from "../entities/passResetToken";
+import { PassResetTokenEntity } from "../entities/pass-reset-token.entities";
 
 export interface IPasswordResetRepository {
   createToken(

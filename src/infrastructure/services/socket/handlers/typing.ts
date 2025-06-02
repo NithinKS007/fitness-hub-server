@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { socketStore } from "../socketStore/socketStore";
+import { socketStore } from "../store/socket.store";
 
 export interface TypingData {
   io: Server;

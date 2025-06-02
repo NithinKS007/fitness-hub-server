@@ -4,24 +4,24 @@ import {
   UpdatePlayListPrivacyDTO,
 } from "../../application/dtos/playlist-dtos";
 import { GetPlayListsQueryDTO } from "../../application/dtos/query-dtos";
-import { IdDTO, PaginationDTO } from "../../application/dtos/utility-dtos";
-import { NumberOfVideoPerPlayList, Playlist } from "../entities/playList";
+import { PaginationDTO } from "../../application/dtos/utility-dtos";
+import { NumberOfVideoPerPlayList, Playlist } from "../entities/playlist.entities";
 
 export interface IPlayListRepository {
-  createPlayList(createPlayListData: CreatePlayListDTO): Promise<Playlist>;
+  addPlaylist(createPlayListData: CreatePlayListDTO): Promise<Playlist>;
   getPlaylists(
-    trainerId: IdDTO,
+    trainerId: string,
     data: GetPlayListsQueryDTO
   ): Promise<{ playList: Playlist[]; paginationData: PaginationDTO }>;
   getNumberOfVideosPerPlaylist(
-    playListIds: IdDTO[]
+    playListIds: string[]
   ): Promise<NumberOfVideoPerPlayList[]>;
   updateManyVideoCount(
     numberOfVideosPerPlaylist: NumberOfVideoPerPlayList[]
   ): Promise<void>;
-  updatePlayListPrivacy(
+  updatePrivacy(
     updatePlayListBlockStatus: UpdatePlayListPrivacyDTO
   ): Promise<Playlist | null>;
-  getallPlaylists(trainerId: IdDTO): Promise<Playlist[]>;
+  getallPlaylists(trainerId: string): Promise<Playlist[]>;
   editPlayList({ playListId, title }: EditPlayListDTO): Promise<Playlist | null>;
 }

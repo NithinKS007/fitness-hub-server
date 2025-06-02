@@ -4,14 +4,13 @@ import {
   UpdateSubscriptionBlockStatusDTO,
   UpdateSubscriptionDetailsDTO,
 } from "../../application/dtos/subscription-dtos";
-import { IdDTO } from "../../application/dtos/utility-dtos";
-import { Subscription } from "../entities/subscription";
+import { Subscription } from "../entities/subscription.entities";
 
 export interface ISubscriptionRepository {
   createSubscription(
     createSubscriptionData: CreateSubscriptionDTO
   ): Promise<Subscription>;
-  findAllSubscription(trainerId: IdDTO): Promise<Subscription[]>;
+  findAllSubscription(trainerId: string): Promise<Subscription[]>;
   findExistingSubscription(
     findExistingSub: FindExistingSubscriptionDTO
   ): Promise<boolean>;
@@ -21,6 +20,6 @@ export interface ISubscriptionRepository {
   editSubscription(
     updateSubDetails: UpdateSubscriptionDetailsDTO
   ): Promise<Subscription | null>;
-  findSubscriptionById(subscriptionId: IdDTO): Promise<Subscription | null>;
-  deletedSubscription(subscriptionId: IdDTO): Promise<Subscription | null>;
+  findSubscriptionById(subscriptionId: string): Promise<Subscription | null>;
+  deletedSubscription(subscriptionId: string): Promise<Subscription | null>;
 }

@@ -4,27 +4,27 @@ import {
   UpdateVideoPrivacyDTO,
 } from "../../application/dtos/video-dtos";
 import { GetVideoQueryDTO } from "../../application/dtos/query-dtos";
-import { IdDTO, PaginationDTO } from "../../application/dtos/utility-dtos";
-import { Video, VideoWithPlayLists } from "../entities/video";
+import { PaginationDTO } from "../../application/dtos/utility-dtos";
+import { Video, VideoWithPlayLists } from "../entities/video.entities";
 
 export interface IVideoRepository {
   createVideo(createVideo: CreateVideoDTO): Promise<Video>;
   getVideos(
-    trainerId: IdDTO,
+    trainerId: string,
     data: GetVideoQueryDTO
   ): Promise<{
     videoList: VideoWithPlayLists[];
     paginationData: PaginationDTO;
   }>;
   getPublicVideos(
-    trainerId: IdDTO,
+    trainerId: string,
     data: GetVideoQueryDTO
   ): Promise<{
     videoList: VideoWithPlayLists[];
     paginationData: PaginationDTO;
   }>;
-  getVideoById(videoId: IdDTO): Promise<Video | null>;
-  updateVideoPrivacy(
+  getVideoById(videoId: string): Promise<Video | null>;
+  updatePrivacy(
     updateVideoBlockStatus: UpdateVideoPrivacyDTO
   ): Promise<Video | null>;
   editVideo(editVideo: EditVideoDTO): Promise<Video | null>;
