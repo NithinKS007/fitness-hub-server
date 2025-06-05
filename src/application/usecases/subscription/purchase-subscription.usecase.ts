@@ -5,7 +5,7 @@ import {
   SubscriptionStatus,
 } from "../../../shared/constants/index.constants";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
+import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
 import { SubscriptionPlanEntity } from "../../../domain/entities/subscription-plan.entities";
 import { IPaymentService } from "../../interfaces/payments/IPayment.service";
 
@@ -20,7 +20,7 @@ export class PurchaseSubscriptionUseCase {
     userId,
   }: PurchaseSubscriptionDTO): Promise<string> {
     const subscriptionData =
-      await this.subscriptionRepository.findSubscriptionById(subscriptionId);
+      await this.subscriptionRepository.findById(subscriptionId);
     if (!subscriptionData) {
       throw new validationError(
         SubscriptionStatus.FailedToRetrieveSubscriptionDetails

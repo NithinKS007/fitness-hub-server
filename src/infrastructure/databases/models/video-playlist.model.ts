@@ -22,9 +22,9 @@ const videoPlaylistSchema: Schema = new Schema(
 );
 videoPlaylistSchema.index({ videoId: 1, playlistId: 1 });
 videoPlaylistSchema.index({ playlistId: 1, videoId: 1 });
-const videoPlayListModel = mongoose.model<IVideoPlaylist>(
+const VideoPlayListModel = mongoose.model<IVideoPlaylist>(
   "VideoPlaylist",
   videoPlaylistSchema
 );
 
-export default videoPlayListModel;
+export default VideoPlayListModel;

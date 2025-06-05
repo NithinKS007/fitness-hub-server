@@ -10,7 +10,7 @@ import {
   purchaseSubscriptionController, 
   userDashBoardController, 
   userSubscriptionController,  
-  userVideoCallController, 
+  getUserVideoCallLogController, 
   webhookController, 
   getBookingSlotController,
   getPlaylistController,
@@ -26,9 +26,9 @@ import {
 const userRoutes = express.Router()
 
 //TRAINER DISPLAYING ROUTES
-userRoutes.get("/trainers",expressAsyncHandler(getApprovedTrainersController.getApprovedTrainers.bind(getApprovedTrainersController)))
-userRoutes.get("/trainers/:trainerId",expressAsyncHandler(getTrainerWithSubController.getTrainerWithSub.bind(getTrainerWithSubController)))
-userRoutes.get("/my-trainers",authenticate,expressAsyncHandler(getUserMyTrainersController.getMyTrainers.bind(getUserMyTrainersController)))
+userRoutes.get("/trainers",expressAsyncHandler(getApprovedTrainersController.handleGetApprovedTrainers.bind(getApprovedTrainersController)))
+userRoutes.get("/trainers/:trainerId",expressAsyncHandler(getTrainerWithSubController.handleGetTrainerWithSub.bind(getTrainerWithSubController)))
+userRoutes.get("/my-trainers",authenticate,expressAsyncHandler(getUserMyTrainersController.handleGetMyTrainers.bind(getUserMyTrainersController)))
 
 //SUBSCRIPTION ROUTES
 userRoutes.post("/subscriptions/checkout",authenticate,expressAsyncHandler(purchaseSubscriptionController.purchaseSubscription.bind(purchaseSubscriptionController)))
@@ -47,21 +47,21 @@ userRoutes.get("/playlists/all/:trainerId",authenticate,expressAsyncHandler(getP
 //BOOKING ROUTES
 userRoutes.get("/slots/all/:trainerId",authenticate,expressAsyncHandler(getBookingSlotController.getAllAvailableSlots.bind(getBookingSlotController)))
 userRoutes.get("/slots/:trainerId",authenticate,expressAsyncHandler(getBookingSlotController.getUpcomingSlots.bind(getBookingSlotController)))
-userRoutes.post("/slots/:slotId",authenticate,expressAsyncHandler(bookAppointmentController.bookAppointment.bind(bookAppointmentController)))
+userRoutes.post("/slots/:slotId",authenticate,expressAsyncHandler(bookAppointmentController.handleBookAppointment.bind(bookAppointmentController)))
 
 //APPOINTMENT ROUTES
-userRoutes.get("/appointments",authenticate,expressAsyncHandler(getAppointmentController.getUserSchedules.bind(getAppointmentController)))
-userRoutes.patch("/appointments/:appointmentId",authenticate,expressAsyncHandler(updateAppointmentController.cancelAppointment.bind(updateAppointmentController)))
-userRoutes.get("/video-call-logs",authenticate,expressAsyncHandler(userVideoCallController.getUserVideoCallLogs.bind(userVideoCallController)))
+userRoutes.get("/appointments",authenticate,expressAsyncHandler(getAppointmentController.handleGetUserSchedules.bind(getAppointmentController)))
+userRoutes.patch("/appointments/:appointmentId",authenticate,expressAsyncHandler(updateAppointmentController.handleCancelAppointment.bind(updateAppointmentController)))
+userRoutes.get("/video-call-logs",authenticate,expressAsyncHandler(getUserVideoCallLogController.handleGetUserLogs.bind(getUserVideoCallLogController)))
 
 //PROFILE ROUTES
 userRoutes.put("/profile",authenticate,expressAsyncHandler(profileController.updateUserProfile.bind(profileController)))
 
 //WORKOUT ROUTES
-userRoutes.post("/workouts",authenticate,expressAsyncHandler(addWorkoutController.addWorkout.bind(addWorkoutController)))
-userRoutes.get("/workouts",authenticate,expressAsyncHandler(getWorkoutController.getWorkoutsByUserId.bind(getWorkoutController)))
-userRoutes.delete("/workouts/:setId",authenticate,expressAsyncHandler(deleteWorkoutController.deleteWorkoutSet.bind(deleteWorkoutController)))
-userRoutes.patch("/workouts/:setId",authenticate,expressAsyncHandler(updateWorkoutController.markSetAsCompleted.bind(updateWorkoutController)))
+userRoutes.post("/workouts",authenticate,expressAsyncHandler(addWorkoutController.handleAddWorkout.bind(addWorkoutController)))
+userRoutes.get("/workouts",authenticate,expressAsyncHandler(getWorkoutController.handleGetWorkout.bind(getWorkoutController)))
+userRoutes.delete("/workouts/:setId",authenticate,expressAsyncHandler(deleteWorkoutController.handleDeleteWorkout.bind(deleteWorkoutController)))
+userRoutes.patch("/workouts/:setId",authenticate,expressAsyncHandler(updateWorkoutController.handlWorkoutComplete.bind(updateWorkoutController)))
 
 //DASHBOARD ROUTES
 userRoutes.get("/dashBoard",authenticate,expressAsyncHandler(userDashBoardController.getUserDashBoardData.bind(userDashBoardController)))

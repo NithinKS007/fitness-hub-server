@@ -1,8 +1,6 @@
 import { Socket, Server } from "socket.io";
-import { LoggerHelper } from "../../../../../shared/utils/handle.log";
 import { TrainerGetUseCase } from "../../../../../application/usecases/trainer/get-trainer.usecase";
 import { GetAppointmentByIdUseCase } from "../../../../../application/usecases/appointment/get-bookingby-id.usecase";
-// import { validationError } from "../../../../../presentation/middlewares/error.middleware";
 import { CreateVideoCallLogUseCase } from "../../../../../application/usecases/videoCallLog/create-videocalllog.usecase";
 import { socketStore } from "../../store/socket.store";
 
@@ -41,7 +39,7 @@ export const handleInitiateCall = async ({
   const trainerName = `${trainerData.fname} ${trainerData.lname}`;
   const appointmentTime = appointmentData?.appointmentTime;
   const appointmentDate = appointmentData?.appointmentDate;
-  await createVideoCallLogUseCase.createVideoCallLog({
+  await createVideoCallLogUseCase.execute({
     callerId: callerId,
     receiverId: receiverId,
     callRoomId: roomId,

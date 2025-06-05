@@ -1,16 +1,11 @@
-import mongoose, { Model } from "mongoose";
-import {
-  HandleBookingRequestDTO,
-  CreateAppointmentDTO,
-} from "../../../application/dtos/booking-dtos";
+import { Model } from "mongoose";
 import { PaginationDTO } from "../../../application/dtos/utility-dtos";
 import {
-  Appointment,
   AppointmentRequestsTrainer,
   AppointmentRequestsUser,
 } from "../../../domain/entities/appointment.entities";
 import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
-import appointmentModel, { IAppointment } from "../models/appointment.model";
+import AppointmentModel, { IAppointment } from "../models/appointment.model";
 import {
   GetBookingRequestsDTO,
   GetBookingSchedulesDTO,
@@ -21,17 +16,11 @@ export class AppointmentRepository
   extends BaseRepository<IAppointment>
   implements IAppointmentRepository
 {
-  constructor(model: Model<IAppointment> = appointmentModel) {
+  constructor(model: Model<IAppointment> = AppointmentModel) {
     super(model);
   }
 
-  async createAppointment(
-    appointmentData: CreateAppointmentDTO
-  ): Promise<Appointment> {
-    return await this.model.create(appointmentData);
-  }
-
-  async getBookingAppointmentRequests(
+  async getBookingRequests(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO
   ): Promise<{
@@ -63,74 +52,47 @@ export class AppointmentRepository
         matchQuery.appointmentDate = { $lte: toDate };
       }
     }
+
+    const commonPipeline = [
+      {
+        $match: {
+          trainerId: this.parseId(trainerId),
+          status: "pending",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData",
+        },
+      },
+      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "bookingslots",
+          localField: "bookingSlotId",
+          foreignField: "_id",
+          as: "bookingSlotData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$bookingSlotData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      { $match: matchQuery },
+    ];
+
     const [totalCount, bookingRequestsList] = await Promise.all([
-      appointmentModel
-        .aggregate([
-          {
-            $match: {
-              trainerId: new mongoose.Types.ObjectId(trainerId),
-              status: "pending",
-            },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "userId",
-              foreignField: "_id",
-              as: "userData",
-            },
-          },
-          { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
-          {
-            $lookup: {
-              from: "bookingslots",
-              localField: "bookingSlotId",
-              foreignField: "_id",
-              as: "bookingSlotData",
-            },
-          },
-          {
-            $unwind: {
-              path: "$bookingSlotData",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          { $match: matchQuery },
-          { $count: "totalCount" },
-        ])
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      appointmentModel
+      this.model
         .aggregate([
-          {
-            $match: {
-              trainerId: new mongoose.Types.ObjectId(trainerId),
-              status: "pending",
-            },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "userId",
-              foreignField: "_id",
-              as: "userData",
-            },
-          },
-          { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
-          {
-            $lookup: {
-              from: "bookingslots",
-              localField: "bookingSlotId",
-              foreignField: "_id",
-              as: "bookingSlotData",
-            },
-          },
-          {
-            $unwind: {
-              path: "$bookingSlotData",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          { $match: matchQuery },
+          ...commonPipeline,
           {
             $project: {
               _id: 1,
@@ -168,16 +130,6 @@ export class AppointmentRepository
     };
   }
 
-  async handleBookingRequest({
-    appointmentId,
-    action,
-  }: HandleBookingRequestDTO): Promise<Appointment | null> {
-    return await appointmentModel.findByIdAndUpdate(
-      appointmentId,
-      { status: action },
-      { new: true }
-    );
-  }
   async getTrainerSchedules(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetBookingSchedulesDTO
@@ -209,74 +161,46 @@ export class AppointmentRepository
       matchQuery.appointmentDate = { $lte: toDate };
     }
 
+    const commonPipeline = [
+      {
+        $match: {
+          trainerId: this.parseId(trainerId),
+          status: "approved",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData",
+        },
+      },
+      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "bookingslots",
+          localField: "bookingSlotId",
+          foreignField: "_id",
+          as: "bookingSlotData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$bookingSlotData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      { $match: matchQuery },
+    ];
+
     const [totalCount, trainerBookingSchedulesList] = await Promise.all([
-      appointmentModel
-        .aggregate([
-          {
-            $match: {
-              trainerId: new mongoose.Types.ObjectId(trainerId),
-              status: "approved",
-            },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "userId",
-              foreignField: "_id",
-              as: "userData",
-            },
-          },
-          { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
-          {
-            $lookup: {
-              from: "bookingslots",
-              localField: "bookingSlotId",
-              foreignField: "_id",
-              as: "bookingSlotData",
-            },
-          },
-          {
-            $unwind: {
-              path: "$bookingSlotData",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          { $match: matchQuery },
-          { $count: "totalCount" },
-        ])
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      appointmentModel
+      this.model
         .aggregate([
-          {
-            $match: {
-              trainerId: new mongoose.Types.ObjectId(trainerId),
-              status: "approved",
-            },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "userId",
-              foreignField: "_id",
-              as: "userData",
-            },
-          },
-          { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
-          {
-            $lookup: {
-              from: "bookingslots",
-              localField: "bookingSlotId",
-              foreignField: "_id",
-              as: "bookingSlotData",
-            },
-          },
-          {
-            $unwind: {
-              path: "$bookingSlotData",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          { $match: matchQuery },
+          ...commonPipeline,
           {
             $project: {
               _id: 1,
@@ -342,104 +266,61 @@ export class AppointmentRepository
       matchQuery.appointmentDate = { $lte: toDate };
     }
 
+    const commonPipeline = [
+      {
+        $match: {
+          userId: this.parseId(userId),
+        },
+      },
+      {
+        $lookup: {
+          from: "trainers",
+          localField: "trainerId",
+          foreignField: "_id",
+          as: "trainerCollectionData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$trainerCollectionData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "trainerCollectionData.userId",
+          foreignField: "_id",
+          as: "trainerData",
+        },
+      },
+      {
+        $unwind: { path: "$trainerData", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: "bookingslots",
+          localField: "bookingSlotId",
+          foreignField: "_id",
+          as: "bookingSlotData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$bookingSlotData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      { $match: matchQuery },
+    ];
+
     const [totalCount, appointmentList] = await Promise.all([
-      appointmentModel
-        .aggregate([
-          {
-            $match: {
-              userId: new mongoose.Types.ObjectId(userId),
-            },
-          },
-          {
-            $lookup: {
-              from: "trainers",
-              localField: "trainerId",
-              foreignField: "_id",
-              as: "trainerCollectionData",
-            },
-          },
-          {
-            $unwind: {
-              path: "$trainerCollectionData",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "trainerCollectionData.userId",
-              foreignField: "_id",
-              as: "trainerData",
-            },
-          },
-          {
-            $unwind: { path: "$trainerData", preserveNullAndEmptyArrays: true },
-          },
-          {
-            $lookup: {
-              from: "bookingslots",
-              localField: "bookingSlotId",
-              foreignField: "_id",
-              as: "bookingSlotData",
-            },
-          },
-          {
-            $unwind: {
-              path: "$bookingSlotData",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          { $match: matchQuery },
-          { $count: "totalCount" },
-        ])
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      appointmentModel
+      this.model
         .aggregate([
-          {
-            $match: {
-              userId: new mongoose.Types.ObjectId(userId),
-            },
-          },
-          {
-            $lookup: {
-              from: "trainers",
-              localField: "trainerId",
-              foreignField: "_id",
-              as: "trainerCollectionData",
-            },
-          },
-          {
-            $unwind: {
-              path: "$trainerCollectionData",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "trainerCollectionData.userId",
-              foreignField: "_id",
-              as: "trainerData",
-            },
-          },
-          {
-            $unwind: { path: "$trainerData", preserveNullAndEmptyArrays: true },
-          },
-          {
-            $lookup: {
-              from: "bookingslots",
-              localField: "bookingSlotId",
-              foreignField: "_id",
-              as: "bookingSlotData",
-            },
-          },
-          {
-            $unwind: {
-              path: "$bookingSlotData",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          { $match: matchQuery },
+          ...commonPipeline,
           {
             $project: {
               _id: 1,
@@ -475,21 +356,5 @@ export class AppointmentRepository
         totalPages: totalPages,
       },
     };
-  }
-
-  async cancelAppointmentSchedule(
-    appointmentId: string
-  ): Promise<Appointment | null> {
-    return await appointmentModel.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(appointmentId),
-      { status: "cancelled" },
-      { new: true }
-    );
-  }
-
-  async getAppointmentById(appointmentId: string): Promise<Appointment | null> {
-    return await appointmentModel.findOne(
-      new mongoose.Types.ObjectId(appointmentId)
-    );
   }
 }

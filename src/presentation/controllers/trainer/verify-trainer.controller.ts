@@ -14,7 +14,7 @@ export class VerifyTrainerController {
       action: req.body.action,
     };
     const updatedTrainerData =
-      await this.trainerApprovalUseCase.handleVerification(verificationData);
+      await this.trainerApprovalUseCase.execute(verificationData);
     if (req.body.action === "approved") {
       sendResponse(
         res,

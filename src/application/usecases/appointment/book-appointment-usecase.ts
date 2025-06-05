@@ -1,9 +1,8 @@
-import { BookAppointmentDTO } from "../../dtos/booking-dtos";
+import { BookAppointmentDTO, BookingSlotStatus } from "../../dtos/booking-dtos";
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import {
   AppointmentStatus,
   AuthStatus,
-  BookingSlotStatus,
 } from "../../../shared/constants/index.constants";
 import { Appointment } from "../../../domain/entities/appointment.entities";
 import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
@@ -25,7 +24,7 @@ export class BookAppointmentUseCase {
     if (!slotId || !userId) {
       throw new validationError(AuthStatus.IdRequired);
     }
-    const bookingSlot = await this.bookingSlotRepository.findSlotById(slotId);
+    const bookingSlot = await this.bookingSlotRepository.findById(slotId);
     if (!bookingSlot) {
       throw new validationError(AppointmentStatus.FailedToBookSlot);
     }
@@ -50,11 +49,10 @@ export class BookAppointmentUseCase {
       userId,
     };
     const [appointmentData, bookingSlotData] = await Promise.all([
-      this.appointmentRepository.createAppointment(appointmentToCreate),
-      this.bookingSlotRepository.changeStatus(
-        bookingSlotId.toString(),
-        BookingSlotStatus.BOOKED
-      ),
+      this.appointmentRepository.create(appointmentToCreate),
+      this.bookingSlotRepository.update(bookingSlotId.toString(), {
+        status: BookingSlotStatus.BOOKED,
+      }),
     ]);
     if (!appointmentData || !bookingSlotData) {
       throw new validationError(AppointmentStatus.FailedToBookSlot);

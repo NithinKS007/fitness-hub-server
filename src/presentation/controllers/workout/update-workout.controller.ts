@@ -4,14 +4,15 @@ import {
   HttpStatusCodes,
   WorkoutStatus,
 } from "../../../shared/constants/index.constants";
-import { UpdateWorkoutUseCase } from "../../../application/usecases/workout/update-workout.usecase";
+import { CompleteWorkoutUseCase } from "../../../application/usecases/workout/complete-workout.usecase";
 
 export class UpdateWorkoutController {
-  constructor(private updateWorkoutUseCase: UpdateWorkoutUseCase) {}
-  async markSetAsCompleted(req: Request, res: Response): Promise<void> {
+  constructor(private completeWorkoutUseCase: CompleteWorkoutUseCase) {}
+  async handlWorkoutComplete(req: Request, res: Response): Promise<void> {
     const { setId } = req.params;
-    const completedWorkoutSet =
-      await this.updateWorkoutUseCase.markSetAsCompleted(setId);
+    const completedWorkoutSet = await this.completeWorkoutUseCase.execute(
+      setId
+    );
     sendResponse(
       res,
       HttpStatusCodes.OK,

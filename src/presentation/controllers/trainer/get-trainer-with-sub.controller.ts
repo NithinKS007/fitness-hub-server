@@ -8,7 +8,7 @@ import { TrainerGetUseCase } from "../../../application/usecases/trainer/get-tra
 
 export class GetTrainerWithSubController {
   constructor(private trainerGetUseCase: TrainerGetUseCase) {}
-  async getTrainerWithSub(req: Request, res: Response): Promise<void> {
+  async handleGetTrainerWithSub(req: Request, res: Response): Promise<void> {
     const trainerId = req.params.trainerId;
     const trainersData = await this.trainerGetUseCase.getTrainerWithSub(
       trainerId

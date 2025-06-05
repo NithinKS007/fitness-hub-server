@@ -4,19 +4,22 @@ import {
   SlotStatus,
 } from "../../../shared/constants/index.constants";
 import { sendResponse } from "../../../shared/utils/http.response";
-import { GetBookingSlotUseCase } from "../../../application/usecases/bookingSlot/get-booking-slot.usecase";
 import { parseQueryParams } from "../../../shared/utils/parse.queryParams";
+import { GetPendingSlotsUseCase } from "../../../application/usecases/bookingSlot/get-pending-slots";
+import { GetAllPendingSlotsUseCase } from "../../../application/usecases/bookingSlot/get-all-pending-slots";
+import { GetUpComingSlotsUseCase } from "../../../application/usecases/bookingSlot/get-upcoming-slots";
 
 export class GetBookingSlotController {
-  constructor(private getBookingSlotUseCase: GetBookingSlotUseCase) {}
+  constructor(
+    private getPendingSlotsUseCase: GetPendingSlotsUseCase,
+    private getAllPendingSlotsUseCase: GetAllPendingSlotsUseCase,
+    private getUpComingSlotsUseCase: GetUpComingSlotsUseCase
+  ) {}
   async getAvailableSlots(req: Request, res: Response): Promise<void> {
     const trainerId = req?.user?._id;
     const queryParams = parseQueryParams(req.query);
     const { availableSlotsList, paginationData } =
-      await this.getBookingSlotUseCase.getAvailableSlots(
-        trainerId,
-        queryParams
-      );
+      await this.getPendingSlotsUseCase.execute(trainerId, queryParams);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -32,7 +35,7 @@ export class GetBookingSlotController {
     const trainerId = req.params.trainerId;
     const queryParams = parseQueryParams(req.query);
     const { availableSlotsList, paginationData } =
-      await this.getBookingSlotUseCase.getUpcomingSlots(trainerId, queryParams);
+      await this.getUpComingSlotsUseCase.execute(trainerId, queryParams);
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -46,8 +49,9 @@ export class GetBookingSlotController {
 
   async getAllAvailableSlots(req: Request, res: Response): Promise<void> {
     const trainerId = req.params.trainerId;
-    const bookingSlotsOfTrainer =
-      await this.getBookingSlotUseCase.getAllAvailableSlots(trainerId);
+    const bookingSlotsOfTrainer = await this.getAllPendingSlotsUseCase.execute(
+      trainerId
+    );
     sendResponse(
       res,
       HttpStatusCodes.OK,

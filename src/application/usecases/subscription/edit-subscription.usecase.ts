@@ -1,4 +1,9 @@
-import { UpdateSubscriptionDetailsDTO } from "../../dtos/subscription-dtos";
+import {
+  PeriodType,
+  SubPeriod,
+  SubscriptionInterval,
+  UpdateSubscriptionDetailsDTO,
+} from "../../dtos/subscription-dtos";
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
@@ -6,7 +11,6 @@ import {
   SubscriptionStatus,
 } from "../../../shared/constants/index.constants";
 import { Subscription } from "../../../domain/entities/subscription.entities";
-import { SubPeriod } from "../../../infrastructure/databases/models/subscription.model";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
 import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
 import { IPaymentService } from "../../interfaces/payments/IPayment.service";
@@ -18,21 +22,24 @@ export class EditSubscriptionUseCase {
     private paymentService: IPaymentService
   ) {}
 
-  private getInterval(subPeriod: SubPeriod): "month" | "year" {
-    return subPeriod === "yearly" ? "year" : "month";
+  private getInterval(subPeriod: SubPeriod): SubscriptionInterval {
+    return subPeriod === PeriodType.Yearly
+      ? SubscriptionInterval.Year
+      : SubscriptionInterval.Month;
   }
   private getIntervalCount = (subPeriod: SubPeriod): number => {
-    if (subPeriod === "quarterly") {
-      return 3;
-    } else if (subPeriod === "halfYearly") {
-      return 6;
-    } else if (subPeriod === "yearly") {
-      return 1;
-    } else {
-      return 1;
+    switch (subPeriod) {
+      case PeriodType.Quarterly:
+        return 3;
+      case PeriodType.HalfYearly:
+        return 6;
+      case PeriodType.Yearly:
+        return 1;
+      default:
+        return 1;
     }
   };
-  async editSubscription({
+  async execute({
     subscriptionId,
     durationInWeeks,
     price,
@@ -53,8 +60,9 @@ export class EditSubscriptionUseCase {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
 
-    const existingSubData =
-      await this.subscriptionRepository.findSubscriptionById(subscriptionId);
+    const existingSubData = await this.subscriptionRepository.findById(
+      subscriptionId
+    );
 
     if (!existingSubData) {
       throw new validationError(AuthStatus.InvalidId);
@@ -85,35 +93,32 @@ export class EditSubscriptionUseCase {
         interval,
         intervalCount,
       });
-      updatedSubscriptionData =
-        await this.subscriptionRepository.editSubscription({
-          ...{
-            subscriptionId,
-            durationInWeeks,
-            price,
-            sessionsPerWeek,
-            stripePriceId,
-            subPeriod,
-            totalSessions,
-            trainerId,
-          },
-          stripePriceId: stripePriceId,
-        });
-    }
-
-    updatedSubscriptionData =
-      await this.subscriptionRepository.editSubscription({
-        ...{
-          subscriptionId,
+      updatedSubscriptionData = await this.subscriptionRepository.update(
+        subscriptionId,
+        {
           durationInWeeks,
           price,
           sessionsPerWeek,
-          stripePriceId: existingSubData?.stripePriceId,
+          stripePriceId,
           subPeriod,
           totalSessions,
           trainerId,
-        },
-      });
+        }
+      );
+    }
+
+    updatedSubscriptionData = await this.subscriptionRepository.update(
+      subscriptionId,
+      {
+        durationInWeeks,
+        price,
+        sessionsPerWeek,
+        stripePriceId: existingSubData?.stripePriceId,
+        subPeriod,
+        totalSessions,
+        trainerId,
+      }
+    );
     if (!updatedSubscriptionData) {
       throw new validationError(SubscriptionStatus.FailedToEditSubscription);
     }

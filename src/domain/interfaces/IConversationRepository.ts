@@ -39,7 +39,7 @@ export interface IConversationRepository {
   updateLastMessage(
     UpdateLastMessage: UpdateLastMessage
   ): Promise<Conversation | null>;
-  updateUnReadMessageCount(
+  updateUnReadCount(
     UpdateUnReadMessageCount: UpdateUnReadMessageCount
   ): Promise<Conversation | null>;
   incrementUnReadMessageCount(

@@ -2,14 +2,13 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IVideo extends Document {
   _id: mongoose.Schema.Types.ObjectId;
-  trainerId: mongoose.Schema.Types.ObjectId;
+  trainerId: string | mongoose.Schema.Types.ObjectId;
   title: string;
   description: string;
   duration: Number;
   thumbnail: string;
   video: string;
   privacy: boolean;
-  playLists: mongoose.Schema.Types.ObjectId[];
 }
 
 const videoSchema: Schema = new Schema(
@@ -18,6 +17,12 @@ const videoSchema: Schema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Trainer",
       required: true,
+      set: (value: string) => {
+        return typeof value === "string" &&
+          mongoose.Types.ObjectId.isValid(value)
+          ? new mongoose.Types.ObjectId(value)
+          : value;
+      },
     },
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -28,8 +33,8 @@ const videoSchema: Schema = new Schema(
   },
   { timestamps: true }
 );
-videoSchema.index({ trainerId: 1 ,title:1});
+videoSchema.index({ trainerId: 1, title: 1 });
 
-const videoModel = mongoose.model<IVideo>("Video", videoSchema);
+const VideoModel = mongoose.model<IVideo>("Video", videoSchema);
 
-export default videoModel;
+export default VideoModel;

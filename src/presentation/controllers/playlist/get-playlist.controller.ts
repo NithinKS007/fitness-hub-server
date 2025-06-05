@@ -16,8 +16,10 @@ export class GetPlaylistController {
   async getPlaylists(req: Request, res: Response): Promise<void> {
     const trainerId = req?.user?._id;
     const queryParams = parseQueryParams(req.query);
-    const { playList, paginationData } =
-      await this.getPlayListUseCase.getPlaylists(trainerId, queryParams);
+    const { playList, paginationData } = await this.getPlayListUseCase.execute(
+      trainerId,
+      queryParams
+    );
     sendResponse(
       res,
       HttpStatusCodes.OK,
@@ -28,7 +30,7 @@ export class GetPlaylistController {
 
   async getallPlayLists(req: Request, res: Response): Promise<void> {
     const trainerId = req.params.trainerId || req?.user?._id;
-    const playListsOfTrainer = await this.getallPlaylistUseCase.getallPlaylists(
+    const playListsOfTrainer = await this.getallPlaylistUseCase.execute(
       trainerId
     );
     sendResponse(

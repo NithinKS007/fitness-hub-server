@@ -1,49 +1,20 @@
-import mongoose from "mongoose";
-import {
-  CreatePlayListDTO,
-  EditPlayListDTO,
-  UpdatePlayListPrivacyDTO,
-} from "../../../application/dtos/playlist-dtos";
+import { Model } from "mongoose";
 import { PaginationDTO } from "../../../application/dtos/utility-dtos";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
-import playlistModel from "../models/playlist.model";
+import PlaylistModel, { IPlayList } from "../models/playlist.model";
 import {
   NumberOfVideoPerPlayList,
   Playlist,
 } from "../../../domain/entities/playlist.entities";
 import { GetPlayListsQueryDTO } from "../../../application/dtos/query-dtos";
+import { BaseRepository } from "./base.repository";
 
-export class PlayListRepository implements IPlayListRepository {
-  async addPlaylist({
-    trainerId,
-    ...rest
-  }: CreatePlayListDTO): Promise<Playlist> {
-    const PlayList = await playlistModel.create({
-      ...rest,
-      trainerId: new mongoose.Types.ObjectId(trainerId),
-    });
-    return PlayList.toObject();
-  }
-
-  async updatePrivacy({
-    playListId,
-    privacy,
-  }: UpdatePlayListPrivacyDTO): Promise<Playlist | null> {
-    return await playlistModel.findByIdAndUpdate(
-      { _id: new mongoose.Types.ObjectId(playListId) },
-      { privacy: privacy },
-      { new: true }
-    );
-  }
-  async editPlayList({
-    playListId,
-    title,
-  }: EditPlayListDTO): Promise<Playlist | null> {
-    return await playlistModel.findOneAndUpdate(
-      new mongoose.Types.ObjectId(playListId),
-      { title: title },
-      { new: true }
-    );
+export class PlayListRepository
+  extends BaseRepository<IPlayList>
+  implements IPlayListRepository
+{
+  constructor(model: Model<IPlayList> = PlaylistModel) {
+    super(model);
   }
 
   async getPlaylists(
@@ -70,25 +41,27 @@ export class PlayListRepository implements IPlayListRepository {
     if (fromDate || toDate) {
       matchQuery.createdAt = {};
       if (fromDate) {
-        matchQuery.createdAt.$gte = new Date(fromDate);
+        matchQuery.createdAt.$gte = fromDate;
       }
       if (toDate) {
-        matchQuery.createdAt.$lte = new Date(toDate);
+        matchQuery.createdAt.$lte = toDate;
       }
     }
-    const totalCount = await playlistModel.countDocuments({
-      trainerId: new mongoose.Types.ObjectId(trainerId),
-      ...matchQuery,
-    });
-    const trainerPlaylists = await playlistModel
-      .find({
-        trainerId: new mongoose.Types.ObjectId(trainerId),
+    const [totalCount, trainerPlaylists] = await Promise.all([
+      this.model.countDocuments({
+        trainerId: this.parseId(trainerId),
         ...matchQuery,
-      })
-      .skip(skip)
-      .limit(limitNumber)
-      .sort({ createdAt: -1 })
-      .lean();
+      }),
+      this.model
+        .find({
+          trainerId: this.parseId(trainerId),
+          ...matchQuery,
+        })
+        .skip(skip)
+        .limit(limitNumber)
+        .sort({ createdAt: -1 })
+        .lean(),
+    ]);
 
     const totalPages = Math.ceil(totalCount / limitNumber);
 
@@ -104,11 +77,11 @@ export class PlayListRepository implements IPlayListRepository {
   async getNumberOfVideosPerPlaylist(
     playListIds: string[]
   ): Promise<NumberOfVideoPerPlayList[]> {
-    const result = await playlistModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $match: {
           _id: {
-            $in: playListIds.map((id) => new mongoose.Types.ObjectId(id)),
+            $in: playListIds.map((id) => this.parseId(id)),
           },
         },
       },
@@ -141,11 +114,11 @@ export class PlayListRepository implements IPlayListRepository {
     }));
 
     if (bulkOps.length > 0) {
-      await playlistModel.bulkWrite(bulkOps);
+      await this.model.bulkWrite(bulkOps);
     }
   }
 
   async getallPlaylists(trainerId: string): Promise<Playlist[]> {
-    return await playlistModel.find({ trainerId: trainerId });
+    return await this.model.find({ trainerId: trainerId });
   }
 }

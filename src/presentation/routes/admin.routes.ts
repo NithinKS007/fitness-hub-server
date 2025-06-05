@@ -21,9 +21,9 @@ adminRoutes.get("/users/:userId",authenticate,expressAsyncHandler(getUserControl
 adminRoutes.patch("/users/:userId",authenticate,expressAsyncHandler(updateUserBlockStatusController.updateBlockStatus.bind(updateUserBlockStatusController)))
 
 //TRAINER MANAGEMENT ROUTES
-adminRoutes.get("/trainers",authenticate,expressAsyncHandler(getallTrainersController.getTrainers.bind(getallTrainersController)))
-adminRoutes.get("/trainers/:trainerId",authenticate,expressAsyncHandler(getTrainerDetailsController.getTrainerDetails.bind(getTrainerDetailsController)))
-adminRoutes.get("/pending-approval",authenticate,expressAsyncHandler(getVerifyTrainerController.getVerifyPendingList.bind(getVerifyTrainerController)))
+adminRoutes.get("/trainers",authenticate,expressAsyncHandler(getallTrainersController.handleGetTrainers.bind(getallTrainersController)))
+adminRoutes.get("/trainers/:trainerId",authenticate,expressAsyncHandler(getTrainerDetailsController.handleGetTrainerDetails.bind(getTrainerDetailsController)))
+adminRoutes.get("/pending-approval",authenticate,expressAsyncHandler(getVerifyTrainerController.handleGetVerifyPendingList.bind(getVerifyTrainerController)))
 adminRoutes.patch("/pending-approval/:trainerId",authenticate, expressAsyncHandler(verifyTrainerController.handleVerification.bind(verifyTrainerController)))
 adminRoutes.get("/trainer/subscriptions/:trainerId",authenticate, expressAsyncHandler(trainerSubscriptionController.getTrainerSubscriptions.bind(trainerSubscriptionController)))
 

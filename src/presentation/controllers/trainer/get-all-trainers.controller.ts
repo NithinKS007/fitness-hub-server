@@ -9,7 +9,7 @@ import { parseQueryParams } from "../../../shared/utils/parse.queryParams";
 
 export class GetallTrainersController {
   constructor(private trainerGetUseCase: TrainerGetUseCase) {}
-  async getTrainers(req: Request, res: Response): Promise<void> {
+  async handleGetTrainers(req: Request, res: Response): Promise<void> {
     const { trainersList, paginationData } =
       await this.trainerGetUseCase.getTrainers(parseQueryParams(req.query));
     sendResponse(

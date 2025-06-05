@@ -1,25 +1,9 @@
-import {
-  CreateSubscriptionDTO,
-  FindExistingSubscriptionDTO,
-  UpdateSubscriptionBlockStatusDTO,
-  UpdateSubscriptionDetailsDTO,
-} from "../../application/dtos/subscription-dtos";
+import { FindExistingSubscriptionDTO } from "../../application/dtos/subscription-dtos";
+import { ISubscription } from "../../infrastructure/databases/models/subscription.model";
 import { Subscription } from "../entities/subscription.entities";
+import { IBaseRepository } from "./IBaseRepository";
 
-export interface ISubscriptionRepository {
-  createSubscription(
-    createSubscriptionData: CreateSubscriptionDTO
-  ): Promise<Subscription>;
+export interface ISubscriptionRepository
+  extends IBaseRepository<ISubscription> {
   findAllSubscription(trainerId: string): Promise<Subscription[]>;
-  findExistingSubscription(
-    findExistingSub: FindExistingSubscriptionDTO
-  ): Promise<boolean>;
-  updateBlockStatus(
-    updateSubBlockStatus: UpdateSubscriptionBlockStatusDTO
-  ): Promise<Subscription | null>;
-  editSubscription(
-    updateSubDetails: UpdateSubscriptionDetailsDTO
-  ): Promise<Subscription | null>;
-  findSubscriptionById(subscriptionId: string): Promise<Subscription | null>;
-  deletedSubscription(subscriptionId: string): Promise<Subscription | null>;
 }

@@ -9,7 +9,8 @@ export class UserDashBoardUseCase {
     private workoutRepository: IWorkoutRepository,
     private dateService: IDateService
   ) {}
-  async getUserDashBoardData({
+  
+  async execute({
     period,
     bodyPart,
     userId,

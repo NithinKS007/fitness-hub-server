@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import { Action } from "./utility-dtos";
 
 export interface CreateBookingSlotDTO {
   trainerId: string;
@@ -11,16 +11,19 @@ export interface BookAppointmentDTO {
   userId: string;
 }
 
-export interface CreateAppointmentDTO {
-  bookingSlotId: string | ObjectId;
-  userId: string | ObjectId;
-  trainerId: string | ObjectId;
-  appointmentDate: Date;
-  appointmentTime: string;
-}
-
-export interface HandleBookingRequestDTO {
+export interface HandleBookingDTO {
   appointmentId: string;
   bookingSlotId: string;
-  action: "approved" | "rejected";
+  action: Action;
+}
+
+export enum BookingStatus {
+  Completed = "completed",
+  Pending = "pending",
+}
+
+export const enum BookingSlotStatus {
+  PENDING = "pending",
+  BOOKED = "booked",
+  COMPLETED = "completed",
 }

@@ -13,7 +13,7 @@ export class CreatePlaylistController {
       trainerId: req?.user?._id,
       title: req.body.title,
     };
-    const createdPlayList = await this.createPlayListUseCase.addPlaylist(
+    const createdPlayList = await this.createPlayListUseCase.execute(
       newPlayListData
     );
     sendResponse(

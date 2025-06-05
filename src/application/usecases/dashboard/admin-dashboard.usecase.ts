@@ -1,13 +1,14 @@
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
+import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
 import {
   AdminDashBoardStats,
   Top5List,
 } from "../../../domain/entities/trainer.entities";
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
 import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import { IPlatformEarningsRepository } from "../../../domain/interfaces/IPlatformEarningsRepository";;
+import { IPlatformEarningsRepository } from "../../../domain/interfaces/IPlatformEarningsRepository";
 import { AdminChartData } from "../../../domain/entities/chart.entities";
 import { IDateService } from "../../interfaces/date/IDate.service";
+import { RoleType } from "../../dtos/auth-dtos";
 
 export class AdminDashBoardUseCase {
   constructor(
@@ -18,7 +19,7 @@ export class AdminDashBoardUseCase {
     private dateService: IDateService
   ) {}
 
-  async getAdminDashBoardData(period: string): Promise<AdminDashBoardStats> {
+  async execute(period: string): Promise<AdminDashBoardStats> {
     const [
       totalUsersCount,
       totalTrainersCount,
@@ -52,11 +53,11 @@ export class AdminDashBoardUseCase {
   }
 
   private async getTotalUsersCount(): Promise<number> {
-    return await this.userRepository.countDocs("user");
+    return await this.userRepository.countDocs(RoleType.User);
   }
 
   private async getTotalTrainersCount(): Promise<number> {
-    return await this.userRepository.countDocs("trainer");
+    return await this.userRepository.countDocs(RoleType.Trainer);
   }
 
   private async getPendingTrainerApprovalsCount(): Promise<number> {

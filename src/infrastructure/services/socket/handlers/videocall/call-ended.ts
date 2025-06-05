@@ -18,11 +18,10 @@ export const handleCallEnded = async ({
     callEndTime: endTime,
     callStatus: "completed",
   });
-  if (videoCallLogData?.callStartTime && videoCallLogData?.callEndTime) {
+  if (videoCallLogData) {
+    const { callStartTime, callEndTime } = videoCallLogData;
     const duration = Math.floor(
-      (videoCallLogData.callEndTime.getTime() -
-        videoCallLogData.callStartTime.getTime()) /
-        1000
+      (callEndTime.getTime() - callStartTime.getTime()) / 1000
     );
     await updateVideoCallLogUseCase.updateVideoCallDuration({
       callRoomId: roomId,

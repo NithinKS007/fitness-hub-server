@@ -8,10 +8,11 @@ import { DeleteBookingSlotUseCase } from "../../../application/usecases/bookingS
 
 export class DeleteBookingSlotController {
   constructor(private deleteBookingSlotUseCase: DeleteBookingSlotUseCase) {}
-  async deleteBookingSlot(req: Request, res: Response): Promise<void> {
+  async handleDeleteSlot(req: Request, res: Response): Promise<void> {
     const bookingSlotId = req.params.bookingSlotId;
-    const deletedSlotData =
-      await this.deleteBookingSlotUseCase.deleteBookingSlot(bookingSlotId);
+    const deletedSlotData = await this.deleteBookingSlotUseCase.execute(
+      bookingSlotId
+    );
     sendResponse(
       res,
       HttpStatusCodes.OK,

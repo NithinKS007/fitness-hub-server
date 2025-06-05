@@ -32,7 +32,7 @@ export class PurchaseSubscriptionController {
     const { stripeSubscriptionId, action } = req.body;
     const cancelSubData = { stripeSubscriptionId, action };
     const subscriptionCancelledData =
-      await this.cancelSubscriptionUseCase.cancelSubscription(cancelSubData);
+      await this.cancelSubscriptionUseCase.execute(cancelSubData);
     sendResponse(
       res,
       HttpStatusCodes.OK,

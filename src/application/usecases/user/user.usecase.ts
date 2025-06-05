@@ -46,9 +46,8 @@ export class UserUseCase {
     if (!userId || typeof isBlocked !== "boolean") {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const userData = await this.userRepository.updateBlockStatus({
-      userId,
-      isBlocked,
+    const userData = await this.userRepository.update(userId, {
+      isBlocked: isBlocked,
     });
     if (!userData) {
       throw new validationError(BlockStatus.FailedToUpdateBlockStatus);

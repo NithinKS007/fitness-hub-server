@@ -6,4 +6,5 @@ export enum DashboardStatus {
   UserDashBoardRetrievedSuccessfully = "User dashboard retrieved successfully",
   AdminDashBoardRetrievedSuccessfully = "Admin dashboard retrieved successfully",
   TrainerDashBoardRetrievedSuccessfully = "Trainer dashboard retrieved successfully",
+  FailedToRetrieveChart = "Failed to retrieve chart details"
 }

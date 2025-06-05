@@ -6,11 +6,13 @@ import {
 } from "../../application/dtos/query-dtos";
 import {
   CheckSubscriptionStatusDTO,
-  CreateUserSubscriptionPlanDTO,
   UpdateSubscriptionStatusDTO,
 } from "../../application/dtos/subscription-dtos";
 import { PaginationDTO } from "../../application/dtos/utility-dtos";
-import { TrainerChartData, TrainerPieChartData } from "../entities/chart.entities";
+import {
+  TrainerChartData,
+  TrainerPieChartData,
+} from "../entities/chart.entities";
 import {
   UserSubscriptionRecord,
   TrainerSubscriberRecord,
@@ -18,11 +20,11 @@ import {
 } from "../entities/subscription.entities";
 import { Top5List } from "../entities/trainer.entities";
 import { SubscriptionPlanEntity } from "../entities/subscription-plan.entities";
+import { IBaseRepository } from "./IBaseRepository";
+import { IUserSubscriptionPlan } from "../../infrastructure/databases/models/user-subscription-plan";
 
-export interface IUserSubscriptionPlanRepository {
-  create(
-    createUserSubscription: CreateUserSubscriptionPlanDTO
-  ): Promise<SubscriptionPlanEntity>;
+export interface IUserSubscriptionPlanRepository
+  extends IBaseRepository<IUserSubscriptionPlan> {
   findSubscriptionsOfUser(
     userId: string,
     searchFilterQuery: GetUserSubscriptionsQueryDTO

@@ -1,11 +1,15 @@
+import { Model } from "mongoose";
 import { OtpDTO } from "../../../application/dtos/auth-dtos";
-import { Otp } from "../../../domain/entities/otp.entities";
 import { IOtpRepository } from "../../../domain/interfaces/IOtpRepository";
-import otpModel from "../models/otp.model";
+import OtpModel, { IOtp } from "../models/otp.model";
+import { BaseRepository } from "./base.repository";
 
-export class OtpRepository implements IOtpRepository {
-  async createOtp({ email, otp }: OtpDTO): Promise<Otp> {
-    const otpData = await otpModel.findOneAndUpdate(
+export class OtpRepository  extends BaseRepository<IOtp> implements IOtpRepository {
+   constructor(model: Model<IOtp> = OtpModel) {
+      super(model);
+    }
+  async create({ email, otp }: OtpDTO): Promise<IOtp> {
+    const otpData = await this.model.findOneAndUpdate(
       { email },
       { otp },
       {
@@ -14,11 +18,5 @@ export class OtpRepository implements IOtpRepository {
       }
     );
     return otpData.toObject();
-  }
-  async verifyOtpByEmail({ email, otp }: OtpDTO): Promise<Otp | null> {
-    return await otpModel.findOne({ email: email, otp: otp }).lean();
-  }
-  async deleteOtp({ email }: OtpDTO): Promise<Otp | null> {
-    return await otpModel.findOneAndDelete({ email }).lean();
   }
 }

@@ -4,19 +4,16 @@ import {
   AppointmentStatus,
 } from "../../../shared/constants/index.constants";
 import { sendResponse } from "../../../shared/utils/http.response";
-import { UserVideoCallLogUseCase } from "../../../application/usecases/videoCallLog/user-videocalllog.usecase";
+import { GetUserVideoCallLogUseCase } from "../../../application/usecases/videoCallLog/get-user-video-calllog.usecase";
 import { parseQueryParams } from "../../../shared/utils/parse.queryParams";
 
-export class UserVideoCallController {
-  constructor(private userVideoCallLogUseCase: UserVideoCallLogUseCase) {}
-  async getUserVideoCallLogs(req: Request, res: Response): Promise<void> {
+export class GetUserVideoCallLogController {
+  constructor(private getuserVideoCallLogUseCase: GetUserVideoCallLogUseCase) {}
+  async handleGetUserLogs(req: Request, res: Response): Promise<void> {
     const userId = req?.user?._id;
     const queryParams = parseQueryParams(req.query);
     const { userVideoCallLogList, paginationData } =
-      await this.userVideoCallLogUseCase.getUserVideoCallLogs(
-        userId,
-        queryParams
-      );
+      await this.getuserVideoCallLogUseCase.execute(userId, queryParams);
     sendResponse(
       res,
       HttpStatusCodes.OK,

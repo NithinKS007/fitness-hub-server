@@ -1,4 +1,4 @@
-export interface CreateVideoDTO {
+export interface ReqCreateVideo {
   trainerId: string;
   title: string;
   description: string;
@@ -17,7 +17,7 @@ export interface UpdateVideoPrivacyDTO {
   privacy: boolean;
 }
 
-export interface EditVideoDTO {
+export interface ReqEditVideoDTO {
   _id: string;
   trainerId: string;
   title: string;

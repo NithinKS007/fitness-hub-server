@@ -1,5 +1,5 @@
-import { Workout } from "../../../domain/entities/workout.entities";
 import { IWorkoutRepository } from "../../../domain/interfaces/IWorkoutRepository";
+import { IWorkout } from "../../../infrastructure/databases/models/workout.model";
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import { AuthStatus } from "../../../shared/constants/index.constants";
 import { GetWorkoutQueryDTO } from "../../dtos/query-dtos";
@@ -7,10 +7,10 @@ import { PaginationDTO } from "../../dtos/utility-dtos";
 
 export class GetWorkoutUseCase {
   constructor(private workoutRepository: IWorkoutRepository) {}
-  async getWorkoutsByUserId(
+  async execute(
     userId: string,
     { page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
-  ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }> {
+  ): Promise<{ workoutList: IWorkout[]; paginationData: PaginationDTO }> {
     if (!userId) {
       throw new validationError(AuthStatus.IdRequired);
     }

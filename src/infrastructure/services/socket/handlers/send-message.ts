@@ -1,6 +1,8 @@
 import { Server } from "socket.io";
-import { ChatUseCase } from "../../../../application/usecases/chat/chat.usecase";
 import { socketStore } from "../store/socket.store";
+import { CreateMessageUseCase } from "../../../../application/usecases/chat/create-message.usecase";
+import { IncrementUnReadMessageCountUseCase } from "../../../../application/usecases/chat/inc-unread-count.usecase";
+import { UpdateLastMessageUseCase } from "../../../../application/usecases/chat/update-last-message.usecase";
 
 export interface SendMessageData {
   senderId: string;
@@ -10,22 +12,23 @@ export interface SendMessageData {
 
 export const handleSendMessage = async (
   io: Server,
-  chatUseCase: ChatUseCase,
+  createMessageUseCase: CreateMessageUseCase,
+  incUnReadCountUseCase: IncrementUnReadMessageCountUseCase,
+  updateLastMessageUseCase: UpdateLastMessageUseCase,
   senderId: string,
   receiverId: string,
   message: string
 ) => {
   const currentChatPartner = socketStore.openChats.get(receiverId);
   const isChatOpen = currentChatPartner === senderId;
-
-  const savedMessage = await chatUseCase.sendMessageAndSave({
+  const savedMessage = await createMessageUseCase.execute({
     senderId,
     receiverId,
     message,
     isRead: isChatOpen,
   });
 
-  await chatUseCase.updateLastMessage({
+  await updateLastMessageUseCase.execute({
     userId: senderId,
     otherUserId: receiverId,
     lastMessageId: savedMessage._id.toString(),
@@ -33,7 +36,7 @@ export const handleSendMessage = async (
 
   let incrementedMessageDoc;
   if (!isChatOpen) {
-    incrementedMessageDoc = await chatUseCase.incrementUnReadMessageCount({
+    incrementedMessageDoc = await incUnReadCountUseCase.execute({
       userId: senderId,
       otherUserId: receiverId,
     });

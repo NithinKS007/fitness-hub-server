@@ -13,7 +13,7 @@ export class EditPlaylistController {
       playListId: req.params.playListId,
       title: req.body.title,
     };
-    const updatedPlayListData = await this.editPlayListUseCase.editPlayList(
+    const updatedPlayListData = await this.editPlayListUseCase.execute(
       updatePlayListData
     );
     sendResponse(

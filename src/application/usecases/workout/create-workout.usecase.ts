@@ -1,24 +1,31 @@
-import mongoose from "mongoose";
-import { Workout } from "../../../domain/entities/workout.entities";
 import { IWorkoutRepository } from "../../../domain/interfaces/IWorkoutRepository";
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import { WorkoutStatus } from "../../../shared/constants/index.constants";
 import { WorkoutdbDTO, WorkoutDTO } from "../../dtos/workout-dtos";
+import { IWorkout } from "../../../infrastructure/databases/models/workout.model";
+
+/**
+ * Purpose: Create a new workout by adding multiple workout sets for the user on a specific date.
+ * Incoming: 
+ *    - { userId } (The ID of the user performing the workout)
+ *    - { date } (The date of the workout session)
+ *    - { workouts } (The workout details containing exercises and sets)
+ * Returns: { addedWorkouts } (Array of newly created workout sets)
+ * Throws: Error if workout creation fails or if the data is invalid.
+ */
 
 export class CreateWorkoutUseCase {
   constructor(private workoutRepository: IWorkoutRepository) {}
-  async addWorkout(
+  async execute(
     userId: string,
     { date, workouts }: WorkoutDTO
-  ): Promise<Workout[]> {
+  ): Promise<IWorkout[]> {
     const workoutDate = new Date(date);
-
-    const userObjectId = new mongoose.Types.ObjectId(userId);
     const workoutItems: WorkoutdbDTO[] = Object.entries(workouts).flatMap(
       ([bodyPart, workout]: [string, any]) =>
         workout.exercises.flatMap((exercise: any) =>
           exercise.sets.map((set: any) => ({
-            userId: userObjectId,
+            userId: userId,
             date: workoutDate,
             bodyPart,
             exerciseName: exercise.name,
@@ -29,10 +36,16 @@ export class CreateWorkoutUseCase {
           }))
         )
     );
-    const addedWorkout = await this.workoutRepository.addWorkout(workoutItems);
-    if (!addedWorkout) {
+
+    const addedWorkouts = await Promise.all(
+      workoutItems.map(async (item) => {
+        return await this.workoutRepository.create(item);
+      })
+    );
+
+    if (!addedWorkouts) {
       throw new validationError(WorkoutStatus.FailedToAddWorkout);
     }
-    return addedWorkout;
+    return addedWorkouts;
   }
 }

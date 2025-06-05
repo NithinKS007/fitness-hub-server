@@ -19,7 +19,7 @@ export class GetAppointmentByIdUseCase {
     if (!appointmentId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const appointmentData = await this.appointmentRepository.getAppointmentById(
+    const appointmentData = await this.appointmentRepository.findById(
       appointmentId
     );
     if (!appointmentData) {

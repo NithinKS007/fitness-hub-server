@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface ITrainer extends Document {
   _id: string;
-  userId: mongoose.Schema.Types.ObjectId;
+  userId: string | mongoose.Schema.Types.ObjectId;
   yearsOfExperience: string;
   specializations: string[];
   certifications: { fileName: string; url: string }[];
@@ -16,6 +16,12 @@ const trainerSchema = new Schema<ITrainer>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      set: (value: string) => {
+        return typeof value === "string" &&
+          mongoose.Types.ObjectId.isValid(value)
+          ? new mongoose.Types.ObjectId(value)
+          : value;
+      },
     },
     yearsOfExperience: { type: String, required: true },
     specializations: [{ type: String, required: true }],

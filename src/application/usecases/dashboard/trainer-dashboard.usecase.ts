@@ -1,8 +1,10 @@
 import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { ApplicationStatus } from "../../../shared/constants/index.constants";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
+import {
+  ApplicationStatus,
+  DashboardStatus,
+} from "../../../shared/constants/index.constants";
+import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
 import { TrainerDashboardStats } from "../../../domain/entities/trainer.entities";
-import { DashBoardChartFilterDTO } from "../../dtos/query-dtos";
 import { IDateService } from "../../interfaces/date/IDate.service";
 
 export class TrainerDashBoardUseCase {
@@ -10,9 +12,9 @@ export class TrainerDashBoardUseCase {
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
     private dateService: IDateService
   ) {}
-  async getTrainerDashBoardData(
+  async execute(
     trainerId: string,
-    period: DashBoardChartFilterDTO
+    period: string
   ): Promise<TrainerDashboardStats> {
     if (!trainerId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
@@ -80,7 +82,7 @@ export class TrainerDashBoardUseCase {
 
   private async getChartSubscriptionsData(
     trainerId: string,
-    period: DashBoardChartFilterDTO
+    period: string
   ): Promise<any> {
     const { startDate, endDate } = this.dateService.getDateRange(period);
 
@@ -91,7 +93,7 @@ export class TrainerDashBoardUseCase {
       );
 
     if (!chartData) {
-      throw new validationError("Failed to retrieve chartdata");
+      throw new validationError(DashboardStatus.FailedToRetrieveChart);
     }
 
     return chartData;
@@ -99,7 +101,7 @@ export class TrainerDashBoardUseCase {
 
   private async getPieChartSubscriptionsData(
     trainerId: string,
-    period: DashBoardChartFilterDTO
+    period: string
   ): Promise<any> {
     const { startDate, endDate } = this.dateService.getDateRange(period);
 
@@ -110,7 +112,7 @@ export class TrainerDashBoardUseCase {
       );
 
     if (!pieChartData) {
-      throw new validationError("Failed to retrieve chartdata");
+      throw new validationError(DashboardStatus.FailedToRetrieveChart);
     }
 
     return pieChartData;

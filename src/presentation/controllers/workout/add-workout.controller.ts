@@ -8,9 +8,9 @@ import { CreateWorkoutUseCase } from "../../../application/usecases/workout/crea
 
 export class AddWorkoutController {
   constructor(private createWorkoutUseCase: CreateWorkoutUseCase) {}
-  async addWorkout(req: Request, res: Response): Promise<void> {
+  async handleAddWorkout(req: Request, res: Response): Promise<void> {
     const userId = req?.user?._id;
-    const addedWorkOut = await this.createWorkoutUseCase.addWorkout(
+    const addedWorkOut = await this.createWorkoutUseCase.execute(
       userId,
       req.body
     );

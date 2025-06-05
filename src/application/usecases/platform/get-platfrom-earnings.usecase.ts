@@ -8,7 +8,7 @@ export class GetPlatformEarningsUsecase {
   constructor(
     private platformEarningsRepository: IPlatformEarningsRepository
   ) {}
-  async getPlatformEarnings({
+  async execute({
     page,
     limit,
     fromDate,

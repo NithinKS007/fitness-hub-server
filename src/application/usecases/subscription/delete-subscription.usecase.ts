@@ -14,12 +14,12 @@ export class DeleteSubscriptionUseCase {
     private paymentService: IPaymentService
   ) {}
 
-  async deleteSubscription(subscriptionId: string): Promise<Subscription> {
+  async execute(subscriptionId: string): Promise<Subscription> {
     if (!subscriptionId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
     const subscriptionData =
-      await this.subscriptionRepository.findSubscriptionById(subscriptionId);
+      await this.subscriptionRepository.findById(subscriptionId);
 
     if (!subscriptionData) {
       throw new validationError(AuthStatus.InvalidId);
@@ -29,7 +29,7 @@ export class DeleteSubscriptionUseCase {
       await this.paymentService.deactivatePrice({ priceId: stripePriceId });
     }
     const deletedSubscription =
-      await this.subscriptionRepository.deletedSubscription(subscriptionId);
+      await this.subscriptionRepository.delete(subscriptionId);
 
     if (!deletedSubscription) {
       throw new validationError(SubscriptionStatus.FailedToDeleteSubscription);

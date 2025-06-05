@@ -8,9 +8,9 @@ import { CreateVideoUseCase } from "../../../application/usecases/video/create-v
 
 export class AddVideoController {
   constructor(private createVideoUseCase: CreateVideoUseCase) {}
-  async addVideo(req: Request, res: Response): Promise<void> {
+  async handleAddVideo(req: Request, res: Response): Promise<void> {
     const trainerId = req?.user?._id;
-    const createdVideo = await this.createVideoUseCase.createVideo({
+    const createdVideo = await this.createVideoUseCase.execute({
       trainerId: trainerId,
       ...req.body,
     });

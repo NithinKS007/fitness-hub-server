@@ -6,5 +6,5 @@ export enum ApplicationStatus {
   MissingEmailEnvironmentVariables = "Missing required email environment variables",
   MissingCloudinaryCredentials = "Missing required cloudinary environment variables",
   MissingJwtEnvironmentVariables = "Missing required jwt environment variables",
-  AllFieldsAreRequired = "Please ensure that all required fields are filled in before submitting the form.",
+  AllFieldsAreRequired = "Please ensure that all required are available.",
 }

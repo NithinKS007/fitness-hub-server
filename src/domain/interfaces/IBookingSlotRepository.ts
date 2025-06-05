@@ -1,18 +1,18 @@
-import { CreateBookingSlotDTO } from "../../application/dtos/booking-dtos";
 import { AvailableSlotsQueryDTO } from "../../application/dtos/query-dtos";
 import { PaginationDTO } from "../../application/dtos/utility-dtos";
+import { IBookingSlot } from "../../infrastructure/databases/models/booking.slot";
 import { BookingSlot } from "../entities/booking-slot.entities";
+import { IBaseRepository } from "./IBaseRepository";
 
-export interface IBookingSlotRepository {
-  addBookingSlot(slotData: CreateBookingSlotDTO): Promise<BookingSlot>;
-  getAvailableSlots(
+export interface IBookingSlotRepository extends IBaseRepository<IBookingSlot> {
+  getPendingSlots(
     trainerId: string,
     availableSlotQueryData: AvailableSlotsQueryDTO
   ): Promise<{
     availableSlotsList: BookingSlot[];
     paginationData: PaginationDTO;
   }>;
-  getAllAvailableSlots(trainerId: string): Promise<BookingSlot[]>;
+  getAllPendingSlots(trainerId: string): Promise<BookingSlot[]>;
   getUpcomingSlots(
     trainerId: string,
     availableSlotQueryData: AvailableSlotsQueryDTO
@@ -20,10 +20,4 @@ export interface IBookingSlotRepository {
     availableSlotsList: BookingSlot[];
     paginationData: PaginationDTO;
   }>;
-  findSlotById(bookingSlotId: string): Promise<BookingSlot | null>;
-  changeStatus(
-    bookingSlotId: string,
-    newStatus: "completed" | "pending" | "booked"
-  ): Promise<BookingSlot | null>;
-  findByIdAndDeleteSlot(bookingSlotId: string): Promise<BookingSlot | null>;
 }

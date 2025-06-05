@@ -48,10 +48,10 @@ export class OtpUseCase {
   ) {}
 
   async createOtp({ email, otp }: OtpDTO): Promise<Otp> {
-    return await this.otpRepository.createOtp({ email, otp });
+    return await this.otpRepository.create({ email, otp });
   }
-  async verifyOtpByEmail({ email, otp }: OtpDTO): Promise<void> {
-    const otpData = await this.otpRepository.verifyOtpByEmail({ email, otp });
+  async verifyOtp({ email, otp }: OtpDTO): Promise<void> {
+    const otpData = await this.otpRepository.findOne({ email, otp });
 
     if (!otpData) {
       throw new validationError(OTPStatus.InvalidOtp);
@@ -60,16 +60,16 @@ export class OtpUseCase {
     await this.userRepository.updateUserVerificationStatus({
       email: userEmail,
     });
-    await this.otpRepository.deleteOtp(otpData);
+    await this.otpRepository.delete(String(otpData?._id));
   }
   async resendOtp({ email, otp }: OtpDTO): Promise<void> {
-    const userData = await this.userRepository.findByEmail({ email });
+    const userData = await this.userRepository.findOne({ email });
 
     if (userData?.otpVerified) {
       throw new validationError(OTPStatus.AlreadyUserVerifiedByOtp);
     }
     const otpData = this.otpService.generateOtp(6);
-    await this.otpRepository.createOtp({ email, otp: otpData });
+    await this.otpRepository.create({ email, otp: otpData });
     await this.emailService.sendEmail({
       to: email,
       subject: "OTP for Registration",

@@ -32,7 +32,7 @@ export class CreateUserUseCase {
 
   private async sendOtpEmail(email: string): Promise<void> {
     const otp = this.otpService.generateOtp(6);
-    await this.otpRepository.createOtp({ email, otp });
+    await this.otpRepository.create({ email, otp });
     await this.emailService.sendEmail({
       to: email,
       subject: "OTP for Registration",
@@ -50,7 +50,7 @@ export class CreateUserUseCase {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
 
-    const existinguser = await this.userRepository.findByEmail({
+    const existinguser = await this.userRepository.findOne({
       email: email,
     });
     if (existinguser && existinguser.otpVerified) {

@@ -9,16 +9,15 @@ import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotR
 
 export class CreateBookingSlotUseCase {
   constructor(private bookingSlotRepository: IBookingSlotRepository) {}
-  async addBookingSlot(slotData: CreateBookingSlotDTO): Promise<BookingSlot> {
+  async execute(slotData: CreateBookingSlotDTO): Promise<BookingSlot> {
     const { date, ...otherSlotData } = slotData;
     if (!slotData) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const createdSlotData = await this.bookingSlotRepository.addBookingSlot({
+    const createdSlotData = await this.bookingSlotRepository.create({
       date: new Date(date),
       ...otherSlotData,
     });
-
     if (!createdSlotData) {
       throw new validationError(SlotStatus.FailedToCreateBookingSlot);
     }

@@ -14,7 +14,7 @@ export class UpdateVideoCallLogUseCase {
     callEndTime,
     callRoomId,
     callStatus,
-  }: UpdateVideoCallLogDTO): Promise<VideoCallLog> {
+  }: UpdateVideoCallLogDTO): Promise<VideoCallLog | null> {
     if (!callEndTime || !callRoomId || !callStatus) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

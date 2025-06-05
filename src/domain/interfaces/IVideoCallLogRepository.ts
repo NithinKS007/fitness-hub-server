@@ -10,10 +10,11 @@ import {
   UserVideoCallLog,
   VideoCallLog,
 } from "../entities/video-calllog.entities";
+import { IBaseRepository } from "./IBaseRepository";
+import { IVideoCallLog } from "../../infrastructure/databases/models/video-call-log.model";
 
-export interface IVideoCallLogRepository {
-  createCallLog(data: CreateVideoCallLogDTO): Promise<void>;
-  updateVideoCallLog(data: UpdateVideoCallLogDTO): Promise<VideoCallLog>;
+export interface IVideoCallLogRepository extends IBaseRepository<IVideoCallLog> {
+  updateVideoCallLog(data: UpdateVideoCallLogDTO): Promise<VideoCallLog|null>;
   updateVideoCallDuration(data: UpdateVideoCallDurationDTO): Promise<void>;
   getTrainerVideoCallLogs(
     trainerId: string,

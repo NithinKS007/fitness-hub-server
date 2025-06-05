@@ -1,34 +1,20 @@
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
-  AuthStatus,
   SubscriptionStatus,
 } from "../../../shared/constants/index.constants";
-import {
-  Subscription,
-  TrainerSubscribersList,
-} from "../../../domain/entities/subscription.entities";
-import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
+import { TrainerSubscribersList } from "../../../domain/entities/subscription.entities";
+import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
 import { GetTrainerSubscribersQueryDTO } from "../../dtos/query-dtos";
 import { IPaymentService } from "../../interfaces/payments/IPayment.service";
 import { PaginationDTO } from "../../dtos/utility-dtos";
 
-export class GetTrainerSubscriptionUseCase {
+export class GetTrainerSubscribersUseCase {
   constructor(
-    private subscriptionRepository: ISubscriptionRepository,
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
     private paymentService: IPaymentService
   ) {}
-
-  async getTrainerSubscriptions(trainerId: string): Promise<Subscription[]> {
-    if (!trainerId) {
-      throw new validationError(AuthStatus.IdRequired);
-    }
-    return await this.subscriptionRepository.findAllSubscription(trainerId);
-  }
-
-  async getTrainerSubscribedUsers(
+  async execute(
     trainerId: string,
     { page, limit, search, filters }: GetTrainerSubscribersQueryDTO
   ): Promise<{

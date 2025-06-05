@@ -16,7 +16,7 @@ export class UserDashboardController {
       todaysTotalCompletedWorkouts,
       todaysTotalPendingWorkouts,
       totalWorkoutTime,
-    } = await this.userDashBoardUseCase.getUserDashBoardData({
+    } = await this.userDashBoardUseCase.execute({
       userId,
       ...parseQueryParams(req.query),
     });

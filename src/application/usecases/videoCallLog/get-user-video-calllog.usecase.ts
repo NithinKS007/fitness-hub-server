@@ -1,4 +1,4 @@
-import { TrainerVideoCallLog } from "../../../domain/entities/video-calllog.entities";
+import { UserVideoCallLog } from "../../../domain/entities/video-calllog.entities";
 import { IVideoCallLogRepository } from "../../../domain/interfaces/IVideoCallLogRepository";
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import {
@@ -8,31 +8,35 @@ import {
 import { GetVideoCallLogQueryDTO } from "../../dtos/query-dtos";
 import { PaginationDTO } from "../../dtos/utility-dtos";
 
-export class TrainerVideoCallLogUseCase {
+/**
+ * Purpose: Fetch video call logs for a user with pagination, filters, and date range.
+ * Incoming: { userId, page, limit, fromDate, toDate, search, filters }
+ * Returns: { userVideoCallLogList, paginationData }
+ * Throws: Error if userId is missing or retrieval fails.
+ */
+
+export class GetUserVideoCallLogUseCase {
   constructor(private videoCallLogRepository: IVideoCallLogRepository) {}
 
-  async getTrainerVideoCallLogs(
-    trainerId: string,
+  async execute(
+    userId: string,
     { page, limit, fromDate, toDate, search, filters }: GetVideoCallLogQueryDTO
   ): Promise<{
-    trainerVideoCallLogList: TrainerVideoCallLog[];
+    userVideoCallLogList: UserVideoCallLog[];
     paginationData: PaginationDTO;
   }> {
-    if (!trainerId) {
+    if (!userId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
     const query = { page, limit, fromDate, toDate, search, filters };
-    const { trainerVideoCallLogList, paginationData } =
-      await this.videoCallLogRepository.getTrainerVideoCallLogs(
-        trainerId,
-        query
-      );
+    const { userVideoCallLogList, paginationData } =
+      await this.videoCallLogRepository.getUserVideoCallLogs(userId, query);
 
-    if (!trainerVideoCallLogList) {
+    if (!userVideoCallLogList) {
       throw new validationError(
         AppointmentStatus.FailedToRetrieveVideoCallLogs
       );
     }
-    return { trainerVideoCallLogList, paginationData };
+    return { userVideoCallLogList, paginationData };
   }
 }

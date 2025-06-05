@@ -12,7 +12,7 @@ import {
   subscriptionPlanController, 
   trainerDashboardController, 
   trainerSubscriptionController, 
-  trainerVideoCallController, 
+  getTrainerVideoCallLogController, 
   createBookingSlotController,
   getBookingSlotController,
   deleteBookingSlotController,
@@ -40,24 +40,24 @@ trainerRoutes.patch("/playlists/:playListId",authenticate,expressAsyncHandler(up
 trainerRoutes.put("/playlists/:playListId",authenticate,expressAsyncHandler(editPlaylistController.editPlayList.bind(editPlaylistController)))
 
 //VIDEO MANAGEMENT ROUTES
-trainerRoutes.post("/videos/",authenticate,expressAsyncHandler(addVideoController.addVideo.bind(addVideoController)))
-trainerRoutes.patch("/videos/:videoId",authenticate,expressAsyncHandler(updateVideoStatusController.updatePrivacy.bind(updateVideoStatusController)))
-trainerRoutes.put("/videos/:videoId",authenticate,expressAsyncHandler(editVideoController.editVideo.bind(editVideoController)))
+trainerRoutes.post("/videos/",authenticate,expressAsyncHandler(addVideoController.handleAddVideo.bind(addVideoController)))
+trainerRoutes.patch("/videos/:videoId",authenticate,expressAsyncHandler(updateVideoStatusController.handleUpdatePrivacy.bind(updateVideoStatusController)))
+trainerRoutes.put("/videos/:videoId",authenticate,expressAsyncHandler(editVideoController.handleEditVideo.bind(editVideoController)))
 trainerRoutes.get("/videos",authenticate,expressAsyncHandler(getVideoController.getVideos.bind(getVideoController)))
 
 //SLOT MANAGEMENT
-trainerRoutes.post("/slots",authenticate,expressAsyncHandler(createBookingSlotController.addBookingSlot.bind(createBookingSlotController)))
+trainerRoutes.post("/slots",authenticate,expressAsyncHandler(createBookingSlotController.handleAddSlot.bind(createBookingSlotController)))
 trainerRoutes.get("/slots",authenticate,expressAsyncHandler(getBookingSlotController.getAvailableSlots.bind(getBookingSlotController)))
-trainerRoutes.delete("/slots/:bookingSlotId",authenticate,expressAsyncHandler(deleteBookingSlotController.deleteBookingSlot.bind(deleteBookingSlotController)))
+trainerRoutes.delete("/slots/:bookingSlotId",authenticate,expressAsyncHandler(deleteBookingSlotController.handleDeleteSlot.bind(deleteBookingSlotController)))
 
 //BOOKING ROUTES
-trainerRoutes.get("/bookings",authenticate,expressAsyncHandler(getAppointmentController.getBookingRequests.bind(getAppointmentController)))
+trainerRoutes.get("/bookings",authenticate,expressAsyncHandler(getAppointmentController.handleGetBookingRequests.bind(getAppointmentController)))
 trainerRoutes.patch("/bookings",authenticate,expressAsyncHandler(updateAppointmentController.handleBookingRequest.bind(updateAppointmentController)))
 
 //APPOINTMENT ROUTES
-trainerRoutes.get("/appointments",authenticate,expressAsyncHandler(getAppointmentController.getTrainerSchedules.bind(getAppointmentController)))
-trainerRoutes.patch("/appointments/:appointmentId",authenticate,expressAsyncHandler(updateAppointmentController.cancelAppointment.bind(updateAppointmentController)))
-trainerRoutes.get("/video-call-logs",authenticate,expressAsyncHandler(trainerVideoCallController.getVideoCallLogsTrainer.bind(trainerVideoCallController)))
+trainerRoutes.get("/appointments",authenticate,expressAsyncHandler(getAppointmentController.handleGetTrainerSchedules.bind(getAppointmentController)))
+trainerRoutes.patch("/appointments/:appointmentId",authenticate,expressAsyncHandler(updateAppointmentController.handleCancelAppointment.bind(updateAppointmentController)))
+trainerRoutes.get("/video-call-logs",authenticate,expressAsyncHandler(getTrainerVideoCallLogController.handleGetTrainerLogs.bind(getTrainerVideoCallLogController)))
 
 //DASHBOARD ROUTES
 trainerRoutes.get("/dashboard",authenticate,expressAsyncHandler(trainerDashboardController.getTrainerDashBoardData.bind(trainerDashboardController)))

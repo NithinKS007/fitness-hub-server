@@ -15,7 +15,7 @@ export class UpdatePlaylistcontroller {
       playListId: req.params.playListId,
       privacy: req.body.privacy,
     };
-    const playListData = await this.updatePlayListPrivacyUseCase.updatePrivacy(
+    const playListData = await this.updatePlayListPrivacyUseCase.execute(
       privacyData
     );
     sendResponse(

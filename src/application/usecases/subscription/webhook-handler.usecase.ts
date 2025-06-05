@@ -1,7 +1,7 @@
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import { SubscriptionStatus } from "../../../shared/constants/index.constants";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
+import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
 import stripe from "../../../infrastructure/config/stripe.config";
 import { IPlatformEarningsRepository } from "../../../domain/interfaces/IPlatformEarningsRepository";
 import { IConversationRepository } from "../../../domain/interfaces/IConversationRepository";
@@ -95,8 +95,9 @@ export class WebHookHandlerUseCase {
           SubscriptionStatus.SubscriptionIdAndTraineIdMissing
         );
       }
-      const subscriptionData =
-        await this.subscriptionRepository.findSubscriptionById(subscriptionId);
+      const subscriptionData = await this.subscriptionRepository.findById(
+        subscriptionId
+      );
       if (!subscriptionData) {
         throw new validationError(
           SubscriptionStatus.FailedToRetrieveSubscriptionDetails
@@ -247,11 +248,7 @@ export class WebHookHandlerUseCase {
     }
   }
 
-  async webHookHandler(
-    sig: string,
-    webhookSecret: string,
-    body: any
-  ): Promise<void> {
+  async execute(sig: string, webhookSecret: string, body: any): Promise<void> {
     this.validateWebhookInput(sig, webhookSecret, body);
     const event = this.constructStripeEvent(body, sig, webhookSecret);
     switch (event.type) {

@@ -53,7 +53,7 @@ export class GoogleAuthUseCase {
     }
     const { email } = googleUserInfo;
 
-    const userData = await this.userRepository.findByEmail({ email });
+    const userData = await this.userRepository.findOne({ email });
     if (userData && userData.isBlocked) {
       throw new ForbiddenError(AuthStatus.AccountBlocked);
     }
@@ -70,7 +70,7 @@ export class GoogleAuthUseCase {
         googleVerified: true,
         otpVerified: undefined,
       };
-      const userData = await this.userRepository.createGoogleUser(userObj);
+      const userData = await this.userRepository.create(userObj);
       const accessToken = this.generateAccessToken(userData);
       const refreshToken = this.generateRefreshToken(userData);
       return {

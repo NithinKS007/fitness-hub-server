@@ -12,7 +12,7 @@ export class UpdateAppointmentController {
     private cancelAppointmentUseCase: CancelAppointmentUseCase,
     private handleBookingApprovalUseCase: HandleBookingApprovalUseCase
   ) {}
-  async cancelAppointment(req: Request, res: Response): Promise<void> {
+  async handleCancelAppointment(req: Request, res: Response): Promise<void> {
     const appointmentId = req.params.appointmentId;
     const cancelledAppointmentData =
       await this.cancelAppointmentUseCase.execute(appointmentId);

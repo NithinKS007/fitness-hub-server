@@ -21,7 +21,7 @@ export interface WorkoutDTO {
 }
 
 export interface WorkoutdbDTO {
-  userId: any
+  userId: string
   date: Date;
   bodyPart: string;
   exerciseName: string;

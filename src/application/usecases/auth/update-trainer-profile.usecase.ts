@@ -1,28 +1,20 @@
 import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
-import { User } from "../../../domain/entities/user.entities";
-import { UpdateUserDetailsDTO } from "../../dtos/user-dtos";
 import { UpdateTrainerDetailsDTO } from "../../dtos/trainer-dtos";
-import {
-  AuthStatus,
-  ProfileStatus,
-} from "../../../shared/constants/index.constants";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
 import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
 import { Trainer } from "../../../domain/entities/trainer.entities";
 import dotenv from "dotenv";
 import { ICloudStorageService } from "../../interfaces/storage/ICloud.storage.service";
 dotenv.config();
 
-export class UpdateProfileUseCase {
-  private profileFolder: string = process.env
-    .CLOUDINARY_PROFILE_PIC_FOLDER as string;
-  private certificateFolder: string = process.env
-    .CLOUDINARY_TRAINER_CERTIFICATES_FOLDER as string;
-
+export class UpdateTrainerProfileUseCase {
   constructor(
     private userRepository: IUserRepository,
     private trainerRepository: ITrainerRepository,
-    private cloudinaryService: ICloudStorageService
+    private cloudinaryService: ICloudStorageService,
+    private profileFolder: string = process.env
+      .CLOUDINARY_PROFILE_PIC_FOLDER as string,
+    private certificateFolder: string = process.env
+      .CLOUDINARY_TRAINER_CERTIFICATES_FOLDER as string
   ) {}
 
   private async uploadtoCloud(image: string, folder: string): Promise<string> {
@@ -45,6 +37,8 @@ export class UpdateProfileUseCase {
             fileName: certi.fileName,
             url: base64,
           });
+        } else {
+          updatedCertifications.push(certi);
         }
       });
       await Promise.all(uploadPromises);
@@ -58,36 +52,7 @@ export class UpdateProfileUseCase {
     return specializations.length > 0 ? [...specializations] : [];
   }
 
-  private async updateTrainerData({
-    trainerId,
-    updatedCertifications,
-    updatedSpecializations,
-    yearsOfExperience,
-    aboutMe,
-  }: {
-    trainerId: string;
-    updatedCertifications: any[];
-    updatedSpecializations: string[];
-    yearsOfExperience: string;
-    aboutMe: string;
-  }) {
-    return await this.trainerRepository.updateTrainerData({
-      trainerId,
-      certifications: updatedCertifications,
-      specializations: updatedSpecializations,
-      yearsOfExperience,
-      aboutMe,
-    });
-  }
-
-  private async updateUserData(userId: string, profileData: any) {
-    return await this.userRepository.updateUserProfile({
-      userId,
-      ...profileData,
-    });
-  }
-
-  async updateTrainerProfile({
+  async execute({
     trainerId,
     yearsOfExperience,
     certifications,
@@ -95,6 +60,8 @@ export class UpdateProfileUseCase {
     userId,
     aboutMe,
     profilePic,
+    dateOfBirth,
+    _id,
     ...profileData
   }: UpdateTrainerDetailsDTO): Promise<Trainer | null> {
     const [updatedCertifications, updatedSpecializations, profilePicData] =
@@ -104,41 +71,24 @@ export class UpdateProfileUseCase {
         this.uploadtoCloud(profilePic, this.profileFolder),
       ]);
 
-    const updatedTrainerData = await this.updateTrainerData({
-      trainerId,
-      updatedCertifications,
-      updatedSpecializations,
+    const updatedTrainerData = await this.trainerRepository.update(trainerId, {
+      certifications: updatedCertifications,
+      specializations: updatedSpecializations,
       yearsOfExperience,
       aboutMe,
     });
 
-    const updatedTrainerUserData = await this.userRepository.updateUserProfile({
-      userId: userId,
+    const updatedTrainerUserData = await this.userRepository.update(userId, {
       profilePic: profilePicData,
+      dateOfBirth: new Date(dateOfBirth),
       ...profileData,
     });
+
     const trainerData = Object.assign(
       {},
       updatedTrainerUserData,
       updatedTrainerData
     );
     return trainerData;
-  }
-
-  async updateUserProfile(
-    profileUpdationData: UpdateUserDetailsDTO
-  ): Promise<User | null> {
-    const { userId, ...profileData } = profileUpdationData;
-    if (!userId) {
-      throw new validationError(AuthStatus.IdRequired);
-    }
-    const { profilePic } = profileUpdationData;
-    const url = await this.uploadtoCloud(profilePic, this.profileFolder);
-    profileData.profilePic = url;
-    const updatedUserData = await this.updateUserData(userId, profileData);
-    if (!updatedUserData) {
-      throw new validationError(ProfileStatus.FailedToUpdateUserDetails);
-    }
-    return updatedUserData;
   }
 }

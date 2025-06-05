@@ -3,11 +3,11 @@ import { TrainerGetUseCase } from "../application/usecases/trainer/get-trainer.u
 import { UserRepository } from "../infrastructure/databases/repositories/user.repository";
 import { TrainerRepository } from "../infrastructure/databases/repositories/trainer.repository";
 import { SubscriptionRepository } from "../infrastructure/databases/repositories/subscription.repository";
-import { UserSubscriptionPlanRepository } from "../infrastructure/databases/repositories/user-subscription.repository";
+import { UserSubscriptionPlanRepository } from "../infrastructure/databases/repositories/user-subscription-plan.repository";
 import { RevenueRepository } from "../infrastructure/databases/repositories/revenue.repository";
 import { GetPlatformEarningsUsecase } from "../application/usecases/platform/get-platfrom-earnings.usecase";
 import { StripePaymentService } from "../infrastructure/services/payments/stripe.service";
-import { GetTrainerSubscriptionUseCase } from "../application/usecases/subscription/get-trainer-subscription.usecase";
+import { GetTrainerSubscriptionsUseCase } from "../application/usecases/subscription/get-trainer-subscriptions.usecase";
 import { TrainerApprovalUseCase } from "../application/usecases/trainer/trainer-approval.usecase";
 import { AdminDashBoardUseCase } from "../application/usecases/dashboard/admin-dashboard.usecase";
 import { CreateUserUseCase } from "../application/usecases/auth/create-user.usecase";
@@ -16,7 +16,7 @@ import { OtpUseCase } from "../application/usecases/auth/otp.usecase";
 import { PasswordUseCase } from "../application/usecases/auth/password.usecase";
 import { GoogleAuthUseCase } from "../application/usecases/auth/google-auth.usecase";
 import { CreateTrainerUseCase } from "../application/usecases/auth/create-trainer.usecase";
-import { UpdateProfileUseCase } from "../application/usecases/auth/update-profile.usecase";
+import { UpdateTrainerProfileUseCase } from "../application/usecases/auth/update-trainer-profile.usecase";
 import { PasswordResetRepository } from "../infrastructure/databases/repositories/passwordreset.repository";
 import { OtpRepository } from "../infrastructure/databases/repositories/otp.repository";
 import { JwtService } from "../infrastructure/services/auth/jwt.service";
@@ -26,7 +26,6 @@ import { GoogleAuthService } from "../infrastructure/services/auth/google.auth.s
 import { EmailService } from "../infrastructure/services/communication/email.service";
 import { AdminDashboardController } from "../presentation/controllers/dashboard/admin-dashboard.controller";
 import { UserSessionController } from "../presentation/controllers/auth/user-session.controller";
-import { ChatUseCase } from "../application/usecases/chat/chat.usecase";
 import { ChatRepository } from "../infrastructure/databases/repositories/chat.repository";
 import { ConversationRepository } from "../infrastructure/databases/repositories/conversation.repository";
 import { ChatController } from "../presentation/controllers/chat/chat.controller";
@@ -49,7 +48,6 @@ import { GetVideoUseCase } from "../application/usecases/video/get-video.usecase
 import { WorkoutRepository } from "../infrastructure/databases/repositories/workout.repository";
 import { CreateWorkoutUseCase } from "../application/usecases/workout/create-workout.usecase";
 import { GetWorkoutUseCase } from "../application/usecases/workout/get-workout.usecase";
-import { UpdateWorkoutUseCase } from "../application/usecases/workout/update-workout.usecase";
 import { BookingSlotRepository } from "../infrastructure/databases/repositories/bookingslot.repository";
 import { AppointmentRepository } from "../infrastructure/databases/repositories/appointment.repository";
 import { BookAppointmentUseCase } from "../application/usecases/appointment/book-appointment-usecase";
@@ -61,14 +59,13 @@ import { EditPlayListUseCase } from "../application/usecases/playlist/edit-playl
 import { GetallPlaylistUseCase } from "../application/usecases/playlist/get-all-playlist.usecase";
 import { GetPlayListUseCase } from "../application/usecases/playlist/get-playlist.usecase";
 import { UpdatePlayListPrivacyUseCase } from "../application/usecases/playlist/update-playlist-privacy.usecase";
-import { GetBookingSlotUseCase } from "../application/usecases/bookingSlot/get-booking-slot.usecase";
 import { DeleteBookingSlotUseCase } from "../application/usecases/bookingSlot/delete-booking-slot.usecase";
 import { CreateBookingSlotUseCase } from "../application/usecases/bookingSlot/create-booking-slot.usecase";
 import { TrainerDashBoardUseCase } from "../application/usecases/dashboard/trainer-dashboard.usecase";
 import { TrainerDashboardController } from "../presentation/controllers/dashboard/trainer-dashboard.controller";
 import { VideoCallLogRepository } from "../infrastructure/databases/repositories/video-calllog.repository";
-import { TrainerVideoCallLogUseCase } from "../application/usecases/videoCallLog/trainer-videocalllog.usecase";
-import { UserVideoCallLogUseCase } from "../application/usecases/videoCallLog/user-videocalllog.usecase";
+import { GetTrainerVideoCallLogUseCase } from "../application/usecases/videoCallLog/get-trainer-video-calllog.usecase";
+import { GetUserVideoCallLogUseCase } from "../application/usecases/videoCallLog/get-user-video-calllog.usecase";
 import { CreateSubscriptionUseCase } from "../application/usecases/subscription/create-subscription.usecase";
 import { EditSubscriptionUseCase } from "../application/usecases/subscription/edit-subscription.usecase";
 import { DeleteSubscriptionUseCase } from "../application/usecases/subscription/delete-subscription.usecase";
@@ -86,8 +83,8 @@ import { AddVideoController } from "../presentation/controllers/video/add-video.
 import { EditVideoController } from "../presentation/controllers/video/edit-video.controller";
 import { GetVideoController } from "../presentation/controllers/video/get-video.controller";
 import { UpdateVideoStatusController } from "../presentation/controllers/video/update-video-status.controller";
-import { UserVideoCallController } from "../presentation/controllers/videoCallLog/user-calllogs.controller";
-import { TrainerVideoCallController } from "../presentation/controllers/videoCallLog/trainer-calllogs.controller";
+import { GetUserVideoCallLogController } from "../presentation/controllers/videoCallLog/user-calllogs.controller";
+import { GetTrainerVideoCallLogController } from "../presentation/controllers/videoCallLog/trainer-calllogs.controller";
 import { GetBookingSlotController } from "../presentation/controllers/booking/get-booking.controller";
 import { DeleteBookingSlotController } from "../presentation/controllers/booking/deleting-booking.controller";
 import { CreateBookingSlotController } from "../presentation/controllers/booking/create-booking.controller";
@@ -117,6 +114,16 @@ import { CancelAppointmentUseCase } from "../application/usecases/appointment/ca
 import { HandleBookingApprovalUseCase } from "../application/usecases/appointment/handle-booking.usecase";
 import { GetTrainerSchedulesUseCase } from "../application/usecases/appointment/get-trainer-schedules";
 import { GetUserSchedulesUseCase } from "../application/usecases/appointment/get-user-schedules";
+import { UpdateUserProfileUseCase } from "../application/usecases/auth/update-user-profile.usecase";
+import { GetTrainerSubscribersUseCase } from "../application/usecases/subscription/get-trainer-subscribed-users.usecase";
+import { DeleteWorkoutUseCase } from "../application/usecases/workout/delete-workout-usecase";
+import { CompleteWorkoutUseCase } from "../application/usecases/workout/complete-workout.usecase";
+import { GetPendingSlotsUseCase } from "../application/usecases/bookingSlot/get-pending-slots";
+import { GetAllPendingSlotsUseCase } from "../application/usecases/bookingSlot/get-all-pending-slots";
+import { GetUpComingSlotsUseCase } from "../application/usecases/bookingSlot/get-upcoming-slots";
+import { GetChatHistoryUseCase } from "../application/usecases/chat/get-chat-history.usecase";
+import { GetTrainerChatListUseCase } from "../application/usecases/chat/get-trainer-chat-list.usecase";
+import { GetUserChatListUseCase } from "../application/usecases/chat/get-user-chat-list.usecase";
 
 //SERVICE INSTANCES
 const cloudinaryService = new CloudinaryService();
@@ -151,11 +158,15 @@ const passwordService = new PasswordService();
 const tokenService = new TokenService();
 const dateService = new DateService();
 
-const getTrainerSubscriptionUseCase = new GetTrainerSubscriptionUseCase(
-  subscriptionRepository,
+const getTrainerSubscriptionsUseCase = new GetTrainerSubscriptionsUseCase(
+  subscriptionRepository
+);
+
+const getTrainerSubscribersUseCase = new GetTrainerSubscribersUseCase(
   userSubscriptionPlanRepository,
   stripeService
 );
+
 const trainerApprovalUseCase = new TrainerApprovalUseCase(trainerRepository);
 const adminDashBoardUseCase = new AdminDashBoardUseCase(
   userSubscriptionPlanRepository,
@@ -197,7 +208,7 @@ const googleAuthUseCase = new GoogleAuthUseCase(
   jwtService,
   googleAuthService
 );
-const profileUseCase = new UpdateProfileUseCase(
+const updateTrainerProfileUseCase = new UpdateTrainerProfileUseCase(
   userRepository,
   trainerRepository,
   cloudinaryService
@@ -211,7 +222,14 @@ const createTrainerUseCase = new CreateTrainerUseCase(
   passwordService
 );
 const refreshAccessTokenUseCase = new TokenUseCase(jwtService);
-const chatUseCase = new ChatUseCase(chatRepository, conversationRepository);
+
+const getChatHistoryUseCase = new GetChatHistoryUseCase(chatRepository);
+const getTrainerChatListUseCase = new GetTrainerChatListUseCase(
+  conversationRepository
+);
+const getUserChatListUseCase = new GetUserChatListUseCase(
+  conversationRepository
+);
 
 const getUserSubscriptionUseCase = new GetUserSubscriptionUseCase(
   userSubscriptionPlanRepository,
@@ -257,7 +275,6 @@ const updateVideoPrivacyUseCase = new UpdateVideoPrivacyUseCase(
 const getVideoUseCase = new GetVideoUseCase(videoRepository);
 const createWorkoutUseCase = new CreateWorkoutUseCase(workoutRepository);
 const getWorkoutUseCase = new GetWorkoutUseCase(workoutRepository);
-const updateWorkoutUseCase = new UpdateWorkoutUseCase(workoutRepository);
 const bookAppointmentUseCase = new BookAppointmentUseCase(
   bookingSlotRepository,
   appointmentRepository
@@ -296,15 +313,28 @@ const createBookingSlotUseCase = new CreateBookingSlotUseCase(
 const deleteBookingSlotUseCase = new DeleteBookingSlotUseCase(
   bookingSlotRepository
 );
-const getBookingSlotUseCase = new GetBookingSlotUseCase(bookingSlotRepository);
+// const getBookingSlotUseCase = new GetBookingSlotUseCase(bookingSlotRepository);
+
+const getPendingSlotsUseCase = new GetPendingSlotsUseCase(
+  bookingSlotRepository
+);
+
+const getAllPendingSlotsUseCase = new GetAllPendingSlotsUseCase(
+  bookingSlotRepository
+);
+
+const getUpComingSlotsUseCase = new GetUpComingSlotsUseCase(
+  bookingSlotRepository
+);
+
 const trainerDashBoardUseCase = new TrainerDashBoardUseCase(
   userSubscriptionPlanRepository,
   dateService
 );
-const trainerVideoCallLogUseCase = new TrainerVideoCallLogUseCase(
+const trainerVideoCallLogUseCase = new GetTrainerVideoCallLogUseCase(
   videoCallLogRepository
 );
-const userVideoCallLogUseCase = new UserVideoCallLogUseCase(
+const userVideoCallLogUseCase = new GetUserVideoCallLogUseCase(
   videoCallLogRepository
 );
 
@@ -363,11 +393,22 @@ export const createController = new CreateController(
   createUserUseCase,
   createTrainerUseCase
 );
+const updateUserProfileUseCase = new UpdateUserProfileUseCase(
+  userRepository,
+  cloudinaryService
+);
 export const googleAuthController = new GoogleAuthController(googleAuthUseCase);
-export const profileController = new ProfileController(profileUseCase);
+export const profileController = new ProfileController(
+  updateTrainerProfileUseCase,
+  updateUserProfileUseCase
+);
 
 export const passwordController = new PasswordController(passwordUseCase);
-export const chatController = new ChatController(chatUseCase);
+export const chatController = new ChatController(
+  getChatHistoryUseCase,
+  getTrainerChatListUseCase,
+  getUserChatListUseCase
+);
 
 export const otpController = new OtpController(otpUseCase);
 export const purchaseSubscriptionController =
@@ -406,24 +447,22 @@ export const updateVideoStatusController = new UpdateVideoStatusController(
 export const getUserMyTrainersController = new GetUserMyTrainersController(
   getUserSubscriptionUseCase
 );
-// export const workoutController = new WorkoutController(
-//   createWorkoutUseCase,
-//   getWorkoutUseCase,
-//   updateWorkoutUseCase
-// );
 
 export const addWorkoutController = new AddWorkoutController(
   createWorkoutUseCase
 );
 
 export const getWorkoutController = new GetWorkoutController(getWorkoutUseCase);
-
+export const deleteWorkoutUseCase = new DeleteWorkoutUseCase(workoutRepository);
 export const deleteWorkoutController = new DeleteWorkoutController(
-  updateWorkoutUseCase
+  deleteWorkoutUseCase
 );
 
+export const completeWorkoutUseCase = new CompleteWorkoutUseCase(
+  workoutRepository
+);
 export const updateWorkoutController = new UpdateWorkoutController(
-  updateWorkoutUseCase
+  completeWorkoutUseCase
 );
 
 export const bookAppointmentController = new BookAppointmentController(
@@ -440,6 +479,7 @@ const getAppointmentRequestUseCase = new GetAppointmentRequestUseCase(
 const getUserSchedulesUseCase = new GetUserSchedulesUseCase(
   appointmentRepository
 );
+
 export const getAppointmentController = new GetAppointmentController(
   getAppointmentRequestUseCase,
   getTrainerSchedulesUseCase,
@@ -468,7 +508,9 @@ export const updatePlaylistcontroller = new UpdatePlaylistcontroller(
 );
 
 export const getBookingSlotController = new GetBookingSlotController(
-  getBookingSlotUseCase
+  getPendingSlotsUseCase,
+  getAllPendingSlotsUseCase,
+  getUpComingSlotsUseCase
 );
 
 export const deleteBookingSlotController = new DeleteBookingSlotController(
@@ -483,12 +525,11 @@ export const trainerDashboardController = new TrainerDashboardController(
   trainerDashBoardUseCase
 );
 
-export const userVideoCallController = new UserVideoCallController(
+export const getUserVideoCallLogController = new GetUserVideoCallLogController(
   userVideoCallLogUseCase
 );
-export const trainerVideoCallController = new TrainerVideoCallController(
-  trainerVideoCallLogUseCase
-);
+export const getTrainerVideoCallLogController =
+  new GetTrainerVideoCallLogController(trainerVideoCallLogUseCase);
 export const subscriptionPlanController = new SubscriptionPlanController(
   createSubscriptionUseCase,
   editSubscriptionUseCase,
@@ -497,5 +538,6 @@ export const subscriptionPlanController = new SubscriptionPlanController(
 );
 
 export const trainerSubscriptionController = new TrainerSubscriptionController(
-  getTrainerSubscriptionUseCase
+  getTrainerSubscriptionsUseCase,
+  getTrainerSubscribersUseCase
 );

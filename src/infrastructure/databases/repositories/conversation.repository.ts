@@ -8,7 +8,7 @@ import {
   UpdateUnReadMessageCount,
 } from "../../../application/dtos/conversation-dtos";
 import { IConversationRepository } from "../../../domain/interfaces/IConversationRepository";
-import conversationModel from "../models/conversation.model";
+import ConversationModel from "../models/conversation.model";
 import {
   Conversation,
   Ichat,
@@ -23,7 +23,7 @@ export class ConversationRepository implements IConversationRepository {
     trainerId,
     stripeSubscriptionStatus,
   }: CreateConversation): Promise<void> {
-    await conversationModel.create({
+    await ConversationModel.create({
       userId: new mongoose.Types.ObjectId(userId),
       trainerId: new mongoose.Types.ObjectId(trainerId),
       stripeSubscriptionStatus: stripeSubscriptionStatus,
@@ -35,7 +35,7 @@ export class ConversationRepository implements IConversationRepository {
     trainerId,
     stripeSubscriptionStatus,
   }: ConversationSubscriptionUpdate): Promise<void> {
-    await conversationModel.findOneAndUpdate(
+    await ConversationModel.findOneAndUpdate(
       {
         userId: new mongoose.Types.ObjectId(userId),
         trainerId: new mongoose.Types.ObjectId(trainerId),
@@ -49,17 +49,40 @@ export class ConversationRepository implements IConversationRepository {
     userId,
     trainerId,
   }: FindConversation): Promise<Conversation | null> {
-    return await conversationModel
-      .findOne({
-        userId: new mongoose.Types.ObjectId(userId),
-        trainerId: new mongoose.Types.ObjectId(trainerId),
-      })
-      .populate<{ lastMessage: Ichat | null }>({
-        path: "lastMessage",
-        model: "Chat",
-      })
-      .lean()
-      .exec();
+    const result = await ConversationModel.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId),
+          trainerId: new mongoose.Types.ObjectId(trainerId),
+        },
+      },
+      {
+        $lookup: {
+          from: "chats",
+          localField: "lastMessage",
+          foreignField: "_id",
+          as: "lastMessage",
+        },
+      },
+      {
+        $unwind: {
+          path: "$lastMessage",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          userId: 1,
+          trainerId: 1,
+          lastMessage: 1,
+          unreadCount: 1,
+          stripeSubscriptionStatus: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+    ]);
+    return result.length > 0 ? result[0] : null;
   }
 
   async updateLastMessage({
@@ -67,23 +90,22 @@ export class ConversationRepository implements IConversationRepository {
     otherUserId,
     lastMessageId,
   }: UpdateLastMessage): Promise<Conversation | null> {
-    return await conversationModel
-      .findOneAndUpdate(
-        {
-          $or: [
-            {
-              userId: new mongoose.Types.ObjectId(userId),
-              trainerId: new mongoose.Types.ObjectId(otherUserId),
-            },
-            {
-              userId: new mongoose.Types.ObjectId(otherUserId),
-              trainerId: new mongoose.Types.ObjectId(userId),
-            },
-          ],
-        },
-        { $set: { lastMessage: new mongoose.Types.ObjectId(lastMessageId) } },
-        { new: true }
-      )
+    return await ConversationModel.findOneAndUpdate(
+      {
+        $or: [
+          {
+            userId: new mongoose.Types.ObjectId(userId),
+            trainerId: new mongoose.Types.ObjectId(otherUserId),
+          },
+          {
+            userId: new mongoose.Types.ObjectId(otherUserId),
+            trainerId: new mongoose.Types.ObjectId(userId),
+          },
+        ],
+      },
+      { $set: { lastMessage: new mongoose.Types.ObjectId(lastMessageId) } },
+      { new: true }
+    )
       .populate<{ lastMessage: Ichat | null }>({
         path: "lastMessage",
         model: "Chat",
@@ -92,12 +114,12 @@ export class ConversationRepository implements IConversationRepository {
       .exec();
   }
 
-  async updateUnReadMessageCount({
+  async updateUnReadCount({
     userId,
     otherUserId,
     count,
   }: UpdateUnReadMessageCount): Promise<Conversation | null> {
-    const matchResult = await conversationModel.aggregate([
+    const matchResult = await ConversationModel.aggregate([
       {
         $match: {
           $or: [
@@ -135,14 +157,13 @@ export class ConversationRepository implements IConversationRepository {
 
     if (!matchResult.length) return null;
 
-    const conversationId = matchResult[0]._id;
+    const conversationId = matchResult[0]?._id;
 
-    const updatedConversation = await conversationModel
-      .findOneAndUpdate(
-        { _id: conversationId },
-        { $set: { unreadCount: count } },
-        { new: true }
-      )
+    const updatedConversation = await ConversationModel.findOneAndUpdate(
+      { _id: conversationId },
+      { $set: { unreadCount: count } },
+      { new: true }
+    )
       .populate<{ lastMessage: Ichat | null }>({
         path: "lastMessage",
         model: "Chat",
@@ -157,25 +178,24 @@ export class ConversationRepository implements IConversationRepository {
     userId,
     otherUserId,
   }: IncrementUnReadMessageCount): Promise<Conversation | null> {
-    const updatedDoc = await conversationModel
-      .findOneAndUpdate(
-        {
-          $or: [
-            {
-              userId: new mongoose.Types.ObjectId(userId),
-              trainerId: new mongoose.Types.ObjectId(otherUserId),
-            },
-            {
-              userId: new mongoose.Types.ObjectId(otherUserId),
-              trainerId: new mongoose.Types.ObjectId(userId),
-            },
-          ],
-        },
-        {
-          $inc: { unreadCount: 1 },
-        },
-        { new: true }
-      )
+    const updatedDoc = await ConversationModel.findOneAndUpdate(
+      {
+        $or: [
+          {
+            userId: new mongoose.Types.ObjectId(userId),
+            trainerId: new mongoose.Types.ObjectId(otherUserId),
+          },
+          {
+            userId: new mongoose.Types.ObjectId(otherUserId),
+            trainerId: new mongoose.Types.ObjectId(userId),
+          },
+        ],
+      },
+      {
+        $inc: { unreadCount: 1 },
+      },
+      { new: true }
+    )
       .populate<{ lastMessage: Ichat | null }>({
         path: "lastMessage",
         model: "Chat",
@@ -197,7 +217,7 @@ export class ConversationRepository implements IConversationRepository {
         { "subscribedTrainerData.email": { $regex: search, $options: "i" } },
       ];
     }
-    const result = await conversationModel.aggregate([
+    const result = await ConversationModel.aggregate([
       { $match: { userId: new mongoose.Types.ObjectId(userId) } },
       { $sort: { createdAt: -1 } },
       {
@@ -271,7 +291,7 @@ export class ConversationRepository implements IConversationRepository {
         { "subscribedUserData.email": { $regex: search, $options: "i" } },
       ];
     }
-    const result = await conversationModel.aggregate([
+    const result = await ConversationModel.aggregate([
       { $match: { trainerId: new mongoose.Types.ObjectId(trainerId) } },
       { $sort: { createdAt: -1 } },
       {

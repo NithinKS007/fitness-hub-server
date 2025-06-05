@@ -2,8 +2,8 @@ import { ObjectId } from "mongoose";
 import { Playlist } from "./playlist.entities";
 
 export interface Video {
-  _id: string | ObjectId;
-  trainerId: string | ObjectId;
+  _id: ObjectId;
+  trainerId: ObjectId;
   title: string;
   description: string;
   duration: Number;

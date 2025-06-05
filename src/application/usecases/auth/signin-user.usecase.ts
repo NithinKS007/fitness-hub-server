@@ -40,7 +40,7 @@ export class SigninUserUseCase {
     email: string,
     password: string
   ): Promise<User | Trainer> {
-    const userData = await this.userRepository.findByEmail({ email: email });
+    const userData = await this.userRepository.findOne({ email: email });
     if (!userData) {
       throw new validationError(AuthStatus.EmailNotFound);
     }

@@ -8,14 +8,14 @@ import { UpdateVideoPrivacyUseCase } from "../../../application/usecases/video/u
 
 export class UpdateVideoStatusController {
   constructor(private updateVideoPrivacyUseCase: UpdateVideoPrivacyUseCase) {}
-  async updatePrivacy(req: Request, res: Response): Promise<void> {
+  async handleUpdatePrivacy(req: Request, res: Response): Promise<void> {
     const { videoId } = req.params;
     const { privacy } = req.body;
     const updatedVideoData = {
       videoId,
       privacy,
     };
-    const videoData = await this.updateVideoPrivacyUseCase.updatePrivacy(
+    const videoData = await this.updateVideoPrivacyUseCase.execute(
       updatedVideoData
     );
     sendResponse(

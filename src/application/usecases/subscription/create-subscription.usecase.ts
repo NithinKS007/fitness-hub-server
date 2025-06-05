@@ -1,10 +1,14 @@
-import { SubPeriod } from "../../../infrastructure/databases/models/subscription.model";
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import { SubscriptionStatus } from "../../../shared/constants/index.constants";
 import { Subscription } from "../../../domain/entities/subscription.entities";
 import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
 import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
 import { IPaymentService } from "../../interfaces/payments/IPayment.service";
+import {
+  PeriodType,
+  SubPeriod,
+  SubscriptionInterval,
+} from "../../dtos/subscription-dtos";
 
 export class CreateSubscriptionUseCase {
   constructor(
@@ -12,22 +16,27 @@ export class CreateSubscriptionUseCase {
     private trainerRepository: ITrainerRepository,
     private paymentService: IPaymentService
   ) {}
-  private getInterval(subPeriod: SubPeriod): "month" | "year" {
-    return subPeriod === "yearly" ? "year" : "month";
+
+  private getInterval(subPeriod: SubPeriod): SubscriptionInterval {
+    return subPeriod === PeriodType.Yearly
+      ? SubscriptionInterval.Year
+      : SubscriptionInterval.Month;
   }
+
   private getIntervalCount = (subPeriod: SubPeriod): number => {
-    if (subPeriod === "quarterly") {
-      return 3;
-    } else if (subPeriod === "halfYearly") {
-      return 6;
-    } else if (subPeriod === "yearly") {
-      return 1;
-    } else {
-      return 1;
+    switch (subPeriod) {
+      case PeriodType.Quarterly:
+        return 3;
+      case PeriodType.HalfYearly:
+        return 6;
+      case PeriodType.Yearly:
+        return 1;
+      default:
+        return 1;
     }
   };
 
-  async createSubscription(createSubscriptionData: {
+  async execute(createSubscriptionData: {
     trainerId: string;
     subPeriod: SubPeriod;
     price: number;
@@ -37,15 +46,16 @@ export class CreateSubscriptionUseCase {
   }): Promise<Subscription> {
     const { trainerId, subPeriod, totalSessions, price } =
       createSubscriptionData;
-    const existing = await this.subscriptionRepository.findExistingSubscription(
-      { trainerId, subPeriod }
-    );
+    const existingSubscription = await this.subscriptionRepository.findOne({
+      trainerId,
+      subPeriod,
+    });
 
     const trainerData = await this.trainerRepository.getTrainerDetailsById(
       trainerId
     );
 
-    if (existing) {
+    if (existingSubscription) {
       throw new validationError(SubscriptionStatus.SubscriptionAlreadyExists);
     }
 
@@ -63,7 +73,7 @@ export class CreateSubscriptionUseCase {
       interval,
       intervalCount,
     });
-    return await this.subscriptionRepository.createSubscription({
+    return await this.subscriptionRepository.create({
       ...createSubscriptionData,
       stripePriceId: stripePriceId,
     });

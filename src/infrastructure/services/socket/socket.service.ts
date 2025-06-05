@@ -1,5 +1,4 @@
 import { Server, Socket } from "socket.io";
-import { ChatUseCase } from "../../../application/usecases/chat/chat.usecase";
 import { TrainerGetUseCase } from "../../../application/usecases/trainer/get-trainer.usecase";
 import { TrainerRepository } from "../../databases/repositories/trainer.repository";
 import { AppointmentRepository } from "../../databases/repositories/appointment.repository";
@@ -25,30 +24,45 @@ import { handleCallEnded } from "./handlers/videocall/call-ended";
 import { CreateVideoCallLogUseCase } from "../../../application/usecases/videoCallLog/create-videocalllog.usecase";
 import { UpdateVideoCallLogUseCase } from "../../../application/usecases/videoCallLog/update-videoCalllog.usecase";
 import { GetAppointmentByIdUseCase } from "../../../application/usecases/appointment/get-bookingby-id.usecase";
+import { CreateMessageUseCase } from "../../../application/usecases/chat/create-message.usecase";
+import { MarkMessageAsReadUseCase } from "../../../application/usecases/chat/mark-as-read.usecase";
+import { UpdateUnReadMessageCountUseCase } from "../../../application/usecases/chat/update-unread-count.usecase";
+import { IncrementUnReadMessageCountUseCase } from "../../../application/usecases/chat/inc-unread-count.usecase";
+import { UpdateLastMessageUseCase } from "../../../application/usecases/chat/update-last-message.usecase";
 
-//MONGO REPOSITORY INSTANCES
-const mongoChatRepository = new ChatRepository();
-const mongoVideoCallLogRepository = new VideoCallLogRepository();
-const mongoTrainerRepository = new TrainerRepository();
-const mongoAppointmentRepository = new AppointmentRepository();
-const mongoConversationRepository = new ConversationRepository();
+//REPOSITORY INSTANCES
+const chatRepository = new ChatRepository();
+const videoCallLogRepository = new VideoCallLogRepository();
+const trainerRepository = new TrainerRepository();
+const appointmentRepository = new AppointmentRepository();
+const conversationRepository = new ConversationRepository();
 
 //USE CASE INSTANCES
-const trainerGetUseCase = new TrainerGetUseCase(mongoTrainerRepository);
-const chatUseCase = new ChatUseCase(
-  mongoChatRepository,
-  mongoConversationRepository
+const trainerGetUseCase = new TrainerGetUseCase(trainerRepository);
+
+const createMessageUseCase = new CreateMessageUseCase(chatRepository);
+const markMessageAsReadUseCase = new MarkMessageAsReadUseCase(chatRepository);
+
+const updateUnReadMessageCount = new UpdateUnReadMessageCountUseCase(
+  conversationRepository
+);
+
+const incUnReadCountUseCase = new IncrementUnReadMessageCountUseCase(
+  conversationRepository
+);
+const updateLastMessageUseCase = new UpdateLastMessageUseCase(
+  conversationRepository
 );
 
 const createVideoCallLogUseCase = new CreateVideoCallLogUseCase(
-  mongoVideoCallLogRepository
+  videoCallLogRepository
 );
 const updateVideoCallLogUseCase = new UpdateVideoCallLogUseCase(
-  mongoVideoCallLogRepository
+  videoCallLogRepository
 );
 
 const getAppointmentByIdUseCase = new GetAppointmentByIdUseCase(
-  mongoAppointmentRepository
+  appointmentRepository
 );
 
 export const socketService = (io: Server) => {
@@ -67,7 +81,13 @@ export const socketService = (io: Server) => {
     socket.on(
       "setActiveChat",
       async ({ userId, partnerId }: SetActiveChatData) => {
-        await handleSetActiveChat(io, chatUseCase, userId, partnerId);
+        await handleSetActiveChat(
+          io,
+          markMessageAsReadUseCase,
+          updateUnReadMessageCount,
+          userId,
+          partnerId
+        );
       }
     );
 
@@ -78,7 +98,15 @@ export const socketService = (io: Server) => {
     socket.on(
       "sendMessage",
       async ({ senderId, receiverId, message }: SendMessageData) => {
-        await handleSendMessage(io, chatUseCase, senderId, receiverId, message);
+        await handleSendMessage(
+          io,
+          createMessageUseCase,
+          incUnReadCountUseCase,
+          updateLastMessageUseCase,
+          senderId,
+          receiverId,
+          message
+        );
       }
     );
 

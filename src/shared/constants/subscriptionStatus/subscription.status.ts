@@ -19,4 +19,6 @@ export enum SubscriptionStatus {
   SubscriptionEditedSuccessfully = "Subscription edited successfully",
   SubscriptionDeletedSuccessfully = "Subscription deleted successfully",
   FailedToEditSubscription = "Failed to edit subscription",
+  FailedToCancelSubscription = "Failed to cancel subscription"
 }
+

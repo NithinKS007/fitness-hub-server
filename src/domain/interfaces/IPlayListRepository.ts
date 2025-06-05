@@ -1,14 +1,13 @@
-import {
-  CreatePlayListDTO,
-  EditPlayListDTO,
-  UpdatePlayListPrivacyDTO,
-} from "../../application/dtos/playlist-dtos";
 import { GetPlayListsQueryDTO } from "../../application/dtos/query-dtos";
 import { PaginationDTO } from "../../application/dtos/utility-dtos";
-import { NumberOfVideoPerPlayList, Playlist } from "../entities/playlist.entities";
+import { IPlayList } from "../../infrastructure/databases/models/playlist.model";
+import {
+  NumberOfVideoPerPlayList,
+  Playlist,
+} from "../entities/playlist.entities";
+import { IBaseRepository } from "./IBaseRepository";
 
-export interface IPlayListRepository {
-  addPlaylist(createPlayListData: CreatePlayListDTO): Promise<Playlist>;
+export interface IPlayListRepository extends IBaseRepository<IPlayList> {
   getPlaylists(
     trainerId: string,
     data: GetPlayListsQueryDTO
@@ -19,9 +18,5 @@ export interface IPlayListRepository {
   updateManyVideoCount(
     numberOfVideosPerPlaylist: NumberOfVideoPerPlayList[]
   ): Promise<void>;
-  updatePrivacy(
-    updatePlayListBlockStatus: UpdatePlayListPrivacyDTO
-  ): Promise<Playlist | null>;
   getallPlaylists(trainerId: string): Promise<Playlist[]>;
-  editPlayList({ playListId, title }: EditPlayListDTO): Promise<Playlist | null>;
 }

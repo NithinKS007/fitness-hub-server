@@ -1,53 +1,47 @@
-import mongoose from "mongoose";
+import { Model } from "mongoose";
 import {
-  CreateVideoCallLogDTO,
   UpdateVideoCallLogDTO,
   UpdateVideoCallDurationDTO,
 } from "../../../application/dtos/video-call-dtos";
 import { PaginationDTO } from "../../../application/dtos/utility-dtos";
 import { IVideoCallLogRepository } from "../../../domain/interfaces/IVideoCallLogRepository";
-import videoCallLogModel from "../models/videocalllog.model";
+import VideoCallLogModel, {
+  IVideoCallLog,
+} from "../models/video-call-log.model";
 import {
   TrainerVideoCallLog,
   UserVideoCallLog,
   VideoCallLog,
 } from "../../../domain/entities/video-calllog.entities";
 import { GetVideoCallLogQueryDTO } from "../../../application/dtos/query-dtos";
+import { BaseRepository } from "./base.repository";
 
-export class VideoCallLogRepository implements IVideoCallLogRepository {
-  async createCallLog({
-    appointmentId,
-    callerId,
-    receiverId,
-    callStartTime,
-    callRoomId,
-  }: CreateVideoCallLogDTO): Promise<void> {
-    await videoCallLogModel.create({
-      appointmentId: new mongoose.Types.ObjectId(appointmentId),
-      callStartTime: callStartTime,
-      callRoomId: callRoomId,
-      callerId: new mongoose.Types.ObjectId(callerId),
-      receiverId: new mongoose.Types.ObjectId(receiverId),
-    });
+export class VideoCallLogRepository
+  extends BaseRepository<IVideoCallLog>
+  implements IVideoCallLogRepository
+{
+  constructor(model: Model<IVideoCallLog> = VideoCallLogModel) {
+    super(model);
   }
+
   async updateVideoCallLog({
     callRoomId,
     callEndTime,
     callStatus,
-  }: UpdateVideoCallLogDTO): Promise<VideoCallLog> {
-    const videoCallLogData = await videoCallLogModel.findOneAndUpdate(
+  }: UpdateVideoCallLogDTO): Promise<VideoCallLog | null> {
+    const videoCallLogData = await this.model.findOneAndUpdate(
       { callRoomId: callRoomId },
       { callEndTime: callEndTime, callStatus: callStatus },
       { new: true }
     );
-    return videoCallLogData!!;
+    return videoCallLogData;
   }
 
   async updateVideoCallDuration({
     callRoomId,
     callDuration,
   }: UpdateVideoCallDurationDTO): Promise<void> {
-    await videoCallLogModel.findOneAndUpdate(
+    await this.model.findOneAndUpdate(
       { callRoomId: callRoomId },
       { callDuration: callDuration },
       { new: true }
@@ -88,55 +82,35 @@ export class VideoCallLogRepository implements IVideoCallLogRepository {
       matchQuery["appointmentData.appointmentDate"] = { $lte: toDate };
     }
 
+    const commonPipeline = [
+      { $match: { callerId: this.parseId(trainerId) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "receiverId",
+          foreignField: "_id",
+          as: "userData",
+        },
+      },
+      { $unwind: "$userData" },
+      {
+        $lookup: {
+          from: "appointments",
+          localField: "appointmentId",
+          foreignField: "_id",
+          as: "appointmentData",
+        },
+      },
+      { $match: matchQuery },
+      { $unwind: "$appointmentData" },
+    ];
+
     const [totalCount, trainerVideoCallLogList] = await Promise.all([
-      videoCallLogModel
-        .aggregate([
-          { $match: { callerId: new mongoose.Types.ObjectId(trainerId) } },
-          {
-            $lookup: {
-              from: "users",
-              localField: "receiverId",
-              foreignField: "_id",
-              as: "userData",
-            },
-          },
-          { $unwind: "$userData" },
-          {
-            $lookup: {
-              from: "appointments",
-              localField: "appointmentId",
-              foreignField: "_id",
-              as: "appointmentData",
-            },
-          },
-          { $match: matchQuery },
-          { $unwind: "$appointmentData" },
-          { $count: "totalCount" },
-        ])
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      videoCallLogModel
-        .aggregate([
-          { $match: { callerId: new mongoose.Types.ObjectId(trainerId) } },
-          {
-            $lookup: {
-              from: "users",
-              localField: "receiverId",
-              foreignField: "_id",
-              as: "userData",
-            },
-          },
-          { $unwind: "$userData" },
-          {
-            $lookup: {
-              from: "appointments",
-              localField: "appointmentId",
-              foreignField: "_id",
-              as: "appointmentData",
-            },
-          },
-          { $match: matchQuery },
-          { $unwind: "$appointmentData" },
-        ])
+      this.model
+        .aggregate([...commonPipeline])
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNumber)
@@ -185,73 +159,44 @@ export class VideoCallLogRepository implements IVideoCallLogRepository {
       matchQuery["appointmentData.appointmentDate"] = { $lte: toDate };
     }
 
+    const commonPipeline = [
+      { $match: { receiverId: this.parseId(userId) } },
+      {
+        $lookup: {
+          from: "trainers",
+          localField: "callerId",
+          foreignField: "_id",
+          as: "trainerCollectionData",
+        },
+      },
+      { $unwind: "$trainerCollectionData" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "trainerCollectionData.userId",
+          foreignField: "_id",
+          as: "trainerData",
+        },
+      },
+      { $unwind: "$trainerData" },
+      {
+        $lookup: {
+          from: "appointments",
+          localField: "appointmentId",
+          foreignField: "_id",
+          as: "appointmentData",
+        },
+      },
+      { $match: matchQuery },
+      { $unwind: "$appointmentData" },
+    ];
+
     const [totalCount, userVideoCallLogList] = await Promise.all([
-      videoCallLogModel
-        .aggregate([
-          { $match: { receiverId: new mongoose.Types.ObjectId(userId) } },
-          {
-            $lookup: {
-              from: "trainers",
-              localField: "callerId",
-              foreignField: "_id",
-              as: "trainerCollectionData",
-            },
-          },
-          { $unwind: "$trainerCollectionData" },
-          {
-            $lookup: {
-              from: "users",
-              localField: "trainerCollectionData.userId",
-              foreignField: "_id",
-              as: "trainerData",
-            },
-          },
-          { $unwind: "$trainerData" },
-          {
-            $lookup: {
-              from: "appointments",
-              localField: "appointmentId",
-              foreignField: "_id",
-              as: "appointmentData",
-            },
-          },
-          { $match: matchQuery },
-          { $unwind: "$appointmentData" },
-          { $count: "totalCount" },
-        ])
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      videoCallLogModel
-        .aggregate([
-          { $match: { receiverId: new mongoose.Types.ObjectId(userId) } },
-          {
-            $lookup: {
-              from: "trainers",
-              localField: "callerId",
-              foreignField: "_id",
-              as: "trainerCollectionData",
-            },
-          },
-          { $unwind: "$trainerCollectionData" },
-          {
-            $lookup: {
-              from: "users",
-              localField: "trainerCollectionData.userId",
-              foreignField: "_id",
-              as: "trainerData",
-            },
-          },
-          { $unwind: "$trainerData" },
-          {
-            $lookup: {
-              from: "appointments",
-              localField: "appointmentId",
-              foreignField: "_id",
-              as: "appointmentData",
-            },
-          },
-          { $match: matchQuery },
-          { $unwind: "$appointmentData" },
-        ])
+      this.model
+        .aggregate([...commonPipeline])
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNumber)

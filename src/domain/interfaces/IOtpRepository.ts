@@ -1,8 +1,7 @@
 import { OtpDTO } from "../../application/dtos/auth-dtos";
-import { Otp } from "../entities/otp.entities";
+import { IOtp } from "../../infrastructure/databases/models/otp.model";
+import { IBaseRepository } from "./IBaseRepository";
 
-export interface IOtpRepository {
-  createOtp(createOTP: OtpDTO): Promise<Otp>;
-  verifyOtpByEmail(verifyOTP: OtpDTO): Promise<Otp | null>;
-  deleteOtp(deleteOTP: OtpDTO): Promise<Otp | null>;
+export interface IOtpRepository extends IBaseRepository<IOtp> {
+  create(createOTP: OtpDTO): Promise<IOtp>;
 }

@@ -1,63 +1,31 @@
-import mongoose from "mongoose";
-import {
-  CreateTrainerCollectionDTO,
-  TrainerDTO,
-} from "../../../application/dtos/trainer-dtos";
+import { Model } from "mongoose";
 import {
   GetApprovedTrainerQueryDTO,
   GetTrainersApprovalQueryDTO,
   GetTrainersQueryDTO,
 } from "../../../application/dtos/query-dtos";
 import { PaginationDTO } from "../../../application/dtos/utility-dtos";
-import { TrainerVerificationDTO } from "../../../application/dtos/trainer-dtos";
-
 import {
   Trainer,
-  TrainerSpecific,
   TrainerWithSubscription,
 } from "../../../domain/entities/trainer.entities";
 import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import TrainerModel from "../models/trainer.model";
+import TrainerModel, { ITrainer } from "../models/trainer.model";
+import { BaseRepository } from "./base.repository";
 
-export class TrainerRepository implements ITrainerRepository {
-  async create(
-    createTrainer: CreateTrainerCollectionDTO
-  ): Promise<TrainerSpecific> {
-    return (await TrainerModel.create(createTrainer)).toObject();
-  }
-
-  async updateTrainerData({
-    certifications,
-    specializations,
-    aboutMe,
-    yearsOfExperience,
-    trainerId,
-  }: TrainerDTO): Promise<TrainerSpecific | null> {
-    let updated: any = {};
-    if (certifications && certifications.length > 0) {
-      updated.certifications = certifications;
-    }
-    if (specializations && specializations.length > 0) {
-      updated.specializations = specializations;
-    }
-    if (aboutMe) {
-      updated.aboutMe = aboutMe;
-    }
-    if (yearsOfExperience) {
-      updated.yearsOfExperience = yearsOfExperience;
-    }
-    return await TrainerModel.findOneAndUpdate(
-      new mongoose.Types.ObjectId(trainerId),
-      updated,
-      { new: true }
-    ).lean();
+export class TrainerRepository
+  extends BaseRepository<ITrainer>
+  implements ITrainerRepository
+{
+  constructor(model: Model<ITrainer> = TrainerModel) {
+    super(model);
   }
 
   async getTrainerDetailsById(trainerId: string): Promise<Trainer> {
-    const trainerData = await TrainerModel.aggregate([
+    const trainerData = await this.model.aggregate([
       {
         $match: {
-          _id: new mongoose.Types.ObjectId(trainerId),
+          _id: this.parseId(trainerId),
         },
       },
       {
@@ -101,10 +69,10 @@ export class TrainerRepository implements ITrainerRepository {
   }
 
   async getTrainerWithSub(trainerId: string): Promise<TrainerWithSubscription> {
-    const result = await TrainerModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $match: {
-          _id: new mongoose.Types.ObjectId(trainerId),
+          _id: this.parseId(trainerId),
           isApproved: true,
         },
       },
@@ -157,28 +125,11 @@ export class TrainerRepository implements ITrainerRepository {
     return result[0];
   }
 
-  async handleVerification({
-    trainerId,
-    action,
-  }: TrainerVerificationDTO): Promise<Trainer | null> {
-    if (action === "approved") {
-      return await TrainerModel.findByIdAndUpdate(
-        trainerId,
-        { isApproved: true },
-        { new: true }
-      );
-    }
-    if (action === "rejected") {
-      return await TrainerModel.findByIdAndDelete(trainerId);
-    }
-    return null;
-  }
-
   async getTrainerDetailsByUserIdRef(userId: string): Promise<Trainer> {
-    const trainerData = await TrainerModel.aggregate([
+    const trainerData = await this.model.aggregate([
       {
         $match: {
-          userId: new mongoose.Types.ObjectId(userId),
+          userId: this.parseId(userId),
         },
       },
       {
@@ -270,58 +221,52 @@ export class TrainerRepository implements ITrainerRepository {
       if (conditions.length > 0) matchQuery.$and = conditions;
     }
 
+    const commonPipeline: any = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "trainersList",
+        },
+      },
+      { $match: matchQuery },
+      { $unwind: "$trainersList" },
+    ];
     const [totalCount, trainersList] = await Promise.all([
-      TrainerModel.aggregate([
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "trainersList",
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
+        .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
+      this.model
+        .aggregate([
+          ...commonPipeline,
+          {
+            $project: {
+              fname: "$trainersList.fname",
+              lname: "$trainersList.lname",
+              email: "$trainersList.email",
+              role: "$trainersList.role",
+              isBlocked: "$trainersList.isBlocked",
+              otpVerified: "$trainersList.otpVerified",
+              googleVerified: "$trainersList.googleVerified",
+              phone: "$trainersList.phone",
+              dateOfBirth: "$trainersList.dateOfBirth",
+              profilePic: "$trainersList.profilePic",
+              age: "$trainersList.age",
+              height: "$trainersList.height",
+              weight: "$trainersList.weight",
+              gender: "$trainersList.gender",
+              _id: 1,
+              userId: 1,
+              yearsOfExperience: 1,
+              specializations: 1,
+              certifications: 1,
+              isApproved: 1,
+              aboutMe: 1,
+              createdAt: 1,
+            },
           },
-        },
-        { $match: matchQuery },
-        { $unwind: "$trainersList" },
-        { $count: "totalCount" },
-      ]).then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      TrainerModel.aggregate([
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "trainersList",
-          },
-        },
-        { $match: matchQuery },
-        { $unwind: "$trainersList" },
-        {
-          $project: {
-            fname: "$trainersList.fname",
-            lname: "$trainersList.lname",
-            email: "$trainersList.email",
-            role: "$trainersList.role",
-            isBlocked: "$trainersList.isBlocked",
-            otpVerified: "$trainersList.otpVerified",
-            googleVerified: "$trainersList.googleVerified",
-            phone: "$trainersList.phone",
-            dateOfBirth: "$trainersList.dateOfBirth",
-            profilePic: "$trainersList.profilePic",
-            age: "$trainersList.age",
-            height: "$trainersList.height",
-            weight: "$trainersList.weight",
-            gender: "$trainersList.gender",
-            _id: 1,
-            userId: 1,
-            yearsOfExperience: 1,
-            specializations: 1,
-            certifications: 1,
-            isApproved: 1,
-            aboutMe: 1,
-            createdAt: 1,
-          },
-        },
-      ])
+        ])
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNumber)
@@ -419,64 +364,57 @@ export class TrainerRepository implements ITrainerRepository {
       }
     }
 
-    const [totalCount, trainersList] = await Promise.all([
-      TrainerModel.aggregate([
-        { $match: { isApproved: true } },
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "trainersList",
-          },
+    const commonPipeline = [
+      { $match: { isApproved: true } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "trainersList",
         },
-        { $unwind: "$trainersList" },
-        { $match: { "trainersList.isBlocked": false } },
-        { $match: matchQuery },
-        { $count: "totalCount" },
-      ]).then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      TrainerModel.aggregate([
-        { $match: { isApproved: true } },
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "trainersList",
-          },
-        },
-        { $unwind: "$trainersList" },
-        { $match: { "trainersList.isBlocked": false } },
-        { $match: matchQuery },
-        { $sort: sortQuery },
-        {
-          $project: {
-            fname: "$trainersList.fname",
-            lname: "$trainersList.lname",
-            email: "$trainersList.email",
-            role: "$trainersList.role",
-            isBlocked: "$trainersList.isBlocked",
-            otpVerified: "$trainersList.otpVerified",
-            googleVerified: "$trainersList.googleVerified",
-            phone: "$trainersList.phone",
-            dateOfBirth: "$trainersList.dateOfBirth",
-            profilePic: "$trainersList.profilePic",
-            age: "$trainersList.age",
-            height: "$trainersList.height",
-            weight: "$trainersList.weight",
-            gender: "$trainersList.gender",
+      },
+      { $unwind: "$trainersList" },
+      { $match: { "trainersList.isBlocked": false } },
+      { $match: matchQuery },
+    ];
 
-            _id: 1,
-            userId: 1,
-            yearsOfExperience: 1,
-            specializations: 1,
-            certifications: 1,
-            isApproved: 1,
-            aboutMe: 1,
-            createdAt: 1,
+    const [totalCount, trainersList] = await Promise.all([
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
+        .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
+      this.model
+        .aggregate([
+          ...commonPipeline,
+          { $sort: sortQuery },
+          {
+            $project: {
+              fname: "$trainersList.fname",
+              lname: "$trainersList.lname",
+              email: "$trainersList.email",
+              role: "$trainersList.role",
+              isBlocked: "$trainersList.isBlocked",
+              otpVerified: "$trainersList.otpVerified",
+              googleVerified: "$trainersList.googleVerified",
+              phone: "$trainersList.phone",
+              dateOfBirth: "$trainersList.dateOfBirth",
+              profilePic: "$trainersList.profilePic",
+              age: "$trainersList.age",
+              height: "$trainersList.height",
+              weight: "$trainersList.weight",
+              gender: "$trainersList.gender",
+
+              _id: 1,
+              userId: 1,
+              yearsOfExperience: 1,
+              specializations: 1,
+              certifications: 1,
+              isApproved: 1,
+              aboutMe: 1,
+              createdAt: 1,
+            },
           },
-        },
-      ])
+        ])
         .skip(skip)
         .limit(limitNumber)
         .exec(),
@@ -526,59 +464,54 @@ export class TrainerRepository implements ITrainerRepository {
       }
     }
 
+    const commonPipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "trainersList",
+        },
+      },
+      { $match: matchQuery },
+      { $unwind: "$trainersList" },
+    ];
+    
     const [totalCount, trainersList] = await Promise.all([
-      TrainerModel.aggregate([
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "trainersList",
-          },
-        },
-        { $match: matchQuery },
-        { $unwind: "$trainersList" },
-        { $count: "totalCount" },
-      ]).then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      TrainerModel.aggregate([
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "trainersList",
-          },
-        },
-        { $match: matchQuery },
-        { $unwind: "$trainersList" },
-        {
-          $project: {
-            fname: "$trainersList.fname",
-            lname: "$trainersList.lname",
-            email: "$trainersList.email",
-            role: "$trainersList.role",
-            isBlocked: "$trainersList.isBlocked",
-            otpVerified: "$trainersList.otpVerified",
-            googleVerified: "$trainersList.googleVerified",
-            phone: "$trainersList.phone",
-            dateOfBirth: "$trainersList.dateOfBirth",
-            profilePic: "$trainersList.profilePic",
-            age: "$trainersList.age",
-            height: "$trainersList.height",
-            weight: "$trainersList.weight",
-            gender: "$trainersList.gender",
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
+        .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
+      this.model
+        .aggregate([
+          ...commonPipeline,
+          {
+            $project: {
+              fname: "$trainersList.fname",
+              lname: "$trainersList.lname",
+              email: "$trainersList.email",
+              role: "$trainersList.role",
+              isBlocked: "$trainersList.isBlocked",
+              otpVerified: "$trainersList.otpVerified",
+              googleVerified: "$trainersList.googleVerified",
+              phone: "$trainersList.phone",
+              dateOfBirth: "$trainersList.dateOfBirth",
+              profilePic: "$trainersList.profilePic",
+              age: "$trainersList.age",
+              height: "$trainersList.height",
+              weight: "$trainersList.weight",
+              gender: "$trainersList.gender",
 
-            _id: 1,
-            userId: 1,
-            yearsOfExperience: 1,
-            specializations: 1,
-            certifications: 1,
-            isApproved: 1,
-            aboutMe: 1,
-            createdAt: 1,
+              _id: 1,
+              userId: 1,
+              yearsOfExperience: 1,
+              specializations: 1,
+              certifications: 1,
+              isApproved: 1,
+              aboutMe: 1,
+              createdAt: 1,
+            },
           },
-        },
-      ])
+        ])
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNumber)
@@ -595,6 +528,6 @@ export class TrainerRepository implements ITrainerRepository {
   }
 
   async countPendingTrainerApprovals(): Promise<number> {
-    return await TrainerModel.countDocuments({ isApproved: false });
+    return await this.model.countDocuments({ isApproved: false });
   }
 }

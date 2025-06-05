@@ -2,9 +2,10 @@ import { IPlayListRepository } from "../../../domain/interfaces/IPlayListReposit
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
 import { IVideoPlayListRepository } from "../../../domain/interfaces/IVideoPlayListRepository";
 import { ApplicationStatus } from "../../../shared/constants/index.constants";
-import { CreateVideoDTO } from "../../dtos/video-dtos";
+import { ReqCreateVideo } from "../../dtos/video-dtos";
 import { Video } from "../../../domain/entities/video.entities";
 import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { IVideo } from "../../../infrastructure/databases/models/video.model";
 
 export class CreateVideoUseCase {
   constructor(
@@ -13,7 +14,7 @@ export class CreateVideoUseCase {
     private videoPlayListRepository: IVideoPlayListRepository
   ) {}
 
-  async createVideo({
+  async execute({
     video,
     description,
     duration,
@@ -21,7 +22,7 @@ export class CreateVideoUseCase {
     thumbnail,
     title,
     trainerId,
-  }: CreateVideoDTO): Promise<Video> {
+  }: ReqCreateVideo): Promise<IVideo> {
     if (
       !video ||
       !description ||
@@ -33,15 +34,15 @@ export class CreateVideoUseCase {
     ) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const createdVideo = await this.videoRepository.createVideo({
+    const videoDataCreate = {
       video,
       description,
       duration,
-      playLists,
       thumbnail,
       title,
       trainerId,
-    });
+    };
+    const createdVideo = await this.videoRepository.create(videoDataCreate);
 
     if (createdVideo && playLists && playLists.length > 0) {
       const videoPlayListDocs = playLists.map((list) => ({
@@ -49,7 +50,7 @@ export class CreateVideoUseCase {
         playListId: list,
       }));
 
-      await this.videoPlayListRepository.insertManyVideoPlayList(
+      await this.videoPlayListRepository.insertPlaylists(
         videoPlayListDocs
       );
 

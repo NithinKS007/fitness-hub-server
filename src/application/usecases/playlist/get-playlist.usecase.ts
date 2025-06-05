@@ -7,7 +7,7 @@ import { GetPlayListsQueryDTO } from "../../dtos/query-dtos";
 
 export class GetPlayListUseCase {
   constructor(private playListRepository: IPlayListRepository) {}
-  async getPlaylists(
+  async execute(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
   ): Promise<{ playList: Playlist[]; paginationData: PaginationDTO }> {

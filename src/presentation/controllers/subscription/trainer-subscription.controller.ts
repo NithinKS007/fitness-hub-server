@@ -4,18 +4,20 @@ import {
   HttpStatusCodes,
   SubscriptionStatus,
 } from "../../../shared/constants/index.constants";
-import { GetTrainerSubscriptionUseCase } from "../../../application/usecases/subscription/get-trainer-subscription.usecase";
+import { GetTrainerSubscriptionsUseCase } from "../../../application/usecases/subscription/get-trainer-subscriptions.usecase";
 import { parseQueryParams } from "../../../shared/utils/parse.queryParams";
+import { GetTrainerSubscribersUseCase } from "../../../application/usecases/subscription/get-trainer-subscribed-users.usecase";
 
 export class TrainerSubscriptionController {
   constructor(
-    private getTrainerSubscriptionUseCase: GetTrainerSubscriptionUseCase
+    private getTrainerSubscriptionUseCase: GetTrainerSubscriptionsUseCase,
+    private getTrainerSubscribersUseCase :GetTrainerSubscribersUseCase
   ) {}
 
   async getTrainerSubscriptions(req: Request, res: Response): Promise<void> {
     const trainerId = req?.user?._id || req.params.trainerId;
     const subscriptionsData =
-      await this.getTrainerSubscriptionUseCase.getTrainerSubscriptions(
+      await this.getTrainerSubscriptionUseCase.execute(
         trainerId
       );
     sendResponse(
@@ -30,7 +32,7 @@ export class TrainerSubscriptionController {
     const trainerId = req?.user?._id;
     const queryParams = parseQueryParams(req.query);
     const { trainerSubscribers, paginationData } =
-      await this.getTrainerSubscriptionUseCase.getTrainerSubscribedUsers(
+      await this.getTrainerSubscribersUseCase.execute(
         trainerId,
         queryParams
       );

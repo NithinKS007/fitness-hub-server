@@ -44,3 +44,9 @@ export interface UpdateBlockStatusDTO {
   userId: string;
   isBlocked: boolean;
 }
+
+export enum RoleType {
+  Trainer = "trainer",
+  User = "user",
+  Admin = "admin",
+}

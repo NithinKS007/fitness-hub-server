@@ -1,58 +1,39 @@
-import mongoose from "mongoose";
-import {
-  AdminRevenueHistory,
-  CreateRevenueDTO,
-} from "../../../application/dtos/revenue-dtos";
+import { Model } from "mongoose";
+import { AdminRevenueHistory } from "../../../application/dtos/revenue-dtos";
 import { IPlatformEarningsRepository } from "../../../domain/interfaces/IPlatformEarningsRepository";
-import revenueModel from "../models/revenue.model";
+import revenueModel, { IRevenue } from "../models/revenue.model";
 import {
   DateRangeQueryDTO,
   GetRevenueQueryDTO,
 } from "../../../application/dtos/query-dtos";
 import { AdminChartData } from "../../../domain/entities/chart.entities";
 import { PaginationDTO } from "../../../application/dtos/utility-dtos";
+import { BaseRepository } from "./base.repository";
 
-export class RevenueRepository implements IPlatformEarningsRepository {
-  async create({
-    subscriptionId,
-    userSubscriptionPlanId,
-    trainerId,
-    userId,
-    amountPaid,
-    platformRevenue,
-    trainerRevenue,
-    commission,
-  }: CreateRevenueDTO): Promise<void> {
-    await revenueModel.create({
-      subscriptionId: new mongoose.Types.ObjectId(subscriptionId),
-      userSubscriptionPlanId: new mongoose.Types.ObjectId(
-        userSubscriptionPlanId
-      ),
-      trainerId: new mongoose.Types.ObjectId(trainerId),
-      userId: new mongoose.Types.ObjectId(userId),
-      amountPaid: amountPaid,
-      platformRevenue: platformRevenue,
-      trainerRevenue: trainerRevenue,
-      commission: commission,
-    });
+export class RevenueRepository
+  extends BaseRepository<IRevenue>
+  implements IPlatformEarningsRepository
+{
+  constructor(model: Model<IRevenue> = revenueModel) {
+    super(model);
   }
 
   async getTotalPlatFormFee(): Promise<number> {
-    const totalPlatFormFee = await revenueModel.aggregate([
+    const totalPlatFormFee = await this.model.aggregate([
       { $group: { _id: null, totalPlatFormFee: { $sum: "$platformRevenue" } } },
     ]);
     return totalPlatFormFee[0]?.totalPlatFormFee || 0;
   }
 
   async getTotalCommission(): Promise<number> {
-    const totalcommission = await revenueModel.aggregate([
+    const totalcommission = await this.model.aggregate([
       { $group: { _id: null, totalCommission: { $sum: "$commission" } } },
     ]);
     return totalcommission[0]?.totalCommission || 0;
   }
 
   async getTotalRevenue(): Promise<number> {
-    const totalRevenue = await revenueModel.aggregate([
+    const totalRevenue = await this.model.aggregate([
       {
         $group: {
           _id: null,
@@ -67,12 +48,12 @@ export class RevenueRepository implements IPlatformEarningsRepository {
     startDate,
     endDate,
   }: DateRangeQueryDTO): Promise<AdminChartData[]> {
-    const result = await revenueModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $match: {
           createdAt: {
-            $gte: new Date(startDate),
-            $lte: new Date(endDate),
+            $gte: startDate,
+            $lte: endDate,
           },
         },
       },
@@ -171,92 +152,55 @@ export class RevenueRepository implements IPlatformEarningsRepository {
       matchQuery.createdAt = { $lte: toDate };
     }
 
+    const commonPipeline = [
+      {
+        $lookup: {
+          from: "trainers",
+          localField: "trainerId",
+          foreignField: "_id",
+          as: "trainerData",
+        },
+      },
+      {
+        $unwind: "$trainerData",
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "trainerData.userId",
+          foreignField: "_id",
+          as: "subscriptionProvidedBy",
+        },
+      },
+      { $unwind: "$subscriptionProvidedBy" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "subscriptionTakenBy",
+        },
+      },
+      { $unwind: "$subscriptionTakenBy" },
+      {
+        $lookup: {
+          from: "usersubscriptionplans",
+          localField: "userSubscriptionPlanId",
+          foreignField: "_id",
+          as: "userSubscriptionPlanData",
+        },
+      },
+      { $unwind: "$userSubscriptionPlanData" },
+      { $match: matchQuery },
+    ];
+
     const [totalCount, revenueData] = await Promise.all([
-      revenueModel
-        .aggregate([
-          {
-            $lookup: {
-              from: "trainers",
-              localField: "trainerId",
-              foreignField: "_id",
-              as: "trainerData",
-            },
-          },
-          {
-            $unwind: "$trainerData",
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "trainerData.userId",
-              foreignField: "_id",
-              as: "subscriptionProvidedBy",
-            },
-          },
-          { $unwind: "$subscriptionProvidedBy" },
-          {
-            $lookup: {
-              from: "users",
-              localField: "userId",
-              foreignField: "_id",
-              as: "subscriptionTakenBy",
-            },
-          },
-          { $unwind: "$subscriptionTakenBy" },
-          {
-            $lookup: {
-              from: "usersubscriptionplans",
-              localField: "userSubscriptionPlanId",
-              foreignField: "_id",
-              as: "userSubscriptionPlanData",
-            },
-          },
-          { $unwind: "$userSubscriptionPlanData" },
-          { $match: matchQuery },
-          { $count: "totalCount" },
-        ])
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      revenueModel
+      this.model
         .aggregate([
-          {
-            $lookup: {
-              from: "trainers",
-              localField: "trainerId",
-              foreignField: "_id",
-              as: "trainerData",
-            },
-          },
-          {
-            $unwind: "$trainerData",
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "trainerData.userId",
-              foreignField: "_id",
-              as: "subscriptionProvidedBy",
-            },
-          },
-          { $unwind: "$subscriptionProvidedBy" },
-          {
-            $lookup: {
-              from: "users",
-              localField: "userId",
-              foreignField: "_id",
-              as: "subscriptionTakenBy",
-            },
-          },
-          { $unwind: "$subscriptionTakenBy" },
-          {
-            $lookup: {
-              from: "usersubscriptionplans",
-              localField: "userSubscriptionPlanId",
-              foreignField: "_id",
-              as: "userSubscriptionPlanData",
-            },
-          },
-          { $unwind: "$userSubscriptionPlanData" },
-          { $match: matchQuery },
+          ...commonPipeline,
           {
             $project: {
               amountPaid: 1,

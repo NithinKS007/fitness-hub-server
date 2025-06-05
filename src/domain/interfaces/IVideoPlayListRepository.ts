@@ -6,10 +6,10 @@ import {
 import { VideoPlayList } from "../entities/video-playlist.entities";
 
 export interface IVideoPlayListRepository {
-  insertManyVideoPlayList(
+  insertPlaylists(
     createVideoPlayList: CreateVideoPlayListDTO[]
   ): Promise<VideoPlayList[]>;
-  bulkWriteAddNewDeleteUnused(
+  bulkUpdatePlaylists(
     addPlayList: BulkWriteAddVideoPlayListDTO[],
     deletePlayList: BulkWriteDeleteVideoPlayListDTO[]
   ): Promise<void>;

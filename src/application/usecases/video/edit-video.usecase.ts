@@ -1,4 +1,4 @@
-import { EditVideoDTO } from "../../dtos/video-dtos";
+import { ReqEditVideoDTO } from "../../dtos/video-dtos";
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
@@ -8,6 +8,7 @@ import { Video } from "../../../domain/entities/video.entities";
 import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
 import { IVideoPlayListRepository } from "../../../domain/interfaces/IVideoPlayListRepository";
+import { IVideo } from "../../../infrastructure/databases/models/video.model";
 
 export class EditVideoUseCase {
   constructor(
@@ -16,7 +17,7 @@ export class EditVideoUseCase {
     private videoPlayListRepository: IVideoPlayListRepository
   ) {}
 
-  async editVideo({
+  async execute({
     _id,
     description,
     duration,
@@ -25,7 +26,7 @@ export class EditVideoUseCase {
     title,
     trainerId,
     video,
-  }: EditVideoDTO): Promise<Video> {
+  }: ReqEditVideoDTO): Promise<IVideo> {
     if (
       !_id ||
       !description ||
@@ -38,11 +39,9 @@ export class EditVideoUseCase {
     ) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const editedVideo = await this.videoRepository.editVideo({
-      _id,
+    const editedVideo = await this.videoRepository.update(_id, {
       description,
       duration,
-      playLists,
       thumbnail,
       title,
       trainerId,
@@ -63,7 +62,7 @@ export class EditVideoUseCase {
       const videoCountWithPlayList =
         await this.playListRepository.getNumberOfVideosPerPlaylist(playLists);
 
-      await this.videoPlayListRepository.bulkWriteAddNewDeleteUnused(
+      await this.videoPlayListRepository.bulkUpdatePlaylists(
         videoPlayListDocs,
         videoIdsToDelete
       );

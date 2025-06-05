@@ -46,7 +46,6 @@ export type GetVideoCallLogQueryDTO = BaseQueryDTO;
 export interface BaseDashBoardQueryDTO {
   period: string;
 }
-export type DashBoardChartFilterDTO = string;
 export type DateRangeQueryDTO = { startDate: Date; endDate: Date };
 export interface UserDashBoardQueryDTO extends BaseDashBoardQueryDTO {
   userId: string;

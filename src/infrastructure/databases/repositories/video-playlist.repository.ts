@@ -5,20 +5,20 @@ import {
 } from "../../../application/dtos/playlist-dtos";
 import { VideoPlayList } from "../../../domain/entities/video-playlist.entities";
 import { IVideoPlayListRepository } from "../../../domain/interfaces/IVideoPlayListRepository";
-import videoPlayListModel from "../models/video-playlist.model";
+import VideoPlayListModel from "../models/video-playlist.model";
 
 export class VideoPlayListRepository implements IVideoPlayListRepository {
-  async insertManyVideoPlayList(
+  async insertPlaylists(
     createVideoPlayList: CreateVideoPlayListDTO[]
   ): Promise<VideoPlayList[]> {
-    return await videoPlayListModel.insertMany(createVideoPlayList);
+    return await VideoPlayListModel.insertMany(createVideoPlayList);
   }
 
-  async bulkWriteAddNewDeleteUnused(
+  async bulkUpdatePlaylists(
     addPlayList: BulkWriteAddVideoPlayListDTO[],
     deletePlayList: BulkWriteDeleteVideoPlayListDTO[]
   ): Promise<void> {
-    await videoPlayListModel.bulkWrite([
+    await VideoPlayListModel.bulkWrite([
       {
         deleteMany: {
           filter: { videoId: { $in: deletePlayList } },

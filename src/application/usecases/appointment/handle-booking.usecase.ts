@@ -1,4 +1,4 @@
-import { HandleBookingRequestDTO } from "../../dtos/booking-dtos";
+import { BookingStatus, HandleBookingDTO } from "../../dtos/booking-dtos";
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
@@ -7,6 +7,7 @@ import {
 import { Appointment } from "../../../domain/entities/appointment.entities";
 import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
 import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
+import { Action } from "../../dtos/utility-dtos";
 
 /*  
     Purpose: Approve or reject a booking request, and update the booking slot and appointment status accordingly
@@ -24,24 +25,28 @@ export class HandleBookingApprovalUseCase {
     appointmentId,
     bookingSlotId,
     action,
-  }: HandleBookingRequestDTO): Promise<Appointment> {
+  }: HandleBookingDTO): Promise<Appointment> {
     if (!appointmentId || !bookingSlotId || !action) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const bookingSlotData = await this.bookingSlotRepository.findSlotById(
+    const bookingSlotData = await this.bookingSlotRepository.findById(
       bookingSlotId
     );
     if (!bookingSlotData) {
       throw new validationError(AppointmentStatus.BookingSlotNotFound);
     }
-    const status = action === "approved" ? "completed" : "pending";
-    await this.bookingSlotRepository.changeStatus(bookingSlotId, status);
-    const appointmentData =
-      await this.appointmentRepository.handleBookingRequest({
-        appointmentId,
-        action,
-        bookingSlotId,
-      });
+    const status =
+      action === Action.Approved
+        ? BookingStatus.Completed
+        : BookingStatus.Pending;
+
+    await this.bookingSlotRepository.update(bookingSlotId, { status });
+    const appointmentData = await this.appointmentRepository.update(
+      appointmentId,
+      {
+        status: action,
+      }
+    );
 
     if (!appointmentData) {
       throw new validationError(

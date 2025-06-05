@@ -1,13 +1,22 @@
+import { Model } from "mongoose";
 import {
   CreatePassResetTokenDTO,
   DeletePasswordResetTokenDTO,
-  PasswordResetDTO,
 } from "../../../application/dtos/auth-dtos";
 import { PassResetTokenEntity } from "../../../domain/entities/pass-reset-token.entities";
 import { IPasswordResetRepository } from "../../../domain/interfaces/IPasswordResetTokenRepository";
-import PasswordResetTokenModel from "../models/password.token.model";
+import PasswordResetTokenModel, {
+  IPasswordResetToken,
+} from "../models/password.token.model";
+import { BaseRepository } from "./base.repository";
 
-export class PasswordResetRepository implements IPasswordResetRepository {
+export class PasswordResetRepository
+  extends BaseRepository<IPasswordResetToken>
+  implements IPasswordResetRepository
+{
+  constructor(model: Model<IPasswordResetToken> = PasswordResetTokenModel) {
+    super(model);
+  }
   async createToken({
     email,
     resetToken,
@@ -26,13 +35,7 @@ export class PasswordResetRepository implements IPasswordResetRepository {
       );
     return PasswordResetTokenData.toObject();
   }
-  async verifyToken({
-    resetToken,
-  }: PasswordResetDTO): Promise<PassResetTokenEntity | null> {
-    return await PasswordResetTokenModel.findOne({
-      resetToken: resetToken,
-    }).lean();
-  }
+
   async deleteToken({
     resetToken,
   }: DeletePasswordResetTokenDTO): Promise<PassResetTokenEntity | null> {

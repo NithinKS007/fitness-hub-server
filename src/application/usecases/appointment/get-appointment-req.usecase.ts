@@ -29,7 +29,7 @@ export class GetAppointmentRequestUseCase {
     }
     const query = { page, limit, fromDate, toDate, search, filters };
     const { bookingRequestsList, paginationData } =
-      await this.appointmentRepository.getBookingAppointmentRequests(
+      await this.appointmentRepository.getBookingRequests(
         trainerId,
         query
       );

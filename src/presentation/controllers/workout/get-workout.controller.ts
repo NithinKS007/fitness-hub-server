@@ -9,11 +9,11 @@ import { parseQueryParams } from "../../../shared/utils/parse.queryParams";
 
 export class GetWorkoutController {
   constructor(private getWorkoutUseCase: GetWorkoutUseCase) {}
-  async getWorkoutsByUserId(req: Request, res: Response): Promise<void> {
+  async handleGetWorkout(req: Request, res: Response): Promise<void> {
     const userId = req?.user?._id;
     const queryParams = parseQueryParams(req.query);
     const { workoutList, paginationData } =
-      await this.getWorkoutUseCase.getWorkoutsByUserId(userId, queryParams);
+      await this.getWorkoutUseCase.execute(userId, queryParams);
     sendResponse(
       res,
       HttpStatusCodes.OK,

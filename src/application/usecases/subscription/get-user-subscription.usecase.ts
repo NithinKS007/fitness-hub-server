@@ -7,7 +7,7 @@ import {
   UserMyTrainersList,
   UserSubscriptionsList,
 } from "../../../domain/entities/subscription.entities";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
+import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
 import {
   GetUserSubscriptionsQueryDTO,
   GetUserTrainersListQueryDTO,

@@ -20,7 +20,7 @@ export class AdminDashboardController {
       totalRevenue,
       chartData,
       top5List,
-    } = await this.adminDashBoardUseCase.getAdminDashBoardData(period);
+    } = await this.adminDashBoardUseCase.execute(period);
     sendResponse(
       res,
       HttpStatusCodes.OK,

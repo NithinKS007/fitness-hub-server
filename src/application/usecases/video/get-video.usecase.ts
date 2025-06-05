@@ -5,11 +5,11 @@ import {
   VideoStatus,
 } from "../../../shared/constants/index.constants";
 import {
-  Video,
   VideoWithPlayLists,
 } from "../../../domain/entities/video.entities";
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
 import { GetVideoQueryDTO } from "../../dtos/query-dtos";
+import { IVideo } from "../../../infrastructure/databases/models/video.model";
 
 export class GetVideoUseCase {
   constructor(private videoRepository: IVideoRepository) {}
@@ -48,8 +48,8 @@ export class GetVideoUseCase {
     return { videoList, paginationData };
   }
 
-  async getVideoById(videoId: string): Promise<Video> {
-    const videoData = await this.videoRepository.getVideoById(videoId);
+  async getVideoById(videoId: string): Promise<IVideo> {
+    const videoData = await this.videoRepository.findById(videoId);
     if (!videoData) {
       throw new validationError(VideoStatus.FailedToGetVideo);
     }

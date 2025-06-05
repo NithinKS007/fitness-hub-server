@@ -8,13 +8,13 @@ import { CreateBookingSlotUseCase } from "../../../application/usecases/bookingS
 
 export class CreateBookingSlotController {
   constructor(private createBookingSlotUseCase: CreateBookingSlotUseCase) {}
-  async addBookingSlot(req: Request, res: Response): Promise<void> {
+  async handleAddSlot(req: Request, res: Response): Promise<void> {
     const trainerId = req?.user?._id;
     const bookingSlotData = {
       trainerId,
       ...req.body,
     };
-    const createdSlotData = await this.createBookingSlotUseCase.addBookingSlot(
+    const createdSlotData = await this.createBookingSlotUseCase.execute(
       bookingSlotData
     );
     sendResponse(

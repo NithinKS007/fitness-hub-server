@@ -6,13 +6,10 @@ import { IPlayListRepository } from "../../../domain/interfaces/IPlayListReposit
 
 export class CreatePlayListUseCase {
   constructor(private playListRepository: IPlayListRepository) {}
-  async addPlaylist({
-    title,
-    trainerId,
-  }: CreatePlayListDTO): Promise<Playlist> {
+  async execute({ title, trainerId }: CreatePlayListDTO): Promise<Playlist> {
     if (!title || !trainerId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    return await this.playListRepository.addPlaylist({ title, trainerId });
+    return await this.playListRepository.create({ title, trainerId });
   }
 }

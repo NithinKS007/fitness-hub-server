@@ -5,7 +5,7 @@ import { IPlayListRepository } from "../../../domain/interfaces/IPlayListReposit
 
 export class GetallPlaylistUseCase {
   constructor(private playListRepository: IPlayListRepository) {}
-  async getallPlaylists(trainerId: string): Promise<Playlist[]> {
+  async execute(trainerId: string): Promise<Playlist[]> {
     if (!trainerId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

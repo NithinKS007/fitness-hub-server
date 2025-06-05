@@ -28,7 +28,7 @@ export class PasswordUseCase {
   async generateResetLink({
     email,
   }: CreatePassResetTokenDTO): Promise<PassResetTokenEntity> {
-    const userData = await this.userRepository.findByEmail({ email: email });
+    const userData = await this.userRepository.findOne({ email: email });
     if (!userData) {
       throw new validationError(AuthStatus.EmailNotFound);
     }
@@ -45,7 +45,8 @@ export class PasswordUseCase {
     const resetURL = `${productionUrl}/auth/reset-password/${token}`;
     const subject = "Password Reset";
     const text =
-      `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n` +
+      `You are receiving this because you (or someone else) have requested the reset of the 
+       password for your account.\n\n` +
       `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
       `${resetURL}\n\n` +
       `If you did not request this, please ignore this email and your password will remain unchanged.`;
@@ -65,7 +66,7 @@ export class PasswordUseCase {
     password,
   }: PasswordResetDTO): Promise<void> {
     const token = await this.tokenService.hashToken(resetToken);
-    const tokenData = await this.passwordResetRepository.verifyToken({
+    const tokenData = await this.passwordResetRepository.findOne({
       resetToken: token,
     });
 
@@ -73,7 +74,7 @@ export class PasswordUseCase {
       throw new validationError(PasswordStatus.LinkExpired);
     }
     const { email } = tokenData;
-    const userData = await this.userRepository.findByEmail({ email });
+    const userData = await this.userRepository.findOne({ email });
     if (!userData) {
       throw new validationError(AuthStatus.EmailNotFound);
     }
@@ -107,10 +108,8 @@ export class PasswordUseCase {
       throw new validationError(PasswordStatus.IncorrectPassword);
     }
     const hashedPassword = await this.passwordService.hashPassword(newPassword);
-    await this.userRepository.changePassword({
-      userId,
-      newPassword: hashedPassword,
-      password,
+    await this.userRepository.update(userId, {
+      password: hashedPassword,
     });
   }
 }

@@ -1,55 +1,20 @@
-import mongoose from "mongoose";
-import {
-  CreateVideoDTO,
-  EditVideoDTO,
-  UpdateVideoPrivacyDTO,
-} from "../../../application/dtos/video-dtos";
+import mongoose, { Model } from "mongoose";
 import { PaginationDTO } from "../../../application/dtos/utility-dtos";
-import {
-  Video,
-  VideoWithPlayLists,
-} from "../../../domain/entities/video.entities";
+import { VideoWithPlayLists } from "../../../domain/entities/video.entities";
 import { IVideoRepository } from "../../../domain/interfaces/IVideoRepository";
-import videoModel from "../models/video.model";
+import VideoModel, { IVideo } from "../models/video.model";
 import { GetVideoQueryDTO } from "../../../application/dtos/query-dtos";
+import { BaseRepository } from "./base.repository";
 
-export class VideoRepository implements IVideoRepository {
-   async createVideo({
-    trainerId,
-    title,
-    description,
-    thumbnail,
-    video,
-    playLists,
-    duration,
-  }: CreateVideoDTO): Promise<Video> {
-    const trainerIdObjectId = new mongoose.Types.ObjectId(trainerId);
-    const playListsObjectId = playLists.map(
-      (playlist) => new mongoose.Types.ObjectId(playlist)
-    );
-    const createdVideo = await videoModel.create({
-      trainerId: trainerIdObjectId,
-      title,
-      description,
-      thumbnail,
-      video,
-      duration,
-      playLists: playListsObjectId,
-    });
-    return createdVideo.toObject();
+export class VideoRepository
+  extends BaseRepository<IVideo>
+  implements IVideoRepository
+{
+  constructor(model: Model<IVideo> = VideoModel) {
+    super(model);
   }
 
-   async updatePrivacy({
-    videoId,
-    privacy,
-  }: UpdateVideoPrivacyDTO): Promise<Video | null> {
-    return await videoModel.findByIdAndUpdate(
-      { _id: new mongoose.Types.ObjectId(videoId) },
-      { privacy: privacy },
-      { new: true }
-    );
-  }
-   async getVideos(
+  async getVideos(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO
   ): Promise<{
@@ -60,7 +25,7 @@ export class VideoRepository implements IVideoRepository {
     const limitNumber = limit || 10;
     const skip = (pageNumber - 1) * limitNumber;
 
-    const trainerObjectId = new mongoose.Types.ObjectId(trainerId);
+    const trainerObjectId = this.parseId(trainerId);
     let matchQuery: any = { trainerId: trainerObjectId };
 
     if (search) {
@@ -73,10 +38,10 @@ export class VideoRepository implements IVideoRepository {
     if (fromDate || toDate) {
       matchQuery.createdAt = {};
       if (fromDate) {
-        matchQuery.createdAt.$gte = new Date(fromDate);
+        matchQuery.createdAt.$gte = fromDate;
       }
       if (toDate) {
-        matchQuery.createdAt.$lte = new Date(toDate);
+        matchQuery.createdAt.$lte = toDate;
       }
     }
 
@@ -90,7 +55,7 @@ export class VideoRepository implements IVideoRepository {
     const playlistIds =
       filters
         ?.filter((id) => mongoose.Types.ObjectId.isValid(id))
-        .map((id) => new mongoose.Types.ObjectId(id)) || [];
+        .map((id) => this.parseId(id)) || [];
 
     const basePipeline: any[] = [
       { $match: matchQuery },
@@ -136,10 +101,10 @@ export class VideoRepository implements IVideoRepository {
       },
     ];
     const [totalCount, videoList] = await Promise.all([
-      videoModel
+      this.model
         .aggregate([...basePipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      videoModel
+      this.model
         .aggregate(basePipeline)
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -157,7 +122,7 @@ export class VideoRepository implements IVideoRepository {
     };
   }
 
-   async getPublicVideos(
+  async getPublicVideos(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO
   ): Promise<{
@@ -168,7 +133,7 @@ export class VideoRepository implements IVideoRepository {
     const limitNumber = limit || 10;
     const skip = (pageNumber - 1) * limitNumber;
 
-    const trainerObjectId = new mongoose.Types.ObjectId(trainerId);
+    const trainerObjectId = this.parseId(trainerId);
     let matchQuery: any = { trainerId: trainerObjectId, privacy: false };
 
     if (search) {
@@ -181,10 +146,10 @@ export class VideoRepository implements IVideoRepository {
     if (fromDate || toDate) {
       matchQuery.createdAt = {};
       if (fromDate) {
-        matchQuery.createdAt.$gte = new Date(fromDate);
+        matchQuery.createdAt.$gte = fromDate;
       }
       if (toDate) {
-        matchQuery.createdAt.$lte = new Date(toDate);
+        matchQuery.createdAt.$lte = toDate;
       }
     }
 
@@ -198,7 +163,7 @@ export class VideoRepository implements IVideoRepository {
     const playlistIds =
       filters
         ?.filter((id) => mongoose.Types.ObjectId.isValid(id))
-        .map((id) => new mongoose.Types.ObjectId(id)) || [];
+        .map((id) => this.parseId(id)) || [];
 
     const basePipeline: any[] = [
       { $match: matchQuery },
@@ -244,10 +209,10 @@ export class VideoRepository implements IVideoRepository {
       },
     ];
     const [totalCount, videoList] = await Promise.all([
-      videoModel
+      this.model
         .aggregate([...basePipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      videoModel
+      this.model
         .aggregate(basePipeline)
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -263,32 +228,5 @@ export class VideoRepository implements IVideoRepository {
         totalPages: totalPages,
       },
     };
-  }
-
-   async getVideoById(videoId: string): Promise<Video | null> {
-    return await videoModel.findOne({
-      _id: new mongoose.Types.ObjectId(videoId),
-    });
-  }
-
-   async editVideo({
-    _id,
-    title,
-    description,
-    duration,
-    thumbnail,
-    video,
-  }: EditVideoDTO): Promise<Video | null> {
-    return await videoModel.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(_id),
-      {
-        title: title,
-        description: description,
-        duration: duration,
-        thumbnail: thumbnail,
-        video: video,
-      },
-      { new: true }
-    );
   }
 }

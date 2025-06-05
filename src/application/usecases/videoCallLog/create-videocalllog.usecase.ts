@@ -3,9 +3,16 @@ import { validationError } from "../../../presentation/middlewares/error.middlew
 import { ApplicationStatus } from "../../../shared/constants/index.constants";
 import { CreateVideoCallLogDTO } from "../../dtos/video-call-dtos";
 
+/**
+ * Purpose: Create a video call log entry for a given appointment.
+ * Incoming: { appointmentId, callRoomId, callStartTime, callerId, receiverId }
+ * Returns: void (No return value)
+ * Throws: Error if any required field is missing.
+ */
+
 export class CreateVideoCallLogUseCase {
   constructor(private videoCallLogRepository: IVideoCallLogRepository) {}
-  async createVideoCallLog({
+  async execute({
     appointmentId,
     callRoomId,
     callStartTime,
@@ -21,13 +28,13 @@ export class CreateVideoCallLogUseCase {
     ) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const dateToCreate = {
+    const callDataCreate = {
       appointmentId,
       callRoomId,
       callStartTime,
       callerId,
       receiverId,
     };
-    await this.videoCallLogRepository.createCallLog(dateToCreate);
+    await this.videoCallLogRepository.create(callDataCreate);
   }
 }

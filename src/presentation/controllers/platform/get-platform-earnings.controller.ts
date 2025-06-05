@@ -11,9 +11,7 @@ export class GetPlatformEarningsController {
   constructor(private getPFearningsUseCase: GetPlatformEarningsUsecase) {}
   async getPlatformEarnings(req: Request, res: Response): Promise<void> {
     const { revenueData, paginationData } =
-      await this.getPFearningsUseCase.getPlatformEarnings(
-        parseQueryParams(req.query)
-      );
+      await this.getPFearningsUseCase.execute(parseQueryParams(req.query));
     sendResponse(
       res,
       HttpStatusCodes.OK,

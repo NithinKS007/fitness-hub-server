@@ -18,7 +18,7 @@ export class TrainerDashboardController {
       canceledSubscribersCount,
       chartData,
       pieChartData,
-    } = await this.trainerDashBoardUseCase.getTrainerDashBoardData(
+    } = await this.trainerDashBoardUseCase.execute(
       trainerId,
       period
     );

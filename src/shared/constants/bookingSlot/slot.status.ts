@@ -8,8 +8,3 @@ export enum SlotStatus {
   FailedToDeleteSlotAlreadyUsedForTakingAppointment = "Slot currently unavailbale, Please try again",
 }
 
-export const enum BookingSlotStatus {
-  PENDING = "pending",
-  BOOKED = "booked",
-  COMPLETED = "completed",
-}

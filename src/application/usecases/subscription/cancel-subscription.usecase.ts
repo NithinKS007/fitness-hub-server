@@ -1,14 +1,19 @@
-import { CancelSubscriptionDTO } from "../../dtos/subscription-dtos";
+import {
+  CancelSubAction,
+  CancelSubscriptionDTO,
+} from "../../dtos/subscription-dtos";
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AuthStatus,
+  SubscriptionStatus,
 } from "../../../shared/constants/index.constants";
 import { IPaymentService } from "../../interfaces/payments/IPayment.service";
 
 export class CancelSubscriptionUseCase {
   constructor(private paymentService: IPaymentService) {}
-  async cancelSubscription({
+
+  async execute({
     stripeSubscriptionId,
     action,
   }: CancelSubscriptionDTO): Promise<{
@@ -26,7 +31,7 @@ export class CancelSubscriptionUseCase {
     if (!stripeSub) {
       throw new validationError(AuthStatus.InvalidId);
     }
-    if (action === "cancelImmediately") {
+    if (action === CancelSubAction.immediately) {
       const stripeSub = await this.paymentService.cancelSubscription(
         stripeSubscriptionId
       );
@@ -36,7 +41,7 @@ export class CancelSubscriptionUseCase {
         cancelAction: action,
       };
     } else {
-      throw new validationError("Invalid cancellation action");
+      throw new validationError(SubscriptionStatus.FailedToCancelSubscription);
     }
   }
 }

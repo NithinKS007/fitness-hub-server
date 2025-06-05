@@ -1,7 +1,7 @@
 import { CheckSubscriptionStatusDTO } from "../../dtos/subscription-dtos";
 import { validationError } from "../../../presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "../../../shared/constants/index.constants";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
+import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
 import { IPaymentService } from "../../interfaces/payments/IPayment.service";
 
 export class CheckSubscriptionStatusUseCase {
@@ -10,10 +10,7 @@ export class CheckSubscriptionStatusUseCase {
     private paymentService: IPaymentService
   ) {}
 
-  async isUserSubscribedToTheTrainer({
-    userId,
-    trainerId,
-  }: CheckSubscriptionStatusDTO): Promise<{
+  async execute({ userId, trainerId }: CheckSubscriptionStatusDTO): Promise<{
     trainerId: string;
     isSubscribed: boolean;
   }> {

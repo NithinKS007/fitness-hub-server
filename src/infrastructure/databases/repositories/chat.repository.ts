@@ -1,36 +1,29 @@
-import mongoose from "mongoose";
-import {
-  CreateChatDTO,
-  FindChatDTO,
-} from "../../../application/dtos/chat-dtos";
+import { Model } from "mongoose";
+import { FindChatDTO } from "../../../application/dtos/chat-dtos";
 import { Chat } from "../../../domain/entities/chat.entities";
 import { IChatRepository } from "../../../domain/interfaces/IChatRepository";
-import chatModel from "../models/chat.model";
+import ChatModel, { IChat } from "../models/chat.model";
+import { BaseRepository } from "./base.repository";
 
-export class ChatRepository implements IChatRepository {
-  async saveChat(createChatDto: CreateChatDTO): Promise<Chat> {
-    const chatToSave = {
-      ...createChatDto,
-      senderId: new mongoose.Types.ObjectId(createChatDto.senderId),
-      receiverId: new mongoose.Types.ObjectId(createChatDto.receiverId),
-    };
-
-    return await chatModel.create(chatToSave);
+export class ChatRepository
+  extends BaseRepository<IChat>
+  implements IChatRepository
+{
+  constructor(model: Model<IChat> = ChatModel) {
+    super(model);
   }
-  async getMessagesBetween2users({
-    userId,
-    otherUserId,
-  }: FindChatDTO): Promise<Chat[]> {
-    const chats = await chatModel
+
+  async getChatHistory({ userId, otherUserId }: FindChatDTO): Promise<Chat[]> {
+    const chats = await this.model
       .find({
         $or: [
           {
-            senderId: new mongoose.Types.ObjectId(userId),
-            receiverId: new mongoose.Types.ObjectId(otherUserId),
+            senderId: this.parseId(userId),
+            receiverId: this.parseId(otherUserId),
           },
           {
-            senderId: new mongoose.Types.ObjectId(otherUserId),
-            receiverId: new mongoose.Types.ObjectId(userId),
+            senderId: this.parseId(otherUserId),
+            receiverId: this.parseId(userId),
           },
         ],
       })
@@ -38,26 +31,27 @@ export class ChatRepository implements IChatRepository {
     return chats;
   }
 
-  async markAsRead(userId: string, receiverId: string): Promise<Chat[] | null> {
-    const unreadMessages = await chatModel.find({
-      senderId: new mongoose.Types.ObjectId(receiverId),
-      receiverId: new mongoose.Types.ObjectId(userId),
+  async findUnreadMessages(
+    userId: string,
+    receiverId: string
+  ): Promise<Chat[]> {
+    return this.model.find({
+      senderId: this.parseId(receiverId),
+      receiverId: this.parseId(userId),
       isRead: false,
     });
-    if (unreadMessages.length === 0) {
-      return null;
-    }
-    await chatModel.updateMany(
+  }
+
+  async markMessagesRead(userId: string, receiverId: string): Promise<void> {
+    await this.model.updateMany(
       {
-        senderId: new mongoose.Types.ObjectId(receiverId),
-        receiverId: new mongoose.Types.ObjectId(userId),
+        senderId: this.parseId(receiverId),
+        receiverId: this.parseId(userId),
         isRead: false,
       },
       {
         $set: { isRead: true },
       }
     );
-
-    return unreadMessages;
   }
 }

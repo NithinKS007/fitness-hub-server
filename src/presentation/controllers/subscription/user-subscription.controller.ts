@@ -33,7 +33,7 @@ export class UserSubscriptionController {
     const userId = req?.user?._id;
     const trainerId = req.params._id;
     const isUserSubscribedToTheTrainer =
-      await this.checkSubscriptionStatusUseCase.isUserSubscribedToTheTrainer({
+      await this.checkSubscriptionStatusUseCase.execute({
         userId,
         trainerId,
       });

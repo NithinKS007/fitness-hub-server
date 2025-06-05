@@ -5,9 +5,10 @@ import {
 } from "../../../shared/constants/index.constants";
 import { sendResponse } from "../../../shared/utils/http.response";
 import { BookAppointmentUseCase } from "../../../application/usecases/appointment/book-appointment-usecase";
+
 export class BookAppointmentController {
   constructor(private bookAppointmentUseCase: BookAppointmentUseCase) {}
-  async bookAppointment(req: Request, res: Response): Promise<void> {
+  async handleBookAppointment(req: Request, res: Response): Promise<void> {
     const slotId = req.params.slotId;
     const userId = req?.user?._id;
     const bookingRequestData = {

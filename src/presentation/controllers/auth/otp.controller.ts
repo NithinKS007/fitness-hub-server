@@ -10,7 +10,7 @@ import { OtpUseCase } from "../../../application/usecases/auth/otp.usecase";
 export class OtpController {
   constructor(private otpUseCase: OtpUseCase) {}
   async verifyOtp(req: Request, res: Response): Promise<void> {
-    await this.otpUseCase.verifyOtpByEmail(req.body);
+    await this.otpUseCase.verifyOtp(req.body);
     sendResponse(
       res,
       HttpStatusCodes.OK,

@@ -9,7 +9,7 @@ import { parseQueryParams } from "../../../shared/utils/parse.queryParams";
 
 export class GetUserMyTrainersController {
   constructor(private getUserSubscriptionUseCase: GetUserSubscriptionUseCase) {}
-  async getMyTrainers(req: Request, res: Response): Promise<void> {
+  async handleGetMyTrainers(req: Request, res: Response): Promise<void> {
     const userId = req?.user?._id;
     const { userTrainersList, paginationData } =
       await this.getUserSubscriptionUseCase.userMyTrainersList(

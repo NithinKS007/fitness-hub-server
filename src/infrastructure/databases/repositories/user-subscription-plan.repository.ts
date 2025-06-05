@@ -1,13 +1,12 @@
-import mongoose from "mongoose";
+import { Model } from "mongoose";
 import {
   CheckSubscriptionStatusDTO,
-  CreateUserSubscriptionPlanDTO,
   UpdateSubscriptionStatusDTO,
 } from "../../../application/dtos/subscription-dtos";
 import { PaginationDTO } from "../../../application/dtos/utility-dtos";
 import { SubscriptionPlanEntity } from "../../../domain/entities/subscription-plan.entities";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionRepository";
-import userSubscriptionPlanModel from "../models/user.subscription.plan";
+import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
+import { IUserSubscriptionPlan } from "../models/user-subscription-plan";
 import {
   DateRangeQueryDTO,
   GetTrainerSubscribersQueryDTO,
@@ -25,36 +24,15 @@ import {
 } from "../../../domain/entities/chart.entities";
 import { Top5List } from "../../../domain/entities/trainer.entities";
 import conversationModel from "../models/conversation.model";
+import UserSubscriptionPlanModel from "../models/user-subscription-plan";
+import { BaseRepository } from "./base.repository";
 
 export class UserSubscriptionPlanRepository
+  extends BaseRepository<IUserSubscriptionPlan>
   implements IUserSubscriptionPlanRepository
 {
-  async create({
-    userId,
-    trainerId,
-    subPeriod,
-    price,
-    durationInWeeks,
-    sessionsPerWeek,
-    totalSessions,
-    stripePriceId,
-    stripeSubscriptionId,
-    stripeSubscriptionStatus,
-  }: CreateUserSubscriptionPlanDTO): Promise<SubscriptionPlanEntity> {
-    const newSubscription = await userSubscriptionPlanModel.create({
-      userId: new mongoose.Types.ObjectId(userId),
-      trainerId: new mongoose.Types.ObjectId(trainerId),
-      subPeriod,
-      price,
-      durationInWeeks,
-      sessionsPerWeek,
-      totalSessions,
-      stripePriceId,
-      stripeSubscriptionId,
-      stripeSubscriptionStatus,
-    });
-
-    return newSubscription.toObject();
+  constructor(model: Model<IUserSubscriptionPlan> = UserSubscriptionPlanModel) {
+    super(model);
   }
   async findSubscriptionsOfUser(
     userId: string,
@@ -104,52 +82,35 @@ export class UserSubscriptionPlanRepository
       if (conditions.length > 0) matchQuery.$or = conditions;
     }
 
+    const commonPipeline = [
+      { $match: { userId: this.parseId(userId) } },
+      {
+        $lookup: {
+          from: "trainers",
+          localField: "trainerId",
+          foreignField: "_id",
+          as: "subscribedTrainerData",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "subscribedTrainerData.userId",
+          foreignField: "_id",
+          as: "subscribedTrainerData",
+        },
+      },
+      { $match: matchQuery },
+      { $unwind: "$subscribedTrainerData" },
+    ];
+
     const [totalCount, userSubscriptionsList] = await Promise.all([
-      userSubscriptionPlanModel
-        .aggregate([
-          { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-          {
-            $lookup: {
-              from: "trainers",
-              localField: "trainerId",
-              foreignField: "_id",
-              as: "subscribedTrainerData",
-            },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "subscribedTrainerData.userId",
-              foreignField: "_id",
-              as: "subscribedTrainerData",
-            },
-          },
-          { $match: matchQuery },
-          { $unwind: "$subscribedTrainerData" },
-          { $count: "totalCount" },
-        ])
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      userSubscriptionPlanModel
+      this.model
         .aggregate([
-          { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-          {
-            $lookup: {
-              from: "trainers",
-              localField: "trainerId",
-              foreignField: "_id",
-              as: "subscribedTrainerData",
-            },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "subscribedTrainerData.userId",
-              foreignField: "_id",
-              as: "subscribedTrainerData",
-            },
-          },
-          { $match: matchQuery },
-          { $unwind: "$subscribedTrainerData" },
+          ...commonPipeline,
           {
             $project: {
               _id: 1,
@@ -189,6 +150,7 @@ export class UserSubscriptionPlanRepository
       },
     };
   }
+
   async findSubscriptionsOfTrainer(
     trainerId: string,
     { page, limit, search, filters }: GetTrainerSubscribersQueryDTO
@@ -237,37 +199,28 @@ export class UserSubscriptionPlanRepository
       if (conditions.length > 0) matchQuery.$or = conditions;
     }
 
+    const commonPipeline = [
+      { $match: { trainerId: this.parseId(trainerId) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "subscribedUserData",
+        },
+      },
+      { $match: matchQuery },
+      { $unwind: "$subscribedUserData" },
+    ];
+
     const [totalCount, trainerSubscribers] = await Promise.all([
-      userSubscriptionPlanModel
-        .aggregate([
-          { $match: { trainerId: new mongoose.Types.ObjectId(trainerId) } },
-          {
-            $lookup: {
-              from: "users",
-              localField: "userId",
-              foreignField: "_id",
-              as: "subscribedUserData",
-            },
-          },
-          { $match: matchQuery },
-          { $unwind: "$subscribedUserData" },
-          { $count: "totalCount" },
-        ])
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
 
-      userSubscriptionPlanModel
+      this.model
         .aggregate([
-          { $match: { trainerId: new mongoose.Types.ObjectId(trainerId) } },
-          {
-            $lookup: {
-              from: "users",
-              localField: "userId",
-              foreignField: "_id",
-              as: "subscribedUserData",
-            },
-          },
-          { $match: matchQuery },
-          { $unwind: "$subscribedUserData" },
+          ...commonPipeline,
           {
             $project: {
               _id: 1,
@@ -307,10 +260,11 @@ export class UserSubscriptionPlanRepository
       },
     };
   }
+
   async findSubscriptionByStripeSubscriptionId(
     stripeSubscriptionId: string
   ): Promise<SubscriptionPlanEntity> {
-    const result = await userSubscriptionPlanModel.aggregate([
+    const result = await this.model.aggregate([
       { $match: { stripeSubscriptionId: stripeSubscriptionId } },
       {
         $lookup: {
@@ -359,11 +313,11 @@ export class UserSubscriptionPlanRepository
     userId,
     trainerId,
   }: CheckSubscriptionStatusDTO): Promise<SubscriptionPlanEntity[] | null> {
-    const result = await userSubscriptionPlanModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $match: {
-          userId: new mongoose.Types.ObjectId(userId),
-          trainerId: new mongoose.Types.ObjectId(trainerId),
+          userId: this.parseId(userId),
+          trainerId: this.parseId(trainerId),
         },
       },
     ]);
@@ -374,7 +328,7 @@ export class UserSubscriptionPlanRepository
     status,
     stripeSubscriptionId,
   }: UpdateSubscriptionStatusDTO): Promise<SubscriptionPlanEntity | null> {
-    const result = await userSubscriptionPlanModel.findOneAndUpdate(
+    const result = await this.model.findOneAndUpdate(
       { stripeSubscriptionId: stripeSubscriptionId },
       { stripeSubscriptionStatus: status }
     );
@@ -382,10 +336,10 @@ export class UserSubscriptionPlanRepository
   }
 
   async countAllTrainerSubscribers(trainerId: string): Promise<number> {
-    const result = await userSubscriptionPlanModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $match: {
-          trainerId: new mongoose.Types.ObjectId(trainerId),
+          trainerId: this.parseId(trainerId),
         },
       },
       {
@@ -397,10 +351,10 @@ export class UserSubscriptionPlanRepository
   }
 
   async countAllActiveSubscribers(trainerId: string): Promise<number> {
-    const result = await userSubscriptionPlanModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $match: {
-          trainerId: new mongoose.Types.ObjectId(trainerId),
+          trainerId: this.parseId(trainerId),
           stripeSubscriptionStatus: "active",
         },
       },
@@ -413,10 +367,10 @@ export class UserSubscriptionPlanRepository
   }
 
   async countCanceledSubscribers(trainerId: string): Promise<number> {
-    const result = await userSubscriptionPlanModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $match: {
-          trainerId: new mongoose.Types.ObjectId(trainerId),
+          trainerId: this.parseId(trainerId),
           stripeSubscriptionStatus: "canceled",
         },
       },
@@ -432,13 +386,13 @@ export class UserSubscriptionPlanRepository
     trainerId: string,
     { startDate, endDate }: DateRangeQueryDTO
   ): Promise<TrainerChartData[]> {
-    const result = await userSubscriptionPlanModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $match: {
-          trainerId: new mongoose.Types.ObjectId(trainerId),
+          trainerId: this.parseId(trainerId),
           createdAt: {
-            $gte: new Date(startDate),
-            $lte: new Date(endDate),
+            $gte: startDate,
+            $lte: endDate,
           },
         },
       },
@@ -467,13 +421,13 @@ export class UserSubscriptionPlanRepository
     trainerId: string,
     { startDate, endDate }: DateRangeQueryDTO
   ): Promise<TrainerPieChartData[]> {
-    const result = await userSubscriptionPlanModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $match: {
-          trainerId: new mongoose.Types.ObjectId(trainerId),
+          trainerId: this.parseId(trainerId),
           createdAt: {
-            $gte: new Date(startDate),
-            $lte: new Date(endDate),
+            $gte: startDate,
+            $lte: endDate,
           },
         },
       },
@@ -509,62 +463,38 @@ export class UserSubscriptionPlanRepository
       ];
     }
 
+    const commonPipeline = [
+      { $match: { userId: this.parseId(userId) } },
+      {
+        $lookup: {
+          from: "trainers",
+          localField: "trainerId",
+          foreignField: "_id",
+          as: "trainerData",
+        },
+      },
+      {
+        $unwind: "$trainerData",
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "trainerData.userId",
+          foreignField: "_id",
+          as: "subscribedTrainerData",
+        },
+      },
+      { $match: matchQuery },
+      { $unwind: "$subscribedTrainerData" },
+    ];
+
     const [totalCount, userTrainersList] = await Promise.all([
       conversationModel
-        .aggregate([
-          { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-          { $sort: { updatedAt: -1 } },
-          {
-            $lookup: {
-              from: "trainers",
-              localField: "trainerId",
-              foreignField: "_id",
-              as: "trainerData",
-            },
-          },
-          {
-            $unwind: "$trainerData",
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "trainerData.userId",
-              foreignField: "_id",
-              as: "subscribedTrainerData",
-            },
-          },
-          { $match: matchQuery },
-          { $unwind: "$subscribedTrainerData" },
-          { $count: "totalCount" },
-        ])
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
       conversationModel
         .aggregate([
-          { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-          { $sort: { updatedAt: -1 } },
-          {
-            $lookup: {
-              from: "trainers",
-              localField: "trainerId",
-              foreignField: "_id",
-              as: "trainerData",
-            },
-          },
-          {
-            $unwind: "$trainerData",
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "trainerData.userId",
-              foreignField: "_id",
-              as: "subscribedTrainerData",
-            },
-          },
-          { $match: matchQuery },
-          {
-            $unwind: "$subscribedTrainerData",
-          },
+          ...commonPipeline,
           {
             $project: {
               _id: 1,
@@ -598,7 +528,7 @@ export class UserSubscriptionPlanRepository
   }
 
   async findTop5TrainersWithHighestSubscribers(): Promise<Top5List[]> {
-    const result = await userSubscriptionPlanModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $group: {
           _id: "$trainerId",

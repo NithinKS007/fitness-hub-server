@@ -15,7 +15,7 @@ export class GetAppointmentController {
     private getTrainerSchedulesUseCase: GetTrainerSchedulesUseCase,
     private getUserSchedulesUseCase: GetUserSchedulesUseCase
   ) {}
-  async getBookingRequests(req: Request, res: Response): Promise<void> {
+  async handleGetBookingRequests(req: Request, res: Response): Promise<void> {
     const trainerId = req?.user?._id;
     const queryParams = parseQueryParams(req.query);
     const { bookingRequestsList, paginationData } =
@@ -27,7 +27,7 @@ export class GetAppointmentController {
       AppointmentStatus.BookingRequestsRetrievedSuccessfully
     );
   }
-  async getTrainerSchedules(req: Request, res: Response): Promise<void> {
+  async handleGetTrainerSchedules(req: Request, res: Response): Promise<void> {
     const trainerId = req?.user?._id;
     const queryParams = parseQueryParams(req.query);
     const { trainerBookingSchedulesList, paginationData } =
@@ -42,7 +42,7 @@ export class GetAppointmentController {
       AppointmentStatus.AppointmentsListRetrievedSuccessfully
     );
   }
-  async getUserSchedules(req: Request, res: Response): Promise<void> {
+  async handleGetUserSchedules(req: Request, res: Response): Promise<void> {
     const userId = req?.user?._id;
     const queryParams = parseQueryParams(req.query);
     const { appointmentList, paginationData } =

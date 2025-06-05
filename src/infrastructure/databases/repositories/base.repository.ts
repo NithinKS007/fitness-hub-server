@@ -1,4 +1,4 @@
-import { Model, Document } from "mongoose";
+import mongoose, { Model, Document } from "mongoose";
 import { IBaseRepository } from "../../../domain/interfaces/IBaseRepository";
 
 export abstract class BaseRepository<T extends Document>
@@ -14,19 +14,36 @@ export abstract class BaseRepository<T extends Document>
   }
 
   async findById(id: string): Promise<T | null> {
-    return await this.model.findById(id).exec();
+    return (await this.model.findById(id).lean().exec()) as T;
   }
 
   async update(id: string, entity: Partial<T>): Promise<T | null> {
-    return await this.model.findByIdAndUpdate(id, entity, { new: true }).exec();
+    return (await this.model
+      .findByIdAndUpdate(id, entity, { new: true })
+      .lean()
+      .exec()) as T;
   }
 
-  async delete(id: string): Promise<boolean> {
-    const result = await this.model.deleteOne({ _id: id }).exec();
-    return result.deletedCount > 0;
+  async delete(id: string): Promise<T | null> {
+    return (await this.model.findByIdAndDelete({ _id: id }).lean().exec()) as T;
   }
 
-  async getAll(): Promise<T[]> {
-    return await this.model.find().exec();
+  async findOne(conditions: object): Promise<T | null> {
+    return (await this.model.findOne(conditions).lean().exec()) as T;
   }
+
+  async findOneAndUpdate(
+    conditions: object,
+    update: Partial<T>
+  ): Promise<T | null> {
+    return (await this.model
+      .findOneAndUpdate(conditions, update, { new: true })
+      .lean()
+      .exec()) as T;
+  }
+
+  parseId(id: string): mongoose.Types.ObjectId {
+    return new mongoose.Types.ObjectId(id);
+  }
+  
 }

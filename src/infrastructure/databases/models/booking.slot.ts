@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IBookingSlot extends Document {
   _id: mongoose.Schema.Types.ObjectId;
-  trainerId: mongoose.Schema.Types.ObjectId;
+  trainerId: string | mongoose.Schema.Types.ObjectId;
   status: "pending" | "booked" | "completed";
   time: string;
   date: Date;
@@ -14,6 +14,12 @@ const bookingSlotSchema: Schema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Trainer",
       required: true,
+      set: (value: string) => {
+        return typeof value === "string" &&
+          mongoose.Types.ObjectId.isValid(value)
+          ? new mongoose.Types.ObjectId(value)
+          : value;
+      },
     },
     time: { type: String, required: true },
     status: {
@@ -31,9 +37,9 @@ bookingSlotSchema.index(
   { date: 1, status: 1 },
   { partialFilterExpression: { status: "pending" } }
 );
-const bookingSlotModel = mongoose.model<IBookingSlot>(
+const BookingSlotModel = mongoose.model<IBookingSlot>(
   "BookingSlot",
   bookingSlotSchema
 );
 
-export default bookingSlotModel;
+export default BookingSlotModel;

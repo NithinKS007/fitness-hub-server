@@ -3,8 +3,8 @@ export type SubPeriod = "monthly" | "yearly" | "quarterly" | "halfYearly";
 
 export interface IUserSubscriptionPlan extends Document {
   _id: mongoose.Schema.Types.ObjectId;
-  userId: mongoose.Schema.Types.ObjectId;
-  trainerId: mongoose.Schema.Types.ObjectId;
+  userId: string | mongoose.Schema.Types.ObjectId;
+  trainerId: string | mongoose.Schema.Types.ObjectId;
   subPeriod: SubPeriod;
   price: number;
   durationInWeeks: number;
@@ -21,12 +21,24 @@ const userSubscriptionPlanSchema: Schema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      set: (value: string) => {
+        return typeof value === "string" &&
+          mongoose.Types.ObjectId.isValid(value)
+          ? new mongoose.Types.ObjectId(value)
+          : value;
+      },
     },
 
     trainerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      set: (value: string) => {
+        return typeof value === "string" &&
+          mongoose.Types.ObjectId.isValid(value)
+          ? new mongoose.Types.ObjectId(value)
+          : value;
+      },
     },
     subPeriod: {
       type: String,
@@ -56,9 +68,9 @@ userSubscriptionPlanSchema.index({
 });
 userSubscriptionPlanSchema.index({ stripeSubscriptionId: 1 }, { unique: true });
 
-const userSubscriptionPlanModel = mongoose.model<IUserSubscriptionPlan>(
+const UserSubscriptionPlanModel = mongoose.model<IUserSubscriptionPlan>(
   "UserSubscriptionPlan",
   userSubscriptionPlanSchema
 );
 
-export default userSubscriptionPlanModel;
+export default UserSubscriptionPlanModel;

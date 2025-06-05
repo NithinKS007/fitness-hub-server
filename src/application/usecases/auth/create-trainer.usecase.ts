@@ -12,6 +12,7 @@ import { User } from "../../../domain/entities/user.entities";
 import { IEmailService } from "../../interfaces/communication/IEmail.service";
 import { IOTPService } from "../../interfaces/security/IGenerate-otp.service";
 import { IPasswordService } from "../../interfaces/security/IPassword.service";
+import { RoleType } from "../../dtos/auth-dtos";
 
 /*  
     Purpose: Creates a new trainer and handles OTP verification during registration.
@@ -22,11 +23,7 @@ import { IPasswordService } from "../../interfaces/security/IPassword.service";
         - Error if the email is already registered or has a different verification method.
         - Sends OTP email if the user exists but hasn't verified yet.
 */
-enum Role {
-  Trainer = "trainer",
-  User = "user",
-  Admin = "admin",
-}
+
 export class CreateTrainerUseCase {
   constructor(
     private userRepository: IUserRepository,
@@ -39,7 +36,7 @@ export class CreateTrainerUseCase {
 
   private async sendOtpEmail(email: string): Promise<void> {
     const otp = this.otpService.generateOtp(6);
-    await this.otpRepository.createOtp({ email, otp });
+    await this.otpRepository.create({ email, otp });
     await this.emailService.sendEmail({
       to: email,
       subject: "OTP for Registration",
@@ -70,7 +67,7 @@ export class CreateTrainerUseCase {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
 
-    const existinguser = await this.userRepository.findByEmail({
+    const existinguser = await this.userRepository.findOne({
       email: email,
     });
     if (existinguser && existinguser.otpVerified) {
@@ -93,7 +90,7 @@ export class CreateTrainerUseCase {
       lname,
       email,
       phone,
-      role: Role.Trainer,
+      role: RoleType.Trainer,
       dateOfBirth: new Date(dateOfBirth),
     };
     const hashedPassword = await this.passwordService.hashPassword(password);

@@ -2,11 +2,11 @@ import { validationError } from "../../../presentation/middlewares/error.middlew
 import {
   ApplicationStatus,
   AppointmentStatus,
-  BookingSlotStatus,
 } from "../../../shared/constants/index.constants";
 import { Appointment } from "../../../domain/entities/appointment.entities";
 import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
 import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
+import { BookingSlotStatus } from "../../dtos/booking-dtos";
 
 /*  
     Purpose: Cancel an existing appointment and update the booking slot status to "pending"
@@ -24,17 +24,19 @@ export class CancelAppointmentUseCase {
     if (!appointmentId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const cancelledAppointment =
-      await this.appointmentRepository.cancelAppointmentSchedule(appointmentId);
+    const cancelledAppointment = await this.appointmentRepository.update(
+      appointmentId,
+      { status: "cancelled" }
+    );
 
     if (!cancelledAppointment) {
       throw new validationError(
         AppointmentStatus.FailedToCancelAppointmentStatus
       );
     }
-    const changeStatusPending = await this.bookingSlotRepository.changeStatus(
+    const changeStatusPending = await this.bookingSlotRepository.update(
       cancelledAppointment.bookingSlotId.toString(),
-      BookingSlotStatus.PENDING
+      { status: BookingSlotStatus.PENDING }
     );
     if (!changeStatusPending) {
       throw new validationError(

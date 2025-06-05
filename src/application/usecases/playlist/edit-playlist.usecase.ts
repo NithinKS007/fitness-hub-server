@@ -6,12 +6,8 @@ import { IPlayListRepository } from "../../../domain/interfaces/IPlayListReposit
 
 export class EditPlayListUseCase {
   constructor(private playListRepository: IPlayListRepository) {}
-  async editPlayList({
-    playListId,
-    title,
-  }: EditPlayListDTO): Promise<Playlist> {
-    const playListData = await this.playListRepository.editPlayList({
-      playListId,
+  async execute({ playListId, title }: EditPlayListDTO): Promise<Playlist> {
+    const playListData = await this.playListRepository.update(playListId, {
       title,
     });
     if (!playListData) {

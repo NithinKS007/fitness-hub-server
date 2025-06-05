@@ -1,22 +1,19 @@
-import mongoose from "mongoose";
-import { CreateBookingSlotDTO } from "../../../application/dtos/booking-dtos";
+import { Model } from "mongoose";
 import { PaginationDTO } from "../../../application/dtos/utility-dtos";
 import { BookingSlot } from "../../../domain/entities/booking-slot.entities";
 import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
-import bookingSlotModel from "../models/booking.slot";
+import BookingSlotModel, { IBookingSlot } from "../models/booking.slot";
 import { AvailableSlotsQueryDTO } from "../../../application/dtos/query-dtos";
+import { BaseRepository } from "./base.repository";
 
-export class BookingSlotRepository implements IBookingSlotRepository {
-  async addBookingSlot({
-    trainerId,
-    time,
-    date,
-  }: CreateBookingSlotDTO): Promise<BookingSlot> {
-    const Id = new mongoose.Types.ObjectId(trainerId);
-    return await bookingSlotModel.create({ trainerId: Id, time, date: date });
+export class BookingSlotRepository
+  extends BaseRepository<IBookingSlot>
+  implements IBookingSlotRepository
+{
+  constructor(model: Model<IBookingSlot> = BookingSlotModel) {
+    super(model);
   }
-
-  async getAvailableSlots(
+  async getPendingSlots(
     trainerId: string,
     { page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
   ): Promise<{
@@ -33,12 +30,12 @@ export class BookingSlotRepository implements IBookingSlotRepository {
     if (toDate) matchQuery.date = { ...matchQuery.date, $lte: toDate };
 
     const [totalCount, availableSlotsList] = await Promise.all([
-      bookingSlotModel.countDocuments({
+      this.model.countDocuments({
         trainerId: trainerId,
         ...matchQuery,
         status: "pending",
       }),
-      bookingSlotModel
+      this.model
         .find({ trainerId: trainerId, ...matchQuery, status: "pending" })
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -93,12 +90,12 @@ export class BookingSlotRepository implements IBookingSlotRepository {
     }
 
     const [totalCount, availableSlotsList] = await Promise.all([
-      bookingSlotModel.countDocuments({
+      this.model.countDocuments({
         trainerId: trainerId,
         date: matchQuery,
         status: "pending",
       }),
-      bookingSlotModel
+      this.model
         .find({ trainerId: trainerId, date: matchQuery, status: "pending" })
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -116,34 +113,11 @@ export class BookingSlotRepository implements IBookingSlotRepository {
     };
   }
 
-  async getAllAvailableSlots(trainerId: string): Promise<BookingSlot[]> {
-    return await bookingSlotModel.find({
+  async getAllPendingSlots(trainerId: string): Promise<BookingSlot[]> {
+    return await this.model.find({
       trainerId: trainerId,
       date: { $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)) },
       status: "pending",
     });
-  }
-
-  async findSlotById(bookingSlotId: string): Promise<BookingSlot | null> {
-    return await bookingSlotModel.findById(bookingSlotId);
-  }
-
-  async changeStatus(
-    bookingSlotId: string,
-    newStatus: "booked" | "pending" | "completed"
-  ): Promise<BookingSlot | null> {
-    return await bookingSlotModel.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(bookingSlotId),
-      { status: newStatus },
-      { new: true }
-    );
-  }
-
-  async findByIdAndDeleteSlot(
-    bookingSlotId: string
-  ): Promise<BookingSlot | null> {
-    return await bookingSlotModel.findByIdAndDelete(
-      new mongoose.Types.ObjectId(bookingSlotId)
-    );
   }
 }

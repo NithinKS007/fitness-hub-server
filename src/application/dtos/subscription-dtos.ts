@@ -1,13 +1,20 @@
-type SubPeriod = "monthly" | "yearly" | "quarterly" | "halfYearly";
+export enum CancelSubAction {
+  immediately = "cancelImmediately",
+  atEndOfCycle = "cancelAtEndOfCycle",
+}
 
-export interface CreateSubscriptionDTO {
-  trainerId: string;
-  subPeriod: SubPeriod;
-  price: number;
-  durationInWeeks: number;
-  sessionsPerWeek: number;
-  totalSessions: number;
-  stripePriceId: string;
+export enum PeriodType {
+  Quarterly = "quarterly",
+  HalfYearly = "halfYearly",
+  Yearly = "yearly",
+  Monthly = "monthly",
+}
+
+export type SubPeriod = PeriodType;
+
+export enum SubscriptionInterval {
+  Month = "month",
+  Year = "year",
 }
 
 export interface FindExistingSubscriptionDTO {
@@ -34,19 +41,6 @@ export interface UpdateSubscriptionDetailsDTO {
 export interface PurchaseSubscriptionDTO {
   subscriptionId: string;
   userId: string;
-}
-
-export interface CreateUserSubscriptionPlanDTO {
-  userId: string;
-  trainerId: string;
-  subPeriod: SubPeriod;
-  price: number;
-  durationInWeeks: number;
-  sessionsPerWeek: number;
-  totalSessions: number;
-  stripePriceId: string;
-  stripeSubscriptionId: string;
-  stripeSubscriptionStatus: string;
 }
 
 export interface CancelSubscriptionDTO {

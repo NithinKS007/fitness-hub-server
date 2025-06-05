@@ -10,31 +10,28 @@ import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptio
 
 export class SubscriptionBlockUseCase {
   constructor(private subscriptionRepository: ISubscriptionRepository) {}
-  async updateSubscriptionBlockStatus({
+  async execute({
     subscriptionId,
     isBlocked,
   }: UpdateSubscriptionBlockStatusDTO): Promise<Subscription> {
     if (!subscriptionId || typeof isBlocked !== "boolean") {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-
-    const subscriptionData =
-      await this.subscriptionRepository.findSubscriptionById(subscriptionId);
-
+    const subscriptionData = await this.subscriptionRepository.findById(
+      subscriptionId
+    );
     if (!subscriptionData) {
       throw new validationError(AuthStatus.InvalidId);
     }
-
-    const updatedSubscriptionData =
-      await this.subscriptionRepository.updateBlockStatus({
-        subscriptionId,
-        isBlocked,
-      });
-
+    const updatedSubscriptionData = await this.subscriptionRepository.update(
+      subscriptionId,
+      {
+        isBlocked: isBlocked,
+      }
+    );
     if (!updatedSubscriptionData) {
       throw new validationError(BlockStatus.FailedToUpdateBlockStatus);
     }
-
     return updatedSubscriptionData;
   }
 }

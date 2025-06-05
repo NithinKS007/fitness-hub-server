@@ -4,15 +4,13 @@ import {
   HttpStatusCodes,
   WorkoutStatus,
 } from "../../../shared/constants/index.constants";
-import { UpdateWorkoutUseCase } from "../../../application/usecases/workout/update-workout.usecase";
+import { DeleteWorkoutUseCase } from "../../../application/usecases/workout/delete-workout-usecase";
 
 export class DeleteWorkoutController {
-  constructor(private updateWorkoutUseCase: UpdateWorkoutUseCase) {}
-  async deleteWorkoutSet(req: Request, res: Response): Promise<void> {
+  constructor(private deleteWorkoutUseCase: DeleteWorkoutUseCase) {}
+  async handleDeleteWorkout(req: Request, res: Response): Promise<void> {
     const { setId } = req.params;
-    const deletedWorkoutSet = await this.updateWorkoutUseCase.deleteWorkoutSet(
-      setId
-    );
+    const deletedWorkoutSet = await this.deleteWorkoutUseCase.execute(setId);
     sendResponse(
       res,
       HttpStatusCodes.OK,

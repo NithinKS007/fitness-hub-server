@@ -1,27 +1,25 @@
 import dayjs from "dayjs";
-import { DashBoardChartFilterDTO } from "../../../application/dtos/query-dtos";
 import { IDateService } from "../../../application/interfaces/date/IDate.service";
+import { DateRange } from "../../../application/dtos/service/date.service";
 
 export class DateService implements IDateService {
-  getDateRange = (
-    data: DashBoardChartFilterDTO
-  ): { startDate: Date; endDate: Date } => {
+  getDateRange = (data: DateRange): { startDate: Date; endDate: Date } => {
     let startDate = dayjs().startOf("month").toDate();
     let endDate = dayjs().endOf("month").toDate();
     switch (data) {
-      case "Today":
+      case DateRange.Today:
         startDate = dayjs().startOf("day").toDate();
         endDate = dayjs().endOf("day").toDate();
         break;
-      case "This week":
+      case DateRange.ThisWeek:
         startDate = dayjs().startOf("week").toDate();
         endDate = dayjs().endOf("week").toDate();
         break;
-      case "This month":
+      case DateRange.ThisMonth:
         startDate = dayjs().startOf("month").toDate();
         endDate = dayjs().endOf("month").toDate();
         break;
-      case "This year":
+      case DateRange.ThisYear:
         startDate = dayjs().startOf("year").toDate();
         endDate = dayjs().endOf("year").toDate();
         break;

@@ -6,14 +6,20 @@ import {
   TrainerStatus,
   UserStatus,
 } from "../../../shared/constants/index.constants";
-import { ChatUseCase } from "../../../application/usecases/chat/chat.usecase";
 import { parseQueryParams } from "../../../shared/utils/parse.queryParams";
+import { GetChatHistoryUseCase } from "../../../application/usecases/chat/get-chat-history.usecase";
+import { GetTrainerChatListUseCase } from "../../../application/usecases/chat/get-trainer-chat-list.usecase";
+import { GetUserChatListUseCase } from "../../../application/usecases/chat/get-user-chat-list.usecase";
 
 export class ChatController {
-  constructor(private chatUseCase: ChatUseCase) {}
+  constructor(
+    private getChatHistoryUseCase: GetChatHistoryUseCase,
+    private getTrainerChatListUseCase: GetTrainerChatListUseCase,
+    private getUserChatListUseCase: GetUserChatListUseCase
+  ) {}
   async getMessages(req: Request, res: Response): Promise<void> {
     const { senderId, receiverId } = req.params;
-    const messages = await this.chatUseCase.getMessages({
+    const messages = await this.getChatHistoryUseCase.execute({
       userId: senderId,
       otherUserId: receiverId,
     });
@@ -28,7 +34,7 @@ export class ChatController {
   async getTrainerChatList(req: Request, res: Response): Promise<void> {
     const trainerId = req?.user?._id;
     const { search } = parseQueryParams(req.query);
-    const trainerChatList = await this.chatUseCase.getTrainerChatList(
+    const trainerChatList = await this.getTrainerChatListUseCase.execute(
       trainerId,
       {
         search: search,
@@ -45,7 +51,7 @@ export class ChatController {
   async getUserChatList(req: Request, res: Response): Promise<void> {
     const userId = req?.user?._id;
     const { search } = parseQueryParams(req.query);
-    const userChatList = await this.chatUseCase.getUserChatList(userId, {
+    const userChatList = await this.getUserChatListUseCase.execute(userId, {
       search: search,
     });
     sendResponse(res, HttpStatusCodes.OK, userChatList, UserStatus.UserList);
