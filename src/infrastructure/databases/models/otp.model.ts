@@ -1,10 +1,6 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { IOtp } from "@domain/entities/otp.entity";
+import mongoose, { Schema } from "mongoose";
 
-export interface IOtp extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  email: string;
-  otp: string;
-}
 const otpSchema: Schema = new Schema(
   {
     email: { type: String, required: true },

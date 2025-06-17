@@ -1,8 +1,8 @@
 import { OAuth2Client, TokenPayload } from "google-auth-library";
 import dotenv from "dotenv";
-import { AuthStatus } from "../../../shared/constants/index.constants";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { IGoogleAuthService } from "../../../application/interfaces/auth/IGoogle.auth.service";
+import { AuthStatus } from "@shared/constants/index.constants";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { IGoogleAuthService } from "@application/interfaces/auth/IGoogle.auth.service";
 dotenv.config();
 
 export class GoogleAuthService implements IGoogleAuthService {

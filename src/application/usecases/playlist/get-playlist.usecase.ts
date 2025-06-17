@@ -1,16 +1,16 @@
-import { PaginationDTO } from "../../dtos/utility-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { AuthStatus } from "../../../shared/constants/index.constants";
-import { Playlist } from "../../../domain/entities/playlist.entities";
-import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
-import { GetPlayListsQueryDTO } from "../../dtos/query-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { AuthStatus } from "@shared/constants/index.constants";
+import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
+import { GetPlayListsQueryDTO } from "@application/dtos/query-dtos";
+import { IPlayList } from "@domain/entities/playlist.entity";
 
 export class GetPlayListUseCase {
   constructor(private playListRepository: IPlayListRepository) {}
   async execute(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
-  ): Promise<{ playList: Playlist[]; paginationData: PaginationDTO }> {
+  ): Promise<{ playList: IPlayList[]; paginationData: PaginationDTO }> {
     if (!trainerId) {
       throw new validationError(AuthStatus.IdRequired);
     }

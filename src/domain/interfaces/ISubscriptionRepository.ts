@@ -1,9 +1,7 @@
-import { FindExistingSubscriptionDTO } from "../../application/dtos/subscription-dtos";
-import { ISubscription } from "../../infrastructure/databases/models/subscription.model";
-import { Subscription } from "../entities/subscription.entities";
-import { IBaseRepository } from "./IBaseRepository";
+import { ISubscription } from "@domain/entities/subscription.entity";
+import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
 
 export interface ISubscriptionRepository
   extends IBaseRepository<ISubscription> {
-  findAllSubscription(trainerId: string): Promise<Subscription[]>;
+  findAllSubscription(trainerId: string): Promise<ISubscription[]>;
 }

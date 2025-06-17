@@ -1,32 +1,26 @@
-import { PurchaseSubscriptionDTO } from "../../dtos/subscription-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import {
-  ApplicationStatus,
-  SubscriptionStatus,
-} from "../../../shared/constants/index.constants";
-import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
-import { SubscriptionPlanEntity } from "../../../domain/entities/subscription-plan.entities";
-import { IPaymentService } from "../../interfaces/payments/IPayment.service";
+import { PurchaseSubscriptionDTO } from "@application/dtos/subscription-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { SubscriptionStatus } from "@shared/constants/index.constants";
+import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
+import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
 
 export class PurchaseSubscriptionUseCase {
   constructor(
     private subscriptionRepository: ISubscriptionRepository,
-    private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
     private paymentService: IPaymentService
   ) {}
-  async createStripeSession({
+  async execute({
     subscriptionId,
     userId,
   }: PurchaseSubscriptionDTO): Promise<string> {
-    const subscriptionData =
-      await this.subscriptionRepository.findById(subscriptionId);
+    const subscriptionData = await this.subscriptionRepository.findById(
+      subscriptionId
+    );
     if (!subscriptionData) {
       throw new validationError(
         SubscriptionStatus.FailedToRetrieveSubscriptionDetails
       );
     }
-
     if (subscriptionData.isBlocked) {
       throw new validationError(
         SubscriptionStatus.SubscriptionBlockedUnavailabe
@@ -44,40 +38,5 @@ export class PurchaseSubscriptionUseCase {
       );
     }
     return sessionId.sessionId;
-  }
-
-  async getSubscriptionBySession(
-    sessionId: string
-  ): Promise<SubscriptionPlanEntity & { isSubscribed: boolean }> {
-    if (!sessionId) {
-      throw new validationError(ApplicationStatus.AllFieldsAreRequired);
-    }
-    const session = await this.paymentService.getCheckoutSession(sessionId);
-    if (!session) {
-      throw new validationError(SubscriptionStatus.InvalidSessionIdForStripe);
-    }
-    const stripeSubscriptionId =
-      typeof session.subscription === "string"
-        ? session.subscription
-        : session.subscription?.id;
-
-    const userTakenSubscription =
-      await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionId(
-        stripeSubscriptionId as string
-      );
-
-    if (!userTakenSubscription) {
-      throw new validationError(
-        SubscriptionStatus.FailedToRetrieveSubscriptionDetails
-      );
-    }
-    const stripeSubscription = await this.paymentService.getSubscription(
-      stripeSubscriptionId as string
-    );
-    const subscriptionStatus =
-      stripeSubscription.status === "active" &&
-      userTakenSubscription.stripeSubscriptionStatus === "active";
-
-    return { ...userTakenSubscription, isSubscribed: subscriptionStatus };
   }
 }

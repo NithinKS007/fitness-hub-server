@@ -1,4 +1,17 @@
-export interface AdminRevenueHistory {
+interface PersonInfo {
+  email: string;
+  fname: string;
+  lname: string;
+  phone: string;
+  profilePic: string;
+}
+
+interface SubscriptionPlanData {
+  stripeSubscriptionStatus: string;
+  subPeriod: string;
+}
+
+export interface PlatformRevenue {
   amountPaid: number;
   commission: number;
   createdAt: Date;
@@ -8,22 +21,7 @@ export interface AdminRevenueHistory {
   userId: string;
   trainerId: string;
   userSubscriptionPlanId: string;
-  subscriptionProvidedBy: {
-    email: string;
-    fname: string;
-    lname: string;
-    phone: string;
-    profilePic: string;
-  };
-  subscriptionTakenBy: {
-    email: string;
-    fname: string;
-    lname: string;
-    phone: string;
-    profilePic: string;
-  };
-  subscriptionPlanData: {
-    stripeSubscriptionStatus: string;
-    subPeriod: string;
-  };
+  subscriptionProvidedBy: PersonInfo;
+  subscriptionTakenBy: PersonInfo;
+  subscriptionPlanData: SubscriptionPlanData;
 }

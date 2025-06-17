@@ -1,14 +1,14 @@
 import {
   CancelSubAction,
   CancelSubscriptionDTO,
-} from "../../dtos/subscription-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+} from "@application/dtos/subscription-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AuthStatus,
   SubscriptionStatus,
-} from "../../../shared/constants/index.constants";
-import { IPaymentService } from "../../interfaces/payments/IPayment.service";
+} from "@shared/constants/index.constants";
+import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
 
 export class CancelSubscriptionUseCase {
   constructor(private paymentService: IPaymentService) {}

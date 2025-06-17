@@ -1,4 +1,4 @@
-import { socketStore } from "../store/socket.store";
+import { socketStore } from "@infrastructure/services/socket/store/socket.store";
 import { Socket } from "socket.io";
 
 export const handleCloseChat = (userId: string, socket: Socket) => {

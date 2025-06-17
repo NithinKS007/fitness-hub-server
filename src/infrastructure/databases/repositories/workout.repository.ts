@@ -1,14 +1,15 @@
-import { PaginationDTO } from "../../../application/dtos/utility-dtos";
-import { IWorkoutRepository } from "../../../domain/interfaces/IWorkoutRepository";
-import { IWorkout } from "../models/workout.model";
-import { WorkoutChartData } from "../../../domain/entities/workout.entities";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
 import { Model } from "mongoose";
 import {
   CustomUserDashBoardQueryDTO,
   GetWorkoutQueryDTO,
-} from "../../../application/dtos/query-dtos";
-import { BaseRepository } from "./base.repository";
-import WorkoutModel from "../models/workout.model";
+} from "@application/dtos/query-dtos";
+import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
+import WorkoutModel from "@infrastructure/databases/models/workout.model";
+import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
+import { WorkoutChartData } from "@application/dtos/workout-dtos";
+import { IWorkout } from "@domain/entities/workout.entity";
 
 export class WorkoutRepository
   extends BaseRepository<IWorkout>
@@ -22,9 +23,7 @@ export class WorkoutRepository
     userId: string,
     { page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
   ): Promise<{ workoutList: IWorkout[]; paginationData: PaginationDTO }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
     const matchQuery: any = { userId: this.parseId(userId) };
     if (search) {
@@ -61,14 +60,15 @@ export class WorkoutRepository
         .exec(),
       this.model.countDocuments(matchQuery).exec(),
     ]);
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
 
     return {
       workoutList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 
@@ -81,8 +81,8 @@ export class WorkoutRepository
     const matchQuery: any = {
       userId: this.parseId(userId),
       date: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
+        $gte: startDate,
+        $lte: endDate,
       },
       isCompleted: true,
     };

@@ -1,9 +1,9 @@
 import { UploadApiResponse } from "cloudinary";
-import cloudinary from "../../config/cloudinary.config";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { ApplicationStatus } from "../../../shared/constants/index.constants";
-import { ICloudStorageService } from "../../../application/interfaces/storage/ICloud.storage.service";
-import { UploadImage } from "../../../application/dtos/service/cloud.storage.service";
+import cloudinary from "@infrastructure/config/cloudinary.config";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { ApplicationStatus } from "@shared/constants/index.constants";
+import { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
+import { UploadImage } from "@application/dtos/service/cloud.storage.service";
 
 export class CloudinaryService implements ICloudStorageService {
   async uploadImage(uploadImage: UploadImage): Promise<string> {

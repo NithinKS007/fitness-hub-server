@@ -1,5 +1,5 @@
-import { Chat } from "../../../domain/entities/chat.entities";
-import { IChatRepository } from "../../../domain/interfaces/IChatRepository";
+import { IChat } from "@domain/entities/chat.entity";
+import { IChatRepository } from "@domain/interfaces/IChatRepository";
 
 export class MarkMessageAsReadUseCase {
   constructor(private chatRepository: IChatRepository) {}
@@ -9,7 +9,7 @@ export class MarkMessageAsReadUseCase {
   }: {
     userId: string;
     otherUserId: string;
-  }): Promise<Chat[] | null> {
+  }): Promise<IChat[] | null> {
     const unreadMessages = await this.chatRepository.findUnreadMessages(
       userId,
       otherUserId

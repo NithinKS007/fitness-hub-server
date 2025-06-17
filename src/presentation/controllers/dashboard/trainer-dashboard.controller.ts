@@ -1,30 +1,32 @@
 import { Request, Response } from "express";
-import { sendResponse } from "../../../shared/utils/http.response";
+import { sendResponse } from "@shared/utils/http.response";
 import {
   DashboardStatus,
-  HttpStatusCodes,
-} from "../../../shared/constants/index.constants";
-import { TrainerDashBoardUseCase } from "../../../application/usecases/dashboard/trainer-dashboard.usecase";
-import { parseQueryParams } from "../../../shared/utils/parse.queryParams";
+  StatusCodes,
+} from "@shared/constants/index.constants";
+import { TrainerDashBoardUseCase } from "@application/usecases/dashboard/trainer-dashboard.usecase";
+import { parseQueryParams } from "@shared/utils/parse.queryParams";
 
 export class TrainerDashboardController {
   constructor(private trainerDashBoardUseCase: TrainerDashBoardUseCase) {}
+
   async getTrainerDashBoardData(req: Request, res: Response): Promise<void> {
-    const trainerId = req?.user?._id;
+
+    const { _id: trainerId } = req?.user || {}; 
+
     const period = parseQueryParams(req.query).period;
+
     const {
       totalSubscribersCount,
       activeSubscribersCount,
       canceledSubscribersCount,
       chartData,
       pieChartData,
-    } = await this.trainerDashBoardUseCase.execute(
-      trainerId,
-      period
-    );
+    } = await this.trainerDashBoardUseCase.execute(trainerId, period);
+
     sendResponse(
       res,
-      HttpStatusCodes.OK,
+      StatusCodes.OK,
       {
         totalSubscribersCount: totalSubscribersCount,
         activeSubscribersCount: activeSubscribersCount,
@@ -34,5 +36,7 @@ export class TrainerDashboardController {
       },
       DashboardStatus.TrainerDashBoardRetrievedSuccessfully
     );
+    
   }
+
 }

@@ -1,7 +1,7 @@
 import { ParsedQs } from "qs";
 import { DateService } from "../../infrastructure/services/date/date.service";
 
-const dateService = new DateService()
+const dateService = new DateService();
 export const parseQueryParams = (query: ParsedQs) => {
   const filters: string[] = Array.isArray(query.filters)
     ? query.filters.filter((filter) => typeof filter === "string")
@@ -49,11 +49,20 @@ export const parseQueryParams = (query: ParsedQs) => {
 
   const sort: string =
     query.sort && typeof query.sort === "string" ? query.sort : "";
-  //FOR DASHBOARD FILTERING
+
   const period: string =
-    query.period && typeof query.period === "string" ? query.period : "";
+    typeof query.period === "string"
+      ? query.period
+      : typeof query.period === "object" &&
+        query.period !== null &&
+        "period" in query.period &&
+        typeof query.period["period"] === "string"
+      ? query.period["period"]
+      : "";
+
   const bodyPart: string =
     query.bodyPart && typeof query.bodyPart === "string" ? query.bodyPart : "";
+
   return {
     search,
     page,

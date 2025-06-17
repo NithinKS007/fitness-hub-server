@@ -1,19 +1,22 @@
 import { Server } from "socket.io";
-import { UpdateVideoCallLogUseCase } from "../../../../../application/usecases/videoCallLog/update-videoCalllog.usecase";
+import { UpdateVideoCallStatusUseCase } from "@application/usecases/videoCallLog/update-call-duration.usecase";
+import { UpdateVideoCallDurationUseCase } from "@application/usecases/videoCallLog/update-call-data.usecase";
 
 interface RejectVideoCall {
   io: Server;
-  updateVideoCallLogUseCase: UpdateVideoCallLogUseCase;
+  updateVideoCallStatusUseCase: UpdateVideoCallStatusUseCase;
+  updateVideoCallDurationUseCase: UpdateVideoCallDurationUseCase;
   roomId: string;
 }
 
 export const handleCallRejected = async ({
   io,
-  updateVideoCallLogUseCase,
+  updateVideoCallStatusUseCase,
+  updateVideoCallDurationUseCase,
   roomId,
 }: RejectVideoCall) => {
   const endTime = new Date();
-  const videoCallLogData = await updateVideoCallLogUseCase.updateVideoCallLog({
+  const videoCallLogData = await updateVideoCallStatusUseCase.execute({
     callRoomId: roomId,
     callEndTime: endTime,
     callStatus: "missed",
@@ -24,7 +27,7 @@ export const handleCallRejected = async ({
         videoCallLogData.callStartTime.getTime()) /
         1000
     );
-    await updateVideoCallLogUseCase.updateVideoCallDuration({
+    await updateVideoCallDurationUseCase.execute({
       callRoomId: roomId,
       callDuration: duration,
     });

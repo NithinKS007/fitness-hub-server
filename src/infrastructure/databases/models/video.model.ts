@@ -1,15 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-
-export interface IVideo extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  trainerId: string | mongoose.Schema.Types.ObjectId;
-  title: string;
-  description: string;
-  duration: Number;
-  thumbnail: string;
-  video: string;
-  privacy: boolean;
-}
+import { IVideo } from "@domain/entities/video.entity";
+import mongoose, { Schema } from "mongoose";
 
 const videoSchema: Schema = new Schema(
   {

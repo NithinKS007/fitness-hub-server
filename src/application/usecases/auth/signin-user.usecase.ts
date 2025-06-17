@@ -1,35 +1,42 @@
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
-import { User } from "../../../domain/entities/user.entities";
+import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import {
   AuthStatus,
   PasswordStatus,
   TrainerStatus,
-} from "../../../shared/constants/index.constants";
-import { SignInDTO } from "../../dtos/auth-dtos";
+} from "@shared/constants/index.constants";
+import { SignInDTO } from "@application/dtos/auth-dtos";
 import {
   ForbiddenError,
   validationError,
-} from "../../../presentation/middlewares/error.middleware";
-import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import { Trainer } from "../../../domain/entities/trainer.entities";
-import { IAuthService } from "../../interfaces/auth/IAuth.service";
-import { IPasswordService } from "../../interfaces/security/IPassword.service";
+} from "@presentation/middlewares/error.middleware";
+import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
+import { IAuthService } from "@application/interfaces/auth/IAuth.service";
+import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
+import { Trainer } from "@application/dtos/trainer-dtos";
+import { IUser } from "@domain/entities/user.entity";
+
+/**
+ * Purpose: Handle the sign-in process for a user or trainer.
+ * Incoming: { email, password } - User credentials for authentication.
+ * Returns: { accessToken, refreshToken, userData } - JWT tokens and user data.
+ * Throws: Error if user data is invalid, OTP not verified, or password is incorrect.
+ */
 
 export class SigninUserUseCase {
   constructor(
     private userRepository: IUserRepository,
     private trainerRepository: ITrainerRepository,
     private authService: IAuthService,
-    private passwordService: IPasswordService
+    private encryptionService: IEncryptionService
   ) {}
 
-  private generateAccessToken(user: User | Trainer): string {
+  private generateAccessToken(user: IUser | Trainer): string {
     return this.authService.generateAccessToken({
       _id: user._id.toString(),
       role: user.role,
     });
   }
-  private generateRefreshToken(user: User | Trainer): string {
+  private generateRefreshToken(user: IUser | Trainer): string {
     return this.authService.generateRefreshToken({
       _id: user._id.toString(),
       role: user.role,
@@ -39,7 +46,7 @@ export class SigninUserUseCase {
   private async validateUserLogin(
     email: string,
     password: string
-  ): Promise<User | Trainer> {
+  ): Promise<IUser | Trainer> {
     const userData = await this.userRepository.findOne({ email: email });
     if (!userData) {
       throw new validationError(AuthStatus.EmailNotFound);
@@ -53,12 +60,12 @@ export class SigninUserUseCase {
     if (userData?.isBlocked) {
       throw new ForbiddenError(AuthStatus.AccountBlocked);
     }
-    const isValidPassword = await this.passwordService.comparePassword(
+    const isValidPassword = await this.encryptionService.compare(
       password,
       userData?.password
     );
     if (!isValidPassword) {
-      throw new validationError(PasswordStatus.IncorrectPassword);
+      throw new validationError(PasswordStatus.Incorrect);
     }
     return userData;
   }
@@ -66,7 +73,7 @@ export class SigninUserUseCase {
   async execute({ email, password }: SignInDTO): Promise<{
     accessToken: string;
     refreshToken: string;
-    userData: User | Trainer;
+    userData: IUser | Trainer;
   }> {
     const userData = await this.validateUserLogin(email, password);
 

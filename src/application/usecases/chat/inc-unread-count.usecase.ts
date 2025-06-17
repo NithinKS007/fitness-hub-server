@@ -1,8 +1,8 @@
-import { Conversation } from "../../../domain/entities/conversation.entities";
-import { IConversationRepository } from "../../../domain/interfaces/IConversationRepository";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { ChatStatus } from "../../../shared/constants/index.constants";
-import { IncrementUnReadMessageCount } from "../../dtos/conversation-dtos";
+import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { ChatStatus } from "@shared/constants/index.constants";
+import { IncrementUnReadMessageCount } from "@application/dtos/conversation-dtos";
+import { Conversation } from "@application/dtos/chat-dtos";
 
 export class IncrementUnReadMessageCountUseCase {
   constructor(private conversationRepository: IConversationRepository) {}
@@ -19,6 +19,10 @@ export class IncrementUnReadMessageCountUseCase {
     if (!incrementUnReadMessageDoc) {
       throw new validationError(ChatStatus.FailedtoUpdateUnReadCount);
     }
-    return incrementUnReadMessageDoc;
+    const updatedMessageDoc =
+      await this.conversationRepository.findChatWithLastMessage(
+        String(incrementUnReadMessageDoc._id)
+      );
+    return updatedMessageDoc;
   }
 }

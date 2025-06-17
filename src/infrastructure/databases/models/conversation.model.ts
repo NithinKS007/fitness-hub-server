@@ -1,13 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-
-export interface IConversation extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  userId: mongoose.Schema.Types.ObjectId;
-  trainerId: mongoose.Schema.Types.ObjectId;
-  lastMessage: mongoose.Schema.Types.ObjectId;
-  unreadCount: number;
-  stripeSubscriptionStatus: string;
-}
+import { IConversation } from "@domain/entities/conversation.entity";
+import mongoose, { Schema } from "mongoose";
 
 const conversationSchema = new Schema(
   {

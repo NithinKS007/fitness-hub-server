@@ -1,11 +1,11 @@
-import { IOtpRepository } from "../../../domain/interfaces/IOtpRepository";
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
-import { Otp } from "../../../domain/entities/otp.entities";
-import { OtpDTO } from "../../dtos/auth-dtos";
-import { OTPStatus } from "../../../shared/constants/index.constants";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { IEmailService } from "../../interfaces/communication/IEmail.service";
-import { IOTPService } from "../../interfaces/security/IGenerate-otp.service";
+import { IOtpRepository } from "@domain/interfaces/IOtpRepository";
+import { IUserRepository } from "@domain/interfaces/IUserRepository";
+import { OtpDTO } from "@application/dtos/auth-dtos";
+import { OTPStatus } from "@shared/constants/index.constants";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { IEmailService } from "@application/interfaces/communication/IEmail.service";
+import { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
+import { IOtp } from "@domain/entities/otp.entity";
 
 /*  
     Method  : createOtp
@@ -47,14 +47,14 @@ export class OtpUseCase {
     private otpService: IOTPService
   ) {}
 
-  async createOtp({ email, otp }: OtpDTO): Promise<Otp> {
+  async createOtp({ email, otp }: OtpDTO): Promise<IOtp> {
     return await this.otpRepository.create({ email, otp });
   }
   async verifyOtp({ email, otp }: OtpDTO): Promise<void> {
     const otpData = await this.otpRepository.findOne({ email, otp });
 
     if (!otpData) {
-      throw new validationError(OTPStatus.InvalidOtp);
+      throw new validationError(OTPStatus.Invalid);
     }
     const { email: userEmail } = otpData;
     await this.userRepository.updateUserVerificationStatus({
@@ -66,7 +66,7 @@ export class OtpUseCase {
     const userData = await this.userRepository.findOne({ email });
 
     if (userData?.otpVerified) {
-      throw new validationError(OTPStatus.AlreadyUserVerifiedByOtp);
+      throw new validationError(OTPStatus.Verified);
     }
     const otpData = this.otpService.generateOtp(6);
     await this.otpRepository.create({ email, otp: otpData });

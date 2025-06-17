@@ -1,12 +1,12 @@
-import { TrainerVideoCallLog } from "../../../domain/entities/video-calllog.entities";
-import { IVideoCallLogRepository } from "../../../domain/interfaces/IVideoCallLogRepository";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   AppointmentStatus,
   ApplicationStatus,
-} from "../../../shared/constants/index.constants";
-import { GetVideoCallLogQueryDTO } from "../../dtos/query-dtos";
-import { PaginationDTO } from "../../dtos/utility-dtos";
+} from "@shared/constants/index.constants";
+import { GetVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { TrainerVideoCallLog } from "@application/dtos/video-call-dtos";
 
 /**
  * Purpose: Fetch video call logs for a trainer with pagination, filters, and date range.

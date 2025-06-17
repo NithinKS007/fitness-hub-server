@@ -1,7 +1,7 @@
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { AuthStatus } from "../../../shared/constants/index.constants";
-import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { AuthStatus } from "@shared/constants/index.constants";
+import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
+import { IUserRepository } from "@domain/interfaces/IUserRepository";
 
 /*  
     Purpose: Check if a user or trainer is blocked based on their ID

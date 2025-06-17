@@ -1,33 +1,33 @@
-import mongoose from "mongoose";
+import { Model } from "mongoose";
 import {
   ConversationSubscriptionUpdate,
-  CreateConversation,
   FindConversation,
   IncrementUnReadMessageCount,
   UpdateLastMessage,
-  UpdateUnReadMessageCount,
-} from "../../../application/dtos/conversation-dtos";
-import { IConversationRepository } from "../../../domain/interfaces/IConversationRepository";
-import ConversationModel from "../models/conversation.model";
+} from "@application/dtos/conversation-dtos";
+import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
+import ConversationModel from "@infrastructure/databases/models/conversation.model";
+import {
+  GetChatListQueryDTO,
+  GetUserTrainersListQueryDTO,
+} from "@application/dtos/query-dtos";
+import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
+import { IConversation } from "@domain/entities/conversation.entity";
 import {
   Conversation,
-  Ichat,
   TrainerChatList,
   UserChatList,
-} from "../../../domain/entities/conversation.entities";
-import { GetChatListQueryDTO } from "../../../application/dtos/query-dtos";
+} from "@application/dtos/chat-dtos";
+import { UserMyTrainersList } from "@application/dtos/subscription-dtos";
 
-export class ConversationRepository implements IConversationRepository {
-  async createChatConversation({
-    userId,
-    trainerId,
-    stripeSubscriptionStatus,
-  }: CreateConversation): Promise<void> {
-    await ConversationModel.create({
-      userId: new mongoose.Types.ObjectId(userId),
-      trainerId: new mongoose.Types.ObjectId(trainerId),
-      stripeSubscriptionStatus: stripeSubscriptionStatus,
-    });
+export class ConversationRepository
+  extends BaseRepository<IConversation>
+  implements IConversationRepository
+{
+  constructor(model: Model<IConversation> = ConversationModel) {
+    super(model);
   }
 
   async updateSubscriptionStatus({
@@ -37,8 +37,8 @@ export class ConversationRepository implements IConversationRepository {
   }: ConversationSubscriptionUpdate): Promise<void> {
     await ConversationModel.findOneAndUpdate(
       {
-        userId: new mongoose.Types.ObjectId(userId),
-        trainerId: new mongoose.Types.ObjectId(trainerId),
+        userId: this.parseId(userId),
+        trainerId: this.parseId(trainerId),
       },
       { stripeSubscriptionStatus },
       { new: true }
@@ -52,8 +52,8 @@ export class ConversationRepository implements IConversationRepository {
     const result = await ConversationModel.aggregate([
       {
         $match: {
-          userId: new mongoose.Types.ObjectId(userId),
-          trainerId: new mongoose.Types.ObjectId(trainerId),
+          userId: this.parseId(userId),
+          trainerId: this.parseId(trainerId),
         },
       },
       {
@@ -89,47 +89,58 @@ export class ConversationRepository implements IConversationRepository {
     userId,
     otherUserId,
     lastMessageId,
-  }: UpdateLastMessage): Promise<Conversation | null> {
+  }: UpdateLastMessage): Promise<IConversation | null> {
     return await ConversationModel.findOneAndUpdate(
       {
         $or: [
           {
-            userId: new mongoose.Types.ObjectId(userId),
-            trainerId: new mongoose.Types.ObjectId(otherUserId),
+            userId: this.parseId(userId),
+            trainerId: this.parseId(otherUserId),
           },
           {
-            userId: new mongoose.Types.ObjectId(otherUserId),
-            trainerId: new mongoose.Types.ObjectId(userId),
+            userId: this.parseId(otherUserId),
+            trainerId: this.parseId(userId),
           },
         ],
       },
-      { $set: { lastMessage: new mongoose.Types.ObjectId(lastMessageId) } },
+      { lastMessage: this.parseId(lastMessageId) },
       { new: true }
     )
-      .populate<{ lastMessage: Ichat | null }>({
-        path: "lastMessage",
-        model: "Chat",
-      })
       .lean()
       .exec();
   }
 
-  async updateUnReadCount({
-    userId,
-    otherUserId,
-    count,
-  }: UpdateUnReadMessageCount): Promise<Conversation | null> {
-    const matchResult = await ConversationModel.aggregate([
+  async findChatWithLastMessage(conversationId: string): Promise<Conversation> {
+    const result = await ConversationModel.aggregate([
+      { $match: { _id: this.parseId(conversationId) } },
+      {
+        $lookup: {
+          from: "chats",
+          localField: "lastMessage",
+          foreignField: "_id",
+          as: "lastMessage",
+        },
+      },
+      { $unwind: { path: "$lastMessage", preserveNullAndEmptyArrays: true } },
+    ]);
+    return result[0];
+  }
+
+  async findChatUpdateCount(
+    userId: string,
+    otherUserId: string
+  ): Promise<Conversation | null> {
+    const result = await ConversationModel.aggregate([
       {
         $match: {
           $or: [
             {
-              userId: new mongoose.Types.ObjectId(userId),
-              trainerId: new mongoose.Types.ObjectId(otherUserId),
+              userId: this.parseId(userId),
+              trainerId: this.parseId(otherUserId),
             },
             {
-              userId: new mongoose.Types.ObjectId(otherUserId),
-              trainerId: new mongoose.Types.ObjectId(userId),
+              userId: this.parseId(otherUserId),
+              trainerId: this.parseId(userId),
             },
           ],
         },
@@ -147,47 +158,27 @@ export class ConversationRepository implements IConversationRepository {
       },
       {
         $match: {
-          "lastMessage.receiverId": new mongoose.Types.ObjectId(userId),
+          "lastMessage.receiverId": this.parseId(userId),
         },
       },
-      {
-        $project: { _id: 1 },
-      },
     ]);
-
-    if (!matchResult.length) return null;
-
-    const conversationId = matchResult[0]?._id;
-
-    const updatedConversation = await ConversationModel.findOneAndUpdate(
-      { _id: conversationId },
-      { $set: { unreadCount: count } },
-      { new: true }
-    )
-      .populate<{ lastMessage: Ichat | null }>({
-        path: "lastMessage",
-        model: "Chat",
-      })
-      .lean()
-      .exec();
-
-    return updatedConversation;
+    return result.length > 0 ? result[0] : null;
   }
 
   async incrementUnReadMessageCount({
     userId,
     otherUserId,
-  }: IncrementUnReadMessageCount): Promise<Conversation | null> {
-    const updatedDoc = await ConversationModel.findOneAndUpdate(
+  }: IncrementUnReadMessageCount): Promise<IConversation | null> {
+    return await ConversationModel.findOneAndUpdate(
       {
         $or: [
           {
-            userId: new mongoose.Types.ObjectId(userId),
-            trainerId: new mongoose.Types.ObjectId(otherUserId),
+            userId: this.parseId(userId),
+            trainerId: this.parseId(otherUserId),
           },
           {
-            userId: new mongoose.Types.ObjectId(otherUserId),
-            trainerId: new mongoose.Types.ObjectId(userId),
+            userId: this.parseId(otherUserId),
+            trainerId: this.parseId(userId),
           },
         ],
       },
@@ -196,13 +187,8 @@ export class ConversationRepository implements IConversationRepository {
       },
       { new: true }
     )
-      .populate<{ lastMessage: Ichat | null }>({
-        path: "lastMessage",
-        model: "Chat",
-      })
       .lean()
       .exec();
-    return updatedDoc;
   }
 
   async findUserChatList(
@@ -218,7 +204,7 @@ export class ConversationRepository implements IConversationRepository {
       ];
     }
     const result = await ConversationModel.aggregate([
-      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+      { $match: { userId: this.parseId(userId) } },
       { $sort: { createdAt: -1 } },
       {
         $lookup: {
@@ -279,6 +265,7 @@ export class ConversationRepository implements IConversationRepository {
     ]);
     return result;
   }
+
   async findTrainerChatList(
     trainerId: string,
     { search }: GetChatListQueryDTO
@@ -292,7 +279,7 @@ export class ConversationRepository implements IConversationRepository {
       ];
     }
     const result = await ConversationModel.aggregate([
-      { $match: { trainerId: new mongoose.Types.ObjectId(trainerId) } },
+      { $match: { trainerId: this.parseId(trainerId) } },
       { $sort: { createdAt: -1 } },
       {
         $lookup: {
@@ -339,5 +326,89 @@ export class ConversationRepository implements IConversationRepository {
       },
     ]);
     return result;
+  }
+
+  async getUserTrainersList(
+    userId: string,
+    { page, limit, search }: GetUserTrainersListQueryDTO
+  ): Promise<{
+    userTrainersList: UserMyTrainersList[];
+    paginationData: PaginationDTO;
+  }> {
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
+
+    let matchQuery: any = {};
+
+    if (search) {
+      matchQuery.$or = [
+        { "subscribedTrainerData.fname": { $regex: search, $options: "i" } },
+        { "subscribedTrainerData.lname": { $regex: search, $options: "i" } },
+        { "subscribedTrainerData.email": { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const commonPipeline = [
+      { $match: { userId: this.parseId(userId) } },
+      {
+        $lookup: {
+          from: "trainers",
+          localField: "trainerId",
+          foreignField: "_id",
+          as: "trainerData",
+        },
+      },
+      {
+        $unwind: "$trainerData",
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "trainerData.userId",
+          foreignField: "_id",
+          as: "subscribedTrainerData",
+        },
+      },
+      { $match: matchQuery },
+      { $unwind: "$subscribedTrainerData" },
+    ];
+
+    const [totalCount, userTrainersList] = await Promise.all([
+      this.model
+        .aggregate([...commonPipeline, { $count: "totalCount" }])
+        .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
+      this.model
+        .aggregate([
+          ...commonPipeline,
+          {
+            $project: {
+              _id: 1,
+              stripeSubscriptionStatus: 1,
+              trainerId: 1,
+              userId: 1,
+              subscribedTrainerData: {
+                _id: 1,
+                fname: 1,
+                lname: 1,
+                email: 1,
+                profilePic: 1,
+                isBlocked: 1,
+              },
+            },
+          },
+        ])
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNumber)
+        .exec(),
+    ]);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
+    return {
+      userTrainersList: userTrainersList,
+      paginationData,
+    };
   }
 }

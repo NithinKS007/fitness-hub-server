@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import { AuthStatus, JwtStatus } from "../../shared/constants/index.constants";
+import { AuthStatus, JwtStatus } from "@shared/constants/index.constants";
 import { JwtPayload } from "jsonwebtoken";
-import { CheckUserBlockStatusUseCase } from "../../application/usecases/auth/check-user-blockstatus.usecase";
-import { UserRepository } from "../../infrastructure/databases/repositories/user.repository";
+import { CheckUserBlockStatusUseCase } from "@application/usecases/auth/check-user-blockstatus.usecase";
+import { UserRepository } from "@infrastructure/databases/repositories/user.repository";
 import { ForbiddenError, UnauthorizedError } from "./error.middleware";
-import { TrainerRepository } from "../../infrastructure/databases/repositories/trainer.repository";
-import { TokenUseCase } from "../../application/usecases/auth/token.usecase";
-import { JwtService } from "../../infrastructure/services/auth/jwt.service";
+import { TrainerRepository } from "@infrastructure/databases/repositories/trainer.repository";
+import { TokenUseCase } from "@application/usecases/auth/token.usecase";
+import { JwtService } from "@infrastructure/services/auth/jwt.service";
 
 const userRepository = new UserRepository();
 const trainerRepository = new TrainerRepository();
@@ -24,7 +24,7 @@ export const authenticate = async (
 ) => {
   const authHeader = req.headers["authorization"];
   if (!authHeader) {
-    next(new UnauthorizedError(JwtStatus.AuthenticationHeaderIsMissing));
+    next(new UnauthorizedError(JwtStatus.AuthHeaderMissing));
     return;
   }
   const accessToken = authHeader.split(" ")[1];

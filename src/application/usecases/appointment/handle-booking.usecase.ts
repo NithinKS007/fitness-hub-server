@@ -1,13 +1,16 @@
-import { BookingStatus, HandleBookingDTO } from "../../dtos/booking-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import {
+  BookingStatus,
+  HandleBookingDTO,
+} from "@application/dtos/booking-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AppointmentStatus,
-} from "../../../shared/constants/index.constants";
-import { Appointment } from "../../../domain/entities/appointment.entities";
-import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
-import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
-import { Action } from "../../dtos/utility-dtos";
+} from "@shared/constants/index.constants";
+import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
+import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
+import { Action } from "@application/dtos/utility-dtos";
+import { IAppointment } from "@domain/entities/appointment.entity";
 
 /*  
     Purpose: Approve or reject a booking request, and update the booking slot and appointment status accordingly
@@ -21,11 +24,12 @@ export class HandleBookingApprovalUseCase {
     private bookingSlotRepository: IBookingSlotRepository,
     private appointmentRepository: IAppointmentRepository
   ) {}
+
   async execute({
     appointmentId,
     bookingSlotId,
     action,
-  }: HandleBookingDTO): Promise<Appointment> {
+  }: HandleBookingDTO): Promise<IAppointment> {
     if (!appointmentId || !bookingSlotId || !action) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

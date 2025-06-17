@@ -1,20 +1,22 @@
 import { Model } from "mongoose";
-import { AdminRevenueHistory } from "../../../application/dtos/revenue-dtos";
-import { IPlatformEarningsRepository } from "../../../domain/interfaces/IPlatformEarningsRepository";
-import revenueModel, { IRevenue } from "../models/revenue.model";
+import { PlatformRevenue } from "@application/dtos/revenue-dtos";
+import { IPlatformEarningsRepository } from "@domain/interfaces/IPlatformEarningsRepository";
 import {
   DateRangeQueryDTO,
   GetRevenueQueryDTO,
-} from "../../../application/dtos/query-dtos";
-import { AdminChartData } from "../../../domain/entities/chart.entities";
-import { PaginationDTO } from "../../../application/dtos/utility-dtos";
-import { BaseRepository } from "./base.repository";
+} from "@application/dtos/query-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
+import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
+import { AdminChartData } from "@application/dtos/chart-dtos";
+import { IRevenue } from "@domain/entities/revenue.entity";
+import RevenueModel from "../models/revenue.model";
 
 export class RevenueRepository
   extends BaseRepository<IRevenue>
   implements IPlatformEarningsRepository
 {
-  constructor(model: Model<IRevenue> = revenueModel) {
+  constructor(model: Model<IRevenue> = RevenueModel) {
     super(model);
   }
 
@@ -79,12 +81,10 @@ export class RevenueRepository
     search,
     filters,
   }: GetRevenueQueryDTO): Promise<{
-    revenueData: AdminRevenueHistory[];
+    revenueData: PlatformRevenue[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
     let matchQuery: any = {};
 
     if (search) {
@@ -240,13 +240,15 @@ export class RevenueRepository
         .exec(),
     ]);
 
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
+
     return {
       revenueData: revenueData,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 }

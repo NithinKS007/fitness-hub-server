@@ -1,11 +1,15 @@
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   DashboardStatus,
-} from "../../../shared/constants/index.constants";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
-import { TrainerDashboardStats } from "../../../domain/entities/trainer.entities";
-import { IDateService } from "../../interfaces/date/IDate.service";
+} from "@shared/constants/index.constants";
+import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
+import { IDateService } from "@application/interfaces/date/IDate.service";
+import { TrainerDashboardStats } from "@application/dtos/trainer-dtos";
+import {
+  TrainerChartData,
+  TrainerPieChartData,
+} from "@application/dtos/chart-dtos";
 
 export class TrainerDashBoardUseCase {
   constructor(
@@ -83,11 +87,11 @@ export class TrainerDashBoardUseCase {
   private async getChartSubscriptionsData(
     trainerId: string,
     period: string
-  ): Promise<any> {
+  ): Promise<TrainerChartData[]> {
     const { startDate, endDate } = this.dateService.getDateRange(period);
 
     const chartData =
-      await this.userSubscriptionPlanRepository.trainerChartDataFilter(
+      await this.userSubscriptionPlanRepository.getTrainerLineChartData(
         trainerId,
         { startDate, endDate }
       );
@@ -102,11 +106,11 @@ export class TrainerDashBoardUseCase {
   private async getPieChartSubscriptionsData(
     trainerId: string,
     period: string
-  ): Promise<any> {
+  ): Promise<TrainerPieChartData[]> {
     const { startDate, endDate } = this.dateService.getDateRange(period);
 
     const pieChartData =
-      await this.userSubscriptionPlanRepository.trainerPieChartDataFilter(
+      await this.userSubscriptionPlanRepository.getTrainerPieChartData(
         trainerId,
         { startDate, endDate }
       );

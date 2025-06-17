@@ -2,19 +2,16 @@ import { Model } from "mongoose";
 import {
   UpdateVideoCallLogDTO,
   UpdateVideoCallDurationDTO,
-} from "../../../application/dtos/video-call-dtos";
-import { PaginationDTO } from "../../../application/dtos/utility-dtos";
-import { IVideoCallLogRepository } from "../../../domain/interfaces/IVideoCallLogRepository";
-import VideoCallLogModel, {
-  IVideoCallLog,
-} from "../models/video-call-log.model";
-import {
   TrainerVideoCallLog,
   UserVideoCallLog,
-  VideoCallLog,
-} from "../../../domain/entities/video-calllog.entities";
-import { GetVideoCallLogQueryDTO } from "../../../application/dtos/query-dtos";
-import { BaseRepository } from "./base.repository";
+} from "@application/dtos/video-call-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogRepository";
+import { GetVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
+import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
+import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
+import { IVideoCallLog } from "@domain/entities/video-calllog.entity";
+import VideoCallLogModel from "../models/video-call-log.model";
 
 export class VideoCallLogRepository
   extends BaseRepository<IVideoCallLog>
@@ -24,28 +21,30 @@ export class VideoCallLogRepository
     super(model);
   }
 
-  async updateVideoCallLog({
+  private async updateLogField(
+    callRoomId: string,
+    updates: Record<string, {}>
+  ): Promise<IVideoCallLog | null> {
+    return await this.model.findOneAndUpdate(
+      { callRoomId: callRoomId },
+      updates,
+      { new: true }
+    );
+  }
+
+  async updateStatus({
     callRoomId,
     callEndTime,
     callStatus,
-  }: UpdateVideoCallLogDTO): Promise<VideoCallLog | null> {
-    const videoCallLogData = await this.model.findOneAndUpdate(
-      { callRoomId: callRoomId },
-      { callEndTime: callEndTime, callStatus: callStatus },
-      { new: true }
-    );
-    return videoCallLogData;
+  }: UpdateVideoCallLogDTO): Promise<IVideoCallLog | null> {
+    return this.updateLogField(callRoomId, { callEndTime, callStatus });
   }
 
-  async updateVideoCallDuration({
+  async updateDuration({
     callRoomId,
     callDuration,
   }: UpdateVideoCallDurationDTO): Promise<void> {
-    await this.model.findOneAndUpdate(
-      { callRoomId: callRoomId },
-      { callDuration: callDuration },
-      { new: true }
-    );
+    await this.updateLogField(callRoomId, { callDuration });
   }
 
   async getTrainerVideoCallLogs(
@@ -55,9 +54,7 @@ export class VideoCallLogRepository
     trainerVideoCallLogList: TrainerVideoCallLog[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
     let matchQuery: any = {};
 
     if (search) {
@@ -116,13 +113,14 @@ export class VideoCallLogRepository
         .limit(limitNumber)
         .exec(),
     ]);
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
     return {
       trainerVideoCallLogList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 
@@ -133,9 +131,7 @@ export class VideoCallLogRepository
     userVideoCallLogList: UserVideoCallLog[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
     let matchQuery: any = {};
     if (search) {
       matchQuery.$or = [
@@ -202,13 +198,14 @@ export class VideoCallLogRepository
         .limit(limitNumber)
         .exec(),
     ]);
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
     return {
       userVideoCallLogList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 }

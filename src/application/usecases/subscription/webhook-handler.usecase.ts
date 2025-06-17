@@ -1,13 +1,13 @@
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { SubscriptionStatus } from "../../../shared/constants/index.constants";
-import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
-import stripe from "../../../infrastructure/config/stripe.config";
-import { IPlatformEarningsRepository } from "../../../domain/interfaces/IPlatformEarningsRepository";
-import { IConversationRepository } from "../../../domain/interfaces/IConversationRepository";
-import { IPaymentService } from "../../interfaces/payments/IPayment.service";
-import { IEmailService } from "../../interfaces/communication/IEmail.service";
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { SubscriptionStatus } from "@shared/constants/index.constants";
+import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
+import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
+import { IPlatformEarningsRepository } from "@domain/interfaces/IPlatformEarningsRepository";
+import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
+import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { IEmailService } from "@application/interfaces/communication/IEmail.service";
+import { IUserRepository } from "@domain/interfaces/IUserRepository";
+import { IUserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
 
 export class WebHookHandlerUseCase {
   constructor(
@@ -19,7 +19,11 @@ export class WebHookHandlerUseCase {
     private emailService: IEmailService,
     private userRepository: IUserRepository
   ) {}
-  private validateWebhookInput(sig: any, webhookSecret: any, body: any): void {
+  private validateWebhookInput(
+    sig: string,
+    webhookSecret: string,
+    body: string | Buffer
+  ): void {
     if (!sig || !webhookSecret || !body) {
       throw new validationError(SubscriptionStatus.WebHookCredentialsMissing);
     }
@@ -63,14 +67,6 @@ export class WebHookHandlerUseCase {
       text: `Dear user, your subscription to Trainer ID: ${trainerId} has been canceled.
              We hope to have you back soon!`,
     });
-  }
-
-  private constructStripeEvent(body: any, sig: any, webhookSecret: any) {
-    const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-    if (!event) {
-      throw new validationError(SubscriptionStatus.WebHookVerificationFailed);
-    }
-    return event;
   }
 
   private async handleCheckoutSessionCompleted(event: any): Promise<void> {
@@ -119,20 +115,15 @@ export class WebHookHandlerUseCase {
         await this.userSubscriptionPlanRepository.create(newSubscriptionAdding);
 
       if (createdSubscription) {
-        await this.sendSubscriptionConfirmationEmail(
-          userId as string,
-          trainerId
-        );
-        await this.handleRevenue(
-          subscriptionData,
-          trainerId,
-          createdSubscription
-        );
-        await this.manageConversationStatus(
-          createdSubscription,
-          trainerId,
-          subscription.status
-        );
+        await Promise.all([
+          this.sendSubscriptionConfirmationEmail(userId as string, trainerId),
+          this.handleRevenue(subscriptionData, trainerId, createdSubscription),
+          this.manageConversationStatus(
+            createdSubscription,
+            trainerId,
+            subscription.status
+          ),
+        ]);
       }
       console.log(
         `Subscription ${subscriptionId} successful in webhook handler`
@@ -163,7 +154,7 @@ export class WebHookHandlerUseCase {
   }
 
   private async manageConversationStatus(
-    createdSubscription: any,
+    createdSubscription: IUserSubscriptionPlan,
     trainerId: string,
     subscriptionStatus: string
   ): Promise<void> {
@@ -174,9 +165,9 @@ export class WebHookHandlerUseCase {
       });
 
     if (!existingConversation) {
-      await this.conversationRepository.createChatConversation({
+      await this.conversationRepository.create({
         userId: createdSubscription.userId.toString(),
-        trainerId: trainerId,
+        trainerId: trainerId.toString(),
         stripeSubscriptionStatus: subscriptionStatus,
       });
     } else {
@@ -194,7 +185,7 @@ export class WebHookHandlerUseCase {
 
     if (stripeSubscriptionId) {
       const findExistingSubscription =
-        await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionId(
+        await this.userSubscriptionPlanRepository.getSubscriptionByStripeId(
           stripeSubscriptionId
         );
       const { userId, trainerId } = findExistingSubscription;
@@ -205,7 +196,7 @@ export class WebHookHandlerUseCase {
           stripeSubscriptionStatus: "canceled",
         });
       }
-      await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionIdAndUpdateStatus(
+      await this.userSubscriptionPlanRepository.updateSubscriptionStatusByStripeId(
         { stripeSubscriptionId, status: "canceled" }
       );
 
@@ -224,7 +215,7 @@ export class WebHookHandlerUseCase {
 
     if (subscription) {
       const findExistingSubscription =
-        await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionId(
+        await this.userSubscriptionPlanRepository.getSubscriptionByStripeId(
           subscription.id
         );
       const { userId, trainerId } = findExistingSubscription;
@@ -235,7 +226,7 @@ export class WebHookHandlerUseCase {
           stripeSubscriptionStatus: "canceled",
         });
       }
-      await this.userSubscriptionPlanRepository.findSubscriptionByStripeSubscriptionIdAndUpdateStatus(
+      await this.userSubscriptionPlanRepository.updateSubscriptionStatusByStripeId(
         { stripeSubscriptionId: subscription.id, status: "canceled" }
       );
       await this.SendSubscriptionCancelledEmail(
@@ -250,7 +241,11 @@ export class WebHookHandlerUseCase {
 
   async execute(sig: string, webhookSecret: string, body: any): Promise<void> {
     this.validateWebhookInput(sig, webhookSecret, body);
-    const event = this.constructStripeEvent(body, sig, webhookSecret);
+    const event = await this.paymentService.constructStripeEvent(
+      body,
+      sig,
+      webhookSecret
+    );
     switch (event.type) {
       case "checkout.session.completed":
         await this.handleCheckoutSessionCompleted(event);

@@ -1,0 +1,18 @@
+export const TYPES_REPOSITORIES = {
+  AppointmentRepository: Symbol.for("AppointmentRepository"),
+  BookingSlotRepository: Symbol.for("BookingSlotRepository"),
+  ChatRepository: Symbol.for("ChatRepository"),
+  ConversationRepository: Symbol.for("ConversationRepository"),
+  OtpRepository: Symbol.for("OtpRepository"),
+  PasswordResetRepository: Symbol.for("PasswordResetRepository"),
+  PlayListRepository: Symbol.for("PlayListRepository"),
+  RevenueRepository: Symbol.for("RevenueRepository"),
+  SubscriptionRepository: Symbol.for("SubscriptionRepository"),
+  TrainerRepository: Symbol.for("TrainerRepository"),
+  UserRepository: Symbol.for("UserRepository"),
+  UserSubscriptionPlanRepository: Symbol.for("UserSubscriptionPlanRepository"),
+  VideoCallLogRepository: Symbol.for("VideoCallLogRepository"),
+  VideoPlayListRepository: Symbol.for("VideoPlayListRepository"),
+  VideoRepository: Symbol.for("VideoRepository"),
+  WorkoutRepository: Symbol.for("WorkoutRepository"),
+};

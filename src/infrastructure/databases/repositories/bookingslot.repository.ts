@@ -1,10 +1,14 @@
 import { Model } from "mongoose";
-import { PaginationDTO } from "../../../application/dtos/utility-dtos";
-import { BookingSlot } from "../../../domain/entities/booking-slot.entities";
-import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
-import BookingSlotModel, { IBookingSlot } from "../models/booking.slot";
-import { AvailableSlotsQueryDTO } from "../../../application/dtos/query-dtos";
-import { BaseRepository } from "./base.repository";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
+import { AvailableSlotsQueryDTO } from "@application/dtos/query-dtos";
+import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
+import {
+  paginateReq,
+  paginateRes,
+} from "@shared/utils/handle-pagination";
+import BookingSlotModel from "../models/booking-slot.model";
+import { IBookingSlot } from "@domain/entities/booking-slot.entity";
 
 export class BookingSlotRepository
   extends BaseRepository<IBookingSlot>
@@ -13,17 +17,19 @@ export class BookingSlotRepository
   constructor(model: Model<IBookingSlot> = BookingSlotModel) {
     super(model);
   }
+
+  protected resetToUTCStartOfDay() {
+    return new Date(new Date().setUTCHours(0, 0, 0, 0));
+  }
+
   async getPendingSlots(
     trainerId: string,
     { page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
   ): Promise<{
-    availableSlotsList: BookingSlot[];
+    availableSlotsList: IBookingSlot[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
-
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
     let matchQuery: any = {};
 
     if (fromDate) matchQuery.date = { $gte: fromDate };
@@ -43,13 +49,14 @@ export class BookingSlotRepository
         .exec(),
     ]);
 
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
     return {
       availableSlotsList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 
@@ -57,32 +64,30 @@ export class BookingSlotRepository
     trainerId: string,
     { page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
   ): Promise<{
-    availableSlotsList: BookingSlot[];
+    availableSlotsList: IBookingSlot[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 9;
-    const skip = (pageNumber - 1) * limitNumber;
-
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
+    const currentDate = this.resetToUTCStartOfDay();
     let matchQuery: any = {
-      $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+      $gte: currentDate,
     };
 
     if (fromDate) {
-      if (fromDate < new Date(new Date().setUTCHours(0, 0, 0, 0))) {
+      if (fromDate < currentDate) {
         matchQuery = {
           ...matchQuery,
-          $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+          $gte: currentDate,
         };
       } else {
         matchQuery = { ...matchQuery, $gte: fromDate };
       }
     }
     if (toDate) {
-      if (toDate < new Date(new Date().setUTCHours(0, 0, 0, 0))) {
+      if (toDate < currentDate) {
         matchQuery = {
           ...matchQuery,
-          $lte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+          $lte: currentDate,
         };
       } else {
         matchQuery = { ...matchQuery, $lte: toDate };
@@ -103,20 +108,21 @@ export class BookingSlotRepository
         .exec(),
     ]);
 
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
     return {
       availableSlotsList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 
-  async getAllPendingSlots(trainerId: string): Promise<BookingSlot[]> {
+  async getAllPendingSlots(trainerId: string): Promise<IBookingSlot[]> {
     return await this.model.find({
       trainerId: trainerId,
-      date: { $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)) },
+      date: { $gte: this.resetToUTCStartOfDay() },
       status: "pending",
     });
   }

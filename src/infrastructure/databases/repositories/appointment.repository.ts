@@ -1,16 +1,18 @@
 import { Model } from "mongoose";
-import { PaginationDTO } from "../../../application/dtos/utility-dtos";
-import {
-  AppointmentRequestsTrainer,
-  AppointmentRequestsUser,
-} from "../../../domain/entities/appointment.entities";
-import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
-import AppointmentModel, { IAppointment } from "../models/appointment.model";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
+import AppointmentModel from "@infrastructure/databases/models/appointment.model";
 import {
   GetBookingRequestsDTO,
   GetBookingSchedulesDTO,
-} from "../../../application/dtos/query-dtos";
-import { BaseRepository } from "./base.repository";
+} from "@application/dtos/query-dtos";
+import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
+import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
+import {
+  AppointmentRequestsTrainer,
+  AppointmentRequestsUser,
+} from "@application/dtos/appointment-dtos";
+import { IAppointment } from "@domain/entities/appointment.entity";
 
 export class AppointmentRepository
   extends BaseRepository<IAppointment>
@@ -27,9 +29,7 @@ export class AppointmentRepository
     bookingRequestsList: AppointmentRequestsTrainer[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
     let matchQuery: any = {};
 
     if (trainerId) {
@@ -120,13 +120,15 @@ export class AppointmentRepository
         .exec(),
     ]);
 
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
+
     return {
       bookingRequestsList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 
@@ -137,9 +139,7 @@ export class AppointmentRepository
     trainerBookingSchedulesList: AppointmentRequestsTrainer[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
     let matchQuery: any = {};
     if (search) {
@@ -227,13 +227,16 @@ export class AppointmentRepository
         .limit(limitNumber)
         .exec(),
     ]);
-    const totalPages = Math.ceil(totalCount / limitNumber);
+
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
+
     return {
       trainerBookingSchedulesList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
   async getUserSchedules(
@@ -243,9 +246,7 @@ export class AppointmentRepository
     appointmentList: AppointmentRequestsUser[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
     let matchQuery: any = {};
     if (search) {
       matchQuery.$or = [
@@ -348,13 +349,15 @@ export class AppointmentRepository
         .exec(),
     ]);
 
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
+
     return {
       appointmentList: appointmentList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 }

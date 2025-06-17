@@ -1,24 +1,24 @@
 import { Request, Response } from "express";
-import { sendResponse } from "../../../shared/utils/http.response";
-import {
-  HttpStatusCodes,
-  TrainerStatus,
-} from "../../../shared/constants/index.constants";
-import { GetUserSubscriptionUseCase } from "../../../application/usecases/subscription/get-user-subscription.usecase";
-import { parseQueryParams } from "../../../shared/utils/parse.queryParams";
+import { sendResponse } from "@shared/utils/http.response";
+import { StatusCodes, TrainerStatus } from "@shared/constants/index.constants";
+import { parseQueryParams } from "@shared/utils/parse.queryParams";
+import { GetUserTrainerslistUseCase } from "@application/usecases/subscription/get-user-trainers-list.usecase";
 
 export class GetUserMyTrainersController {
-  constructor(private getUserSubscriptionUseCase: GetUserSubscriptionUseCase) {}
+  constructor(private getUserTrainerslistUseCase: GetUserTrainerslistUseCase) {}
+
   async handleGetMyTrainers(req: Request, res: Response): Promise<void> {
-    const userId = req?.user?._id;
+    const { _id: userId } = req?.user || {};
+
     const { userTrainersList, paginationData } =
-      await this.getUserSubscriptionUseCase.userMyTrainersList(
+      await this.getUserTrainerslistUseCase.execute(
         userId,
         parseQueryParams(req.query)
       );
+
     sendResponse(
       res,
-      HttpStatusCodes.OK,
+      StatusCodes.OK,
       { userTrainersList, paginationData },
       TrainerStatus.TrainersListRetrieved
     );

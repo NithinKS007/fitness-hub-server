@@ -1,15 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-
-export interface IWorkout extends Document {
-  userId: string | mongoose.Schema.Types.ObjectId;
-  date: Date;
-  bodyPart: string;
-  exerciseName: string;
-  kg: number;
-  reps: number;
-  time: number;
-  isCompleted: boolean;
-}
+import { IWorkout } from "@domain/entities/workout.entity";
+import mongoose, { Schema } from "mongoose";
 
 const WorkoutSchema: Schema = new Schema(
   {

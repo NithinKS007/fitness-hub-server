@@ -1,13 +1,13 @@
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   SubscriptionStatus,
-} from "../../../shared/constants/index.constants";
-import { TrainerSubscribersList } from "../../../domain/entities/subscription.entities";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
-import { GetTrainerSubscribersQueryDTO } from "../../dtos/query-dtos";
-import { IPaymentService } from "../../interfaces/payments/IPayment.service";
-import { PaginationDTO } from "../../dtos/utility-dtos";
+} from "@shared/constants/index.constants";
+import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
+import { GetTrainerSubscribersQueryDTO } from "@application/dtos/query-dtos";
+import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { TrainerSubscribersList } from "@application/dtos/subscription-dtos";
 
 export class GetTrainerSubscribersUseCase {
   constructor(
@@ -26,7 +26,7 @@ export class GetTrainerSubscribersUseCase {
     }
     const query = { page, limit, search, filters };
     const { trainerSubscriberRecord, paginationData } =
-      await this.userSubscriptionPlanRepository.findSubscriptionsOfTrainer(
+      await this.userSubscriptionPlanRepository.getTrainerSubscriptions(
         trainerId,
         query
       );

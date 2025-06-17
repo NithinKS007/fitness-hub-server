@@ -1,4 +1,4 @@
-import { TokenPayload } from "../../dtos/service/auth.service";
+import { TokenPayload } from "@application/dtos/service/auth.service";
 
 export interface IAuthService {
   generateAccessToken(payload: TokenPayload): string;

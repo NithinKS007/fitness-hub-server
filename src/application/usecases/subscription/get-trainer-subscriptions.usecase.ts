@@ -1,11 +1,11 @@
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { AuthStatus } from "../../../shared/constants/index.constants";
-import { Subscription } from "../../../domain/entities/subscription.entities";
-import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { AuthStatus } from "@shared/constants/index.constants";
+import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
+import { ISubscription } from "@domain/entities/subscription.entity";
 
 export class GetTrainerSubscriptionsUseCase {
   constructor(private subscriptionRepository: ISubscriptionRepository) {}
-  async execute(trainerId: string): Promise<Subscription[]> {
+  async execute(trainerId: string): Promise<ISubscription[]> {
     if (!trainerId) {
       throw new validationError(AuthStatus.IdRequired);
     }

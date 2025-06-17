@@ -1,20 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { ISubscription } from "@domain/entities/subscription.entity";
+import mongoose, { Schema } from "mongoose";
 
-export type SubPeriod = "monthly" | "yearly" | "quarterly" | "halfYearly";
-
-export interface ISubscription extends Document {
-  _id: string;
-  trainerId: string | mongoose.Schema.Types.ObjectId;
-  subPeriod: SubPeriod;
-  price: number;
-  durationInWeeks: number;
-  sessionsPerWeek: number;
-  totalSessions: number;
-  isBlocked: boolean;
-  stripePriceId: string;
-}
-
-const SubscriptionSchema: Schema = new Schema(
+const subscriptionSchema: Schema = new Schema(
   {
     trainerId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -44,7 +31,7 @@ const SubscriptionSchema: Schema = new Schema(
 
 const SubscriptionModel = mongoose.model<ISubscription>(
   "Subscription",
-  SubscriptionSchema
+  subscriptionSchema
 );
 
 export default SubscriptionModel;

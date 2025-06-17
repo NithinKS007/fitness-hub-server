@@ -1,10 +1,20 @@
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
-import { UpdateTrainerDetailsDTO } from "../../dtos/trainer-dtos";
-import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import { Trainer } from "../../../domain/entities/trainer.entities";
+import { IUserRepository } from "@domain/interfaces/IUserRepository";
+import {
+  Trainer,
+  UpdateTrainerDetailsDTO,
+} from "@application/dtos/trainer-dtos";
+import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import dotenv from "dotenv";
-import { ICloudStorageService } from "../../interfaces/storage/ICloud.storage.service";
+import { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
 dotenv.config();
+
+/**
+ * Purpose: Handles updating trainer profile .
+ * Incoming: { trainerId, yearsOfExperience, certifications, specializations, userId, profilePic, dateOfBirth, \
+ * ...profileData }
+ * Returns: Trainer  - The updated trainer profile data.
+ * Throws: Error if any required data is missing or the update fails.
+ */
 
 export class UpdateTrainerProfileUseCase {
   constructor(
@@ -63,7 +73,7 @@ export class UpdateTrainerProfileUseCase {
     dateOfBirth,
     _id,
     ...profileData
-  }: UpdateTrainerDetailsDTO): Promise<Trainer | null> {
+  }: UpdateTrainerDetailsDTO): Promise<Trainer> {
     const [updatedCertifications, updatedSpecializations, profilePicData] =
       await Promise.all([
         this.handleCertifications(certifications),

@@ -1,26 +1,31 @@
 import { Request, Response } from "express";
-import { sendResponse } from "../../../shared/utils/http.response";
-import {
-  BlockStatus,
-  HttpStatusCodes,
-} from "../../../shared/constants/index.constants";
-import { UserUseCase } from "../../../application/usecases/user/user.usecase";
+import { sendResponse } from "@shared/utils/http.response";
+import { BlockStatus, StatusCodes } from "@shared/constants/index.constants";
+import { UpdateUserBlockStatusUseCase } from "@application/usecases/user/update-user-block-status.usecase";
 
 export class UpdateUserBlockStatusController {
-  constructor(private userUseCase: UserUseCase) {}
+  constructor(
+    private updateUserBlockStatusUseCase: UpdateUserBlockStatusUseCase
+  ) {}
+
   async updateBlockStatus(req: Request, res: Response): Promise<void> {
+    const { userId } = req.params;
+    const { isBlocked } = req.body;
+
     const blockStatusData = {
-      userId: req.params.userId,
-      isBlocked: req.body.isBlocked,
+      userId,
+      isBlocked,
     };
-    const updatedData = await this.userUseCase.updateBlockStatus(
+
+    const updatedData = await this.updateUserBlockStatusUseCase.execute(
       blockStatusData
     );
+
     sendResponse(
       res,
-      HttpStatusCodes.OK,
+      StatusCodes.OK,
       updatedData,
-      BlockStatus.BlockStatusUpdated
+      BlockStatus.StatusUpdateFailed
     );
   }
 }

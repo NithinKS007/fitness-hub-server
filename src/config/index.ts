@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
-import app from "../server";
-import connectDB from "../infrastructure/config/db.config";
+import app from "@server";
+import connectDB from "@infrastructure/config/db.config";
 import { Server } from "socket.io";
-import { socketService } from "../infrastructure/services/socket/socket.service";
+import { socketService } from "@infrastructure/services/socket/socket.service";
 import { createServer } from "http";
 // Importing the type augmentation for the global 'Request' interface to ensure
 // TypeScript recognizes the custom properties on the request object.

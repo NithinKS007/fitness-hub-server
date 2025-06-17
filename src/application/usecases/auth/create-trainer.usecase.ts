@@ -1,18 +1,17 @@
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
-import { IOtpRepository } from "../../../domain/interfaces/IOtpRepository";
-import { CreateTrainerDTO } from "../../dtos/trainer-dtos";
+import { IUserRepository } from "@domain/interfaces/IUserRepository";
+import { IOtpRepository } from "@domain/interfaces/IOtpRepository";
+import { CreateTrainerDTO, Trainer } from "@application/dtos/trainer-dtos";
 import {
   ApplicationStatus,
   AuthStatus,
-} from "../../../shared/constants/index.constants";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { Trainer } from "../../../domain/entities/trainer.entities";
-import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import { User } from "../../../domain/entities/user.entities";
-import { IEmailService } from "../../interfaces/communication/IEmail.service";
-import { IOTPService } from "../../interfaces/security/IGenerate-otp.service";
-import { IPasswordService } from "../../interfaces/security/IPassword.service";
-import { RoleType } from "../../dtos/auth-dtos";
+} from "@shared/constants/index.constants";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
+import { IEmailService } from "@application/interfaces/communication/IEmail.service";
+import { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
+import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
+import { RoleType } from "@application/dtos/auth-dtos";
+import { IUser } from "@domain/entities/user.entity";
 
 /*  
     Purpose: Creates a new trainer and handles OTP verification during registration.
@@ -31,7 +30,7 @@ export class CreateTrainerUseCase {
     private trainerRepository: ITrainerRepository,
     private emailService: IEmailService,
     private otpService: IOTPService,
-    private passwordService: IPasswordService
+    private encryptionService: IEncryptionService
   ) {}
 
   private async sendOtpEmail(email: string): Promise<void> {
@@ -54,7 +53,7 @@ export class CreateTrainerUseCase {
     yearsOfExperience,
     specializations,
     certificate,
-  }: CreateTrainerDTO): Promise<Trainer | User> {
+  }: CreateTrainerDTO): Promise<Trainer | IUser> {
     if (
       !fname ||
       !lname ||
@@ -93,7 +92,7 @@ export class CreateTrainerUseCase {
       role: RoleType.Trainer,
       dateOfBirth: new Date(dateOfBirth),
     };
-    const hashedPassword = await this.passwordService.hashPassword(password);
+    const hashedPassword = await this.encryptionService.hash(password);
     const createdTrainer = await this.userRepository.create({
       ...createdTrainerData,
       password: hashedPassword,

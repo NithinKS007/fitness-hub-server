@@ -1,6 +1,8 @@
-export enum PlayListStatus{
-  PlayListCreated = "Playlist added successfully",
-  FailedToCreatePlayList = "Failed to create PlayList",
-  PlayListsOfTrainerRetrievedSuccessfully = "Playlists of trainer retrieved successfully",
-  PlayListEditedSuccessfully = "Playlist edited successfully",
+export enum PlayListStatus {
+  Created = "Playlist added successfully",
+  FailedToCreate = "Failed to create PlayList",
+  RetrievedSuccess = "Playlists of trainer retrieved successfully",
+  EditedSuccess = "Playlist edited successfully",
+  NameExists = "Title already exists,try a different one",
+  PlaylistNotFound = "Sorry, the playlist you're looking for doesn't exist or has been removed",
 }

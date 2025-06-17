@@ -1,31 +1,26 @@
 import { Model } from "mongoose";
 import {
   CheckSubscriptionStatusDTO,
+  TrainerSubscriberRecord,
   UpdateSubscriptionStatusDTO,
-} from "../../../application/dtos/subscription-dtos";
-import { PaginationDTO } from "../../../application/dtos/utility-dtos";
-import { SubscriptionPlanEntity } from "../../../domain/entities/subscription-plan.entities";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
-import { IUserSubscriptionPlan } from "../models/user-subscription-plan";
+  UserSubscriptionRecord,
+} from "@application/dtos/subscription-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
 import {
   DateRangeQueryDTO,
   GetTrainerSubscribersQueryDTO,
   GetUserSubscriptionsQueryDTO,
-  GetUserTrainersListQueryDTO,
-} from "../../../application/dtos/query-dtos";
-import {
-  TrainerSubscriberRecord,
-  UserMyTrainersList,
-  UserSubscriptionRecord,
-} from "../../../domain/entities/subscription.entities";
+} from "@application/dtos/query-dtos";
+import UserSubscriptionPlanModel from "@infrastructure/databases/models/user-subscription-plan";
+import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
+import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import {
   TrainerChartData,
   TrainerPieChartData,
-} from "../../../domain/entities/chart.entities";
-import { Top5List } from "../../../domain/entities/trainer.entities";
-import conversationModel from "../models/conversation.model";
-import UserSubscriptionPlanModel from "../models/user-subscription-plan";
-import { BaseRepository } from "./base.repository";
+} from "@application/dtos/chart-dtos";
+import { Top5List } from "@application/dtos/trainer-dtos";
+import { IUserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
 
 export class UserSubscriptionPlanRepository
   extends BaseRepository<IUserSubscriptionPlan>
@@ -34,16 +29,71 @@ export class UserSubscriptionPlanRepository
   constructor(model: Model<IUserSubscriptionPlan> = UserSubscriptionPlanModel) {
     super(model);
   }
-  async findSubscriptionsOfUser(
+
+  private subStatusFilterCriteria(filters: string[]) {
+    const statusFilters: { [key: string]: string } = {
+      Active: "active",
+      Canceled: "canceled",
+      Incomplete: "incomplete",
+      "Incomplete expired": "incomplete_expired",
+      Trialing: "trialing",
+      "Past due": "past_due",
+      Unpaid: "unpaid",
+      Paused: "paused",
+    };
+
+    const periodFilters: { [key: string]: string } = {
+      Monthly: "monthly",
+      Quarterly: "quarterly",
+      Yearly: "yearly",
+      HalfYearly: "halfYearly",
+    };
+
+    type Condition =
+      | { stripeSubscriptionStatus: string }
+      | { subPeriod: string };
+
+    const conditions = filters.reduce<Condition[]>((acc, filter) => {
+      if (statusFilters[filter]) {
+        acc.push({ stripeSubscriptionStatus: statusFilters[filter] });
+      }
+
+      if (periodFilters[filter]) {
+        acc.push({ subPeriod: periodFilters[filter] });
+      }
+      return acc;
+    }, []);
+
+    return conditions;
+  }
+
+  private async countSubscribersByStatus(
+    trainerId: string,
+    status?: string
+  ): Promise<number> {
+    const result = await this.model.aggregate([
+      {
+        $match: {
+          trainerId: this.parseId(trainerId),
+          ...(status ? { stripeSubscriptionStatus: status } : {}),
+        },
+      },
+      {
+        $count: "count",
+      },
+    ]);
+
+    return result.length > 0 ? result[0].count : 0;
+  }
+
+  async getUserSubscriptions(
     userId: string,
     { page, limit, search, filters }: GetUserSubscriptionsQueryDTO
   ): Promise<{
     userSubscriptionRecord: UserSubscriptionRecord[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
     let matchQuery: any = {};
     if (search) {
@@ -55,30 +105,8 @@ export class UserSubscriptionPlanRepository
     }
 
     if (filters && filters.length > 0 && !filters.includes("All")) {
-      const conditions: any = [];
-      if (filters.includes("Active"))
-        conditions.push({ stripeSubscriptionStatus: "active" });
-      if (filters.includes("Canceled"))
-        conditions.push({ stripeSubscriptionStatus: "canceled" });
-      if (filters.includes("Incomplete"))
-        conditions.push({ stripeSubscriptionStatus: "incomplete" });
-      if (filters.includes("Incomplete expired"))
-        conditions.push({ stripeSubscriptionStatus: "incomplete_expired" });
-      if (filters.includes("Trialing"))
-        conditions.push({ stripeSubscriptionStatus: "trialing" });
-      if (filters.includes("Past due"))
-        conditions.push({ stripeSubscriptionStatus: "past_due" });
-      if (filters.includes("Unpaid"))
-        conditions.push({ stripeSubscriptionStatus: "unpaid" });
-      if (filters.includes("Paused"))
-        conditions.push({ stripeSubscriptionStatus: "paused" });
-      if (filters.includes("Monthly"))
-        conditions.push({ subPeriod: "monthly" });
-      if (filters.includes("Quarterly"))
-        conditions.push({ subPeriod: "quarterly" });
-      if (filters.includes("Yearly")) conditions.push({ subPeriod: "yearly" });
-      if (filters.includes("HalfYearly"))
-        conditions.push({ subPeriod: "halfYearly" });
+      const conditions = this.subStatusFilterCriteria(filters);
+
       if (conditions.length > 0) matchQuery.$or = conditions;
     }
 
@@ -141,26 +169,25 @@ export class UserSubscriptionPlanRepository
         .exec(),
     ]);
 
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
     return {
       userSubscriptionRecord: userSubscriptionsList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 
-  async findSubscriptionsOfTrainer(
+  async getTrainerSubscriptions(
     trainerId: string,
     { page, limit, search, filters }: GetTrainerSubscribersQueryDTO
   ): Promise<{
     trainerSubscriberRecord: TrainerSubscriberRecord[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
     let matchQuery: any = {};
     if (search) {
@@ -172,30 +199,8 @@ export class UserSubscriptionPlanRepository
     }
 
     if (filters && filters.length > 0 && !filters.includes("All")) {
-      const conditions: any = [];
-      if (filters.includes("Active"))
-        conditions.push({ stripeSubscriptionStatus: "active" });
-      if (filters.includes("Canceled"))
-        conditions.push({ stripeSubscriptionStatus: "canceled" });
-      if (filters.includes("Incomplete"))
-        conditions.push({ stripeSubscriptionStatus: "incomplete" });
-      if (filters.includes("Incomplete expired"))
-        conditions.push({ stripeSubscriptionStatus: "incomplete_expired" });
-      if (filters.includes("Trialing"))
-        conditions.push({ stripeSubscriptionStatus: "trialing" });
-      if (filters.includes("Past due"))
-        conditions.push({ stripeSubscriptionStatus: "past_due" });
-      if (filters.includes("Unpaid"))
-        conditions.push({ stripeSubscriptionStatus: "unpaid" });
-      if (filters.includes("Paused"))
-        conditions.push({ stripeSubscriptionStatus: "paused" });
-      if (filters.includes("Monthly"))
-        conditions.push({ subPeriod: "monthly" });
-      if (filters.includes("Quarterly"))
-        conditions.push({ subPeriod: "quarterly" });
-      if (filters.includes("Yearly")) conditions.push({ subPeriod: "yearly" });
-      if (filters.includes("HalfYearly"))
-        conditions.push({ subPeriod: "halfYearly" });
+      const conditions = this.subStatusFilterCriteria(filters);
+
       if (conditions.length > 0) matchQuery.$or = conditions;
     }
 
@@ -251,19 +256,20 @@ export class UserSubscriptionPlanRepository
         .exec(),
     ]);
 
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
     return {
       trainerSubscriberRecord: trainerSubscribers,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 
-  async findSubscriptionByStripeSubscriptionId(
+  async getSubscriptionByStripeId(
     stripeSubscriptionId: string
-  ): Promise<SubscriptionPlanEntity> {
+  ): Promise<IUserSubscriptionPlan> {
     const result = await this.model.aggregate([
       { $match: { stripeSubscriptionId: stripeSubscriptionId } },
       {
@@ -309,10 +315,10 @@ export class UserSubscriptionPlanRepository
     ]);
     return result[0];
   }
-  async findSubscriptionsOfUserwithUserIdAndTrainerId({
+  async getSubscriptionsByUserAndTrainerId({
     userId,
     trainerId,
-  }: CheckSubscriptionStatusDTO): Promise<SubscriptionPlanEntity[] | null> {
+  }: CheckSubscriptionStatusDTO): Promise<IUserSubscriptionPlan[] | null> {
     const result = await this.model.aggregate([
       {
         $match: {
@@ -324,65 +330,32 @@ export class UserSubscriptionPlanRepository
 
     return result.length > 0 ? result : null;
   }
-  async findSubscriptionByStripeSubscriptionIdAndUpdateStatus({
+
+  async updateSubscriptionStatusByStripeId({
     status,
     stripeSubscriptionId,
-  }: UpdateSubscriptionStatusDTO): Promise<SubscriptionPlanEntity | null> {
+  }: UpdateSubscriptionStatusDTO): Promise<IUserSubscriptionPlan | null> {
     const result = await this.model.findOneAndUpdate(
       { stripeSubscriptionId: stripeSubscriptionId },
-      { stripeSubscriptionStatus: status }
+      { stripeSubscriptionStatus: status },
+      { new: true }
     );
     return result;
   }
 
   async countAllTrainerSubscribers(trainerId: string): Promise<number> {
-    const result = await this.model.aggregate([
-      {
-        $match: {
-          trainerId: this.parseId(trainerId),
-        },
-      },
-      {
-        $count: "totalSubscribers",
-      },
-    ]);
-
-    return result.length > 0 ? result[0].totalSubscribers : 0;
+    return this.countSubscribersByStatus(trainerId);
   }
 
   async countAllActiveSubscribers(trainerId: string): Promise<number> {
-    const result = await this.model.aggregate([
-      {
-        $match: {
-          trainerId: this.parseId(trainerId),
-          stripeSubscriptionStatus: "active",
-        },
-      },
-      {
-        $count: "activeCount",
-      },
-    ]);
-
-    return result.length > 0 ? result[0].activeCount : 0;
+    return this.countSubscribersByStatus(trainerId, "active");
   }
 
   async countCanceledSubscribers(trainerId: string): Promise<number> {
-    const result = await this.model.aggregate([
-      {
-        $match: {
-          trainerId: this.parseId(trainerId),
-          stripeSubscriptionStatus: "canceled",
-        },
-      },
-      {
-        $count: "canceledCount",
-      },
-    ]);
-
-    return result.length > 0 ? result[0].canceledCount : 0;
+    return this.countSubscribersByStatus(trainerId, "canceled");
   }
 
-  async trainerChartDataFilter(
+  async getTrainerLineChartData(
     trainerId: string,
     { startDate, endDate }: DateRangeQueryDTO
   ): Promise<TrainerChartData[]> {
@@ -414,10 +387,11 @@ export class UserSubscriptionPlanRepository
       },
       { $sort: { _id: 1 } },
     ]);
+
     return result;
   }
 
-  async trainerPieChartDataFilter(
+  async getTrainerPieChartData(
     trainerId: string,
     { startDate, endDate }: DateRangeQueryDTO
   ): Promise<TrainerPieChartData[]> {
@@ -442,92 +416,7 @@ export class UserSubscriptionPlanRepository
     return result;
   }
 
-  async usersMyTrainersList(
-    userId: string,
-    { page, limit, search }: GetUserTrainersListQueryDTO
-  ): Promise<{
-    userTrainersList: UserMyTrainersList[];
-    paginationData: PaginationDTO;
-  }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
-
-    let matchQuery: any = {};
-
-    if (search) {
-      matchQuery.$or = [
-        { "subscribedTrainerData.fname": { $regex: search, $options: "i" } },
-        { "subscribedTrainerData.lname": { $regex: search, $options: "i" } },
-        { "subscribedTrainerData.email": { $regex: search, $options: "i" } },
-      ];
-    }
-
-    const commonPipeline = [
-      { $match: { userId: this.parseId(userId) } },
-      {
-        $lookup: {
-          from: "trainers",
-          localField: "trainerId",
-          foreignField: "_id",
-          as: "trainerData",
-        },
-      },
-      {
-        $unwind: "$trainerData",
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "trainerData.userId",
-          foreignField: "_id",
-          as: "subscribedTrainerData",
-        },
-      },
-      { $match: matchQuery },
-      { $unwind: "$subscribedTrainerData" },
-    ];
-
-    const [totalCount, userTrainersList] = await Promise.all([
-      conversationModel
-        .aggregate([...commonPipeline, { $count: "totalCount" }])
-        .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
-      conversationModel
-        .aggregate([
-          ...commonPipeline,
-          {
-            $project: {
-              _id: 1,
-              stripeSubscriptionStatus: 1,
-              trainerId: 1,
-              userId: 1,
-              subscribedTrainerData: {
-                _id: 1,
-                fname: 1,
-                lname: 1,
-                email: 1,
-                profilePic: 1,
-                isBlocked: 1,
-              },
-            },
-          },
-        ])
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limitNumber)
-        .exec(),
-    ]);
-    const totalPages = Math.ceil(totalCount / limitNumber);
-    return {
-      userTrainersList: userTrainersList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
-    };
-  }
-
-  async findTop5TrainersWithHighestSubscribers(): Promise<Top5List[]> {
+  async getTop5TrainersBySubscribers(): Promise<Top5List[]> {
     const result = await this.model.aggregate([
       {
         $group: {

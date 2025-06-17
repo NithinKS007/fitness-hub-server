@@ -1,7 +1,9 @@
 export enum VideoStatus {
-  VideoUploadedSuccessfully = "Video uploaded successfully",
-  VideoDataRetrievedSuccessfully = "Video data retrieved successfully",
-  videoEditedSuccessfully = "Video edited successfully",
-  FailedToEditVideo = "Failed to edit video",
-  FailedToGetVideo = "Failed to get video data",
+  UploadSuccess = "Video uploaded successfully",
+  FetchSuccess = "Video data retrieved successfully",
+  EditSuccess = "Video edited successfully",
+  EditFail = "Failed to edit video",
+  FailedToGetVideo = "Failed to load video, Please try again after some time",
+  NameExists = "Title already exists try a different one",
+  VideoNotFound = "Sorry, the video you're looking for doesn't exist or has been removed"
 }

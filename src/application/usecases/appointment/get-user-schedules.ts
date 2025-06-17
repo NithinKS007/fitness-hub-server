@@ -1,12 +1,12 @@
-import { PaginationDTO } from "../../dtos/utility-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   AppointmentStatus,
   AuthStatus,
-} from "../../../shared/constants/index.constants";
-import { AppointmentRequestsUser } from "../../../domain/entities/appointment.entities";
-import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
-import { GetBookingSchedulesDTO } from "../../dtos/query-dtos";
+} from "@shared/constants/index.constants";
+import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
+import { GetBookingSchedulesDTO } from "@application/dtos/query-dtos";
+import { AppointmentRequestsUser } from "@application/dtos/appointment-dtos";
 
 /*  
     Purpose: Retrieve a list of booking schedules for a specific user with pagination and filters

@@ -1,9 +1,9 @@
 import { Model } from "mongoose";
-import { FindChatDTO } from "../../../application/dtos/chat-dtos";
-import { Chat } from "../../../domain/entities/chat.entities";
-import { IChatRepository } from "../../../domain/interfaces/IChatRepository";
-import ChatModel, { IChat } from "../models/chat.model";
-import { BaseRepository } from "./base.repository";
+import { FindChatDTO } from "@application/dtos/chat-dtos";
+import { IChatRepository } from "@domain/interfaces/IChatRepository";
+import ChatModel from "@infrastructure/databases/models/chat.model";
+import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
+import { IChat } from "@domain/entities/chat.entity";
 
 export class ChatRepository
   extends BaseRepository<IChat>
@@ -13,7 +13,7 @@ export class ChatRepository
     super(model);
   }
 
-  async getChatHistory({ userId, otherUserId }: FindChatDTO): Promise<Chat[]> {
+  async getChatHistory({ userId, otherUserId }: FindChatDTO): Promise<IChat[]> {
     const chats = await this.model
       .find({
         $or: [
@@ -34,7 +34,7 @@ export class ChatRepository
   async findUnreadMessages(
     userId: string,
     receiverId: string
-  ): Promise<Chat[]> {
+  ): Promise<IChat[]> {
     return this.model.find({
       senderId: this.parseId(receiverId),
       receiverId: this.parseId(userId),

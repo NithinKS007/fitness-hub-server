@@ -1,12 +1,15 @@
-import { BookAppointmentDTO, BookingSlotStatus } from "../../dtos/booking-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import {
+  BookAppointmentDTO,
+  BookingSlotStatus,
+} from "@application/dtos/booking-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   AppointmentStatus,
   AuthStatus,
-} from "../../../shared/constants/index.constants";
-import { Appointment } from "../../../domain/entities/appointment.entities";
-import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
-import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
+} from "@shared/constants/index.constants";
+import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
+import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
+import { IAppointment } from "@domain/entities/appointment.entity";
 
 /*  
     Purpose: Book an appointment by reserving a slot and creating an appointment record
@@ -20,7 +23,7 @@ export class BookAppointmentUseCase {
     private bookingSlotRepository: IBookingSlotRepository,
     private appointmentRepository: IAppointmentRepository
   ) {}
-  async execute({ slotId, userId }: BookAppointmentDTO): Promise<Appointment> {
+  async execute({ slotId, userId }: BookAppointmentDTO): Promise<IAppointment> {
     if (!slotId || !userId) {
       throw new validationError(AuthStatus.IdRequired);
     }
@@ -28,6 +31,7 @@ export class BookAppointmentUseCase {
     if (!bookingSlot) {
       throw new validationError(AppointmentStatus.FailedToBookSlot);
     }
+
     const {
       _id: bookingSlotId,
       trainerId,
@@ -41,6 +45,7 @@ export class BookAppointmentUseCase {
     ) {
       throw new validationError(AppointmentStatus.SlotCurrentlyUnavailable);
     }
+
     const appointmentToCreate = {
       bookingSlotId,
       trainerId,

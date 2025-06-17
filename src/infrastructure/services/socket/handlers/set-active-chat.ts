@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
-import { socketStore } from "../store/socket.store";
-import { MarkMessageAsReadUseCase } from "../../../../application/usecases/chat/mark-as-read.usecase";
-import { UpdateUnReadMessageCountUseCase } from "../../../../application/usecases/chat/update-unread-count.usecase";
+import { socketStore } from "@infrastructure/services/socket/store/socket.store";
+import { MarkMessageAsReadUseCase } from "@application/usecases/chat/mark-as-read.usecase";
+import { UpdateUnReadMessageCountUseCase } from "@application/usecases/chat/update-unread-count.usecase";
 
 export interface SetActiveChatData {
   userId: string;

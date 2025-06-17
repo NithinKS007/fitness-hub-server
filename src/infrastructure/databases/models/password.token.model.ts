@@ -1,10 +1,6 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { IPasswordResetToken } from "@domain/entities/pass-reset-token.entity";
+import mongoose, { Schema } from "mongoose";
 
-export interface IPasswordResetToken extends Document {
-  email: string;
-  resetToken: string;
-  resetTokenCreatedAt: Date;
-}
 const passwordResetTokenSchema: Schema = new Schema(
   {
     email: { type: String, required: true },

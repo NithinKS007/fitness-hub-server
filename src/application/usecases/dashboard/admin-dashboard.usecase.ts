@@ -1,14 +1,11 @@
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
-import {
-  AdminDashBoardStats,
-  Top5List,
-} from "../../../domain/entities/trainer.entities";
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
-import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import { IPlatformEarningsRepository } from "../../../domain/interfaces/IPlatformEarningsRepository";
-import { AdminChartData } from "../../../domain/entities/chart.entities";
-import { IDateService } from "../../interfaces/date/IDate.service";
-import { RoleType } from "../../dtos/auth-dtos";
+import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
+import { IUserRepository } from "@domain/interfaces/IUserRepository";
+import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
+import { IPlatformEarningsRepository } from "@domain/interfaces/IPlatformEarningsRepository";
+import { IDateService } from "@application/interfaces/date/IDate.service";
+import { RoleType } from "@application/dtos/auth-dtos";
+import { AdminChartData } from "@application/dtos/chart-dtos";
+import { AdminDashBoardStats, Top5List } from "@application/dtos/trainer-dtos";
 
 export class AdminDashBoardUseCase {
   constructor(
@@ -87,7 +84,7 @@ export class AdminDashBoardUseCase {
 
   private async getTop5TrainersWithHighestSubscribers(): Promise<Top5List[]> {
     const top10List =
-      await this.userSubscriptionPlanRepository.findTop5TrainersWithHighestSubscribers();
+      await this.userSubscriptionPlanRepository.getTop5TrainersBySubscribers();
     return top10List;
   }
 }

@@ -1,15 +1,18 @@
-import { UpdatePlayListPrivacyDTO } from "../../dtos/playlist-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { UpdatePlayListPrivacyDTO } from "@application/dtos/playlist-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   BlockStatus,
-} from "../../../shared/constants/index.constants";
-import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
-import { IPlayList } from "../../../infrastructure/databases/models/playlist.model";
+} from "@shared/constants/index.constants";
+import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
+import { IPlayList } from "@domain/entities/playlist.entity";
 
 export class UpdatePlayListPrivacyUseCase {
   constructor(private playListRepository: IPlayListRepository) {}
-  async execute({ playListId, privacy }: UpdatePlayListPrivacyDTO): Promise<IPlayList> {
+  async execute({
+    playListId,
+    privacy,
+  }: UpdatePlayListPrivacyDTO): Promise<IPlayList> {
     if (playListId === null || privacy === null) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
@@ -20,7 +23,7 @@ export class UpdatePlayListPrivacyUseCase {
       }
     );
     if (!updatedPlayListData) {
-      throw new validationError(BlockStatus.FailedToUpdateBlockStatus);
+      throw new validationError(BlockStatus.StatusUpdateFailed );
     }
     return updatedPlayListData;
   }

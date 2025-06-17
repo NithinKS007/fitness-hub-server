@@ -1,28 +1,31 @@
 import { Request, Response } from "express";
-import {
-  BlockStatus,
-  HttpStatusCodes,
-} from "../../../shared/constants/index.constants";
-import { sendResponse } from "../../../shared/utils/http.response";
-import { UpdatePlayListPrivacyUseCase } from "../../../application/usecases/playlist/update-playlist-privacy.usecase";
+import { BlockStatus, StatusCodes } from "@shared/constants/index.constants";
+import { sendResponse } from "@shared/utils/http.response";
+import { UpdatePlayListPrivacyUseCase } from "@application/usecases/playlist/update-playlist-privacy.usecase";
 
-export class UpdatePlaylistcontroller {
+export class UpdatePlaylistPrivacyController {
   constructor(
     private updatePlayListPrivacyUseCase: UpdatePlayListPrivacyUseCase
   ) {}
-  async updatePrivacy(req: Request, res: Response): Promise<void> {
+
+  async handleUpdatePrivacy(req: Request, res: Response): Promise<void> {
+    const { playListId } = req.params;
+    const { privacy } = req.body;
+
     const privacyData = {
-      playListId: req.params.playListId,
-      privacy: req.body.privacy,
+      playListId,
+      privacy,
     };
+
     const playListData = await this.updatePlayListPrivacyUseCase.execute(
       privacyData
     );
+
     sendResponse(
       res,
-      HttpStatusCodes.OK,
+      StatusCodes.OK,
       playListData,
-      BlockStatus.BlockStatusUpdated
+      BlockStatus.StatusUpdateFailed
     );
   }
 }

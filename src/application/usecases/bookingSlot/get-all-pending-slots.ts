@@ -1,14 +1,18 @@
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import {
-  AuthStatus,
-  SlotStatus,
-} from "../../../shared/constants/index.constants";
-import { BookingSlot } from "../../../domain/entities/booking-slot.entities";
-import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { AuthStatus, SlotStatus } from "@shared/constants/index.constants";
+import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
+import { IBookingSlot } from "@domain/entities/booking-slot.entity";
+
+/**
+ * Purpose: Handles the retrieval of all pending booking slots for a given trainer.
+ * Incoming: { trainerId } - The ID of the trainer whose pending slots need to be fetched.
+ * Returns: IBookingSlot[] - An array of pending booking slots for the trainer.
+ * Throws: Error if the trainer ID is missing or the slot data cannot be retrieved.
+ */
 
 export class GetAllPendingSlotsUseCase {
   constructor(private bookingSlotRepository: IBookingSlotRepository) {}
-  async execute(trainerId: string): Promise<BookingSlot[]> {
+  async execute(trainerId: string): Promise<IBookingSlot[]> {
     if (!trainerId) {
       throw new validationError(AuthStatus.IdRequired);
     }

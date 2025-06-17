@@ -1,14 +1,14 @@
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { SubscriptionStatus } from "../../../shared/constants/index.constants";
-import { Subscription } from "../../../domain/entities/subscription.entities";
-import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
-import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import { IPaymentService } from "../../interfaces/payments/IPayment.service";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { SubscriptionStatus } from "@shared/constants/index.constants";
+import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
+import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
+import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
 import {
   PeriodType,
   SubPeriod,
   SubscriptionInterval,
-} from "../../dtos/subscription-dtos";
+} from "@application/dtos/subscription-dtos";
+import { ISubscription } from "@domain/entities/subscription.entity";
 
 export class CreateSubscriptionUseCase {
   constructor(
@@ -43,17 +43,17 @@ export class CreateSubscriptionUseCase {
     durationInWeeks: number;
     sessionsPerWeek: number;
     totalSessions: number;
-  }): Promise<Subscription> {
+  }): Promise<ISubscription> {
     const { trainerId, subPeriod, totalSessions, price } =
       createSubscriptionData;
-    const existingSubscription = await this.subscriptionRepository.findOne({
-      trainerId,
-      subPeriod,
-    });
 
-    const trainerData = await this.trainerRepository.getTrainerDetailsById(
-      trainerId
-    );
+    const [existingSubscription, trainerData] = await Promise.all([
+      await this.subscriptionRepository.findOne({
+        trainerId,
+        subPeriod,
+      }),
+      await this.trainerRepository.getTrainerDetailsById(trainerId),
+    ]);
 
     if (existingSubscription) {
       throw new validationError(SubscriptionStatus.SubscriptionAlreadyExists);
@@ -61,12 +61,12 @@ export class CreateSubscriptionUseCase {
 
     const interval = this.getInterval(subPeriod);
     const intervalCount = this.getIntervalCount(subPeriod);
-    const productId = await this.paymentService.createProduct({
+    const productId = await this.paymentService.addProduct({
       name: `${subPeriod.toUpperCase()} FITNESS PLAN`,
       description: `TRAINER: ${trainerData.fname} ${trainerData.lname}, 
       ${totalSessions} SESSIONS, EMAIL: ${trainerData.email}`,
     });
-    const stripePriceId = await this.paymentService.createPrice({
+    const stripePriceId = await this.paymentService.addPrice({
       productId,
       amount: price * 100,
       currency: "usd",

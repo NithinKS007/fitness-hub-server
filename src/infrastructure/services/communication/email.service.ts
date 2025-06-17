@@ -2,11 +2,11 @@ import nodemailer, { Transporter } from "nodemailer";
 import {
   AuthStatus,
   ApplicationStatus,
-} from "../../../shared/constants/index.constants";
+} from "@shared/constants/index.constants";
 import dotenv from "dotenv";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { IEmailService } from "../../../application/interfaces/communication/IEmail.service";
-import { SendEmail } from "../../../application/dtos/service/email.service";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { IEmailService } from "@application/interfaces/communication/IEmail.service";
+import { SendEmail } from "@application/dtos/service/email.service";
 dotenv.config();
 
 export class EmailService implements IEmailService {
@@ -51,7 +51,7 @@ export class EmailService implements IEmailService {
       console.log("Email sent successfully to", to, subject, text);
     } catch (error) {
       console.log(`Error sending the email:${error}`);
-      throw new validationError(AuthStatus.FailedToSendEmail);
+      throw new validationError(AuthStatus.EmailSendFailed);
     }
   }
 }

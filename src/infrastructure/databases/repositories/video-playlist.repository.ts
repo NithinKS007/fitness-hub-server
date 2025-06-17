@@ -1,32 +1,19 @@
 import {
-  BulkWriteAddVideoPlayListDTO,
-  BulkWriteDeleteVideoPlayListDTO,
-  CreateVideoPlayListDTO,
-} from "../../../application/dtos/playlist-dtos";
-import { VideoPlayList } from "../../../domain/entities/video-playlist.entities";
-import { IVideoPlayListRepository } from "../../../domain/interfaces/IVideoPlayListRepository";
-import VideoPlayListModel from "../models/video-playlist.model";
+  CreateVideoPlayList,
+  DeleteVideoPlaylistDTO,
+} from "@application/dtos/playlist-dtos";
+import { IVideoPlaylist } from "@domain/entities/video-playlist.entity";
+import { IVideoPlayListRepository } from "@domain/interfaces/IVideoPlayListRepository";
+import VideoPlayListModel from "@infrastructure/databases/models/video-playlist.model";
 
 export class VideoPlayListRepository implements IVideoPlayListRepository {
-  async insertPlaylists(
-    createVideoPlayList: CreateVideoPlayListDTO[]
-  ): Promise<VideoPlayList[]> {
+  async insertMany(
+    createVideoPlayList: CreateVideoPlayList[]
+  ): Promise<IVideoPlaylist[]> {
     return await VideoPlayListModel.insertMany(createVideoPlayList);
   }
 
-  async bulkUpdatePlaylists(
-    addPlayList: BulkWriteAddVideoPlayListDTO[],
-    deletePlayList: BulkWriteDeleteVideoPlayListDTO[]
-  ): Promise<void> {
-    await VideoPlayListModel.bulkWrite([
-      {
-        deleteMany: {
-          filter: { videoId: { $in: deletePlayList } },
-        },
-      },
-      ...addPlayList.map((playList) => ({
-        insertOne: { document: playList },
-      })),
-    ]);
+  async deleteMany(deletePlayLists: DeleteVideoPlaylistDTO[]): Promise<void> {
+    await VideoPlayListModel.deleteMany({ videoId: { $in: deletePlayLists } });
   }
 }

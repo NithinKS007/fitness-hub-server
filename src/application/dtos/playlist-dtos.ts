@@ -1,16 +1,16 @@
+import { ObjectId } from "mongoose";
+
 export interface CreatePlayListDTO {
   trainerId: string;
   title: string;
 }
-export interface CreateVideoPlayListDTO {
+export interface CreateVideoPlayList {
   videoId: string;
   playListId: string;
 }
-export interface BulkWriteAddVideoPlayListDTO {
-  videoId: string;
-  playListId: string;
-}
-export type BulkWriteDeleteVideoPlayListDTO = string;
+
+export type DeleteVideoPlaylistDTO = string;
+
 export interface UpdatePlayListPrivacyDTO {
   playListId: string;
   privacy: boolean;
@@ -18,4 +18,9 @@ export interface UpdatePlayListPrivacyDTO {
 export interface EditPlayListDTO {
   playListId: string;
   title: string;
+}
+
+export interface NumberOfVideoPerPlayList {
+  playListId: ObjectId;
+  videoCount: number;
 }

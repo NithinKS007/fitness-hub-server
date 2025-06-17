@@ -1,10 +1,10 @@
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AppointmentStatus,
-} from "../../../shared/constants/index.constants";
-import { Appointment } from "../../../domain/entities/appointment.entities";
-import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
+} from "@shared/constants/index.constants";
+import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
+import { IAppointment } from "@domain/entities/appointment.entity";
 
 /*  
     Purpose: Retrieve an appointment by its ID
@@ -15,7 +15,7 @@ import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentR
 
 export class GetAppointmentByIdUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
-  async execute(appointmentId: string): Promise<Appointment | null> {
+  async execute(appointmentId: string): Promise<IAppointment | null> {
     if (!appointmentId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

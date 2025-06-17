@@ -1,7 +1,7 @@
-import { IVideoCallLogRepository } from "../../../domain/interfaces/IVideoCallLogRepository";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { ApplicationStatus } from "../../../shared/constants/index.constants";
-import { CreateVideoCallLogDTO } from "../../dtos/video-call-dtos";
+import { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { ApplicationStatus } from "@shared/constants/index.constants";
+import { CreateVideoCallLogDTO } from "@application/dtos/video-call-dtos";
 
 /**
  * Purpose: Create a video call log entry for a given appointment.
@@ -28,13 +28,13 @@ export class CreateVideoCallLogUseCase {
     ) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const callDataCreate = {
+    const callData = {
       appointmentId,
       callRoomId,
       callStartTime,
       callerId,
       receiverId,
     };
-    await this.videoCallLogRepository.create(callDataCreate);
+    await this.videoCallLogRepository.create(callData);
   }
 }

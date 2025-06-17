@@ -1,12 +1,12 @@
-import { UserVideoCallLog } from "../../../domain/entities/video-calllog.entities";
-import { IVideoCallLogRepository } from "../../../domain/interfaces/IVideoCallLogRepository";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   AppointmentStatus,
   ApplicationStatus,
-} from "../../../shared/constants/index.constants";
-import { GetVideoCallLogQueryDTO } from "../../dtos/query-dtos";
-import { PaginationDTO } from "../../dtos/utility-dtos";
+} from "@shared/constants/index.constants";
+import { GetVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { UserVideoCallLog } from "@application/dtos/video-call-dtos";
 
 /**
  * Purpose: Fetch video call logs for a user with pagination, filters, and date range.
@@ -17,7 +17,6 @@ import { PaginationDTO } from "../../dtos/utility-dtos";
 
 export class GetUserVideoCallLogUseCase {
   constructor(private videoCallLogRepository: IVideoCallLogRepository) {}
-
   async execute(
     userId: string,
     { page, limit, fromDate, toDate, search, filters }: GetVideoCallLogQueryDTO

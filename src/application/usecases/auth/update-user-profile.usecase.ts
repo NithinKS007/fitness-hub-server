@@ -1,14 +1,18 @@
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
-import { User } from "../../../domain/entities/user.entities";
-import { UpdateUserDetailsDTO } from "../../dtos/user-dtos";
-import {
-  AuthStatus,
-  ProfileStatus,
-} from "../../../shared/constants/index.constants";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { IUserRepository } from "@domain/interfaces/IUserRepository";
+import { UpdateUserDetailsDTO } from "@application/dtos/user-dtos";
+import { AuthStatus, ProfileStatus } from "@shared/constants/index.constants";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import dotenv from "dotenv";
-import { ICloudStorageService } from "../../interfaces/storage/ICloud.storage.service";
+import { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
+import { IUser } from "@domain/entities/user.entity";
 dotenv.config();
+
+/**
+ * Purpose: Handles the logic for updating the user's profile.
+ * Incoming: { userId, profilePic, ...profileData } - Data required to update the user profile.
+ * Returns: IUser - Updated user profile data.
+ * Throws: Error if userId is missing or update fails.
+ */
 
 export class UpdateUserProfileUseCase {
   constructor(
@@ -30,9 +34,7 @@ export class UpdateUserProfileUseCase {
     });
   }
 
-  async execute(
-    profileUpdationData: UpdateUserDetailsDTO
-  ): Promise<User | null> {
+  async execute(profileUpdationData: UpdateUserDetailsDTO): Promise<IUser> {
     const { userId, ...profileData } = profileUpdationData;
     if (!userId) {
       throw new validationError(AuthStatus.IdRequired);
@@ -42,7 +44,7 @@ export class UpdateUserProfileUseCase {
     profileData.profilePic = url;
     const updatedUserData = await this.updateUserData(userId, profileData);
     if (!updatedUserData) {
-      throw new validationError(ProfileStatus.FailedToUpdateUserDetails);
+      throw new validationError(ProfileStatus.UpdateFailed);
     }
     return updatedUserData;
   }

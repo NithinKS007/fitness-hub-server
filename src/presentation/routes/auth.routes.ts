@@ -1,35 +1,88 @@
-import express from "express"
-import { authenticate } from "../middlewares/auth.middleware";
-import expressAsyncHandler from "express-async-handler";
-import { 
-  userSessionController, 
-  googleAuthController, 
-  otpController, 
-  passwordController, 
-  createController 
+import express from "express";
+import { authenticate } from "@presentation/middlewares/auth.middleware";
+import {
+  googleAuthController,
+  otpController,
+  signUpUserController,
+  signUpTrainerController,
+  passwordResetLinkController,
+  forgotPasswordController,
+  changePasswordController,
+  signInController,
+  refreshAccessTokenController,
+  signOutController,
 } from "../../di/di";
+import { asyncHandler } from "@shared/utils/async-handler";
 
-const authRoutes = express.Router()
+const authRoutes = express.Router();
 
 //REGISTRATION AND SIGNIN ROUTES
-authRoutes.post("/sign-up", expressAsyncHandler(createController.signUpUser.bind(createController)))
-authRoutes.post("/trainer-sign-up",expressAsyncHandler(createController .signUpTrainer.bind(createController)))
-authRoutes.post("/google",expressAsyncHandler(googleAuthController.handleGoogleLogin.bind(googleAuthController)))
-authRoutes.post("/sign-in", expressAsyncHandler(userSessionController.signin.bind(userSessionController)))
+authRoutes.post(
+  "/sign-up",
+  asyncHandler(signUpUserController.handleSignUpUser.bind(signUpUserController))
+);
+authRoutes.post(
+  "/trainer-sign-up",
+  asyncHandler(
+    signUpTrainerController.handleSignUpTrainer.bind(signUpTrainerController)
+  )
+);
+authRoutes.post(
+  "/google",
+  asyncHandler(
+    googleAuthController.handleGoogleLogin.bind(googleAuthController)
+  )
+);
+authRoutes.post(
+  "/sign-in",
+  asyncHandler(signInController.handleSignin.bind(signInController))
+);
 
 //OTP ROUTES
-authRoutes.post("/otp/verify", expressAsyncHandler(otpController.verifyOtp.bind(otpController)))
-authRoutes.post("/otp/resend",expressAsyncHandler(otpController.resendOtp.bind(otpController)))
+authRoutes.post(
+  "/otp/verify",
+  asyncHandler(otpController.verifyOtp.bind(otpController))
+);
+authRoutes.post(
+  "/otp/resend",
+  asyncHandler(otpController.resendOtp.bind(otpController))
+);
 
 //PASSWORD ROUTES
-authRoutes.post("/password-reset", expressAsyncHandler(passwordController.generateResetLink.bind(passwordController)))
-authRoutes.patch("/password-reset/:token", expressAsyncHandler(passwordController.forgotPassword.bind(passwordController)))
-authRoutes.patch("/password/change",authenticate,expressAsyncHandler(passwordController.changePassword.bind(passwordController)))
+authRoutes.post(
+  "/password-reset",
+  asyncHandler(
+    passwordResetLinkController.handleResetLink.bind(
+      passwordResetLinkController
+    )
+  )
+);
+authRoutes.patch(
+  "/password-reset/:token",
+  asyncHandler(
+    forgotPasswordController.handleForgotPassword.bind(forgotPasswordController)
+  )
+);
+authRoutes.patch(
+  "/password/change",
+  authenticate,
+  asyncHandler(
+    changePasswordController.handleChangePassword.bind(changePasswordController)
+  )
+);
 
 //AUTHENTICATION AND SIGNOUT ROUTES
-authRoutes.post("/refresh-token",expressAsyncHandler(userSessionController.refreshAccessToken.bind(userSessionController)))
-authRoutes.post("/sign-out",expressAsyncHandler(userSessionController.signOut.bind(userSessionController)))
+authRoutes.post(
+  "/refresh-token",
+  asyncHandler(
+    refreshAccessTokenController.handleRefreshAccessToken.bind(
+      refreshAccessTokenController
+    )
+  )
+);
+authRoutes.post(
+  "/sign-out",
+  asyncHandler(signOutController.handleSignOut.bind(signOutController))
+);
 
-export default authRoutes
-
-
+export default authRoutes;

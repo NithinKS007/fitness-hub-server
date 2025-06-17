@@ -1,11 +1,11 @@
-import { UserChatList } from "../../../domain/entities/conversation.entities";
-import { IConversationRepository } from "../../../domain/interfaces/IConversationRepository";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   ChatStatus,
-} from "../../../shared/constants/index.constants";
-import { GetChatListQueryDTO } from "../../dtos/query-dtos";
+} from "@shared/constants/index.constants";
+import { GetChatListQueryDTO } from "@application/dtos/query-dtos";
+import { UserChatList } from "@application/dtos/chat-dtos";
 
 export class GetUserChatListUseCase {
   constructor(private conversationRepository: IConversationRepository) {}

@@ -1,11 +1,11 @@
 import {
   CustomUserDashBoardQueryDTO,
   GetWorkoutQueryDTO,
-} from "../../application/dtos/query-dtos";
-import { PaginationDTO } from "../../application/dtos/utility-dtos";
-import { IWorkout } from "../../infrastructure/databases/models/workout.model";
-import { WorkoutChartData } from "../entities/workout.entities";
-import { IBaseRepository } from "./IBaseRepository";
+} from "@application/dtos/query-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { WorkoutChartData } from "@application/dtos/workout-dtos";
+import { IWorkout } from "@domain/entities/workout.entity";
+import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
 
 export interface IWorkoutRepository extends IBaseRepository<IWorkout> {
   getWorkoutsByUserId(

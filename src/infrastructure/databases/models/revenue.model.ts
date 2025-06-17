@@ -1,15 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-
-export interface IRevenue extends Document {
-  subscriptionId: string | mongoose.Schema.Types.ObjectId;
-  userSubscriptionPlanId: string | mongoose.Schema.Types.ObjectId;
-  trainerId: string | mongoose.Schema.Types.ObjectId;
-  userId: string | mongoose.Schema.Types.ObjectId;
-  amountPaid: number;
-  platformRevenue: number;
-  trainerRevenue: number;
-  commission: number;
-}
+import { IRevenue } from "@domain/entities/revenue.entity";
+import mongoose, { Schema } from "mongoose";
 
 const revenueSchema: Schema = new Schema(
   {

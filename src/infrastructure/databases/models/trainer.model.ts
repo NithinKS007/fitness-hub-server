@@ -1,16 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { ITrainer } from "@domain/entities/trainer.entity";
+import mongoose, { Schema } from "mongoose";
 
-export interface ITrainer extends Document {
-  _id: string;
-  userId: string | mongoose.Schema.Types.ObjectId;
-  yearsOfExperience: string;
-  specializations: string[];
-  certifications: { fileName: string; url: string }[];
-  isApproved: boolean;
-  aboutMe?: string;
-}
-
-const trainerSchema = new Schema<ITrainer>(
+const trainerSchema = new Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,

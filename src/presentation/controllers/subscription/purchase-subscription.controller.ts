@@ -1,43 +1,30 @@
 import { Request, Response } from "express";
-import { sendResponse } from "../../../shared/utils/http.response";
+import { sendResponse } from "@shared/utils/http.response";
 import {
-  HttpStatusCodes,
+  StatusCodes,
   SubscriptionStatus,
-} from "../../../shared/constants/index.constants";
-import { PurchaseSubscriptionUseCase } from "../../../application/usecases/subscription/purchase-subscription.usecase";
-import { CancelSubscriptionUseCase } from "../../../application/usecases/subscription/cancel-subscription.usecase";
+} from "@shared/constants/index.constants";
+import { PurchaseSubscriptionUseCase } from "@application/usecases/subscription/purchase-subscription.usecase";
 
 export class PurchaseSubscriptionController {
   constructor(
-    private purchaseSubscriptionUseCase: PurchaseSubscriptionUseCase,
-    private cancelSubscriptionUseCase: CancelSubscriptionUseCase
+    private purchaseSubscriptionUseCase: PurchaseSubscriptionUseCase
   ) {}
-  async purchaseSubscription(req: Request, res: Response): Promise<void> {
-    const userId = req?.user?._id;
-    const subscriptionId = req.body.subscriptionId;
-    const sessionId =
-      await this.purchaseSubscriptionUseCase.createStripeSession({
-        userId,
-        subscriptionId,
-      });
-    sendResponse(
-      res,
-      HttpStatusCodes.OK,
-      { sessionId: sessionId },
-      SubscriptionStatus.SubscriptionAddedSuccessfully
-    );
-  }
 
-  async cancelSubscription(req: Request, res: Response): Promise<void> {
-    const { stripeSubscriptionId, action } = req.body;
-    const cancelSubData = { stripeSubscriptionId, action };
-    const subscriptionCancelledData =
-      await this.cancelSubscriptionUseCase.execute(cancelSubData);
+  async handlePurchase(req: Request, res: Response): Promise<void> {
+    const { _id: userId } = req?.user || {};
+    const { subscriptionId } = req.body;
+
+    const sessionId = await this.purchaseSubscriptionUseCase.execute({
+      userId,
+      subscriptionId,
+    });
+
     sendResponse(
       res,
-      HttpStatusCodes.OK,
-      { subscriptionCancelledData: subscriptionCancelledData },
-      SubscriptionStatus.SubscriptionCancelledSuccessfully
+      StatusCodes.OK,
+      { sessionId: sessionId },
+      SubscriptionStatus.SubscriptionAddedSuccess
     );
   }
 }

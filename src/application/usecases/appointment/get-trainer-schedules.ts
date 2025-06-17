@@ -1,16 +1,17 @@
-import { PaginationDTO } from "../../dtos/utility-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   AppointmentStatus,
   AuthStatus,
-} from "../../../shared/constants/index.constants";
-import { AppointmentRequestsTrainer } from "../../../domain/entities/appointment.entities";
-import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
-import { GetBookingSchedulesDTO } from "../../dtos/query-dtos";
+} from "@shared/constants/index.constants";
+import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
+import { GetBookingSchedulesDTO } from "@application/dtos/query-dtos";
+import { AppointmentRequestsTrainer } from "@application/dtos/appointment-dtos";
 
 /*  
     Purpose: Retrieve a list of booking schedules for a specific trainer with pagination and filters
-    Incoming: { trainerId, page, limit, fromDate, toDate, search, filters } (Trainer's ID, Query parameters for filtering)
+    Incoming: { trainerId, page, limit, fromDate, toDate, search, filters } 
+    (Trainer's ID, Query parameters for filtering)
     Returns: { trainerBookingSchedulesList, paginationData } (List of trainer's booking schedules and pagination details)
     Throws: Error if trainer ID is missing or booking schedules cannot be retrieved
 */

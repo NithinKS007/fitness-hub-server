@@ -1,15 +1,15 @@
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
-import { IOtpRepository } from "../../../domain/interfaces/IOtpRepository";
-import { User } from "../../../domain/entities/user.entities";
-import { CreateUserDTO } from "../../dtos/user-dtos";
+import { IUserRepository } from "@domain/interfaces/IUserRepository";
+import { IOtpRepository } from "@domain/interfaces/IOtpRepository";
+import { CreateUserDTO } from "@application/dtos/user-dtos";
 import {
   ApplicationStatus,
   AuthStatus,
-} from "../../../shared/constants/index.constants";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { IEmailService } from "../../interfaces/communication/IEmail.service";
-import { IOTPService } from "../../interfaces/security/IGenerate-otp.service";
-import { IPasswordService } from "../../interfaces/security/IPassword.service";
+} from "@shared/constants/index.constants";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { IEmailService } from "@application/interfaces/communication/IEmail.service";
+import { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
+import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
+import { IUser } from "@domain/entities/user.entity";
 /*  
     Purpose: Creates a new user, handles OTP verification, and sends OTP email.
     Incoming: { fname, lname, email, password } (User's first name, last name, email, and password)
@@ -27,7 +27,7 @@ export class CreateUserUseCase {
     private otpRepository: IOtpRepository,
     private emailService: IEmailService,
     private otpService: IOTPService,
-    private passwordService: IPasswordService
+    private encryptionService: IEncryptionService
   ) {}
 
   private async sendOtpEmail(email: string): Promise<void> {
@@ -45,7 +45,7 @@ export class CreateUserUseCase {
     lname,
     email,
     password,
-  }: CreateUserDTO): Promise<User> {
+  }: CreateUserDTO): Promise<IUser> {
     if (!fname || !lname || !email || !password) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
@@ -68,7 +68,7 @@ export class CreateUserUseCase {
       return existinguser;
     }
 
-    const hashedPassword = await this.passwordService.hashPassword(password);
+    const hashedPassword = await this.encryptionService.hash(password);
     const userData = await this.userRepository.create({
       ...{ fname, lname, email },
       password: hashedPassword,

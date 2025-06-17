@@ -1,10 +1,16 @@
-export interface ReqCreateVideo {
-  trainerId: string;
+import { IPlayList } from "@domain/entities/playlist.entity";
+import { IVideo } from "@domain/entities/video.entity";
+
+interface VideoMetadata {
   title: string;
   description: string;
-  duration: Number;
+  duration: number;
   thumbnail: string;
   video: string;
+}
+
+export interface ReqCreateVideo extends VideoMetadata {
+  trainerId: string;
   playLists: string[];
 }
 
@@ -17,13 +23,12 @@ export interface UpdateVideoPrivacyDTO {
   privacy: boolean;
 }
 
-export interface ReqEditVideoDTO {
+export interface ReqEditVideoDTO extends VideoMetadata {
   _id: string;
   trainerId: string;
-  title: string;
-  description: string;
-  duration: Number;
-  thumbnail: string;
-  video: string;
   playLists: string[];
+}
+
+export interface VideoWithPlayLists extends IVideo {
+  playLists: IPlayList[];
 }

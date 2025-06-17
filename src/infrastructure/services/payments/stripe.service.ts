@@ -1,11 +1,11 @@
 import Stripe from "stripe";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AuthStatus,
   SubscriptionStatus,
-} from "../../../shared/constants/index.constants";
-import stripe from "../../config/stripe.config";
+} from "@shared/constants/index.constants";
+import stripe from "@infrastructure/config/stripe.config";
 import {
   CreatePrice,
   CreateProduct,
@@ -13,11 +13,11 @@ import {
   DeactivatePrice,
   Session,
   SubscriptionMetadata,
-} from "../../../application/dtos/service/payment.service";
-import { IPaymentService } from "../../../application/interfaces/payments/IPayment.service";
+} from "@application/dtos/service/payment.service";
+import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
 
 export class StripePaymentService implements IPaymentService {
-  async createProduct({ name, description }: CreateProduct): Promise<string> {
+  async addProduct({ name, description }: CreateProduct): Promise<string> {
     try {
       const product = await stripe.products.create({ name, description });
       return product.id;
@@ -26,7 +26,7 @@ export class StripePaymentService implements IPaymentService {
       throw new validationError("Failed to create product in stripe service");
     }
   }
-  async createPrice({
+  async addPrice({
     productId,
     amount,
     currency,
@@ -50,6 +50,7 @@ export class StripePaymentService implements IPaymentService {
   async deactivatePrice({ priceId }: DeactivatePrice): Promise<void> {
     await stripe.prices.update(priceId, { active: false });
   }
+
   async createSubscriptionSession({
     stripePriceId,
     userId,
@@ -113,6 +114,7 @@ export class StripePaymentService implements IPaymentService {
     }
     return subscription;
   }
+
   async cancelSubscription(
     stripeSubscriptionId: string
   ): Promise<Stripe.Subscription> {
@@ -137,5 +139,17 @@ export class StripePaymentService implements IPaymentService {
       isActive: stripeSub.status,
       stripeSubscriptionStatus: stripeSub.status,
     };
+  }
+
+  async constructStripeEvent(
+    body: string | Buffer,
+    sig: string,
+    webhookSecret: string
+  ): Promise<Stripe.Event> {
+    const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+    if (!event) {
+      throw new validationError(SubscriptionStatus.WebHookVerificationFailed);
+    }
+    return event;
   }
 }

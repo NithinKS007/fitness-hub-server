@@ -1,12 +1,12 @@
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AppointmentStatus,
-} from "../../../shared/constants/index.constants";
-import { Appointment } from "../../../domain/entities/appointment.entities";
-import { IAppointmentRepository } from "../../../domain/interfaces/IAppointmentRepository";
-import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
-import { BookingSlotStatus } from "../../dtos/booking-dtos";
+} from "@shared/constants/index.constants";
+import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
+import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
+import { BookingSlotStatus } from "@application/dtos/booking-dtos";
+import { IAppointment } from "@domain/entities/appointment.entity";
 
 /*  
     Purpose: Cancel an existing appointment and update the booking slot status to "pending"
@@ -20,7 +20,7 @@ export class CancelAppointmentUseCase {
     private bookingSlotRepository: IBookingSlotRepository,
     private appointmentRepository: IAppointmentRepository
   ) {}
-  async execute(appointmentId: string): Promise<Appointment> {
+  async execute(appointmentId: string): Promise<IAppointment> {
     if (!appointmentId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

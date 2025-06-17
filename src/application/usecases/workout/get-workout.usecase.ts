@@ -1,9 +1,16 @@
-import { IWorkoutRepository } from "../../../domain/interfaces/IWorkoutRepository";
-import { IWorkout } from "../../../infrastructure/databases/models/workout.model";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { AuthStatus } from "../../../shared/constants/index.constants";
-import { GetWorkoutQueryDTO } from "../../dtos/query-dtos";
-import { PaginationDTO } from "../../dtos/utility-dtos";
+import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { AuthStatus } from "@shared/constants/index.constants";
+import { GetWorkoutQueryDTO } from "@application/dtos/query-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { IWorkout } from "@domain/entities/workout.entity";
+
+/**
+ * Purpose: Handles the retrieval of workout data for a given user with support for pagination, search, and filtering.
+ * Incoming: { userId, query } - User ID and query parameters (pagination, date range, search term, filters).
+ * Returns: Object containing workoutList (array of IWorkout) and paginationData (pagination DTO).
+ * Throws: validationError if the user ID is missing.
+ */
 
 export class GetWorkoutUseCase {
   constructor(private workoutRepository: IWorkoutRepository) {}

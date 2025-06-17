@@ -1,12 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-
-export interface IPlayList extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  trainerId: string | mongoose.Schema.Types.ObjectId;
-  title: string;
-  videoCount: number;
-  privacy: boolean;
-}
+import { IPlayList } from "@domain/entities/playlist.entity";
+import mongoose, { Schema } from "mongoose";
 
 const playlistSchema: Schema = new Schema(
   {

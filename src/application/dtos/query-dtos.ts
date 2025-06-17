@@ -58,7 +58,7 @@ export interface CustomUserDashBoardQueryDTO
 }
 
 //Content-related DTOs
-export type GetVideoQueryDTO = BaseQueryDTO;
+export type GetVideoQueryDTO = BaseQueryDTO
 export type GetPlayListsQueryDTO = BaseQueryDTO;
 
 //Workout-related DTOs

@@ -1,22 +1,21 @@
 import { Request, Response } from "express";
-import { sendResponse } from "../../../shared/utils/http.response";
-import {
-  HttpStatusCodes,
-  TrainerStatus,
-} from "../../../shared/constants/index.constants";
-import { TrainerGetUseCase } from "../../../application/usecases/trainer/get-trainer.usecase";
-import { parseQueryParams } from "../../../shared/utils/parse.queryParams";
+import { sendResponse } from "@shared/utils/http.response";
+import { StatusCodes, TrainerStatus } from "@shared/constants/index.constants";
+import { parseQueryParams } from "@shared/utils/parse.queryParams";
+import { GetApprovedTrainersUseCase } from "@application/usecases/trainer/get-approved-trainers.usecase";
 
 export class GetApprovedTrainersController {
-  constructor(private trainerGetUseCase: TrainerGetUseCase) {}
+  constructor(private getApprovedTrainersUseCase: GetApprovedTrainersUseCase) {}
+
   async handleGetApprovedTrainers(req: Request, res: Response): Promise<void> {
     const { trainersList, paginationData } =
-      await this.trainerGetUseCase.getApprovedTrainers(
+      await this.getApprovedTrainersUseCase.execute(
         parseQueryParams(req.query)
       );
+
     sendResponse(
       res,
-      HttpStatusCodes.OK,
+      StatusCodes.OK,
       { trainersList, paginationData },
       TrainerStatus.TrainersList
     );

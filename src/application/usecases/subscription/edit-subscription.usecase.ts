@@ -3,17 +3,17 @@ import {
   SubPeriod,
   SubscriptionInterval,
   UpdateSubscriptionDetailsDTO,
-} from "../../dtos/subscription-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+} from "@application/dtos/subscription-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AuthStatus,
   SubscriptionStatus,
-} from "../../../shared/constants/index.constants";
-import { Subscription } from "../../../domain/entities/subscription.entities";
-import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
-import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import { IPaymentService } from "../../interfaces/payments/IPayment.service";
+} from "@shared/constants/index.constants";
+import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
+import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
+import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { ISubscription } from "@domain/entities/subscription.entity";
 
 export class EditSubscriptionUseCase {
   constructor(
@@ -47,7 +47,7 @@ export class EditSubscriptionUseCase {
     subPeriod,
     totalSessions,
     trainerId,
-  }: UpdateSubscriptionDetailsDTO): Promise<Subscription> {
+  }: UpdateSubscriptionDetailsDTO): Promise<ISubscription> {
     if (
       !subscriptionId ||
       !durationInWeeks ||
@@ -78,7 +78,7 @@ export class EditSubscriptionUseCase {
       price !== existingSubData?.price ||
       totalSessions !== existingSubData?.totalSessions
     ) {
-      const productId = await this.paymentService.createProduct({
+      const productId = await this.paymentService.addProduct({
         name: `${subPeriod.toUpperCase()} FITNESS PLAN`,
         description: `TRAINER: ${trainerData?.fname} ${trainerData?.lname},
         ${totalSessions} SESSIONS, EMAIL: ${trainerData?.email}`,
@@ -86,7 +86,7 @@ export class EditSubscriptionUseCase {
 
       const interval = this.getInterval(subPeriod);
       const intervalCount = this.getIntervalCount(subPeriod);
-      const stripePriceId = await this.paymentService.createPrice({
+      const stripePriceId = await this.paymentService.addPrice({
         productId,
         amount: price * 100,
         currency: "usd",

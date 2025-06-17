@@ -1,9 +1,9 @@
-import { TrainerVerificationDTO } from "../../dtos/trainer-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { ApplicationStatus } from "../../../shared/constants/index.constants";
-import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import { ITrainer } from "../../../infrastructure/databases/models/trainer.model";
-import { Action } from "../../dtos/utility-dtos";
+import { TrainerVerificationDTO } from "@application/dtos/trainer-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { ApplicationStatus } from "@shared/constants/index.constants";
+import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
+import { Action } from "@application/dtos/utility-dtos";
+import { ITrainer } from "@domain/entities/trainer.entity";
 
 export class TrainerApprovalUseCase {
   constructor(private trainerRepository: ITrainerRepository) {}

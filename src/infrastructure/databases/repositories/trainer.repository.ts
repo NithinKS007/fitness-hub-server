@@ -3,15 +3,14 @@ import {
   GetApprovedTrainerQueryDTO,
   GetTrainersApprovalQueryDTO,
   GetTrainersQueryDTO,
-} from "../../../application/dtos/query-dtos";
-import { PaginationDTO } from "../../../application/dtos/utility-dtos";
-import {
-  Trainer,
-  TrainerWithSubscription,
-} from "../../../domain/entities/trainer.entities";
-import { ITrainerRepository } from "../../../domain/interfaces/ITrainerRepository";
-import TrainerModel, { ITrainer } from "../models/trainer.model";
-import { BaseRepository } from "./base.repository";
+} from "@application/dtos/query-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
+import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
+import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
+import TrainerModel from "../models/trainer.model";
+import { ITrainer } from "@domain/entities/trainer.entity";
+import { Trainer, TrainerWithSubscription } from "@application/dtos/trainer-dtos";
 
 export class TrainerRepository
   extends BaseRepository<ITrainer>
@@ -181,9 +180,7 @@ export class TrainerRepository
     trainersList: Trainer[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
     let matchQuery: any = {};
 
@@ -273,13 +270,14 @@ export class TrainerRepository
         .exec(),
     ]);
 
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
     return {
       trainersList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 
@@ -295,9 +293,7 @@ export class TrainerRepository
     trainersList: Trainer[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
     let matchQuery: any = {};
     let sortQuery: any = {};
@@ -420,14 +416,14 @@ export class TrainerRepository
         .exec(),
     ]);
 
-    const totalPages = Math.ceil(totalCount / limitNumber);
-
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
     return {
       trainersList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 
@@ -441,9 +437,7 @@ export class TrainerRepository
     trainersList: Trainer[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
     let matchQuery: any = { isApproved: false };
     if (search) {
       matchQuery.$or = [
@@ -476,7 +470,7 @@ export class TrainerRepository
       { $match: matchQuery },
       { $unwind: "$trainersList" },
     ];
-    
+
     const [totalCount, trainersList] = await Promise.all([
       this.model
         .aggregate([...commonPipeline, { $count: "totalCount" }])
@@ -517,13 +511,14 @@ export class TrainerRepository
         .limit(limitNumber)
         .exec(),
     ]);
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
     return {
       trainersList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 

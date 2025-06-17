@@ -1,14 +1,6 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { IChat } from "@domain/entities/chat.entity";
+import mongoose, { Schema } from "mongoose";
 
-export interface IChat extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  senderId: string | mongoose.Schema.Types.ObjectId;
-  receiverId: string | mongoose.Schema.Types.ObjectId;
-  message: string;
-  isRead: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 const chatSchema: Schema = new Schema(
   {

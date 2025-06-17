@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import {
-  HttpStatusCodes,
+  StatusCodes,
   ApplicationStatus,
-} from "../../shared/constants/index.constants";
-import { sendResponse } from "../../shared/utils/http.response";
-import { LoggerHelper } from "../../shared/utils/handle.log";
-import { LoggerService } from "../../infrastructure/logging/logger";
+} from "@shared/constants/index.constants";
+import { sendResponse } from "@shared/utils/http.response";
+import { LoggerHelper } from "@shared/utils/handle.log";
+import { LoggerService } from "@infrastructure/logging/logger";
 
 class AppError extends Error {
   statusCode: number;
@@ -17,31 +17,31 @@ class AppError extends Error {
 
 export class validationError extends AppError {
   constructor(message: string) {
-    super(message, HttpStatusCodes.BadRequest);
+    super(message, StatusCodes.BadRequest);
   }
 }
 
 export class NotFoundError extends AppError {
   constructor(message: string) {
-    super(message, HttpStatusCodes.NotFound);
+    super(message, StatusCodes.NotFound);
   }
 }
 
 export class UnauthorizedError extends AppError {
   constructor(message: string) {
-    super(message, HttpStatusCodes.Unauthorized);
+    super(message, StatusCodes.Unauthorized);
   }
 }
 
 export class DatabaseError extends AppError {
   constructor(message: string) {
-    super(message, HttpStatusCodes.InternalServerError);
+    super(message, StatusCodes.InternalServerError);
   }
 }
 
 export class ForbiddenError extends AppError {
   constructor(message: string) {
-    super(message, HttpStatusCodes.Forbidden);
+    super(message, StatusCodes.Forbidden);
   }
 }
 
@@ -55,7 +55,7 @@ export const errorMiddleware = (
   next: NextFunction
 ) => {
   loggerHelper.handleLogError(err, req.originalUrl, err.message);
-  const statusCode = err.statusCode || HttpStatusCodes.InternalServerError;
+  const statusCode = err.statusCode || StatusCodes.InternalServerError;
   const message = err.message || ApplicationStatus.InternalServerError;
   sendResponse(res, statusCode, null, message);
 };

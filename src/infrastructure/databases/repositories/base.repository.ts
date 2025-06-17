@@ -1,5 +1,5 @@
 import mongoose, { Model, Document } from "mongoose";
-import { IBaseRepository } from "../../../domain/interfaces/IBaseRepository";
+import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
 
 export abstract class BaseRepository<T extends Document>
   implements IBaseRepository<T>
@@ -14,7 +14,7 @@ export abstract class BaseRepository<T extends Document>
   }
 
   async findById(id: string): Promise<T | null> {
-    return (await this.model.findById(id).lean().exec()) as T;
+    return (await this.model.findById(id).lean().exec()) as T
   }
 
   async update(id: string, entity: Partial<T>): Promise<T | null> {
@@ -32,18 +32,7 @@ export abstract class BaseRepository<T extends Document>
     return (await this.model.findOne(conditions).lean().exec()) as T;
   }
 
-  async findOneAndUpdate(
-    conditions: object,
-    update: Partial<T>
-  ): Promise<T | null> {
-    return (await this.model
-      .findOneAndUpdate(conditions, update, { new: true })
-      .lean()
-      .exec()) as T;
-  }
-
   parseId(id: string): mongoose.Types.ObjectId {
     return new mongoose.Types.ObjectId(id);
   }
-  
 }

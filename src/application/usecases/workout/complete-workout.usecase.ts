@@ -1,7 +1,7 @@
-import { IWorkoutRepository } from "../../../domain/interfaces/IWorkoutRepository";
-import { IWorkout } from "../../../infrastructure/databases/models/workout.model";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { WorkoutStatus } from "../../../shared/constants/index.constants";
+import { IWorkout } from "@domain/entities/workout.entity";
+import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { WorkoutStatus } from "@shared/constants/index.constants";
 
 /**
  * Purpose: Complete a workout session by marking it as completed in the database.

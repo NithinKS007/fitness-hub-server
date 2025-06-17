@@ -1,12 +1,19 @@
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   SlotStatus,
   AppointmentStatus,
   ApplicationStatus,
-} from "../../../shared/constants/index.constants";
-import { IBookingSlotRepository } from "../../../domain/interfaces/IBookingSlotRepository";
-import { IBookingSlot } from "../../../infrastructure/databases/models/booking.slot";
-import { BookingSlotStatus } from "../../dtos/booking-dtos";
+} from "@shared/constants/index.constants";
+import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
+import { BookingSlotStatus } from "@application/dtos/booking-dtos";
+import { IBookingSlot } from "@domain/entities/booking-slot.entity";
+
+/**
+ * Purpose: Handles the deletion of a booking slot based on its slot id.
+ * Incoming: { bookingSlotId } - The ID of the booking slot to be deleted.
+ * Returns: IBookingSlot - The deleted booking slot data.
+ * Throws: Error if any required fields are missing or the slot cannot be deleted.
+ */
 
 export class DeleteBookingSlotUseCase {
   constructor(private bookingSlotRepository: IBookingSlotRepository) {}

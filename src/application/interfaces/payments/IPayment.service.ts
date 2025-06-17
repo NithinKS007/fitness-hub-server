@@ -6,19 +6,26 @@ import {
   DeactivatePrice,
   Session,
   SubscriptionMetadata,
-} from "../../dtos/service/payment.service";
+} from "@application/dtos/service/payment.service";
 
 export interface IPaymentService {
-  createProduct(createProduct: CreateProduct): Promise<string>;
-  createPrice(createPrice: CreatePrice): Promise<string>;
+  addProduct(createProduct: CreateProduct): Promise<string>;
+  addPrice(createPrice: CreatePrice): Promise<string>;
   deactivatePrice(deactivatePrice: DeactivatePrice): Promise<void>;
   createSubscriptionSession(
     createSubscriptionSession: CreateSubscriptionSession
   ): Promise<Session>;
   getCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session>;
   getSubscription(stripeSubscriptionId: string): Promise<Stripe.Subscription>;
-  cancelSubscription(stripeSubscriptionId: string): Promise<Stripe.Subscription>;
+  cancelSubscription(
+    stripeSubscriptionId: string
+  ): Promise<Stripe.Subscription>;
   getSubscriptionsData(
     stripeSubscriptionId: string
   ): Promise<SubscriptionMetadata>;
+  constructStripeEvent(
+    body: string | Buffer,
+    sig: string,
+    webhookSecret: string
+  ): Promise<Stripe.Event>;
 }

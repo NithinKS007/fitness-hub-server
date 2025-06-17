@@ -1,12 +1,12 @@
-import { IWorkoutRepository } from "../../../domain/interfaces/IWorkoutRepository";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { WorkoutStatus } from "../../../shared/constants/index.constants";
-import { WorkoutdbDTO, WorkoutDTO } from "../../dtos/workout-dtos";
-import { IWorkout } from "../../../infrastructure/databases/models/workout.model";
+import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { WorkoutStatus } from "@shared/constants/index.constants";
+import { WorkoutdbDTO, WorkoutDTO } from "@application/dtos/workout-dtos";
+import { IWorkout } from "@domain/entities/workout.entity";
 
 /**
  * Purpose: Create a new workout by adding multiple workout sets for the user on a specific date.
- * Incoming: 
+ * Incoming:
  *    - { userId } (The ID of the user performing the workout)
  *    - { date } (The date of the workout session)
  *    - { workouts } (The workout details containing exercises and sets)

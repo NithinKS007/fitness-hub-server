@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import ms from "ms";
-import { ApplicationStatus } from "../../../shared/constants/index.constants";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { ApplicationStatus } from "@shared/constants/index.constants";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import dotenv from "dotenv";
-import { IAuthService } from "../../../application/interfaces/auth/IAuth.service";
-import { TokenPayload } from "../../../application/dtos/service/auth.service";
+import { IAuthService } from "@application/interfaces/auth/IAuth.service";
+import { TokenPayload } from "@application/dtos/service/auth.service";
 dotenv.config();
 
 export class JwtService implements IAuthService {
@@ -24,7 +24,9 @@ export class JwtService implements IAuthService {
       !this.jwtRefreshSecret ||
       !this.jwtRefreshExpiration
     ) {
-      throw new validationError(ApplicationStatus.MissingJwtEnvironmentVariables);
+      throw new validationError(
+        ApplicationStatus.MissingJwtEnvironmentVariables
+      );
     }
   }
 
@@ -48,4 +50,3 @@ export class JwtService implements IAuthService {
     return jwt.verify(token, this.jwtRefreshSecret) as TokenPayload;
   }
 }
-

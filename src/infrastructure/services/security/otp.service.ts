@@ -1,5 +1,5 @@
 import otpGenerator from "otp-generator";
-import { IOTPService } from "../../../application/interfaces/security/IGenerate-otp.service";
+import { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
 
 export class OTPService implements IOTPService {
   generateOtp(length: number): string {

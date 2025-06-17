@@ -1,12 +1,26 @@
-import { EditPlayListDTO } from "../../dtos/playlist-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
-import { VideoStatus } from "../../../shared/constants/index.constants";
-import { Playlist } from "../../../domain/entities/playlist.entities";
-import { IPlayListRepository } from "../../../domain/interfaces/IPlayListRepository";
+import { EditPlayListDTO } from "@application/dtos/playlist-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
+import { PlayListStatus, VideoStatus } from "@shared/constants/index.constants";
+import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
+import { IPlayList } from "@domain/entities/playlist.entity";
 
 export class EditPlayListUseCase {
   constructor(private playListRepository: IPlayListRepository) {}
-  async execute({ playListId, title }: EditPlayListDTO): Promise<Playlist> {
+  async execute({ playListId, title }: EditPlayListDTO): Promise<IPlayList> {
+    const playlistData = await this.playListRepository.findById(playListId);
+
+    if (!playlistData) {
+      throw new validationError(PlayListStatus.PlaylistNotFound);
+    }
+
+    const existingName = await this.playListRepository.findOne({
+      title: title,
+      _id: playlistData?._id,
+    });
+
+    if (existingName) {
+      throw new validationError(PlayListStatus.NameExists);
+    }
     const playListData = await this.playListRepository.update(playListId, {
       title,
     });

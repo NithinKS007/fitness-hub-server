@@ -1,24 +1,21 @@
+import { Conversation, TrainerChatList, UserChatList } from "@application/dtos/chat-dtos";
 import {
-  CreateConversation,
   ConversationSubscriptionUpdate,
   FindConversation,
   UpdateLastMessage,
-  UpdateUnReadMessageCount,
   IncrementUnReadMessageCount,
-} from "../../application/dtos/conversation-dtos";
-import { GetChatListQueryDTO } from "../../application/dtos/query-dtos";
+} from "@application/dtos/conversation-dtos";
 import {
-  Conversation,
-  TrainerChatList,
-  UserChatList,
-} from "../entities/conversation.entities";
+  GetChatListQueryDTO,
+  GetUserTrainersListQueryDTO,
+} from "@application/dtos/query-dtos";
+import { UserMyTrainersList } from "@application/dtos/subscription-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { IConversation } from "@domain/entities/conversation.entity";
+import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
 
-export interface IConversationRepository {
-  createChatConversation({
-    userId,
-    trainerId,
-    stripeSubscriptionStatus,
-  }: CreateConversation): Promise<void>;
+export interface IConversationRepository
+  extends IBaseRepository<IConversation> {
   updateSubscriptionStatus({
     userId,
     trainerId,
@@ -36,13 +33,23 @@ export interface IConversationRepository {
     trainerId: string,
     { search }: GetChatListQueryDTO
   ): Promise<TrainerChatList[]>;
+
   updateLastMessage(
     UpdateLastMessage: UpdateLastMessage
-  ): Promise<Conversation | null>;
-  updateUnReadCount(
-    UpdateUnReadMessageCount: UpdateUnReadMessageCount
+  ): Promise<IConversation | null>;
+  findChatWithLastMessage(conversationId: string): Promise<Conversation>;
+  findChatUpdateCount(
+    userId: string,
+    otherUserId: string
   ): Promise<Conversation | null>;
   incrementUnReadMessageCount(
     incrementUnReadMessageCount: IncrementUnReadMessageCount
-  ): Promise<Conversation | null>;
+  ): Promise<IConversation | null>;
+  getUserTrainersList(
+    userId: string,
+    searchFilterQuery: GetUserTrainersListQueryDTO
+  ): Promise<{
+    userTrainersList: UserMyTrainersList[];
+    paginationData: PaginationDTO;
+  }>;
 }

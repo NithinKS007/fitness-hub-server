@@ -1,16 +1,12 @@
 import {
-  BulkWriteAddVideoPlayListDTO,
-  BulkWriteDeleteVideoPlayListDTO,
-  CreateVideoPlayListDTO,
-} from "../../application/dtos/playlist-dtos";
-import { VideoPlayList } from "../entities/video-playlist.entities";
+  CreateVideoPlayList,
+  DeleteVideoPlaylistDTO,
+} from "@application/dtos/playlist-dtos";
+import { IVideoPlaylist } from "@domain/entities/video-playlist.entity";
 
 export interface IVideoPlayListRepository {
-  insertPlaylists(
-    createVideoPlayList: CreateVideoPlayListDTO[]
-  ): Promise<VideoPlayList[]>;
-  bulkUpdatePlaylists(
-    addPlayList: BulkWriteAddVideoPlayListDTO[],
-    deletePlayList: BulkWriteDeleteVideoPlayListDTO[]
-  ): Promise<void>;
+  insertMany(
+    createVideoPlayList: CreateVideoPlayList[]
+  ): Promise<IVideoPlaylist[]>;
+  deleteMany(deletePlayLists: DeleteVideoPlaylistDTO[]): Promise<void>;
 }

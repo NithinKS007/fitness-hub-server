@@ -21,7 +21,7 @@ export interface WorkoutDTO {
 }
 
 export interface WorkoutdbDTO {
-  userId: string
+  userId: string;
   date: Date;
   bodyPart: string;
   exerciseName: string;
@@ -29,4 +29,16 @@ export interface WorkoutdbDTO {
   reps: number;
   time: number;
   isCompleted: boolean;
+}
+
+export interface WorkoutChartData {
+  _id: string;
+  totalWeight: number;
+}
+
+export interface UserDashBoard {
+  chartData: WorkoutChartData[];
+  totalWorkoutTime: number;
+  todaysTotalPendingWorkouts: number;
+  todaysTotalCompletedWorkouts: number;
 }

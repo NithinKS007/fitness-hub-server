@@ -1,23 +1,20 @@
 import { Request, Response } from "express";
-import { sendResponse } from "../../../shared/utils/http.response";
-import {
-  HttpStatusCodes,
-  TrainerStatus,
-} from "../../../shared/constants/index.constants";
-import { TrainerGetUseCase } from "../../../application/usecases/trainer/get-trainer.usecase";
+import { sendResponse } from "@shared/utils/http.response";
+import { StatusCodes, TrainerStatus } from "@shared/constants/index.constants";
+import { GetTrainerAndSubInfoUseCase } from "@application/usecases/trainer/get-trainer-with-subscription";
 
 export class GetTrainerWithSubController {
-  constructor(private trainerGetUseCase: TrainerGetUseCase) {}
+  constructor(
+    private getTrainerAndSubInfoUseCase: GetTrainerAndSubInfoUseCase
+  ) {}
+
   async handleGetTrainerWithSub(req: Request, res: Response): Promise<void> {
-    const trainerId = req.params.trainerId;
-    const trainersData = await this.trainerGetUseCase.getTrainerWithSub(
+    const { trainerId } = req.params;
+
+    const trainersData = await this.getTrainerAndSubInfoUseCase.execute(
       trainerId
     );
-    sendResponse(
-      res,
-      HttpStatusCodes.OK,
-      trainersData,
-      TrainerStatus.TrainersList
-    );
+
+    sendResponse(res, StatusCodes.OK, trainersData, TrainerStatus.TrainersList);
   }
 }

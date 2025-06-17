@@ -1,8 +1,8 @@
 import { Server } from "socket.io";
-import { socketStore } from "../store/socket.store";
-import { CreateMessageUseCase } from "../../../../application/usecases/chat/create-message.usecase";
-import { IncrementUnReadMessageCountUseCase } from "../../../../application/usecases/chat/inc-unread-count.usecase";
-import { UpdateLastMessageUseCase } from "../../../../application/usecases/chat/update-last-message.usecase";
+import { socketStore } from "@infrastructure/services/socket/store/socket.store";
+import { CreateMessageUseCase } from "@application/usecases/chat/create-message.usecase";
+import { IncrementUnReadMessageCountUseCase } from "@application/usecases/chat/inc-unread-count.usecase";
+import { UpdateLastMessageUseCase } from "@application/usecases/chat/update-last-message.usecase";
 
 export interface SendMessageData {
   senderId: string;

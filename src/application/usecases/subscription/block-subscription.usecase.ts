@@ -1,19 +1,19 @@
-import { UpdateSubscriptionBlockStatusDTO } from "../../dtos/subscription-dtos";
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { UpdateSubscriptionBlockStatusDTO } from "@application/dtos/subscription-dtos";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AuthStatus,
   BlockStatus,
-} from "../../../shared/constants/index.constants";
-import { Subscription } from "../../../domain/entities/subscription.entities";
-import { ISubscriptionRepository } from "../../../domain/interfaces/ISubscriptionRepository";
+} from "@shared/constants/index.constants";
+import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
+import { ISubscription } from "@domain/entities/subscription.entity";
 
 export class SubscriptionBlockUseCase {
   constructor(private subscriptionRepository: ISubscriptionRepository) {}
   async execute({
     subscriptionId,
     isBlocked,
-  }: UpdateSubscriptionBlockStatusDTO): Promise<Subscription> {
+  }: UpdateSubscriptionBlockStatusDTO): Promise<ISubscription> {
     if (!subscriptionId || typeof isBlocked !== "boolean") {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
@@ -30,7 +30,7 @@ export class SubscriptionBlockUseCase {
       }
     );
     if (!updatedSubscriptionData) {
-      throw new validationError(BlockStatus.FailedToUpdateBlockStatus);
+      throw new validationError(BlockStatus.StatusUpdateFailed );
     }
     return updatedSubscriptionData;
   }

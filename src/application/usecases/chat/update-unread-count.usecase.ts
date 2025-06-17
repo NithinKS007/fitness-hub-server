@@ -1,6 +1,6 @@
-import { Conversation } from "../../../domain/entities/conversation.entities";
-import { IConversationRepository } from "../../../domain/interfaces/IConversationRepository";
-import { UpdateUnReadMessageCount } from "../../dtos/conversation-dtos";
+import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
+import { UpdateUnReadMessageCount } from "@application/dtos/conversation-dtos";
+import { Conversation } from "@application/dtos/chat-dtos";
 
 export class UpdateUnReadMessageCountUseCase {
   constructor(private conversationRepository: IConversationRepository) {}
@@ -9,12 +9,32 @@ export class UpdateUnReadMessageCountUseCase {
     otherUserId,
     count,
   }: UpdateUnReadMessageCount): Promise<Conversation | null> {
-    const updatedUnReadMessage =
-      await this.conversationRepository.updateUnReadCount({
+    const conversationData =
+      await this.conversationRepository.findChatUpdateCount(
         userId,
-        otherUserId,
-        count,
-      });
-    return updatedUnReadMessage;
+        otherUserId
+      );
+
+    if (conversationData) {
+      const { _id: conversationId } = conversationData;
+
+      const updatedMessageDoc = await this.conversationRepository.update(
+        String(conversationId),
+        {
+          unreadCount: count,
+        }
+      );
+
+      if (updatedMessageDoc) {
+        const { _id: updatedMessageDocId } = updatedMessageDoc;
+
+        const finalMessageDocument =
+          await this.conversationRepository.findChatWithLastMessage(
+            String(updatedMessageDocId)
+          );
+        return finalMessageDocument;
+      }
+    }
+    return null;
   }
 }

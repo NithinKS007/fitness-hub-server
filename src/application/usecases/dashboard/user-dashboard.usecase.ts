@@ -1,15 +1,14 @@
-import { UserDashBoard } from "../../../domain/entities/user.entities";
-import { WorkoutChartData } from "../../../domain/entities/workout.entities";
-import { IWorkoutRepository } from "../../../domain/interfaces/IWorkoutRepository";
-import { UserDashBoardQueryDTO } from "../../dtos/query-dtos";
-import { IDateService } from "../../interfaces/date/IDate.service";
+import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
+import { UserDashBoardQueryDTO } from "@application/dtos/query-dtos";
+import { IDateService } from "@application/interfaces/date/IDate.service";
+import { UserDashBoard, WorkoutChartData } from "@application/dtos/workout-dtos";
 
 export class UserDashBoardUseCase {
   constructor(
     private workoutRepository: IWorkoutRepository,
     private dateService: IDateService
   ) {}
-  
+
   async execute({
     period,
     bodyPart,

@@ -1,70 +1,58 @@
 import {
+  TrainerChartData,
+  TrainerPieChartData,
+} from "@application/dtos/chart-dtos";
+import {
   DateRangeQueryDTO,
   GetTrainerSubscribersQueryDTO,
   GetUserSubscriptionsQueryDTO,
-  GetUserTrainersListQueryDTO,
-} from "../../application/dtos/query-dtos";
+} from "@application/dtos/query-dtos";
 import {
   CheckSubscriptionStatusDTO,
-  UpdateSubscriptionStatusDTO,
-} from "../../application/dtos/subscription-dtos";
-import { PaginationDTO } from "../../application/dtos/utility-dtos";
-import {
-  TrainerChartData,
-  TrainerPieChartData,
-} from "../entities/chart.entities";
-import {
-  UserSubscriptionRecord,
   TrainerSubscriberRecord,
-  UserMyTrainersList,
-} from "../entities/subscription.entities";
-import { Top5List } from "../entities/trainer.entities";
-import { SubscriptionPlanEntity } from "../entities/subscription-plan.entities";
-import { IBaseRepository } from "./IBaseRepository";
-import { IUserSubscriptionPlan } from "../../infrastructure/databases/models/user-subscription-plan";
+  UpdateSubscriptionStatusDTO,
+  UserSubscriptionRecord,
+} from "@application/dtos/subscription-dtos";
+import { Top5List } from "@application/dtos/trainer-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { IUserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
+import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
 
 export interface IUserSubscriptionPlanRepository
   extends IBaseRepository<IUserSubscriptionPlan> {
-  findSubscriptionsOfUser(
+  getUserSubscriptions(
     userId: string,
     searchFilterQuery: GetUserSubscriptionsQueryDTO
   ): Promise<{
     userSubscriptionRecord: UserSubscriptionRecord[];
     paginationData: PaginationDTO;
   }>;
-  findSubscriptionsOfTrainer(
+  getTrainerSubscriptions(
     trainerId: string,
     searchFilterQuery: GetTrainerSubscribersQueryDTO
   ): Promise<{
     trainerSubscriberRecord: TrainerSubscriberRecord[];
     paginationData: PaginationDTO;
   }>;
-  findSubscriptionByStripeSubscriptionId(
+  getSubscriptionByStripeId(
     stripeSubscriptionId: string
-  ): Promise<SubscriptionPlanEntity>;
-  findSubscriptionsOfUserwithUserIdAndTrainerId(
+  ): Promise<IUserSubscriptionPlan>;
+  getSubscriptionsByUserAndTrainerId(
     data: CheckSubscriptionStatusDTO
-  ): Promise<SubscriptionPlanEntity[] | null>;
-  findSubscriptionByStripeSubscriptionIdAndUpdateStatus(
+  ): Promise<IUserSubscriptionPlan[] | null>;
+  updateSubscriptionStatusByStripeId(
     updateSubscriptionStatus: UpdateSubscriptionStatusDTO
-  ): Promise<SubscriptionPlanEntity | null>;
+  ): Promise<IUserSubscriptionPlan | null>;
   countAllTrainerSubscribers(trainerId: string): Promise<number>;
   countAllActiveSubscribers(trainerId: string): Promise<number>;
   countCanceledSubscribers(trainerId: string): Promise<number>;
-  trainerChartDataFilter(
+  getTrainerLineChartData(
     trainerId: string,
     dateFilterQuery: DateRangeQueryDTO
   ): Promise<TrainerChartData[]>;
-  trainerPieChartDataFilter(
+  getTrainerPieChartData(
     trainerId: string,
     dateFilterQuery: DateRangeQueryDTO
   ): Promise<TrainerPieChartData[]>;
-  findTop5TrainersWithHighestSubscribers(): Promise<Top5List[]>;
-  usersMyTrainersList(
-    userId: string,
-    searchFilterQuery: GetUserTrainersListQueryDTO
-  ): Promise<{
-    userTrainersList: UserMyTrainersList[];
-    paginationData: PaginationDTO;
-  }>;
+  getTop5TrainersBySubscribers(): Promise<Top5List[]>;
 }

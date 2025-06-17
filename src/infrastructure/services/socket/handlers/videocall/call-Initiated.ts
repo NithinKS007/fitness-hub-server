@@ -1,8 +1,8 @@
 import { Socket, Server } from "socket.io";
-import { TrainerGetUseCase } from "../../../../../application/usecases/trainer/get-trainer.usecase";
-import { GetAppointmentByIdUseCase } from "../../../../../application/usecases/appointment/get-bookingby-id.usecase";
-import { CreateVideoCallLogUseCase } from "../../../../../application/usecases/videoCallLog/create-videocalllog.usecase";
-import { socketStore } from "../../store/socket.store";
+import { GetAppointmentByIdUseCase } from "@application/usecases/appointment/get-bookingby-id.usecase";
+import { CreateVideoCallLogUseCase } from "@application/usecases/videoCallLog/create-videocalllog.usecase";
+import { socketStore } from "@infrastructure/services/socket/store/socket.store";
+import { GetTrainerDetailsUseCase } from "@application/usecases/trainer/get-trainer-details.usecase";
 
 interface InitiateVideoCall {
   io: Server;
@@ -11,7 +11,7 @@ interface InitiateVideoCall {
   receiverId: string;
   roomId: string;
   appointmentId: string;
-  trainerGetUseCase: TrainerGetUseCase;
+  getTrainerDetailsUseCase: GetTrainerDetailsUseCase;
   getAppointmentByIdUseCase: GetAppointmentByIdUseCase;
   createVideoCallLogUseCase: CreateVideoCallLogUseCase;
 }
@@ -19,7 +19,7 @@ interface InitiateVideoCall {
 export const handleInitiateCall = async ({
   io,
   socket,
-  trainerGetUseCase,
+  getTrainerDetailsUseCase,
   getAppointmentByIdUseCase,
   createVideoCallLogUseCase,
   callerId,
@@ -27,14 +27,10 @@ export const handleInitiateCall = async ({
   roomId,
   appointmentId,
 }: InitiateVideoCall) => {
-  const trainerData = await trainerGetUseCase.getTrainerDetailsById(callerId);
+  const trainerData = await getTrainerDetailsUseCase.execute(callerId);
   const appointmentData = await getAppointmentByIdUseCase.execute(
     appointmentId
   );
-
-  // if (appointmentData?.status === "cancelled") {
-  //   throw new validationError("Failed to connect");
-  // }
 
   const trainerName = `${trainerData.fname} ${trainerData.lname}`;
   const appointmentTime = appointmentData?.appointmentTime;

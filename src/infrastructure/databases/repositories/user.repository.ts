@@ -1,14 +1,12 @@
-import {
-  FindEmailDTO,
-  UpdatePasswordDTO,
-} from "../../../application/dtos/auth-dtos";
-import { PaginationDTO } from "../../../application/dtos/utility-dtos";
-import { User } from "../../../domain/entities/user.entities";
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
-import UserModel, { IUser } from "../models/user.model";
-import { GetUsersQueryDTO } from "../../../application/dtos/query-dtos";
+import { FindEmailDTO, UpdatePasswordDTO } from "@application/dtos/auth-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { IUserRepository } from "@domain/interfaces/IUserRepository";
+import UserModel from "@infrastructure/databases/models/user.model";
+import { GetUsersQueryDTO } from "@application/dtos/query-dtos";
 import { Model } from "mongoose";
-import { BaseRepository } from "./base.repository";
+import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
+import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
+import { IUser } from "@domain/entities/user.entity";
 
 export class UserRepository
   extends BaseRepository<IUser>
@@ -20,28 +18,26 @@ export class UserRepository
 
   async updateUserVerificationStatus({
     email,
-  }: FindEmailDTO): Promise<User | null> {
+  }: FindEmailDTO): Promise<IUser | null> {
     return await this.model
       .findOneAndUpdate({ email }, { otpVerified: true })
       .lean();
   }
-  
+
   async forgotPassword({
     email,
     password,
-  }: UpdatePasswordDTO): Promise<User | null> {
+  }: UpdatePasswordDTO): Promise<IUser | null> {
     return await this.model
       .findOneAndUpdate({ email }, { password: password })
       .lean();
   }
 
   async getUsers({ page, limit, search, filters }: GetUsersQueryDTO): Promise<{
-    usersList: User[];
+    usersList: IUser[];
     paginationData: PaginationDTO;
   }> {
-    const pageNumber = page || 1;
-    const limitNumber = limit || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
     let matchQuery: any = {};
 
@@ -81,14 +77,15 @@ export class UserRepository
       .sort({ createdAt: -1 })
       .lean();
 
-    const totalPages = Math.ceil(totalCount / limitNumber);
+    const paginationData = paginateRes({
+      totalCount,
+      pageNumber,
+      limitNumber,
+    });
 
     return {
       usersList,
-      paginationData: {
-        currentPage: pageNumber,
-        totalPages: totalPages,
-      },
+      paginationData,
     };
   }
 

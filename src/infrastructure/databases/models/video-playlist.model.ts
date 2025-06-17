@@ -1,9 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-
-export interface IVideoPlaylist extends Document {
-  videoId: mongoose.Schema.Types.ObjectId;
-  playlistId: mongoose.Schema.Types.ObjectId;
-}
+import { IVideoPlaylist } from "@domain/entities/video-playlist.entity";
+import mongoose, { Schema } from "mongoose";
 
 const videoPlaylistSchema: Schema = new Schema(
   {
@@ -11,11 +7,23 @@ const videoPlaylistSchema: Schema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Video",
       required: true,
+      set: (value: string) => {
+        return typeof value === "string" &&
+          mongoose.Types.ObjectId.isValid(value)
+          ? new mongoose.Types.ObjectId(value)
+          : value;
+      },
     },
     playListId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Playlist",
       required: true,
+      set: (value: string) => {
+        return typeof value === "string" &&
+          mongoose.Types.ObjectId.isValid(value)
+          ? new mongoose.Types.ObjectId(value)
+          : value;
+      },
     },
   },
   { timestamps: true }

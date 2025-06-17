@@ -1,13 +1,13 @@
-import { GoogleTokenDTO } from "../../dtos/auth-dtos";
+import { GoogleTokenDTO } from "@application/dtos/auth-dtos";
 import {
   ForbiddenError,
   validationError,
-} from "../../../presentation/middlewares/error.middleware";
-import { AuthStatus } from "../../../shared/constants/index.constants";
-import { User } from "../../../domain/entities/user.entities";
-import { IUserRepository } from "../../../domain/interfaces/IUserRepository";
-import { IAuthService } from "../../interfaces/auth/IAuth.service";
-import { IGoogleAuthService } from "../../interfaces/auth/IGoogle.auth.service";
+} from "@presentation/middlewares/error.middleware";
+import { AuthStatus } from "@shared/constants/index.constants";
+import { IUserRepository } from "@domain/interfaces/IUserRepository";
+import { IAuthService } from "@application/interfaces/auth/IAuth.service";
+import { IGoogleAuthService } from "@application/interfaces/auth/IGoogle.auth.service";
+import { IUser } from "@domain/entities/user.entity";
 
 /*  
     Purpose: Handles the Google authentication process. It verifies the provided Google token, 
@@ -29,13 +29,13 @@ export class GoogleAuthUseCase {
     private googleAuthService: IGoogleAuthService
   ) {}
 
-  private generateAccessToken(user: User): string {
+  private generateAccessToken(user: IUser): string {
     return this.authService.generateAccessToken({
       _id: user._id.toString(),
       role: user.role,
     });
   }
-  private generateRefreshToken(user: User): string {
+  private generateRefreshToken(user: IUser): string {
     return this.authService.generateRefreshToken({
       _id: user._id.toString(),
       role: user.role,
@@ -45,7 +45,7 @@ export class GoogleAuthUseCase {
   async execute({ token }: GoogleTokenDTO): Promise<{
     accessToken: string;
     refreshToken: string;
-    userData: User;
+    userData: IUser;
   }> {
     const googleUserInfo = await this.googleAuthService.verifyToken(token);
     if (!googleUserInfo || !googleUserInfo.email) {

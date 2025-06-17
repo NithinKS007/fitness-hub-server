@@ -1,14 +1,14 @@
 import {
-  GetBookingRequestsDTO,
-  GetBookingSchedulesDTO,
-} from "../../application/dtos/query-dtos";
-import { PaginationDTO } from "../../application/dtos/utility-dtos";
-import { IAppointment } from "../../infrastructure/databases/models/appointment.model";
-import {
   AppointmentRequestsTrainer,
   AppointmentRequestsUser,
-} from "../entities/appointment.entities";
-import { IBaseRepository } from "./IBaseRepository";
+} from "@application/dtos/appointment-dtos";
+import {
+  GetBookingRequestsDTO,
+  GetBookingSchedulesDTO,
+} from "@application/dtos/query-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { IAppointment } from "@domain/entities/appointment.entity";
+import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
 
 export interface IAppointmentRepository extends IBaseRepository<IAppointment> {
   getBookingRequests(

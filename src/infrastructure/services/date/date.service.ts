@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
-import { IDateService } from "../../../application/interfaces/date/IDate.service";
-import { DateRange } from "../../../application/dtos/service/date.service";
+import { IDateService } from "@application/interfaces/date/IDate.service";
+import { DateRange } from "@application/dtos/service/date.service";
 
 export class DateService implements IDateService {
-  getDateRange = (data: DateRange): { startDate: Date; endDate: Date } => {
+  getDateRange = (data: any): { startDate: Date; endDate: Date } => {
     let startDate = dayjs().startOf("month").toDate();
     let endDate = dayjs().endOf("month").toDate();
     switch (data) {

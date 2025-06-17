@@ -1,13 +1,25 @@
-import express from "express"
-import { authenticate } from "../middlewares/auth.middleware"
-import expressAsyncHandler from "express-async-handler";
+import express from "express";
+import { authenticate } from "@presentation/middlewares/auth.middleware";
 import { chatController } from "../../di/di";
+import { asyncHandler } from "@shared/utils/async-handler";
 
-const chatRoutes = express.Router()
+const chatRoutes = express.Router();
 
 //CHAT ROUTES
-chatRoutes.get("/messages/:senderId/:receiverId", authenticate, expressAsyncHandler (chatController.getMessages.bind(chatController)))
-chatRoutes.get("/trainer",authenticate,expressAsyncHandler(chatController.getTrainerChatList.bind(chatController)))
-chatRoutes.get("/user",authenticate,expressAsyncHandler(chatController.getUserChatList.bind(chatController)))
+chatRoutes.get(
+  "/messages/:senderId/:receiverId",
+  authenticate,
+  asyncHandler(chatController.getMessages.bind(chatController))
+);
+chatRoutes.get(
+  "/trainer",
+  authenticate,
+  asyncHandler(chatController.getTrainerChatList.bind(chatController))
+);
+chatRoutes.get(
+  "/user",
+  authenticate,
+  asyncHandler(chatController.getUserChatList.bind(chatController))
+);
 
-export default chatRoutes
+export default chatRoutes;

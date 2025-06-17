@@ -1,71 +1,242 @@
-import express from "express"
-import { authenticate } from "../middlewares/auth.middleware"
-import expressAsyncHandler from "express-async-handler"
-import { 
-  bookAppointmentController, 
-  getAppointmentController, 
-  updateAppointmentController,
-  getVideoController, 
-  profileController, 
-  purchaseSubscriptionController, 
-  userDashBoardController, 
-  userSubscriptionController,  
-  getUserVideoCallLogController, 
-  webhookController, 
-  getBookingSlotController,
-  getPlaylistController,
+import express from "express";
+import { authenticate } from "@presentation/middlewares/auth.middleware";
+import {
+  bookAppointmentController,
+  purchaseSubscriptionController,
+  userDashBoardController,
+  getUserVideoCallLogController,
   getUserMyTrainersController,
   getTrainerWithSubController,
   getApprovedTrainersController,
   addWorkoutController,
   getWorkoutController,
   deleteWorkoutController,
-  updateWorkoutController
+  updateWorkoutController,
+  updateUserProfileController,
+  getUserSchedulesController,
+  cancelAppointmentController,
+  getAllPendingSlotsController,
+  getUpComingSlotsController,
+  getAllPlaylistController,
+  verifySubscriptionController,
+  cancelSubscriptionController,
+  checkSubscriptionStatusController,
+  getUserSubscriptionController,
+  getPublicVideosController,
+  getPublicVideoDetailscontroller,
+  getAllPublicPlaylistController,
 } from "../../di/di";
+import { asyncHandler } from "@shared/utils/async-handler";
 
-const userRoutes = express.Router()
+const userRoutes = express.Router();
 
 //TRAINER DISPLAYING ROUTES
-userRoutes.get("/trainers",expressAsyncHandler(getApprovedTrainersController.handleGetApprovedTrainers.bind(getApprovedTrainersController)))
-userRoutes.get("/trainers/:trainerId",expressAsyncHandler(getTrainerWithSubController.handleGetTrainerWithSub.bind(getTrainerWithSubController)))
-userRoutes.get("/my-trainers",authenticate,expressAsyncHandler(getUserMyTrainersController.handleGetMyTrainers.bind(getUserMyTrainersController)))
+userRoutes.get(
+  "/trainers",
+  asyncHandler(
+    getApprovedTrainersController.handleGetApprovedTrainers.bind(
+      getApprovedTrainersController
+    )
+  )
+);
+userRoutes.get(
+  "/trainers/:trainerId",
+  asyncHandler(
+    getTrainerWithSubController.handleGetTrainerWithSub.bind(
+      getTrainerWithSubController
+    )
+  )
+);
+userRoutes.get(
+  "/my-trainers",
+  authenticate,
+  asyncHandler(
+    getUserMyTrainersController.handleGetMyTrainers.bind(
+      getUserMyTrainersController
+    )
+  )
+);
 
 //SUBSCRIPTION ROUTES
-userRoutes.post("/subscriptions/checkout",authenticate,expressAsyncHandler(purchaseSubscriptionController.purchaseSubscription.bind(purchaseSubscriptionController)))
-userRoutes.get("/subscriptions",authenticate,expressAsyncHandler(userSubscriptionController.getUserSubscriptions.bind(userSubscriptionController)))
-userRoutes.get("/subscriptions/verify/:sessionId",authenticate,expressAsyncHandler(webhookController.getSubscriptionBySession.bind(webhookController)))
-userRoutes.patch("/subscriptions/cancel",authenticate,expressAsyncHandler(purchaseSubscriptionController.cancelSubscription.bind(purchaseSubscriptionController))) 
-userRoutes.get("/subscriptions/status/:_id",authenticate,expressAsyncHandler(userSubscriptionController.isSubscribedToTheTrainer.bind(userSubscriptionController)))
+userRoutes.post(
+  "/subscriptions/checkout",
+  authenticate,
+  asyncHandler(
+    purchaseSubscriptionController.handlePurchase.bind(
+      purchaseSubscriptionController
+    )
+  )
+);
+userRoutes.get(
+  "/subscriptions",
+  authenticate,
+  asyncHandler(
+    getUserSubscriptionController.handleGetUserSub.bind(
+      getUserSubscriptionController
+    )
+  )
+);
+userRoutes.get(
+  "/subscriptions/:sessionId/verify",
+  authenticate,
+  asyncHandler(
+    verifySubscriptionController.handleVerifySubscription.bind(
+      verifySubscriptionController
+    )
+  )
+);
+userRoutes.patch(
+  "/subscriptions/cancel",
+  authenticate,
+  asyncHandler(
+    cancelSubscriptionController.handleCancelSubscription.bind(
+      cancelSubscriptionController
+    )
+  )
+);
+userRoutes.get(
+  "/subscriptions/:trainerId/status/",
+  authenticate,
+  asyncHandler(
+    checkSubscriptionStatusController.handleCheckSubStatus.bind(
+      checkSubscriptionStatusController
+    )
+  )
+);
 
 //VIDEO ROUTES
-userRoutes.get("/trainer/videos/:trainerId",authenticate,expressAsyncHandler(getVideoController.getPublicVideos.bind(getVideoController)))
-userRoutes.get("/videos/:videoId",authenticate,expressAsyncHandler(getVideoController.getVideoById.bind(getVideoController)))
+userRoutes.get(
+  "/trainers/:trainerId/videos",
+  authenticate,
+  asyncHandler(
+    getPublicVideosController.handleGetPublicVideos.bind(
+      getPublicVideosController
+    )
+  )
+);
+userRoutes.get(
+  "/videos/:videoId",
+  authenticate,
+  asyncHandler(
+    getPublicVideoDetailscontroller.handleGetPublicVideoById.bind(
+      getPublicVideoDetailscontroller
+    )
+  )
+);
 
 //PLAYLIST ROUTES
-userRoutes.get("/playlists/all/:trainerId",authenticate,expressAsyncHandler(getPlaylistController.getallPlayLists.bind(getPlaylistController)))
+userRoutes.get(
+  "/playlists/:trainerId",
+  authenticate,
+  asyncHandler(
+    getAllPublicPlaylistController.handleGetallPublicPlayLists.bind(
+      getAllPublicPlaylistController
+    )
+  )
+);
 
 //BOOKING ROUTES
-userRoutes.get("/slots/all/:trainerId",authenticate,expressAsyncHandler(getBookingSlotController.getAllAvailableSlots.bind(getBookingSlotController)))
-userRoutes.get("/slots/:trainerId",authenticate,expressAsyncHandler(getBookingSlotController.getUpcomingSlots.bind(getBookingSlotController)))
-userRoutes.post("/slots/:slotId",authenticate,expressAsyncHandler(bookAppointmentController.handleBookAppointment.bind(bookAppointmentController)))
+userRoutes.get(
+  "/slots/:trainerId/available",
+  authenticate,
+  asyncHandler(
+    getAllPendingSlotsController.handleGetAllAvailableSlots.bind(
+      getAllPendingSlotsController
+    )
+  )
+);
+userRoutes.get(
+  "/slots/:trainerId/upcoming",
+  authenticate,
+  asyncHandler(
+    getUpComingSlotsController.handleGetUpcomingSlots.bind(
+      getUpComingSlotsController
+    )
+  )
+);
+userRoutes.post(
+  "/slots/:slotId",
+  authenticate,
+  asyncHandler(
+    bookAppointmentController.handleBookAppointment.bind(
+      bookAppointmentController
+    )
+  )
+);
 
 //APPOINTMENT ROUTES
-userRoutes.get("/appointments",authenticate,expressAsyncHandler(getAppointmentController.handleGetUserSchedules.bind(getAppointmentController)))
-userRoutes.patch("/appointments/:appointmentId",authenticate,expressAsyncHandler(updateAppointmentController.handleCancelAppointment.bind(updateAppointmentController)))
-userRoutes.get("/video-call-logs",authenticate,expressAsyncHandler(getUserVideoCallLogController.handleGetUserLogs.bind(getUserVideoCallLogController)))
+userRoutes.get(
+  "/appointments",
+  authenticate,
+  asyncHandler(
+    getUserSchedulesController.handleGetUserSchedules.bind(
+      getUserSchedulesController
+    )
+  )
+);
+userRoutes.patch(
+  "/appointments/:appointmentId",
+  authenticate,
+  asyncHandler(
+    cancelAppointmentController.handleCancelAppointment.bind(
+      cancelAppointmentController
+    )
+  )
+);
+userRoutes.get(
+  "/video-call-logs",
+  authenticate,
+  asyncHandler(
+    getUserVideoCallLogController.handleGetUserLogs.bind(
+      getUserVideoCallLogController
+    )
+  )
+);
 
 //PROFILE ROUTES
-userRoutes.put("/profile",authenticate,expressAsyncHandler(profileController.updateUserProfile.bind(profileController)))
+userRoutes.put(
+  "/profile",
+  authenticate,
+  asyncHandler(
+    updateUserProfileController.handleUpdateUserProfile.bind(
+      updateUserProfileController
+    )
+  )
+);
 
 //WORKOUT ROUTES
-userRoutes.post("/workouts",authenticate,expressAsyncHandler(addWorkoutController.handleAddWorkout.bind(addWorkoutController)))
-userRoutes.get("/workouts",authenticate,expressAsyncHandler(getWorkoutController.handleGetWorkout.bind(getWorkoutController)))
-userRoutes.delete("/workouts/:setId",authenticate,expressAsyncHandler(deleteWorkoutController.handleDeleteWorkout.bind(deleteWorkoutController)))
-userRoutes.patch("/workouts/:setId",authenticate,expressAsyncHandler(updateWorkoutController.handlWorkoutComplete.bind(updateWorkoutController)))
+userRoutes.post(
+  "/workouts",
+  authenticate,
+  asyncHandler(addWorkoutController.handleAddWorkout.bind(addWorkoutController))
+);
+userRoutes.get(
+  "/workouts",
+  authenticate,
+  asyncHandler(getWorkoutController.handleGetWorkout.bind(getWorkoutController))
+);
+userRoutes.delete(
+  "/workouts/:setId",
+  authenticate,
+  asyncHandler(
+    deleteWorkoutController.handleDeleteWorkout.bind(deleteWorkoutController)
+  )
+);
+userRoutes.patch(
+  "/workouts/:setId",
+  authenticate,
+  asyncHandler(
+    updateWorkoutController.handlWorkoutComplete.bind(updateWorkoutController)
+  )
+);
 
 //DASHBOARD ROUTES
-userRoutes.get("/dashBoard",authenticate,expressAsyncHandler(userDashBoardController.getUserDashBoardData.bind(userDashBoardController)))
+userRoutes.get(
+  "/dashBoard",
+  authenticate,
+  asyncHandler(
+    userDashBoardController.getUserDashBoardData.bind(userDashBoardController)
+  )
+);
 
-
-export default userRoutes
-
+export default userRoutes;

@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { sendResponse } from "../../../shared/utils/http.response";
+import { sendResponse } from "@shared/utils/http.response";
 import {
-  HttpStatusCodes,
+  StatusCodes,
   SubscriptionStatus,
-} from "../../../shared/constants/index.constants";
-import { CreateSubscriptionUseCase } from "../../../application/usecases/subscription/create-subscription.usecase";
-import { EditSubscriptionUseCase } from "../../../application/usecases/subscription/edit-subscription.usecase";
-import { DeleteSubscriptionUseCase } from "../../../application/usecases/subscription/delete-subscription.usecase";
-import { SubscriptionBlockUseCase } from "../../../application/usecases/subscription/block-subscription.usecase";
+} from "@shared/constants/index.constants";
+import { CreateSubscriptionUseCase } from "@application/usecases/subscription/create-subscription.usecase";
+import { EditSubscriptionUseCase } from "@application/usecases/subscription/edit-subscription.usecase";
+import { DeleteSubscriptionUseCase } from "@application/usecases/subscription/delete-subscription.usecase";
+import { SubscriptionBlockUseCase } from "@application/usecases/subscription/block-subscription.usecase";
 
 export class SubscriptionPlanController {
   constructor(
@@ -18,59 +18,71 @@ export class SubscriptionPlanController {
   ) {}
 
   async addSubscription(req: Request, res: Response): Promise<void> {
-    const trainerId = req?.user?._id;
-    const subscriptionData =
-      await this.createSubscriptionUseCase.execute({
-        trainerId,
-        ...req.body,
-      });
+    const { _id: trainerId } = req?.user || {};
+
+    const subscriptionData = await this.createSubscriptionUseCase.execute({
+      trainerId,
+      ...req.body,
+    });
+
     sendResponse(
       res,
-      HttpStatusCodes.OK,
+      StatusCodes.OK,
       subscriptionData,
       SubscriptionStatus.SubscriptionCreated
     );
   }
+
   async updateSubscriptionBlockStatus(
     req: Request,
     res: Response
   ): Promise<void> {
+    const { subscriptionId } = req.params;
+    const { isBlocked } = req.body;
+
     const updatedSubData = {
-      subscriptionId: req.params.subscriptionId,
-      isBlocked: req.body.isBlocked,
+      subscriptionId,
+      isBlocked,
     };
+
     const updatedSubscriptionStatus =
       await this.subscriptionBlockUseCase.execute(updatedSubData);
+
     sendResponse(
       res,
-      HttpStatusCodes.OK,
+      StatusCodes.OK,
       updatedSubscriptionStatus,
       SubscriptionStatus.SubscriptionBlockStatusUpdated
     );
   }
+
   async editSubscription(req: Request, res: Response): Promise<void> {
-    const subscriptionId = req.params.subscriptionId;
-    const trainerId = req?.user?._id;
-    const editSubscriptionData =
-      await this.editSubscriptionUseCase.execute({
-        trainerId: trainerId,
-        subscriptionId,
-        ...req.body,
-      });
+    const { subscriptionId } = req.params;
+    const { _id: trainerId } = req?.user || {};
+
+    const editSubscriptionData = await this.editSubscriptionUseCase.execute({
+      trainerId: trainerId,
+      subscriptionId,
+      ...req.body,
+    });
+
     sendResponse(
       res,
-      HttpStatusCodes.OK,
+      StatusCodes.OK,
       editSubscriptionData,
       SubscriptionStatus.SubscriptionEditedSuccessfully
     );
   }
+
   async deleteSubscription(req: Request, res: Response): Promise<void> {
-    const subscriptionId = req.params.subscriptionId;
+    const { subscriptionId } = req.params;
+
     const deletedSubscriptionData =
       await this.deleteSubscriptionUseCase.execute(subscriptionId);
+
     sendResponse(
       res,
-      HttpStatusCodes.OK,
+      StatusCodes.OK,
       deletedSubscriptionData,
       SubscriptionStatus.SubscriptionDeletedSuccessfully
     );

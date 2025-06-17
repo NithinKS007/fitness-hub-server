@@ -1,4 +1,4 @@
 export enum RevenueStatus {
-  FailedToFetchRevenueHistory = "Failed to fetch revenue history",
-  SuccessFullyFetchedRevenueHistory = "Revenue list retrieved successfully",
+  FetchFailed = "Failed to fetch revenue history",
+  Fetched = "Revenue fetched successfully",
 }

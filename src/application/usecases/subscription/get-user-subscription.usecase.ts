@@ -1,19 +1,13 @@
-import { validationError } from "../../../presentation/middlewares/error.middleware";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   SubscriptionStatus,
-} from "../../../shared/constants/index.constants";
-import {
-  UserMyTrainersList,
-  UserSubscriptionsList,
-} from "../../../domain/entities/subscription.entities";
-import { IUserSubscriptionPlanRepository } from "../../../domain/interfaces/IUserSubscriptionPlanRepository";
-import {
-  GetUserSubscriptionsQueryDTO,
-  GetUserTrainersListQueryDTO,
-} from "../../dtos/query-dtos";
-import { IPaymentService } from "../../interfaces/payments/IPayment.service";
-import { PaginationDTO } from "../../dtos/utility-dtos";
+} from "@shared/constants/index.constants";
+import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
+import { GetUserSubscriptionsQueryDTO } from "@application/dtos/query-dtos";
+import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { UserSubscriptionsList } from "@application/dtos/subscription-dtos";
 
 export class GetUserSubscriptionUseCase {
   constructor(
@@ -21,7 +15,7 @@ export class GetUserSubscriptionUseCase {
     private paymentService: IPaymentService
   ) {}
 
-  async getUserSubscriptionsData(
+  async execute(
     userId: string,
     { page, limit, search, filters }: GetUserSubscriptionsQueryDTO
   ): Promise<{
@@ -33,7 +27,7 @@ export class GetUserSubscriptionUseCase {
     }
     const query = { page, limit, search, filters };
     const { userSubscriptionRecord, paginationData } =
-      await this.userSubscriptionPlanRepository.findSubscriptionsOfUser(
+      await this.userSubscriptionPlanRepository.getUserSubscriptions(
         userId,
         query
       );
@@ -56,28 +50,6 @@ export class GetUserSubscriptionUseCase {
     );
     return {
       userSubscriptionsList: userSubscriptionsList,
-      paginationData: paginationData,
-    };
-  }
-
-  async userMyTrainersList(
-    userId: string,
-    { page, limit, search }: GetUserTrainersListQueryDTO
-  ): Promise<{
-    userTrainersList: UserMyTrainersList[];
-    paginationData: PaginationDTO;
-  }> {
-    const query = { page, limit, search };
-    const { userTrainersList, paginationData } =
-      await this.userSubscriptionPlanRepository.usersMyTrainersList(
-        userId,
-        query
-      );
-    if (!userTrainersList) {
-      throw new validationError("Failed to retrieve user trainers list");
-    }
-    return {
-      userTrainersList: userTrainersList,
       paginationData: paginationData,
     };
   }
