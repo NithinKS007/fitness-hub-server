@@ -3,8 +3,10 @@ import dotenv from "dotenv";
 import { AuthStatus } from "@shared/constants/index.constants";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { IGoogleAuthService } from "@application/interfaces/auth/IGoogle.auth.service";
+import { injectable } from "inversify";
 dotenv.config();
 
+@injectable()
 export class GoogleAuthService implements IGoogleAuthService {
   private googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 

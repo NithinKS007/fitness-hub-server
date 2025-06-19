@@ -1,21 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthStatus, JwtStatus } from "@shared/constants/index.constants";
 import { JwtPayload } from "jsonwebtoken";
-import { CheckUserBlockStatusUseCase } from "@application/usecases/auth/check-user-blockstatus.usecase";
-import { UserRepository } from "@infrastructure/databases/repositories/user.repository";
 import { ForbiddenError, UnauthorizedError } from "./error.middleware";
-import { TrainerRepository } from "@infrastructure/databases/repositories/trainer.repository";
-import { TokenUseCase } from "@application/usecases/auth/token.usecase";
-import { JwtService } from "@infrastructure/services/auth/jwt.service";
-
-const userRepository = new UserRepository();
-const trainerRepository = new TrainerRepository();
-const jwtService = new JwtService();
-const checkBlockStatusUseCase = new CheckUserBlockStatusUseCase(
-  userRepository,
-  trainerRepository
-);
-const tokenUseCase = new TokenUseCase(jwtService);
+import { checkBlockStatusUseCase, tokenUseCase } from "di/container-resolver";
 
 export const authenticate = async (
   req: Request,
@@ -33,7 +20,7 @@ export const authenticate = async (
     return;
   }
   try {
-    const decoded = await tokenUseCase.authenticateAccessToken(accessToken);
+    const decoded = await tokenUseCase.authAccessToken(accessToken);
     req.user = decoded as JwtPayload;
     const { _id } = req?.user;
     const isBlocked = await checkBlockStatusUseCase.execute(_id);

@@ -7,9 +7,16 @@ import {
 } from "@shared/constants/index.constants";
 import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
 import { ISubscription } from "@domain/entities/subscription.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
+@injectable()
 export class SubscriptionBlockUseCase {
-  constructor(private subscriptionRepository: ISubscriptionRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.SubscriptionRepository)
+    private subscriptionRepository: ISubscriptionRepository
+  ) {}
+  
   async execute({
     subscriptionId,
     isBlocked,
@@ -30,7 +37,7 @@ export class SubscriptionBlockUseCase {
       }
     );
     if (!updatedSubscriptionData) {
-      throw new validationError(BlockStatus.StatusUpdateFailed );
+      throw new validationError(BlockStatus.StatusUpdateFailed);
     }
     return updatedSubscriptionData;
   }

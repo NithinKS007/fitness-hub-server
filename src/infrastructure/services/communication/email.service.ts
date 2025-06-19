@@ -7,8 +7,10 @@ import dotenv from "dotenv";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/communication/IEmail.service";
 import { SendEmail } from "@application/dtos/service/email.service";
+import { injectable } from "inversify";
 dotenv.config();
 
+@injectable()
 export class EmailService implements IEmailService {
   private readonly emailUser = process.env.EMAIL_USER!;
   private readonly emailPass = process.env.EMAIL_PASS!;

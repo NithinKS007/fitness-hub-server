@@ -3,10 +3,7 @@ import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { AvailableSlotsQueryDTO } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
-import {
-  paginateReq,
-  paginateRes,
-} from "@shared/utils/handle-pagination";
+import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import BookingSlotModel from "../models/booking-slot.model";
 import { IBookingSlot } from "@domain/entities/booking-slot.entity";
 

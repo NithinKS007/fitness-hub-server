@@ -1,17 +1,22 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import {
   DashboardStatus,
   StatusCodes,
 } from "@shared/constants/index.constants";
 import { AdminDashBoardUseCase } from "@application/usecases/dashboard/admin-dashboard.usecase";
-import { parseQueryParams } from "@shared/utils/parse.queryParams";
+import { parseQueryParams } from "@shared/utils/parse-query-params";
+import { TYPES_DASHBOARD_USECASES } from "di/types-usecases";
 
+@injectable()
 export class AdminDashboardController {
-  constructor(private adminDashBoardUseCase: AdminDashBoardUseCase) {}
+  constructor(
+    @inject(TYPES_DASHBOARD_USECASES.AdminDashBoardUseCase)
+    private adminDashBoardUseCase: AdminDashBoardUseCase
+  ) {}
 
   async getAdminDashBoardData(req: Request, res: Response): Promise<void> {
-
     const period = parseQueryParams(req.query).period;
 
     const {
@@ -38,9 +43,7 @@ export class AdminDashboardController {
         chartData: chartData,
         topTrainersList: top5List,
       },
-      DashboardStatus.AdminDashBoardRetrievedSuccessfully
+      DashboardStatus.AdminDashRetrieved
     );
-    
   }
-  
 }

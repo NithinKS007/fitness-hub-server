@@ -1,13 +1,19 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
 import { WebHookHandlerUseCase } from "@application/usecases/subscription/webhook-handler.usecase";
+import { TYPES_SUBSCRIPTION_USECASES } from "di/types-usecases";
 
+@injectable()
 export class WebhookController {
-  constructor(private webHookHandlerUseCase: WebHookHandlerUseCase) {}
+  constructor(
+    @inject(TYPES_SUBSCRIPTION_USECASES.WebHookHandlerUseCase)
+    private webHookHandlerUseCase: WebHookHandlerUseCase
+  ) {}
 
   async webHookHandler(req: Request, res: Response): Promise<void> {
     const sig = req.headers["stripe-signature"];

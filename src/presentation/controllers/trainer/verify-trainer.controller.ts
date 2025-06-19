@@ -1,10 +1,16 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { TrainerStatus, StatusCodes } from "@shared/constants/index.constants";
 import { TrainerApprovalUseCase } from "@application/usecases/trainer/trainer-approval.usecase";
+import { TYPES_TRAINER_USECASES } from "di/types-usecases";
 
+@injectable()
 export class VerifyTrainerController {
-  constructor(private trainerApprovalUseCase: TrainerApprovalUseCase) {}
+  constructor(
+    @inject(TYPES_TRAINER_USECASES.TrainerApprovalUseCase)
+    private trainerApprovalUseCase: TrainerApprovalUseCase
+  ) {}
 
   async handleVerification(req: Request, res: Response): Promise<void> {
     const { trainerId } = req.params;

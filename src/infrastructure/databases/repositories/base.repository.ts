@@ -14,7 +14,7 @@ export abstract class BaseRepository<T extends Document>
   }
 
   async findById(id: string): Promise<T | null> {
-    return (await this.model.findById(id).lean().exec()) as T
+    return (await this.model.findById(id).lean().exec()) as T;
   }
 
   async update(id: string, entity: Partial<T>): Promise<T | null> {
@@ -30,6 +30,10 @@ export abstract class BaseRepository<T extends Document>
 
   async findOne(conditions: object): Promise<T | null> {
     return (await this.model.findOne(conditions).lean().exec()) as T;
+  }
+
+  async insertMany(entities: T[]): Promise<void> {
+    (await this.model.insertMany(entities)).map((doc) => doc.toObject());
   }
 
   parseId(id: string): mongoose.Types.ObjectId {

@@ -6,7 +6,6 @@ import { GetTrainerDetailsUseCase } from "@application/usecases/trainer/get-trai
 
 interface InitiateVideoCall {
   io: Server;
-  socket: Socket;
   callerId: string;
   receiverId: string;
   roomId: string;
@@ -18,7 +17,6 @@ interface InitiateVideoCall {
 
 export const handleInitiateCall = async ({
   io,
-  socket,
   getTrainerDetailsUseCase,
   getAppointmentByIdUseCase,
   createVideoCallLogUseCase,

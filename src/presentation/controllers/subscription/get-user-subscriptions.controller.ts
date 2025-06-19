@@ -1,14 +1,20 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
 import { GetUserSubscriptionUseCase } from "@application/usecases/subscription/get-user-subscription.usecase";
-import { parseQueryParams } from "@shared/utils/parse.queryParams";
+import { parseQueryParams } from "@shared/utils/parse-query-params";
+import { TYPES_SUBSCRIPTION_USECASES } from "di/types-usecases";
 
+@injectable()
 export class GetUserSubscriptionController {
-  constructor(private getUserSubscriptionUseCase: GetUserSubscriptionUseCase) {}
+  constructor(
+    @inject(TYPES_SUBSCRIPTION_USECASES.GetUserSubscriptionUseCase)
+    private getUserSubscriptionUseCase: GetUserSubscriptionUseCase
+  ) {}
 
   async handleGetUserSub(req: Request, res: Response): Promise<void> {
     const { _id: userId } = req?.user || {};

@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { StatusCodes, SlotStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
-import { parseQueryParams } from "@shared/utils/parse.queryParams";
+import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetPendingSlotsUseCase } from "@application/usecases/bookingSlot/get-pending-slots";
+import { TYPES_BOOKINGSLOT_USECASAES } from "di/types-usecases";
 
+@injectable()
 export class GetPendingSlotsController {
-  constructor(private getPendingSlotsUseCase: GetPendingSlotsUseCase) {}
+  constructor(
+    @inject(TYPES_BOOKINGSLOT_USECASAES.GetPendingSlotsUseCase)
+    private getPendingSlotsUseCase: GetPendingSlotsUseCase
+  ) {}
 
   async handleGetPendingSlots(req: Request, res: Response): Promise<void> {
     const { _id: trainerId } = req?.user || {};

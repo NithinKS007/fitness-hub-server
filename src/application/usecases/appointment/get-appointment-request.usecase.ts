@@ -7,6 +7,8 @@ import {
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { GetBookingRequestsDTO } from "@application/dtos/query-dtos";
 import { AppointmentRequestsTrainer } from "@application/dtos/appointment-dtos";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /*  
     Purpose: Retrieve a list of booking requests for a specific trainer with pagination and filters
@@ -16,8 +18,13 @@ import { AppointmentRequestsTrainer } from "@application/dtos/appointment-dtos";
     Throws: Error if trainer ID is missing or booking requests cannot be retrieved
 */
 
+@injectable()
 export class GetAppointmentRequestUseCase {
-  constructor(private appointmentRepository: IAppointmentRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.AppointmentRepository)
+    private appointmentRepository: IAppointmentRepository
+  ) {}
+  
   async execute(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO

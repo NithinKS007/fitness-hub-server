@@ -10,12 +10,19 @@ import {
   TrainerChartData,
   TrainerPieChartData,
 } from "@application/dtos/chart-dtos";
+import { injectable, inject } from "inversify";
+import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
+@injectable()
 export class TrainerDashBoardUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserSubscriptionPlanRepository)
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
+    @inject(TYPES_SERVICES.DateService)
     private dateService: IDateService
   ) {}
+  
   async execute(
     trainerId: string,
     period: string

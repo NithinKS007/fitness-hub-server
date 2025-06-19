@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { StatusCodes, SlotStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
-import { parseQueryParams } from "@shared/utils/parse.queryParams";
+import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetUpComingSlotsUseCase } from "@application/usecases/bookingSlot/get-upcoming-slots";
+import { TYPES_BOOKINGSLOT_USECASAES } from "di/types-usecases";
 
+@injectable()
 export class GetUpComingSlotsController {
-  constructor(private getUpComingSlotsUseCase: GetUpComingSlotsUseCase) {}
+  constructor(
+    @inject(TYPES_BOOKINGSLOT_USECASAES.GetUpComingSlotsUseCase)
+    private getUpComingSlotsUseCase: GetUpComingSlotsUseCase
+  ) {}
 
   async handleGetUpcomingSlots(req: Request, res: Response): Promise<void> {
     const { trainerId } = req.params;

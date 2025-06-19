@@ -10,6 +10,10 @@ import { IEmailService } from "@application/interfaces/communication/IEmail.serv
 import { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
 import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
 import { IUser } from "@domain/entities/user.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+
 /*  
     Purpose: Creates a new user, handles OTP verification, and sends OTP email.
     Incoming: { fname, lname, email, password } (User's first name, last name, email, and password)
@@ -21,12 +25,16 @@ import { IUser } from "@domain/entities/user.entity";
         - Sends OTP email if the user exists but has not verified their OTP.
 */
 
+@injectable()
 export class CreateUserUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
+    @inject(TYPES_REPOSITORIES.OtpRepository)
     private otpRepository: IOtpRepository,
-    private emailService: IEmailService,
-    private otpService: IOTPService,
+    @inject(TYPES_SERVICES.EmailService) private emailService: IEmailService,
+    @inject(TYPES_SERVICES.OTPService) private otpService: IOTPService,
+    @inject(TYPES_SERVICES.EncryptionService)
     private encryptionService: IEncryptionService
   ) {}
 

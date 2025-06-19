@@ -12,6 +12,9 @@ import { IOTPService } from "@application/interfaces/security/IGenerate-otp.serv
 import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
 import { RoleType } from "@application/dtos/auth-dtos";
 import { IUser } from "@domain/entities/user.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "di/types-services";
 
 /*  
     Purpose: Creates a new trainer and handles OTP verification during registration.
@@ -23,13 +26,18 @@ import { IUser } from "@domain/entities/user.entity";
         - Sends OTP email if the user exists but hasn't verified yet.
 */
 
+@injectable()
 export class CreateTrainerUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
+    @inject(TYPES_REPOSITORIES.OtpRepository)
     private otpRepository: IOtpRepository,
+    @inject(TYPES_REPOSITORIES.TrainerRepository)
     private trainerRepository: ITrainerRepository,
-    private emailService: IEmailService,
-    private otpService: IOTPService,
+    @inject(TYPES_SERVICES.EmailService) private emailService: IEmailService,
+    @inject(TYPES_SERVICES.OTPService) private otpService: IOTPService,
+    @inject(TYPES_SERVICES.EncryptionService)
     private encryptionService: IEncryptionService
   ) {}
 

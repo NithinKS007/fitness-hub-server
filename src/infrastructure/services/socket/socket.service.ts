@@ -33,46 +33,58 @@ import { UpdateLastMessageUseCase } from "@application/usecases/chat/update-last
 import { GetTrainerDetailsUseCase } from "@application/usecases/trainer/get-trainer-details.usecase";
 import { UpdateVideoCallDurationUseCase } from "@application/usecases/videoCallLog/update-call-data.usecase";
 import { UpdateVideoCallStatusUseCase } from "@application/usecases/videoCallLog/update-call-duration.usecase";
+import {
+  createMessageUseCase,
+  incUnReadCountUseCase,
+  markMessageAsReadUseCase,
+  updateLastMessageUseCase,
+  updateUnReadMessageCount,
+  getTrainerDetailsUseCase,
+  getAppointmentByIdUseCase,
+  createVideoCallLogUseCase,
+  updateVideoCallStatusUseCase,
+  updateVideoCallDurationUseCase,
+} from "di/container-resolver";
 
-//REPOSITORY INSTANCES
-const chatRepository = new ChatRepository();
-const videoCallLogRepository = new VideoCallLogRepository();
-const trainerRepository = new TrainerRepository();
-const appointmentRepository = new AppointmentRepository();
-const conversationRepository = new ConversationRepository();
+// //REPOSITORY INSTANCES
+// const chatRepository = new ChatRepository();
+// const videoCallLogRepository = new VideoCallLogRepository();
+// const trainerRepository = new TrainerRepository();
+// const appointmentRepository = new AppointmentRepository();
+// const conversationRepository = new ConversationRepository();
 
-//USE CASE INSTANCES
-const getTrainerDetailsUseCase = new GetTrainerDetailsUseCase(
-  trainerRepository
-);
+// //USE CASE INSTANCES
+// const getTrainerDetailsUseCase = new GetTrainerDetailsUseCase(
+//   trainerRepository
+// );
 
-const createMessageUseCase = new CreateMessageUseCase(chatRepository);
-const markMessageAsReadUseCase = new MarkMessageAsReadUseCase(chatRepository);
+// const createMessageUseCase = new CreateMessageUseCase(chatRepository);
+// const markMessageAsReadUseCase = new MarkMessageAsReadUseCase(chatRepository);
 
-const updateUnReadMessageCount = new UpdateUnReadMessageCountUseCase(
-  conversationRepository
-);
+// const updateUnReadMessageCount = new UpdateUnReadMessageCountUseCase(
+//   conversationRepository
+// );
 
-const incUnReadCountUseCase = new IncrementUnReadMessageCountUseCase(
-  conversationRepository
-);
-const updateLastMessageUseCase = new UpdateLastMessageUseCase(
-  conversationRepository
-);
+// const incUnReadCountUseCase = new IncrementUnReadMessageCountUseCase(
+//   conversationRepository
+// );
+// const updateLastMessageUseCase = new UpdateLastMessageUseCase(
+//   conversationRepository
+// );
 
-const createVideoCallLogUseCase = new CreateVideoCallLogUseCase(
-  videoCallLogRepository
-);
+// const createVideoCallLogUseCase = new CreateVideoCallLogUseCase(
+//   videoCallLogRepository
+// );
 
-const updateVideoCallDurationUseCase = new UpdateVideoCallDurationUseCase(
-  videoCallLogRepository
-);
-const updateVideoCallStatusUseCase = new UpdateVideoCallStatusUseCase(
-  videoCallLogRepository
-);
-const getAppointmentByIdUseCase = new GetAppointmentByIdUseCase(
-  appointmentRepository
-);
+// const updateVideoCallDurationUseCase = new UpdateVideoCallDurationUseCase(
+//   videoCallLogRepository
+// );
+// const updateVideoCallStatusUseCase = new UpdateVideoCallStatusUseCase(
+//   videoCallLogRepository
+// );
+// const getAppointmentByIdUseCase = new GetAppointmentByIdUseCase(
+//   appointmentRepository
+// );
 
 export const socketService = (io: Server) => {
   io.on("connection", (socket: Socket) => {
@@ -138,7 +150,6 @@ export const socketService = (io: Server) => {
       "initiateVideoCall",
       async ({ callerId, receiverId, roomId, appointmentId }) => {
         handleInitiateCall({
-          socket,
           io,
           getTrainerDetailsUseCase,
           getAppointmentByIdUseCase,

@@ -1,10 +1,16 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { StatusCodes, PlayListStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { CreatePlayListUseCase } from "@application/usecases/playlist/create-playlist.usecase";
+import { TYPES_PLAYLIST_USECASES } from "di/types-usecases";
 
+@injectable()
 export class CreatePlaylistController {
-  constructor(private createPlayListUseCase: CreatePlayListUseCase) {}
+  constructor(
+    @inject(TYPES_PLAYLIST_USECASES.CreatePlayListUseCase)
+    private createPlayListUseCase: CreatePlayListUseCase
+  ) {}
 
   async handleAddPlaylist(req: Request, res: Response): Promise<void> {
     const { _id: trainerId } = req?.user || {};

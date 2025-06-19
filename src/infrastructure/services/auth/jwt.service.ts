@@ -5,8 +5,10 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import dotenv from "dotenv";
 import { IAuthService } from "@application/interfaces/auth/IAuth.service";
 import { TokenPayload } from "@application/dtos/service/auth.service";
+import { injectable } from "inversify";
 dotenv.config();
 
+@injectable()
 export class JwtService implements IAuthService {
   private readonly jwtSecret = process.env.JWT_SECRET!;
   private readonly jwtExpiration = process.env.JWT_EXPIRATION!;

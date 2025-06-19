@@ -10,6 +10,8 @@ import {
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { IAppointment } from "@domain/entities/appointment.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /*  
     Purpose: Book an appointment by reserving a slot and creating an appointment record
@@ -18,9 +20,12 @@ import { IAppointment } from "@domain/entities/appointment.entity";
     Throws: Error if slot is unavailable, missing parameters, or appointment creation fails
 */
 
+@injectable()
 export class BookAppointmentUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.BookingSlotRepository)
     private bookingSlotRepository: IBookingSlotRepository,
+    @inject(TYPES_REPOSITORIES.AppointmentRepository)
     private appointmentRepository: IAppointmentRepository
   ) {}
   async execute({ slotId, userId }: BookAppointmentDTO): Promise<IAppointment> {

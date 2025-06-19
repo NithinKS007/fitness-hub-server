@@ -6,13 +6,22 @@ import { IDateService } from "@application/interfaces/date/IDate.service";
 import { RoleType } from "@application/dtos/auth-dtos";
 import { AdminChartData } from "@application/dtos/chart-dtos";
 import { AdminDashBoardStats, Top5List } from "@application/dtos/trainer-dtos";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "di/types-services";
 
+@injectable()
 export class AdminDashBoardUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserSubscriptionPlanRepository)
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
+    @inject(TYPES_REPOSITORIES.TrainerRepository)
     private trainerRepository: ITrainerRepository,
+    @inject(TYPES_REPOSITORIES.RevenueRepository)
     private revenueRepository: IPlatformEarningsRepository,
+    @inject(TYPES_SERVICES.DateService)
     private dateService: IDateService
   ) {}
 

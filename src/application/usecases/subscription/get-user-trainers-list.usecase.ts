@@ -4,9 +4,16 @@ import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
 import { UserMyTrainersList } from "@application/dtos/subscription-dtos";
 import { UserStatus } from "@shared/constants/index.constants";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
+@injectable()
 export class GetUserTrainerslistUseCase {
-  constructor(private conversationRepository: IConversationRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.ConversationRepository)
+    private conversationRepository: IConversationRepository
+  ) {}
+  
   async execute(
     userId: string,
     { page, limit, search }: GetUserTrainersListQueryDTO

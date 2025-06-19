@@ -8,6 +8,7 @@ import { createServer } from "http";
 // TypeScript recognizes the custom properties on the request object.
 // This import is necessary to make sure the global type changes are applied.
 import types from "../types/express";
+import "reflect-metadata"
 
 dotenv.config();
 connectDB();

@@ -8,10 +8,16 @@ import { GetUserSubscriptionsQueryDTO } from "@application/dtos/query-dtos";
 import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { UserSubscriptionsList } from "@application/dtos/subscription-dtos";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "di/types-services";
 
+@injectable()
 export class GetUserSubscriptionUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserSubscriptionPlanRepository)
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
+    @inject(TYPES_SERVICES.PaymentService)
     private paymentService: IPaymentService
   ) {}
 

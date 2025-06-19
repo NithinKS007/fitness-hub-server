@@ -4,6 +4,8 @@ import { ApplicationStatus } from "@shared/constants/index.constants";
 import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 import { GetVideoQueryDTO } from "@application/dtos/query-dtos";
 import { VideoWithPlayLists } from "@application/dtos/video-dtos";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /**
  * Purpose: Fetch videos for a specific trainer with pagination, search, filters, and optional privacy setting.
@@ -13,8 +15,13 @@ import { VideoWithPlayLists } from "@application/dtos/video-dtos";
  * Throws: validationError if required fields are missing or invalid.
  */
 
+@injectable()
 export class GetVideosUseCase {
-  constructor(private videoRepository: IVideoRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.VideoRepository)
+    private videoRepository: IVideoRepository
+  ) {}
+
   async execute(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO,

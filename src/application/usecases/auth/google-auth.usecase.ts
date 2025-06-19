@@ -8,6 +8,9 @@ import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { IAuthService } from "@application/interfaces/auth/IAuth.service";
 import { IGoogleAuthService } from "@application/interfaces/auth/IGoogle.auth.service";
 import { IUser } from "@domain/entities/user.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "di/types-services";
 
 /*  
     Purpose: Handles the Google authentication process. It verifies the provided Google token, 
@@ -22,10 +25,13 @@ import { IUser } from "@domain/entities/user.entity";
           already used (OTP not verified).
 */
 
+@injectable()
 export class GoogleAuthUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
-    private authService: IAuthService,
+    @inject(TYPES_SERVICES.AuthService) private authService: IAuthService,
+    @inject(TYPES_SERVICES.GoogleAuthService)
     private googleAuthService: IGoogleAuthService
   ) {}
 

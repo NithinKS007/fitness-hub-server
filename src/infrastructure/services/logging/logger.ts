@@ -1,14 +1,11 @@
 import { Logger } from "winston";
-import { createWinstonLogger } from "../config/logger.config";
+import { createWinstonLogger } from "../../config/logger.config";
 import { ILoggerService } from "@application/interfaces/logging/ILogger.service";
+import { injectable } from "inversify";
 
+@injectable()
 export class LoggerService implements ILoggerService {
-  private logger: Logger;
-
-  constructor() {
-    this.logger = createWinstonLogger();
-  }
-  
+  private readonly logger: Logger = createWinstonLogger();
   info(message: string): void {
     this.logger.info(message);
   }

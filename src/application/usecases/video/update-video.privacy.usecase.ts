@@ -6,6 +6,8 @@ import {
 } from "@shared/constants/index.constants";
 import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 import { IVideo } from "@domain/entities/video.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /**
  * Purpose: Update the privacy setting of a given video.
@@ -14,8 +16,13 @@ import { IVideo } from "@domain/entities/video.entity";
  * Throws: validationError if the videoId or privacy is missing, or if the update fails.
  */
 
+@injectable()
 export class UpdateVideoPrivacyUseCase {
-  constructor(private videoRepository: IVideoRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.VideoRepository)
+    private videoRepository: IVideoRepository
+  ) {}
+  
   async execute({ videoId, privacy }: UpdateVideoPrivacyDTO): Promise<IVideo> {
     if (videoId === null || privacy === null) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);

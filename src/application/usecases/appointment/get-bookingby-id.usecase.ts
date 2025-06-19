@@ -5,6 +5,8 @@ import {
 } from "@shared/constants/index.constants";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { IAppointment } from "@domain/entities/appointment.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /*  
     Purpose: Retrieve an appointment by its ID
@@ -13,8 +15,13 @@ import { IAppointment } from "@domain/entities/appointment.entity";
     Throws: Error if appointment ID is missing or appointment is not found
 */
 
+@injectable()
 export class GetAppointmentByIdUseCase {
-  constructor(private appointmentRepository: IAppointmentRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.AppointmentRepository)
+    private appointmentRepository: IAppointmentRepository
+  ) {}
+  
   async execute(appointmentId: string): Promise<IAppointment | null> {
     if (!appointmentId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);

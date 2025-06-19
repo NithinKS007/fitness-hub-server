@@ -10,7 +10,10 @@ import { BaseRepository } from "@infrastructure/databases/repositories/base.repo
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import TrainerModel from "../models/trainer.model";
 import { ITrainer } from "@domain/entities/trainer.entity";
-import { Trainer, TrainerWithSubscription } from "@application/dtos/trainer-dtos";
+import {
+  Trainer,
+  TrainerWithSubscription,
+} from "@application/dtos/trainer-dtos";
 
 export class TrainerRepository
   extends BaseRepository<ITrainer>

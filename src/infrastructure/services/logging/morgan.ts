@@ -1,5 +1,5 @@
 import morgan from "morgan";
-import { createWinstonLogger } from "../config/logger.config";
+import { createWinstonLogger } from "../../config/logger.config";
 const logger = createWinstonLogger();
 
 const stream = {

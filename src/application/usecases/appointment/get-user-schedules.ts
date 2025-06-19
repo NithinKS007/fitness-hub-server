@@ -7,6 +7,8 @@ import {
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { GetBookingSchedulesDTO } from "@application/dtos/query-dtos";
 import { AppointmentRequestsUser } from "@application/dtos/appointment-dtos";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /*  
     Purpose: Retrieve a list of booking schedules for a specific user with pagination and filters
@@ -15,8 +17,13 @@ import { AppointmentRequestsUser } from "@application/dtos/appointment-dtos";
     Throws: Error if user ID is missing or booking schedules cannot be retrieved
 */
 
+@injectable()
 export class GetUserSchedulesUseCase {
-  constructor(private appointmentRepository: IAppointmentRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.AppointmentRepository)
+    private appointmentRepository: IAppointmentRepository
+  ) {}
+  
   async execute(
     userId: string,
     { page, limit, fromDate, toDate, search, filters }: GetBookingSchedulesDTO

@@ -1,32 +1,57 @@
 import express from "express";
 import { authenticate } from "@presentation/middlewares/auth.middleware";
+// import {
+//   bookAppointmentController,
+//   purchaseSubscriptionController,
+//   userDashBoardController,
+//   getUserVideoCallLogController,
+//   getUserMyTrainersController,
+//   getTrainerWithSubController,
+//   getApprovedTrainersController,
+//   addWorkoutController,
+//   getWorkoutController,
+//   deleteWorkoutController,
+//   updateWorkoutController,
+//   updateUserProfileController,
+//   getUserSchedulesController,
+//   cancelAppointmentController,
+//   getAllPendingSlotsController,
+//   getUpComingSlotsController,
+//   getAllPlaylistController,
+//   verifySubscriptionController,
+//   cancelSubscriptionController,
+//   checkSubscriptionStatusController,
+//   getUserSubscriptionController,
+//   getPublicVideosController,
+//   getPublicVideoDetailscontroller,
+//   getAllPublicPlaylistController,
+// } from "../../di/di";
+import { asyncHandler } from "@shared/utils/async-handler";
 import {
-  bookAppointmentController,
-  purchaseSubscriptionController,
-  userDashBoardController,
-  getUserVideoCallLogController,
-  getUserMyTrainersController,
-  getTrainerWithSubController,
-  getApprovedTrainersController,
   addWorkoutController,
-  getWorkoutController,
-  deleteWorkoutController,
-  updateWorkoutController,
-  updateUserProfileController,
-  getUserSchedulesController,
+  bookAppointmentController,
   cancelAppointmentController,
-  getAllPendingSlotsController,
-  getUpComingSlotsController,
-  getAllPlaylistController,
-  verifySubscriptionController,
   cancelSubscriptionController,
   checkSubscriptionStatusController,
-  getUserSubscriptionController,
-  getPublicVideosController,
-  getPublicVideoDetailscontroller,
+  deleteWorkoutController,
+  getAllPendingSlotsController,
   getAllPublicPlaylistController,
-} from "../../di/di";
-import { asyncHandler } from "@shared/utils/async-handler";
+  getApprovedTrainersController,
+  getPublicVideoDetailsController,
+  getPublicVideosController,
+  getTrainerWithSubController,
+  getUpComingSlotsController,
+  getUserMyTrainersController,
+  getUserSchedulesController,
+  getUserSubscriptionController,
+  getUserVideoCallLogController,
+  getWorkoutController,
+  purchaseSubscriptionController,
+  updateUserProfileController,
+  updateWorkoutController,
+  userDashboardController,
+  verifySubscriptionController,
+} from "di/container-resolver";
 
 const userRoutes = express.Router();
 
@@ -118,8 +143,8 @@ userRoutes.get(
   "/videos/:videoId",
   authenticate,
   asyncHandler(
-    getPublicVideoDetailscontroller.handleGetPublicVideoById.bind(
-      getPublicVideoDetailscontroller
+    getPublicVideoDetailsController.handleGetPublicVideoById.bind(
+      getPublicVideoDetailsController
     )
   )
 );
@@ -235,7 +260,7 @@ userRoutes.get(
   "/dashBoard",
   authenticate,
   asyncHandler(
-    userDashBoardController.getUserDashBoardData.bind(userDashBoardController)
+    userDashboardController.getUserDashBoardData.bind(userDashboardController)
   )
 );
 

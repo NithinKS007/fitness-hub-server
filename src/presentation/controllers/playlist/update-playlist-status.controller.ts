@@ -1,10 +1,14 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { BlockStatus, StatusCodes } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { UpdatePlayListPrivacyUseCase } from "@application/usecases/playlist/update-playlist-privacy.usecase";
+import { TYPES_PLAYLIST_USECASES } from "di/types-usecases";
 
+@injectable()
 export class UpdatePlaylistPrivacyController {
   constructor(
+    @inject(TYPES_PLAYLIST_USECASES.UpdatePlayListPrivacyUseCase)
     private updatePlayListPrivacyUseCase: UpdatePlayListPrivacyUseCase
   ) {}
 

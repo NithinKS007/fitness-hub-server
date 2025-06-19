@@ -12,7 +12,7 @@ export class UserRepository
   extends BaseRepository<IUser>
   implements IUserRepository
 {
-  constructor(model: Model<IUser> = UserModel) {
+  constructor( model: Model<IUser> = UserModel) {
     super(model);
   }
 

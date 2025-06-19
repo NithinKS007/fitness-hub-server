@@ -2,6 +2,8 @@ import { ForbiddenError } from "@presentation/middlewares/error.middleware";
 import { JwtStatus } from "@shared/constants/index.constants";
 import { IAuthService } from "@application/interfaces/auth/IAuth.service";
 import { JwtPayload } from "jsonwebtoken";
+import { injectable, inject } from "inversify";
+import { TYPES_SERVICES } from "di/types-services";
 
 /**
  * refreshAccessToken:
@@ -18,8 +20,13 @@ import { JwtPayload } from "jsonwebtoken";
  * Returns: JwtPayload - The decoded payload from the access token.
  */
 
+@injectable()
 export class TokenUseCase {
-  constructor(private authService: IAuthService) {}
+  constructor(
+    @inject(TYPES_SERVICES.AuthService)
+    private authService: IAuthService
+  ) {}
+
   async refreshAccessToken(refreshToken: string): Promise<string> {
     if (!refreshToken) {
       throw new ForbiddenError(JwtStatus.NoRefreshToken);
@@ -30,7 +37,7 @@ export class TokenUseCase {
       role: decoded.role,
     });
   }
-  async authenticateAccessToken(accessToken: string): Promise<JwtPayload> {
+  async authAccessToken(accessToken: string): Promise<JwtPayload> {
     return this.authService.authenticateAccessToken(accessToken);
   }
 }

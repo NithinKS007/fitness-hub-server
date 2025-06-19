@@ -1,30 +1,54 @@
 import express from "express";
 import { authenticate } from "@presentation/middlewares/auth.middleware";
+// import {
+//   addVideoController,
+//   editVideoController,
+//   updateVideoStatusController,
+//   updateAppointmentController,
+//   subscriptionPlanController,
+//   trainerDashboardController,
+//   getTrainerVideoCallLogController,
+//   createBookingSlotController,
+//   deleteBookingSlotController,
+//   addPlaylistController,
+//   getPlaylistController,
+//   updatePlaylistPrivacyController,
+//   editPlaylistController,
+//   updateTrainerProfileController,
+//   getBookingRequestsController,
+//   getTrainerSchedulesController,
+//   cancelAppointmentController,
+//   getPendingSlotsController,
+//   getAllPlaylistController,
+//   getTrainerSubscriptionController,
+//   getTrainerSubscribersController,
+//   getAllVideosController,
+// } from "../../di/di";
+import { asyncHandler } from "@shared/utils/async-handler";
 import {
   addVideoController,
+  cancelAppointmentController,
+  createBookingSlotController,
+  createPlaylistController,
+  deleteBookingSlotController,
+  editPlaylistController,
   editVideoController,
-  updateVideoStatusController,
-  updateAppointmentController,
+  getAllPlaylistController,
+  getAllVideosController,
+  getBookingRequestsController,
+  getPendingSlotsController,
+  getPlaylistController,
+  getTrainerSchedulesController,
+  getTrainerSubscribersController,
+  getTrainerSubscriptionController,
+  getTrainerVideoCallLogController,
   subscriptionPlanController,
   trainerDashboardController,
-  getTrainerVideoCallLogController,
-  createBookingSlotController,
-  deleteBookingSlotController,
-  addPlaylistController,
-  getPlaylistController,
+  updateAppointmentController,
   updatePlaylistPrivacyController,
-  editPlaylistController,
   updateTrainerProfileController,
-  getBookingRequestsController,
-  getTrainerSchedulesController,
-  cancelAppointmentController,
-  getPendingSlotsController,
-  getAllPlaylistController,
-  getTrainerSubscriptionController,
-  getTrainerSubscribersController,
-  getAllVideosController,
-} from "../../di/di";
-import { asyncHandler } from "@shared/utils/async-handler";
+  updateVideoStatusController,
+} from "di/container-resolver";
 
 const trainerRoutes = express.Router();
 
@@ -85,7 +109,7 @@ trainerRoutes.post(
   "/playlists",
   authenticate,
   asyncHandler(
-    addPlaylistController.handleAddPlaylist.bind(addPlaylistController)
+    createPlaylistController.handleAddPlaylist.bind(createPlaylistController)
   )
 );
 trainerRoutes.get(
@@ -108,7 +132,9 @@ trainerRoutes.patch(
   "/playlists/:playListId",
   authenticate,
   asyncHandler(
-    updatePlaylistPrivacyController.handleUpdatePrivacy.bind(updatePlaylistPrivacyController)
+    updatePlaylistPrivacyController.handleUpdatePrivacy.bind(
+      updatePlaylistPrivacyController
+    )
   )
 );
 trainerRoutes.put(

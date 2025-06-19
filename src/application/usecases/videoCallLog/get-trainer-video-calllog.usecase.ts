@@ -7,6 +7,8 @@ import {
 import { GetVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { TrainerVideoCallLog } from "@application/dtos/video-call-dtos";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /**
  * Purpose: Fetch video call logs for a trainer with pagination, filters, and date range.
@@ -15,8 +17,13 @@ import { TrainerVideoCallLog } from "@application/dtos/video-call-dtos";
  * Throws: Error if trainerId is missing or retrieval fails.
  */
 
+@injectable()
 export class GetTrainerVideoCallLogUseCase {
-  constructor(private videoCallLogRepository: IVideoCallLogRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.VideoCallLogRepository)
+    private videoCallLogRepository: IVideoCallLogRepository
+  ) {}
+  
   async execute(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetVideoCallLogQueryDTO

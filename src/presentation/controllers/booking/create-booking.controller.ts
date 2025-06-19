@@ -1,10 +1,16 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { StatusCodes, SlotStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { CreateBookingSlotUseCase } from "@application/usecases/bookingSlot/create-booking-slot.usecase";
+import { TYPES_BOOKINGSLOT_USECASAES } from "di/types-usecases";
 
+@injectable()
 export class CreateBookingSlotController {
-  constructor(private createBookingSlotUseCase: CreateBookingSlotUseCase) {}
+  constructor(
+    @inject(TYPES_BOOKINGSLOT_USECASAES.CreateBookingSlotUseCase)
+    private createBookingSlotUseCase: CreateBookingSlotUseCase
+  ) {}
 
   async handleAddSlot(req: Request, res: Response): Promise<void> {
     const { _id: trainerId } = req?.user || {};

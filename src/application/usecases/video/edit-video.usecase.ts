@@ -8,7 +8,8 @@ import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 import { IVideoPlayListRepository } from "@domain/interfaces/IVideoPlayListRepository";
 import { IVideo } from "@domain/entities/video.entity";
-import mongoose, { Mongoose, ObjectId } from "mongoose";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /**
  * Purpose: Edit a video by updating its details, such as description, duration, playlists, thumbnail, and title.
@@ -18,10 +19,14 @@ import mongoose, { Mongoose, ObjectId } from "mongoose";
  * Throws: validationError if any required field is missing or if the update operation fails.
  */
 
+@injectable()
 export class EditVideoUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.PlayListRepository)
     private playListRepository: IPlayListRepository,
+    @inject(TYPES_REPOSITORIES.VideoRepository)
     private videoRepository: IVideoRepository,
+    @inject(TYPES_REPOSITORIES.VideoPlayListRepository)
     private videoPlayListRepository: IVideoPlayListRepository
   ) {}
 
@@ -85,14 +90,14 @@ export class EditVideoUseCase {
         await this.playListRepository.getPlaylistCounts(playLists);
 
       await Promise.all([
-        this.videoPlayListRepository.insertMany(videoPlayListDocs),
+        this.videoPlayListRepository.insertMany(
+          videoPlayListDocs as unknown as any
+        ),
         this.videoPlayListRepository.deleteMany(videoIdsToDelete),
       ]);
 
       if (videoCountWithPlayList.length > 0) {
-        await this.playListRepository.updateManyVideoCount(
-          videoCountWithPlayList
-        );
+        await this.playListRepository.updateVideosCount(videoCountWithPlayList);
       }
     }
 

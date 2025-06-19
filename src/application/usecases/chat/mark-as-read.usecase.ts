@@ -1,8 +1,15 @@
 import { IChat } from "@domain/entities/chat.entity";
 import { IChatRepository } from "@domain/interfaces/IChatRepository";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { injectable, inject } from "inversify";
 
+@injectable()
 export class MarkMessageAsReadUseCase {
-  constructor(private chatRepository: IChatRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.ChatRepository)
+    private chatRepository: IChatRepository
+  ) {}
+  
   async execute({
     userId,
     otherUserId,

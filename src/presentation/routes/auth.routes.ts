@@ -1,18 +1,30 @@
 import express from "express";
 import { authenticate } from "@presentation/middlewares/auth.middleware";
+// import {
+//   googleAuthController,
+//   otpController,
+//   signUpUserController,
+//   signUpTrainerController,
+//   passwordResetLinkController,
+//   forgotPasswordController,
+//   changePasswordController,
+//   signInController,
+//   refreshAccessTokenController,
+//   signOutController,
+// } from "../../di/di";
+import { asyncHandler } from "@shared/utils/async-handler";
 import {
+  changePasswordController,
+  forgotPasswordController,
   googleAuthController,
   otpController,
-  signUpUserController,
-  signUpTrainerController,
   passwordResetLinkController,
-  forgotPasswordController,
-  changePasswordController,
-  signInController,
   refreshAccessTokenController,
+  signInController,
   signOutController,
-} from "../../di/di";
-import { asyncHandler } from "@shared/utils/async-handler";
+  signUpTrainerController,
+  signUpUserController,
+} from "di/container-resolver";
 
 const authRoutes = express.Router();
 

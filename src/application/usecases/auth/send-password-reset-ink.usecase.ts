@@ -6,13 +6,19 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/communication/IEmail.service";
 import { IHashService } from "@application/interfaces/security/IHash.service";
 import { IPasswordResetToken } from "@domain/entities/pass-reset-token.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "di/types-services";
 
+@injectable()
 export class SendPasswordRestLinkUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
+    @inject(TYPES_REPOSITORIES.PasswordResetRepository)
     private passwordResetRepository: IPasswordResetRepository,
-    private emailService: IEmailService,
-    private hashService: IHashService
+    @inject(TYPES_SERVICES.EmailService) private emailService: IEmailService,
+    @inject(TYPES_SERVICES.HashService) private hashService: IHashService
   ) {}
 
   async execute({

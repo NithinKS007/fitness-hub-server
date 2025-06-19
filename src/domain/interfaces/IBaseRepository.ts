@@ -4,4 +4,5 @@ export interface IBaseRepository<T> {
   update(id: string, entity: Partial<T>): Promise<T | null>;
   delete(id: string): Promise<T | null>;
   findOne(query: Partial<T>): Promise<T | null>;
+  insertMany(entities: T[]): Promise<void>;
 }

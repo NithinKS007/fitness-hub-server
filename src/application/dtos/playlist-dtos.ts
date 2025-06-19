@@ -20,7 +20,7 @@ export interface EditPlayListDTO {
   title: string;
 }
 
-export interface NumberOfVideoPerPlayList {
+export interface VideoPerPlayList {
   playListId: ObjectId;
   videoCount: number;
 }

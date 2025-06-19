@@ -1,18 +1,19 @@
 import express from "express";
 import { authenticate } from "@presentation/middlewares/auth.middleware";
-import {
-  adminDashboardController,
-  getUsersController,
-  updateUserBlockStatusController,
-  getallTrainersController,
-  getTrainerDetailsController,
-  getVerifyTrainerController,
-  verifyTrainerController,
-  getPlatformEarningsController,
-  getTrainerSubscriptionController,
-  getUserDetailsController,
-} from "../../di/di";
+// import {
+//   adminDashboardController,
+//   getUsersController,
+//   updateUserBlockStatusController,
+//   getallTrainersController,
+//   getTrainerDetailsController,
+//   getVerifyTrainerController,
+//   verifyTrainerController,
+//   getPlatformEarningsController,
+//   getTrainerSubscriptionController,
+//   getUserDetailsController,
+// } from "../../di/di";
 import { asyncHandler } from "@shared/utils/async-handler";
+import { adminDashboardController, getAllTrainersController, getPlatformEarningsController, getTrainerDetailsController, getTrainerSubscriptionController, getUserDetailsController, getUsersController, getVerifyTrainerController, updateUserBlockStatusController, verifyTrainerController } from "di/container-resolver";
 
 const adminRoutes = express.Router();
 
@@ -44,7 +45,7 @@ adminRoutes.get(
   "/trainers",
   authenticate,
   asyncHandler(
-    getallTrainersController.handleGetTrainers.bind(getallTrainersController)
+    getAllTrainersController.handleGetTrainers.bind(getAllTrainersController)
   )
 );
 adminRoutes.get(

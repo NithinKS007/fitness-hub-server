@@ -1,13 +1,17 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
 import { VerifySubcriptionSessionUseCase } from "@application/usecases/subscription/verify-subscription-session.usecase";
+import { TYPES_SUBSCRIPTION_USECASES } from "di/types-usecases";
 
+@injectable()
 export class VerifySubscriptionController {
   constructor(
+    @inject(TYPES_SUBSCRIPTION_USECASES.VerifySubcriptionSessionUseCase)
     private verifySubcriptionSessionUseCase: VerifySubcriptionSessionUseCase
   ) {}
 

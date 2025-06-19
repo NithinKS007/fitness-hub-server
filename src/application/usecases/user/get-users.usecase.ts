@@ -4,9 +4,16 @@ import { UserStatus } from "@shared/constants/index.constants";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { GetUsersQueryDTO } from "@application/dtos/query-dtos";
 import { IUser } from "@domain/entities/user.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
+@injectable()
 export class GetUsersUseCase {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.UserRepository)
+    private userRepository: IUserRepository
+  ) {}
+  
   async execute({ page, limit, search, filters }: GetUsersQueryDTO): Promise<{
     usersList: IUser[];
     paginationData: PaginationDTO;

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import {
   StatusCodes,
@@ -8,12 +9,21 @@ import { CreateSubscriptionUseCase } from "@application/usecases/subscription/cr
 import { EditSubscriptionUseCase } from "@application/usecases/subscription/edit-subscription.usecase";
 import { DeleteSubscriptionUseCase } from "@application/usecases/subscription/delete-subscription.usecase";
 import { SubscriptionBlockUseCase } from "@application/usecases/subscription/block-subscription.usecase";
+import { TYPES_SUBSCRIPTION_USECASES } from "di/types-usecases";
 
+@injectable()
 export class SubscriptionPlanController {
   constructor(
+    @inject(TYPES_SUBSCRIPTION_USECASES.CreateSubscriptionUseCase)
     private createSubscriptionUseCase: CreateSubscriptionUseCase,
+
+    @inject(TYPES_SUBSCRIPTION_USECASES.EditSubscriptionUseCase)
     private editSubscriptionUseCase: EditSubscriptionUseCase,
+
+    @inject(TYPES_SUBSCRIPTION_USECASES.DeleteSubscriptionUseCase)
     private deleteSubscriptionUseCase: DeleteSubscriptionUseCase,
+
+    @inject(TYPES_SUBSCRIPTION_USECASES.SubscriptionBlockUseCase)
     private subscriptionBlockUseCase: SubscriptionBlockUseCase
   ) {}
 

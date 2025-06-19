@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
+import { injectable } from "inversify";
 
+@injectable()
 export class EncryptionService implements IEncryptionService {
   private saltRounds: number = 10;
   async hash(data: string): Promise<string> {

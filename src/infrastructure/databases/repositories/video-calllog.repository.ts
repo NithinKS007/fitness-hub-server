@@ -17,7 +17,10 @@ export class VideoCallLogRepository
   extends BaseRepository<IVideoCallLog>
   implements IVideoCallLogRepository
 {
-  constructor(model: Model<IVideoCallLog> = VideoCallLogModel) {
+  constructor(
+
+    model: Model<IVideoCallLog> = VideoCallLogModel
+  ) {
     super(model);
   }
 

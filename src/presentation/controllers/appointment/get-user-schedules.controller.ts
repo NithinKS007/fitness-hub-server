@@ -1,14 +1,20 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import {
   AppointmentStatus,
   StatusCodes,
 } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
-import { parseQueryParams } from "@shared/utils/parse.queryParams";
+import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetUserSchedulesUseCase } from "@application/usecases/appointment/get-user-schedules";
+import { TYPES_APPOINTMENT_USECASES } from "di/types-usecases";
 
-export class GetUserSchedulescontroller {
-  constructor(private getUserSchedulesUseCase: GetUserSchedulesUseCase) {}
+@injectable()
+export class GetUserSchedulesController {
+  constructor(
+    @inject(TYPES_APPOINTMENT_USECASES.GetUserSchedulesUseCase)
+    private getUserSchedulesUseCase: GetUserSchedulesUseCase
+  ) {}
 
   async handleGetUserSchedules(req: Request, res: Response): Promise<void> {
     const { _id: userId } = req?.user || {};

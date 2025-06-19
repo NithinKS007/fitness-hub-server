@@ -7,6 +7,8 @@ import {
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { BookingSlotStatus } from "@application/dtos/booking-dtos";
 import { IBookingSlot } from "@domain/entities/booking-slot.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /**
  * Purpose: Handles the deletion of a booking slot based on its slot id.
@@ -15,8 +17,13 @@ import { IBookingSlot } from "@domain/entities/booking-slot.entity";
  * Throws: Error if any required fields are missing or the slot cannot be deleted.
  */
 
+@injectable()
 export class DeleteBookingSlotUseCase {
-  constructor(private bookingSlotRepository: IBookingSlotRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.BookingSlotRepository)
+    private bookingSlotRepository: IBookingSlotRepository
+  ) {}
+
   async execute(bookingSlotId: string): Promise<IBookingSlot> {
     if (!bookingSlotId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);

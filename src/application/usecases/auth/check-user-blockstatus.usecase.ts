@@ -2,6 +2,8 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus } from "@shared/constants/index.constants";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /*  
     Purpose: Check if a user or trainer is blocked based on their ID
@@ -12,9 +14,12 @@ import { IUserRepository } from "@domain/interfaces/IUserRepository";
         - Throws an error if no user or trainer is found for the given ID
 */
 
+@injectable()
 export class CheckUserBlockStatusUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
+    @inject(TYPES_REPOSITORIES.TrainerRepository)
     private trainerRepository: ITrainerRepository
   ) {}
 

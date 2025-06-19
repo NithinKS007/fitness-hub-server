@@ -39,7 +39,7 @@ export const TYPES_CHAT_USECASES = {
   IncrementUnReadMessageCountUseCase: Symbol.for(
     "IncrementUnReadMessageCountUseCase"
   ),
-  MarkMessageAsReadUseCase: Symbol.for("GetUserChatListUseCase"),
+  MarkMessageAsReadUseCase: Symbol.for("MarkMessageAsReadUseCase"),
   UpdateLastMessageUseCase: Symbol.for("UpdateLastMessageUseCase"),
   UpdateUnReadMessageCountUseCase1: Symbol.for(
     "UpdateUnReadMessageCountUseCase"
@@ -64,7 +64,7 @@ export const TYPES_PLAYLIST_USECASES = {
   UpdatePlayListPrivacyUseCase: Symbol.for("UpdatePlayListPrivacyUseCase"),
 };
 
-export const TYPES_SUBSCRIPTION__USECASES = {
+export const TYPES_SUBSCRIPTION_USECASES = {
   SubscriptionBlockUseCase: Symbol.for("SubscriptionBlockUseCase"),
   CancelSubscriptionUseCase: Symbol.for("CancelSubscriptionUseCase"),
   CheckSubscriptionStatusUseCase: Symbol.for("CheckSubscriptionStatusUseCase"),
@@ -118,4 +118,8 @@ export const TYPES_WORKOUT_USECASES = {
   CreateWorkoutUseCase: Symbol.for("CreateWorkoutUseCase"),
   DeleteWorkoutUseCase: Symbol.for("DeleteWorkoutUseCase"),
   GetWorkoutUseCase: Symbol.for("GetWorkoutUseCase"),
+};
+
+export const TYPES_LOGGER_USECASES = {
+  LoggerUseCase: Symbol.for("LoggerUseCase"),
 };

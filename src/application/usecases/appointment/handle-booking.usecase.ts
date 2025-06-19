@@ -11,6 +11,8 @@ import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepositor
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { Action } from "@application/dtos/utility-dtos";
 import { IAppointment } from "@domain/entities/appointment.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /*  
     Purpose: Approve or reject a booking request, and update the booking slot and appointment status accordingly
@@ -19,9 +21,12 @@ import { IAppointment } from "@domain/entities/appointment.entity";
     Throws: Error if any required fields are missing, booking slot not found, or updating appointment/slot fails
 */
 
+@injectable()
 export class HandleBookingApprovalUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.BookingSlotRepository)
     private bookingSlotRepository: IBookingSlotRepository,
+    @inject(TYPES_REPOSITORIES.AppointmentRepository)
     private appointmentRepository: IAppointmentRepository
   ) {}
 

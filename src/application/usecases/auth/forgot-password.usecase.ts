@@ -5,13 +5,20 @@ import { IPasswordResetRepository } from "@domain/interfaces/IPasswordResetToken
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
 import { IHashService } from "@application/interfaces/security/IHash.service";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "di/types-services";
 
+@injectable()
 export class ForgotPasswordUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
+    @inject(TYPES_REPOSITORIES.PasswordResetRepository)
     private passwordResetRepository: IPasswordResetRepository,
+    @inject(TYPES_SERVICES.EncryptionService)
     private encryptionService: IEncryptionService,
-    private hashService: IHashService
+    @inject(TYPES_SERVICES.HashService) private hashService: IHashService
   ) {}
 
   async execute({ resetToken, password }: PasswordResetDTO): Promise<void> {

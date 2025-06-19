@@ -8,15 +8,26 @@ import { IPaymentService } from "@application/interfaces/payments/IPayment.servi
 import { IEmailService } from "@application/interfaces/communication/IEmail.service";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { IUserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "di/types-services";
 
+@injectable()
 export class WebHookHandlerUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository,
+    @inject(TYPES_REPOSITORIES.UserSubscriptionPlanRepository)
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
+    @inject(TYPES_REPOSITORIES.RevenueRepository)
     private revenueRepository: IPlatformEarningsRepository,
+    @inject(TYPES_REPOSITORIES.ConversationRepository)
     private conversationRepository: IConversationRepository,
+    @inject(TYPES_SERVICES.PaymentService)
     private paymentService: IPaymentService,
+    @inject(TYPES_SERVICES.EmailService)
     private emailService: IEmailService,
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository
   ) {}
   private validateWebhookInput(

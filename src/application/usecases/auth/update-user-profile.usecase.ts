@@ -5,6 +5,9 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import dotenv from "dotenv";
 import { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
 import { IUser } from "@domain/entities/user.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "di/types-services";
 dotenv.config();
 
 /**
@@ -14,9 +17,12 @@ dotenv.config();
  * Throws: Error if userId is missing or update fails.
  */
 
+@injectable()
 export class UpdateUserProfileUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
+    @inject(TYPES_SERVICES.CloudStorageService)
     private cloudinaryService: ICloudStorageService,
     private profileFolder: string = process.env
       .CLOUDINARY_PROFILE_PIC_FOLDER as string

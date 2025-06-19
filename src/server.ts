@@ -9,11 +9,13 @@ import userRoutes from "@presentation/routes/user.routes";
 import chatRoutes from "@presentation/routes/chat.routes";
 import dotenv from "dotenv";
 import { Request, Response } from "express";
-import morganMiddleware from "@infrastructure/logging/morgan";
+import morganMiddleware from "@infrastructure/services/logging/morgan";
 import rateLimiter from "@presentation/middlewares/ratelimit.middleware";
 import { notFoundMiddleware } from "@presentation/middlewares/notfound.middleware";
-import expressAsyncHandler from "express-async-handler";
-import { webhookController } from "./di/di";
+import { asyncHandler } from "@shared/utils/async-handler";
+import { webhookController } from "di/container-resolver";
+// import expressAsyncHandler from "express-async-handler";
+// import { webhookController } from "./di/di";
 dotenv.config();
 
 const app = express();
@@ -30,7 +32,7 @@ app.use(
 app.post(
   "/api/v1/webhook",
   express.raw({ type: "application/json" }),
-  expressAsyncHandler(webhookController.webHookHandler)
+  asyncHandler(webhookController.webHookHandler)
 );
 app.get("/", (req: Request, res: Response) => {
   res.json({ message: "message send from server" });

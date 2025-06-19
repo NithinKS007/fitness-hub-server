@@ -1,12 +1,8 @@
-import {
-  CreateVideoPlayList,
-  DeleteVideoPlaylistDTO,
-} from "@application/dtos/playlist-dtos";
+import { DeleteVideoPlaylistDTO } from "@application/dtos/playlist-dtos";
 import { IVideoPlaylist } from "@domain/entities/video-playlist.entity";
+import { IBaseRepository } from "./IBaseRepository";
 
-export interface IVideoPlayListRepository {
-  insertMany(
-    createVideoPlayList: CreateVideoPlayList[]
-  ): Promise<IVideoPlaylist[]>;
+export interface IVideoPlayListRepository
+  extends IBaseRepository<IVideoPlaylist> {
   deleteMany(deletePlayLists: DeleteVideoPlaylistDTO[]): Promise<void>;
 }

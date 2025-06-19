@@ -1,7 +1,9 @@
 import dayjs from "dayjs";
 import { IDateService } from "@application/interfaces/date/IDate.service";
 import { DateRange } from "@application/dtos/service/date.service";
+import { injectable } from "inversify";
 
+@injectable()
 export class DateService implements IDateService {
   getDateRange = (data: any): { startDate: Date; endDate: Date } => {
     let startDate = dayjs().startOf("month").toDate();

@@ -3,9 +3,16 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { PlayListStatus, VideoStatus } from "@shared/constants/index.constants";
 import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 import { IPlayList } from "@domain/entities/playlist.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
+@injectable()
 export class EditPlayListUseCase {
-  constructor(private playListRepository: IPlayListRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.PlayListRepository)
+    private playListRepository: IPlayListRepository
+  ) {}
+  
   async execute({ playListId, title }: EditPlayListDTO): Promise<IPlayList> {
     const playlistData = await this.playListRepository.findById(playListId);
 

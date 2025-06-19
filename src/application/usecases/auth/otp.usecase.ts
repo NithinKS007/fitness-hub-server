@@ -6,6 +6,9 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/communication/IEmail.service";
 import { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
 import { IOtp } from "@domain/entities/otp.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "di/types-services";
 
 /*  
     Method  : createOtp
@@ -39,11 +42,16 @@ import { IOtp } from "@domain/entities/otp.entity";
         - validationError: If the user is already verified, or any issue occurs while sending the OTP.
 */
 
+@injectable()
 export class OtpUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.OtpRepository)
     private otpRepository: IOtpRepository,
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
+    @inject(TYPES_SERVICES.EmailService)
     private emailService: IEmailService,
+    @inject(TYPES_SERVICES.OTPService)
     private otpService: IOTPService
   ) {}
 

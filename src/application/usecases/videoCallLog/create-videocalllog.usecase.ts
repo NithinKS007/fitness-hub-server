@@ -2,6 +2,8 @@ import { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogReposit
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "@shared/constants/index.constants";
 import { CreateVideoCallLogDTO } from "@application/dtos/video-call-dtos";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /**
  * Purpose: Create a video call log entry for a given appointment.
@@ -10,8 +12,13 @@ import { CreateVideoCallLogDTO } from "@application/dtos/video-call-dtos";
  * Throws: Error if any required field is missing.
  */
 
+@injectable()
 export class CreateVideoCallLogUseCase {
-  constructor(private videoCallLogRepository: IVideoCallLogRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.VideoCallLogRepository)
+    private videoCallLogRepository: IVideoCallLogRepository
+  ) {}
+  
   async execute({
     appointmentId,
     callRoomId,

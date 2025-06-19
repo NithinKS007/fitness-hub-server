@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { RevenueStatus, StatusCodes } from "@shared/constants/index.constants";
 import { GetPlatformEarningsUsecase } from "@application/usecases/platform/get-platfrom-earnings.usecase";
-import { parseQueryParams } from "@shared/utils/parse.queryParams";
+import { parseQueryParams } from "@shared/utils/parse-query-params";
+import { TYPES_PLATFORM_USECASES } from "di/types-usecases";
 
+@injectable()
 export class GetPlatformEarningsController {
-  constructor(private getPFearningsUseCase: GetPlatformEarningsUsecase) {}
+  constructor(
+    @inject(TYPES_PLATFORM_USECASES.GetPlatformEarningsUsecase)
+    private getPFearningsUseCase: GetPlatformEarningsUsecase
+  ) {}
 
   async handleGetEarnings(req: Request, res: Response): Promise<void> {
     const { revenueData, paginationData } =

@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { StatusCodes, PlayListStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { GetPlayListUseCase } from "@application/usecases/playlist/get-playlist.usecase";
-import { parseQueryParams } from "@shared/utils/parse.queryParams";
+import { parseQueryParams } from "@shared/utils/parse-query-params";
+import { TYPES_PLAYLIST_USECASES } from "di/types-usecases";
 
+@injectable()
 export class GetPlaylistController {
-  constructor(private getPlayListUseCase: GetPlayListUseCase) {}
+  constructor(
+    @inject(TYPES_PLAYLIST_USECASES.GetPlayListUseCase)
+    private getPlayListUseCase: GetPlayListUseCase
+  ) {}
 
   async handleGetPlaylists(req: Request, res: Response): Promise<void> {
     const { _id: trainerId } = req?.user || {};
@@ -24,4 +30,5 @@ export class GetPlaylistController {
       PlayListStatus.RetrievedSuccess
     );
   }
+
 }

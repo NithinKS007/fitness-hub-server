@@ -6,9 +6,16 @@ import {
 } from "@shared/constants/index.constants";
 import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 import { IPlayList } from "@domain/entities/playlist.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
+@injectable()
 export class UpdatePlayListPrivacyUseCase {
-  constructor(private playListRepository: IPlayListRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.PlayListRepository)
+    private playListRepository: IPlayListRepository
+  ) {}
+  
   async execute({
     playListId,
     privacy,
@@ -23,7 +30,7 @@ export class UpdatePlayListPrivacyUseCase {
       }
     );
     if (!updatedPlayListData) {
-      throw new validationError(BlockStatus.StatusUpdateFailed );
+      throw new validationError(BlockStatus.StatusUpdateFailed);
     }
     return updatedPlayListData;
   }

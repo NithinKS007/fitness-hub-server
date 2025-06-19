@@ -6,9 +6,16 @@ import {
 } from "@shared/constants/index.constants";
 import { GetChatListQueryDTO } from "@application/dtos/query-dtos";
 import { UserChatList } from "@application/dtos/chat-dtos";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
+@injectable()
 export class GetUserChatListUseCase {
-  constructor(private conversationRepository: IConversationRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.ConversationRepository)
+    private conversationRepository: IConversationRepository
+  ) {}
+  
   async execute(
     userId: string,
     { search }: GetChatListQueryDTO

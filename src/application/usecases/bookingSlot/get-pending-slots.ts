@@ -4,6 +4,8 @@ import { AuthStatus, SlotStatus } from "@shared/constants/index.constants";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { AvailableSlotsQueryDTO } from "@application/dtos/query-dtos";
 import { IBookingSlot } from "@domain/entities/booking-slot.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /**
  * Purpose: Handles the retrieval of pending booking slots with pagination and filtering based on the given query.
@@ -12,8 +14,13 @@ import { IBookingSlot } from "@domain/entities/booking-slot.entity";
  * Throws: Error if the trainer ID is missing or slot data cannot be retrieved.
  */
 
+@injectable()
 export class GetPendingSlotsUseCase {
-  constructor(private bookingSlotRepository: IBookingSlotRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.BookingSlotRepository)
+    private bookingSlotRepository: IBookingSlotRepository
+  ) {}
+  
   async execute(
     trainerId: string,
     { page, limit, fromDate, toDate }: AvailableSlotsQueryDTO

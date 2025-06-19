@@ -7,6 +7,8 @@ import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepositor
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { BookingSlotStatus } from "@application/dtos/booking-dtos";
 import { IAppointment } from "@domain/entities/appointment.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
 /*  
     Purpose: Cancel an existing appointment and update the booking slot status to "pending"
@@ -15,11 +17,15 @@ import { IAppointment } from "@domain/entities/appointment.entity";
     Throws: Error if appointment cancellation fails or updating slot status fails
 */
 
+@injectable()
 export class CancelAppointmentUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.BookingSlotRepository)
     private bookingSlotRepository: IBookingSlotRepository,
+    @inject(TYPES_REPOSITORIES.AppointmentRepository)
     private appointmentRepository: IAppointmentRepository
   ) {}
+  
   async execute(appointmentId: string): Promise<IAppointment> {
     if (!appointmentId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);

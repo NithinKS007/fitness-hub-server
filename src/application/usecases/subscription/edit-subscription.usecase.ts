@@ -14,11 +14,18 @@ import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionReposit
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
 import { ISubscription } from "@domain/entities/subscription.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
+@injectable()
 export class EditSubscriptionUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository,
+    @inject(TYPES_REPOSITORIES.TrainerRepository)
     private trainerRepository: ITrainerRepository,
+    @inject(TYPES_SERVICES.PaymentService)
     private paymentService: IPaymentService
   ) {}
 

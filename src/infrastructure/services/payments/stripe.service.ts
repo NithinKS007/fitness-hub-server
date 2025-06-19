@@ -15,7 +15,9 @@ import {
   SubscriptionMetadata,
 } from "@application/dtos/service/payment.service";
 import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { injectable } from "inversify";
 
+@injectable()
 export class StripePaymentService implements IPaymentService {
   async addProduct({ name, description }: CreateProduct): Promise<string> {
     try {

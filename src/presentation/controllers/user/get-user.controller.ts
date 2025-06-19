@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
+import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { UserStatus, StatusCodes } from "@shared/constants/index.constants";
-import { parseQueryParams } from "@shared/utils/parse.queryParams";
+import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetUsersUseCase } from "@application/usecases/user/get-users.usecase";
+import { TYPES_USER_USECASES } from "di/types-usecases";
 
+@injectable()
 export class GetUsersController {
-  constructor(private getUsersUseCase: GetUsersUseCase) {}
+  constructor(
+    @inject(TYPES_USER_USECASES.GetUsersUseCase)
+    private getUsersUseCase: GetUsersUseCase
+  ) {}
 
   async handleGetUsers(req: Request, res: Response): Promise<void> {
     const { usersList, paginationData } = await this.getUsersUseCase.execute(

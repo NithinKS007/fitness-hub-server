@@ -6,10 +6,16 @@ import {
 import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
 import { IUserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
 import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { injectable, inject } from "inversify";
+import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
+@injectable()
 export class VerifySubcriptionSessionUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserSubscriptionPlanRepository)
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
+    @inject(TYPES_SERVICES.PaymentService)
     private paymentService: IPaymentService
   ) {}
 
@@ -50,5 +56,4 @@ export class VerifySubcriptionSessionUseCase {
       isSubscribed: subscriptionStatus,
     } as IUserSubscriptionPlan & { isSubscribed: boolean };
   }
-  
 }

@@ -4,9 +4,16 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { TrainerStatus } from "@shared/constants/index.constants";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { Trainer } from "@application/dtos/trainer-dtos";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
+@injectable()
 export class GetVerifyTrainerlistUseCase {
-  constructor(private trainerRepository: ITrainerRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.TrainerRepository)
+    private trainerRepository: ITrainerRepository
+  ) {}
+  
   async execute({
     page,
     limit,

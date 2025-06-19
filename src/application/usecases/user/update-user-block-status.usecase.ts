@@ -6,9 +6,16 @@ import {
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { UpdateBlockStatusDTO } from "@application/dtos/auth-dtos";
 import { IUser } from "@domain/entities/user.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
 
+@injectable()
 export class UpdateUserBlockStatusUseCase {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(
+    @inject(TYPES_REPOSITORIES.UserRepository)
+    private userRepository: IUserRepository
+  ) {}
+  
   async execute({
     userId,
     isBlocked,

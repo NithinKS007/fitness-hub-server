@@ -3,7 +3,7 @@ import { Response } from "express";
 export const sendResponse = (
   res: Response,
   statusCode: number,
-  data: any,
+  data: any = null,
   message: string
 ) => {
   const success = statusCode >= 200 && statusCode < 300;

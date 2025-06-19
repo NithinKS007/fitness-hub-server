@@ -3,8 +3,8 @@ export enum DashboardStatus {
   FailedToGetUserDashBoardData = "Failed to get user dashboard data",
   FailedToGetAdminDashBoardData = "Failed to get admin dashboard data",
   FailedToGetTrainerDashBoardData = "Failed to get Trainer dashboard data",
-  UserDashBoardRetrievedSuccessfully = "User dashboard retrieved successfully",
-  AdminDashBoardRetrievedSuccessfully = "Admin dashboard retrieved successfully",
-  TrainerDashBoardRetrievedSuccessfully = "Trainer dashboard retrieved successfully",
+  UserDashRetrieved  = "User dashboard retrieved successfully",
+  AdminDashRetrieved  = "Admin dashboard retrieved successfully",
+  TrainerDashRetrieved  = "Trainer dashboard retrieved successfully",
   FailedToRetrieveChart = "Failed to retrieve chart details"
 }

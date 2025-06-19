@@ -14,6 +14,9 @@ import { IAuthService } from "@application/interfaces/auth/IAuth.service";
 import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
 import { Trainer } from "@application/dtos/trainer-dtos";
 import { IUser } from "@domain/entities/user.entity";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "di/types-services";
 
 /**
  * Purpose: Handle the sign-in process for a user or trainer.
@@ -22,11 +25,16 @@ import { IUser } from "@domain/entities/user.entity";
  * Throws: Error if user data is invalid, OTP not verified, or password is incorrect.
  */
 
+@injectable()
 export class SigninUserUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
+    @inject(TYPES_REPOSITORIES.TrainerRepository)
     private trainerRepository: ITrainerRepository,
+    @inject(TYPES_SERVICES.AuthService)
     private authService: IAuthService,
+    @inject(TYPES_SERVICES.EncryptionService)
     private encryptionService: IEncryptionService
   ) {}
 

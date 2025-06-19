@@ -1,4 +1,4 @@
-import { NumberOfVideoPerPlayList } from "@application/dtos/playlist-dtos";
+import { VideoPerPlayList } from "@application/dtos/playlist-dtos";
 import { GetPlayListsQueryDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IPlayList } from "@domain/entities/playlist.entity";
@@ -9,9 +9,9 @@ export interface IPlayListRepository extends IBaseRepository<IPlayList> {
     trainerId: string,
     data: GetPlayListsQueryDTO
   ): Promise<{ playList: IPlayList[]; paginationData: PaginationDTO }>;
-  getPlaylistCounts(playListIds: string[]): Promise<NumberOfVideoPerPlayList[]>;
-  updateManyVideoCount(
-    numberOfVideosPerPlaylist: NumberOfVideoPerPlayList[]
+  getPlaylistCounts(playListIds: string[]): Promise<VideoPerPlayList[]>;
+  updateVideosCount(
+    VideoPerPlayList: VideoPerPlayList[]
   ): Promise<void>;
   getallPlaylists(trainerId: string, privacy?: boolean): Promise<IPlayList[]>;
 }

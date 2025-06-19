@@ -4,8 +4,7 @@ import {
   ApplicationStatus,
 } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
-import { LoggerHelper } from "@shared/utils/handle.log";
-import { LoggerService } from "@infrastructure/logging/logger";
+import { loggerUseCase } from "di/container-resolver";
 
 class AppError extends Error {
   statusCode: number;
@@ -45,16 +44,13 @@ export class ForbiddenError extends AppError {
   }
 }
 
-const logger = new LoggerService();
-const loggerHelper = new LoggerHelper(logger);
-
 export const errorMiddleware = (
   err: AppError,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  loggerHelper.handleLogError(err, req.originalUrl, err.message);
+  loggerUseCase.LogError(err, req.originalUrl, err.message);
   const statusCode = err.statusCode || StatusCodes.InternalServerError;
   const message = err.message || ApplicationStatus.InternalServerError;
   sendResponse(res, statusCode, null, message);

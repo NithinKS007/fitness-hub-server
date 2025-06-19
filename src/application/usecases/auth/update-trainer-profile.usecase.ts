@@ -6,6 +6,9 @@ import {
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import dotenv from "dotenv";
 import { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
+import { injectable, inject } from "inversify";
+import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "di/types-services";
 dotenv.config();
 
 /**
@@ -16,10 +19,14 @@ dotenv.config();
  * Throws: Error if any required data is missing or the update fails.
  */
 
+@injectable()
 export class UpdateTrainerProfileUseCase {
   constructor(
+    @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
+    @inject(TYPES_REPOSITORIES.TrainerRepository)
     private trainerRepository: ITrainerRepository,
+    @inject(TYPES_SERVICES.CloudStorageService)
     private cloudinaryService: ICloudStorageService,
     private profileFolder: string = process.env
       .CLOUDINARY_PROFILE_PIC_FOLDER as string,
@@ -35,7 +42,7 @@ export class UpdateTrainerProfileUseCase {
   }
 
   private async handleCertifications(certifications: any[]): Promise<any[]> {
-    const updatedCertifications: any[] = [];
+    const updatedCertifications: { fileName: string; url: string }[] = [];
     if (certifications && certifications.length > 0) {
       const uploadPromises = certifications.map(async (certi) => {
         if (certi && !certi.url.includes("cloudinary.com")) {

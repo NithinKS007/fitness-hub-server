@@ -6,7 +6,7 @@ import { BaseRepository } from "@infrastructure/databases/repositories/base.repo
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import { IPlayList } from "@domain/entities/playlist.entity";
 import PlayListModel from "../models/playlist.model";
-import { NumberOfVideoPerPlayList } from "@application/dtos/playlist-dtos";
+import { VideoPerPlayList } from "@application/dtos/playlist-dtos";
 
 export class PlayListRepository
   extends BaseRepository<IPlayList>
@@ -87,9 +87,7 @@ export class PlayListRepository
     };
   }
 
-  async getPlaylistCounts(
-    playListIds: string[]
-  ): Promise<NumberOfVideoPerPlayList[]> {
+  async getPlaylistCounts(playListIds: string[]): Promise<VideoPerPlayList[]> {
     const result = await this.model.aggregate([
       {
         $match: {
@@ -117,16 +115,17 @@ export class PlayListRepository
     return result;
   }
 
-  async updateManyVideoCount(
-    numberOfVideosPerPlaylist: NumberOfVideoPerPlayList[]
+  async updateVideosCount(
+    VideoPerPlayList: VideoPerPlayList[]
   ): Promise<void> {
-    const bulkOps = numberOfVideosPerPlaylist.map((item) => ({
-      updateOne: {
-        filter: { _id: item.playListId },
-        update: { $set: { videoCount: item.videoCount } },
-      },
-    }));
-    await this.model.bulkWrite(bulkOps);
+    await Promise.all(
+      VideoPerPlayList.map((item) =>
+        this.model.updateOne(
+          { _id: item.playListId }, 
+          { $set: { videoCount: item.videoCount } } 
+        )
+      )
+    );
   }
 
   async getallPlaylists(
