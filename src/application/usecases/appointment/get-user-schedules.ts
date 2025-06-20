@@ -23,7 +23,7 @@ export class GetUserSchedulesUseCase {
     @inject(TYPES_REPOSITORIES.AppointmentRepository)
     private appointmentRepository: IAppointmentRepository
   ) {}
-  
+
   async execute(
     userId: string,
     { page, limit, fromDate, toDate, search, filters }: GetBookingSchedulesDTO
@@ -38,9 +38,7 @@ export class GetUserSchedulesUseCase {
     const { appointmentList, paginationData } =
       await this.appointmentRepository.getUserSchedules(userId, query);
     if (!appointmentList) {
-      throw new validationError(
-        AppointmentStatus.FailedToRetrieveBookingRequests
-      );
+      throw new validationError(AppointmentStatus.BookingRequestsFetchFailed);
     }
     return { appointmentList, paginationData };
   }

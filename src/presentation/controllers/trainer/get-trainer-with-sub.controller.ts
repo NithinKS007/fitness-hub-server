@@ -19,6 +19,6 @@ export class GetTrainerWithSubController {
       trainerId
     );
 
-    sendResponse(res, StatusCodes.OK, trainersData, TrainerStatus.TrainersList);
+    sendResponse(res, StatusCodes.OK, trainersData, TrainerStatus.ListRetrieved);
   }
 }

@@ -26,7 +26,7 @@ export class GetTrainerSubscriptionController {
       res,
       StatusCodes.OK,
       subscriptionsData,
-      SubscriptionStatus.SubscriptionsListRetrieved
+      SubscriptionStatus.ListRetrieved
     );
   }
 }

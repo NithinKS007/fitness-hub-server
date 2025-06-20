@@ -28,7 +28,7 @@ export class GetUserSubscriptionController {
       res,
       StatusCodes.OK,
       { userSubscriptionsList, paginationData },
-      SubscriptionStatus.SubscriptionListOfUserRetrievedSuccessfully
+      SubscriptionStatus.UserSubscriptionsRetrieved
     );
   }
 }

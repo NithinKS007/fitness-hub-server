@@ -19,11 +19,6 @@ export class DeleteBookingSlotController {
       bookingSlotId
     );
 
-    sendResponse(
-      res,
-      StatusCodes.OK,
-      deletedSlotData,
-      SlotStatus.SlotDeletedSuccessfully
-    );
+    sendResponse(res, StatusCodes.OK, deletedSlotData, SlotStatus.Deleted);
   }
 }

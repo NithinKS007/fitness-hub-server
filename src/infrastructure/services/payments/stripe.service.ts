@@ -83,9 +83,7 @@ export class StripePaymentService implements IPaymentService {
       return { sessionId: session.id };
     } catch (error) {
       console.log("error occured in stripe service layer", error);
-      throw new validationError(
-        SubscriptionStatus.FailedToCreateSubscriptionSession
-      );
+      throw new validationError(SubscriptionStatus.SessionCreateFailed);
     }
   }
 

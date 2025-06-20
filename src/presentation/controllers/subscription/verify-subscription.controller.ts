@@ -24,7 +24,7 @@ export class VerifySubscriptionController {
       res,
       StatusCodes.OK,
       { subscriptionData: subscriptionData },
-      SubscriptionStatus.SubscriptionAddedSuccess
+      SubscriptionStatus.Created
     );
   }
 }

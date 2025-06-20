@@ -28,7 +28,7 @@ export class BookAppointmentController {
       res,
       StatusCodes.OK,
       bookedSlotData,
-      AppointmentStatus.SlotBookedSuccessfully
+      AppointmentStatus.SlotBooked
     );
   }
 }

@@ -39,7 +39,7 @@ export class DeleteBookingSlotUseCase {
       bookingSlotId
     );
     if (!deletedSlotData) {
-      throw new validationError(SlotStatus.FailedToDeleteSlot);
+      throw new validationError(SlotStatus.DeleteFailed);
     }
     return deletedSlotData;
   }

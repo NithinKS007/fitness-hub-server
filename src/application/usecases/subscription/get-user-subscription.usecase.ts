@@ -38,9 +38,7 @@ export class GetUserSubscriptionUseCase {
         query
       );
     if (!userSubscriptionRecord) {
-      throw new validationError(
-        SubscriptionStatus.FailedToRetrieveSubscriptionDetails
-      );
+      throw new validationError(SubscriptionStatus.NotFound);
     }
 
     const userSubscriptionsList = await Promise.all(

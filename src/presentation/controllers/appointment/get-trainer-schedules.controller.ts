@@ -31,7 +31,7 @@ export class GetTrainerSchedulesController {
         trainerBookingSchedulesList: trainerBookingSchedulesList,
         paginationData: paginationData,
       },
-      AppointmentStatus.AppointmentsListRetrievedSuccessfully
+      AppointmentStatus.AppointmentsFetched
     );
   }
 }

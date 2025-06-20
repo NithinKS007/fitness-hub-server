@@ -92,9 +92,7 @@ export class WebHookHandlerUseCase {
       );
 
       if (!subscription) {
-        throw new validationError(
-          SubscriptionStatus.FailedToRetrieveSubscriptionDetails
-        );
+        throw new validationError(SubscriptionStatus.NotFound);
       }
 
       if (!subscriptionId || !trainerId) {
@@ -106,9 +104,7 @@ export class WebHookHandlerUseCase {
         subscriptionId
       );
       if (!subscriptionData) {
-        throw new validationError(
-          SubscriptionStatus.FailedToRetrieveSubscriptionDetails
-        );
+        throw new validationError(SubscriptionStatus.NotFound);
       }
       const newSubscriptionAdding = {
         userId: userId as string,

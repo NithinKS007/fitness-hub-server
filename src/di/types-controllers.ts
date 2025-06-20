@@ -31,7 +31,10 @@ export const TYPES_BOOKING_CONTROLLER = {
 };
 
 export const TYPES_CHAT_CONTROLLER = {
-  ChatController: Symbol.for("ChatController"),
+  // ChatController: Symbol.for("ChatController"),
+  GetChatsController: Symbol.for("GetChatsController"),
+  GetUserContactsController: Symbol.for("GetUserContactsController"),
+  GetTrainerContactsController: Symbol.for("GetTrainerContactsController"),
 };
 
 export const TYPES_DASHBOARD_CONTROLLER = {

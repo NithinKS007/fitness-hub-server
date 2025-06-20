@@ -1,9 +1,8 @@
 export enum SlotStatus {
-  FailedToCreateBookingSlot = "Failed to add slot",
-  SlotCreatedSuccessfully = "Booking slot added successfully",
-  SlotDataRetrievedSuccessfully = "Slots retrieved successfully",
-  FailedToGetAvailableSlotData = "Failed to get available slot data",
-  SlotDeletedSuccessfully = "Booking slot deleted successfully",
-  FailedToDeleteSlot = "Failed to delete Slot",
-  FailedToDeleteSlotAlreadyUsedForTakingAppointment = "Slot currently unavailbale, Please try again",
+  CreateFailed = "There was an error adding the slot. Please try again.",
+  Created = "The booking slot has been successfully added.",
+  RetrievedSuccess = "Slots retrieved successfully",
+  FailedToGetAvailableSlotData = "Unable to retrieve available slot data. Please check your connection or try again later.",
+  Deleted = "The booking slot has been successfully deleted.",
+  DeleteFailed = "Failed to delete the slot. Please try again later.",
 }

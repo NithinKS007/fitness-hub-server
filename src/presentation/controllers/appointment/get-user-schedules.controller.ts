@@ -28,7 +28,7 @@ export class GetUserSchedulesController {
       res,
       StatusCodes.OK,
       { appointmentList: appointmentList, paginationData: paginationData },
-      AppointmentStatus.AppointmentsListRetrievedSuccessfully
+      AppointmentStatus.AppointmentsFetched
     );
   }
 }

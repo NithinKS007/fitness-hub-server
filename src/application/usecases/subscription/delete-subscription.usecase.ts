@@ -40,7 +40,7 @@ export class DeleteSubscriptionUseCase {
     );
 
     if (!deletedSubscription) {
-      throw new validationError(SubscriptionStatus.FailedToDeleteSubscription);
+      throw new validationError(SubscriptionStatus.DeleteFailed);
     }
     return deletedSubscription;
   }

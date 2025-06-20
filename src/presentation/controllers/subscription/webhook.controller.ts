@@ -26,11 +26,6 @@ export class WebhookController {
       req.body
     );
 
-    sendResponse(
-      res,
-      StatusCodes.OK,
-      null,
-      SubscriptionStatus.SubscriptionAddedSuccess
-    );
+    sendResponse(res, StatusCodes.OK, null, SubscriptionStatus.Created);
   }
 }

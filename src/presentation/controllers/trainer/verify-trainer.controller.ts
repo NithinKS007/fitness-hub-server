@@ -30,8 +30,8 @@ export class VerifyTrainerController {
       StatusCodes.OK,
       updatedTrainerData,
       req.body.action === "approved"
-        ? TrainerStatus.TrainerApproved
-        : TrainerStatus.TrainerRejected
+        ? TrainerStatus.Approved
+        : TrainerStatus.Rejected
     );
   }
 }

@@ -1,5 +1,5 @@
 export enum UserStatus {
   UserList = "Users list retrieved successfully",
-  failedToRetrieveUsersList = "Failed to retrieve user list",
-  FailedUserTrainerList = "Failed to retrieve user trainer list",
+  FailedToRetrieveUsersList = "An error occurred while trying to retrieve the users list. Please try again later.",
+  FailedUserTrainerList = "Failed to retrieve the list of trainers associated with the users. Please check your connection or try again.",
 }

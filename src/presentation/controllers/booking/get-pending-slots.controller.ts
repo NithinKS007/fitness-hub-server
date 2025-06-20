@@ -28,7 +28,7 @@ export class GetPendingSlotsController {
         availableSlotsList: availableSlotsList,
         paginationData: paginationData,
       },
-      SlotStatus.SlotDataRetrievedSuccessfully
+      SlotStatus.RetrievedSuccess
     );
   }
 }

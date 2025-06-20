@@ -164,7 +164,9 @@ export { GetPendingSlotsController } from "@presentation/controllers/booking/get
 export { GetUpComingSlotsController } from "@presentation/controllers/booking/get-upcoming-slots.controller";
 
 // Chat Controllers
-export { ChatController } from "@presentation/controllers/chat/chat.controller";
+export { GetChatsController } from "@presentation/controllers/chat/get-messages.controller";
+export { GetTrainerContactsController } from "@presentation/controllers/chat/get-trainer-contacts.controller";
+export { GetUserContactsController } from "@presentation/controllers/chat/get-user-contacts.controller";
 
 // Dashboard Controllers
 export { AdminDashboardController } from "@presentation/controllers/dashboard/admin-dashboard.controller";

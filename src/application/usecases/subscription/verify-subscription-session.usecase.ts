@@ -40,9 +40,7 @@ export class VerifySubcriptionSessionUseCase {
       );
 
     if (!userTakenSubscription) {
-      throw new validationError(
-        SubscriptionStatus.FailedToRetrieveSubscriptionDetails
-      );
+      throw new validationError(SubscriptionStatus.NotFound);
     }
     const stripeSubscription = await this.paymentService.getSubscription(
       stripeSubscriptionId as string

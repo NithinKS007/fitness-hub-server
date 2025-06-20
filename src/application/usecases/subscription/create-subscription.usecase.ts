@@ -63,7 +63,7 @@ export class CreateSubscriptionUseCase {
     ]);
 
     if (existingSubscription) {
-      throw new validationError(SubscriptionStatus.SubscriptionAlreadyExists);
+      throw new validationError(SubscriptionStatus.AlreadyExists);
     }
 
     const interval = this.getInterval(subPeriod);

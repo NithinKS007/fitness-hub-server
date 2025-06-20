@@ -23,14 +23,10 @@ export class PurchaseSubscriptionUseCase {
       subscriptionId
     );
     if (!subscriptionData) {
-      throw new validationError(
-        SubscriptionStatus.FailedToRetrieveSubscriptionDetails
-      );
+      throw new validationError(SubscriptionStatus.NotFound);
     }
     if (subscriptionData.isBlocked) {
-      throw new validationError(
-        SubscriptionStatus.SubscriptionBlockedUnavailabe
-      );
+      throw new validationError(SubscriptionStatus.Blocked);
     }
     const sessionId = await this.paymentService.createSubscriptionSession({
       stripePriceId: subscriptionData.stripePriceId,
@@ -39,9 +35,7 @@ export class PurchaseSubscriptionUseCase {
       subscriptionId: subscriptionData._id.toString(),
     });
     if (!sessionId) {
-      throw new validationError(
-        SubscriptionStatus.FailedToCreateSubscriptionSession
-      );
+      throw new validationError(SubscriptionStatus.SessionCreateFailed);
     }
     return sessionId.sessionId;
   }

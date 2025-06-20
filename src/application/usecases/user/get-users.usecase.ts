@@ -23,7 +23,7 @@ export class GetUsersUseCase {
       query
     );
     if (!usersList) {
-      throw new validationError(UserStatus.failedToRetrieveUsersList);
+      throw new validationError(UserStatus.FailedToRetrieveUsersList);
     }
     return { usersList, paginationData };
   }

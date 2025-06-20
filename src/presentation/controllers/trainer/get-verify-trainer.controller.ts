@@ -23,7 +23,7 @@ export class GetVerifyTrainerController {
       res,
       StatusCodes.OK,
       { trainersList: trainersList, paginationData: paginationData },
-      TrainerStatus.TrainersListRetrieved
+      TrainerStatus.ListRetrieved 
     );
   }
 }

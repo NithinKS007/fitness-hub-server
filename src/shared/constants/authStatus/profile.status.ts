@@ -1,6 +1,6 @@
 export enum ProfileStatus {
-  Updated = "Profile updated successfully",
-  UpdateFailed = "Failed to update user details",
+  Updated = "Your profile has been successfully updated. All changes are saved.",
+  UpdateFailed = "There was an issue updating your profile. Please try again later.",
   UserRetrieved = "User Details retrieved successfully",
-  RetrieveFail = "Failed to retrieve user details",
+  RetrieveFail = "Failed to retrieve user details. Please check your connection or try again later.",
 }

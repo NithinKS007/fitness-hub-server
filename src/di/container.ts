@@ -109,6 +109,9 @@ import {
   ILoggerService,
   LoggerService,
   LoggerUseCase,
+  GetChatsController,
+  GetTrainerContactsController,
+  GetUserContactsController,
   // ErrorMiddleware,
   // AuthMiddleware,
 } from "./file-imports-index";
@@ -210,7 +213,6 @@ import {
 // Controllers
 import {
   AdminDashboardController,
-  ChatController,
   GetApprovedTrainersController,
   PurchaseSubscriptionController,
   GetUserSubscriptionController,
@@ -246,6 +248,7 @@ import {
   GetPlaylistController,
   UpdatePlaylistPrivacyController,
 } from "./file-imports-index";
+
 
 const container = new Container();
 
@@ -414,7 +417,9 @@ container.bind(TYPES_BOOKING_CONTROLLER.GetPendingSlotsController).to(GetPending
 container.bind(TYPES_BOOKING_CONTROLLER.GetUpComingSlotsController).to(GetUpComingSlotsController);
 
 // Chat Controllers 
-container.bind(TYPES_CHAT_CONTROLLER.ChatController).to(ChatController);
+container.bind(TYPES_CHAT_CONTROLLER.GetChatsController).to(GetChatsController)
+container.bind(TYPES_CHAT_CONTROLLER.GetTrainerContactsController).to(GetTrainerContactsController)
+container.bind(TYPES_CHAT_CONTROLLER.GetUserContactsController).to(GetUserContactsController)
 
 // Dashboard Controllers 
 container.bind(TYPES_DASHBOARD_CONTROLLER.AdminDashboardController).to(AdminDashboardController);

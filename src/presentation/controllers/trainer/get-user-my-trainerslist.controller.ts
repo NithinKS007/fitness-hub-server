@@ -26,7 +26,7 @@ export class GetUserMyTrainersController {
       res,
       StatusCodes.OK,
       { userTrainersList, paginationData },
-      TrainerStatus.TrainersListRetrieved
+      TrainerStatus.ListRetrieved
     );
   }
 }

@@ -56,7 +56,7 @@ export class EditVideoUseCase {
     const videoData = await this.videoRepository.findById(_id);
 
     if (!videoData) {
-      throw new validationError(VideoStatus.VideoNotFound);
+      throw new validationError(VideoStatus.NotFound);
     }
     const existingNameExcludingId = await this.videoRepository.findOne({
       title,

@@ -47,7 +47,7 @@ export class CancelSubscriptionUseCase {
         cancelAction: action,
       };
     } else {
-      throw new validationError(SubscriptionStatus.FailedToCancelSubscription);
+      throw new validationError(SubscriptionStatus.CancelFailed);
     }
   }
 }

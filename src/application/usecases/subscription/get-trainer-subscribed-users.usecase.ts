@@ -37,9 +37,7 @@ export class GetTrainerSubscribersUseCase {
         query
       );
     if (!trainerSubscriberRecord) {
-      throw new validationError(
-        SubscriptionStatus.FailedToRetrieveSubscriptionDetails
-      );
+      throw new validationError(SubscriptionStatus.NotFound);
     }
 
     const trainerSubscribers = await Promise.all(

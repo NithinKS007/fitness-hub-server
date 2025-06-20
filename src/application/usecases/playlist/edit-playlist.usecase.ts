@@ -12,12 +12,12 @@ export class EditPlayListUseCase {
     @inject(TYPES_REPOSITORIES.PlayListRepository)
     private playListRepository: IPlayListRepository
   ) {}
-  
+
   async execute({ playListId, title }: EditPlayListDTO): Promise<IPlayList> {
     const playlistData = await this.playListRepository.findById(playListId);
 
     if (!playlistData) {
-      throw new validationError(PlayListStatus.PlaylistNotFound);
+      throw new validationError(PlayListStatus.NotFound);
     }
 
     const existingName = await this.playListRepository.findOne({
@@ -32,7 +32,7 @@ export class EditPlayListUseCase {
       title,
     });
     if (!playListData) {
-      throw new validationError(VideoStatus.FailedToGetVideo);
+      throw new validationError(VideoStatus.FailedToGet);
     }
     return playListData;
   }

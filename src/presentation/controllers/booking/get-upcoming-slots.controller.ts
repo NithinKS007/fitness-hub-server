@@ -28,7 +28,7 @@ export class GetUpComingSlotsController {
         availableSlotsList: availableSlotsList,
         paginationData: paginationData,
       },
-      SlotStatus.SlotDataRetrievedSuccessfully
+      SlotStatus.RetrievedSuccess
     );
   }
 }

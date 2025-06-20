@@ -22,7 +22,7 @@ export class GetApprovedTrainersController {
       res,
       StatusCodes.OK,
       { trainersList, paginationData },
-      TrainerStatus.TrainersList
+      TrainerStatus.ListRetrieved
     );
   }
 }

@@ -127,7 +127,7 @@ export class EditSubscriptionUseCase {
       }
     );
     if (!updatedSubscriptionData) {
-      throw new validationError(SubscriptionStatus.FailedToEditSubscription);
+      throw new validationError(SubscriptionStatus.EditFailed);
     }
     return updatedSubscriptionData;
   }

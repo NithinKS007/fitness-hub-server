@@ -24,7 +24,7 @@ export class GetAppointmentRequestUseCase {
     @inject(TYPES_REPOSITORIES.AppointmentRepository)
     private appointmentRepository: IAppointmentRepository
   ) {}
-  
+
   async execute(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO
@@ -40,9 +40,7 @@ export class GetAppointmentRequestUseCase {
       await this.appointmentRepository.getBookingRequests(trainerId, query);
 
     if (!bookingRequestsList) {
-      throw new validationError(
-        AppointmentStatus.FailedToRetrieveBookingRequests
-      );
+      throw new validationError(AppointmentStatus.BookingRequestsFetchFailed);
     }
     return { bookingRequestsList, paginationData };
   }

@@ -4,5 +4,5 @@ export enum PlayListStatus {
   RetrievedSuccess = "Playlists of trainer retrieved successfully",
   EditedSuccess = "Playlist edited successfully",
   NameExists = "Title already exists,try a different one",
-  PlaylistNotFound = "Sorry, the playlist you're looking for doesn't exist or has been removed",
+  NotFound = "Sorry, the playlist you're looking for doesn't exist or has been removed",
 }

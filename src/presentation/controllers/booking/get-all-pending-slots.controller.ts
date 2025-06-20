@@ -23,7 +23,7 @@ export class GetAllPendingSlotsController {
       res,
       StatusCodes.OK,
       bookingSlotsOfTrainer,
-      SlotStatus.SlotDataRetrievedSuccessfully
+      SlotStatus.RetrievedSuccess
     );
   }
 }

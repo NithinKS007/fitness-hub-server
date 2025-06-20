@@ -22,10 +22,10 @@ export class GetVideoDetailsUseCase {
   async execute(videoId: string, privacy?: boolean): Promise<IVideo> {
     const videoData = await this.videoRepository.findById(videoId);
     if (!videoData) {
-      throw new validationError(VideoStatus.FailedToGetVideo);
+      throw new validationError(VideoStatus.FailedToGet);
     }
     if (privacy !== undefined && videoData.privacy === true) {
-      throw new validationError(VideoStatus.FailedToGetVideo);
+      throw new validationError(VideoStatus.FailedToGet);
     }
     return videoData;
   }

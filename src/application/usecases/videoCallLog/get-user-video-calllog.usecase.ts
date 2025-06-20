@@ -9,6 +9,7 @@ import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { UserVideoCallLog } from "@application/dtos/video-call-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
 
 /**
  * Purpose: Fetch video call logs for a user with pagination, filters, and date range.
@@ -23,7 +24,7 @@ export class GetUserVideoCallLogUseCase {
     @inject(TYPES_REPOSITORIES.VideoCallLogRepository)
     private videoCallLogRepository: IVideoCallLogRepository
   ) {}
-  
+
   async execute(
     userId: string,
     { page, limit, fromDate, toDate, search, filters }: GetVideoCallLogQueryDTO
@@ -39,9 +40,7 @@ export class GetUserVideoCallLogUseCase {
       await this.videoCallLogRepository.getUserVideoCallLogs(userId, query);
 
     if (!userVideoCallLogList) {
-      throw new validationError(
-        AppointmentStatus.FailedToRetrieveVideoCallLogs
-      );
+      throw new validationError(VideoCallStatus.RetrieveFailed);
     }
     return { userVideoCallLogList, paginationData };
   }

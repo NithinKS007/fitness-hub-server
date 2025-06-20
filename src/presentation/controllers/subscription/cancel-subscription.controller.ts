@@ -27,7 +27,7 @@ export class CancelSubscriptionController {
       res,
       StatusCodes.OK,
       { subscriptionCancelledData: subscriptionCancelledData },
-      SubscriptionStatus.SubscriptionCancelledSuccessfully
+      SubscriptionStatus.Cancelled
     );
   }
 }

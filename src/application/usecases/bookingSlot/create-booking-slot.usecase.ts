@@ -22,7 +22,7 @@ export class CreateBookingSlotUseCase {
     @inject(TYPES_REPOSITORIES.BookingSlotRepository)
     private bookingSlotRepository: IBookingSlotRepository
   ) {}
-  
+
   async execute(slotData: CreateBookingSlotDTO): Promise<IBookingSlot> {
     const { date, ...otherSlotData } = slotData;
     if (!slotData) {
@@ -33,7 +33,7 @@ export class CreateBookingSlotUseCase {
       ...otherSlotData,
     });
     if (!createdSlotData) {
-      throw new validationError(SlotStatus.FailedToCreateBookingSlot);
+      throw new validationError(SlotStatus.CreateFailed);
     }
     return createdSlotData;
   }

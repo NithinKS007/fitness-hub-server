@@ -28,7 +28,7 @@ export class GetBookingRequestsController {
       res,
       StatusCodes.OK,
       { bookingRequestsList, paginationData },
-      AppointmentStatus.BookingRequestsRetrievedSuccessfully
+      AppointmentStatus.BookingRequestsRetrieved
     );
   }
 }

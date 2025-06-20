@@ -39,7 +39,7 @@ export class SubscriptionPlanController {
       res,
       StatusCodes.OK,
       subscriptionData,
-      SubscriptionStatus.SubscriptionCreated
+      SubscriptionStatus.Created
     );
   }
 
@@ -59,7 +59,7 @@ export class SubscriptionPlanController {
       res,
       StatusCodes.OK,
       updatedSubscriptionStatus,
-      SubscriptionStatus.SubscriptionBlockStatusUpdated
+      SubscriptionStatus.StatusUpdated
     );
   }
 
@@ -77,7 +77,7 @@ export class SubscriptionPlanController {
       res,
       StatusCodes.OK,
       editSubscriptionData,
-      SubscriptionStatus.SubscriptionEditedSuccessfully
+      SubscriptionStatus.EditedSuccess
     );
   }
 
@@ -91,7 +91,7 @@ export class SubscriptionPlanController {
       res,
       StatusCodes.OK,
       deletedSubscriptionData,
-      SubscriptionStatus.SubscriptionDeletedSuccessfully
+      SubscriptionStatus.DeletedSuccess
     );
   }
 }

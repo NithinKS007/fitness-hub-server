@@ -28,7 +28,7 @@ export class PurchaseSubscriptionController {
       res,
       StatusCodes.OK,
       { sessionId: sessionId },
-      SubscriptionStatus.SubscriptionAddedSuccess
+      SubscriptionStatus.Created
     );
   }
 }

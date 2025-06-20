@@ -1,10 +1,9 @@
 export enum TrainerStatus {
-  TrainersList = "Trainers list retrieved successfully",
+  ListRetrieved = "Trainers list retrieved successfully",
   FailedToRetrieveTrainersList = "Failed to retrieve trainers list",
-  TrainerApproved = "Trainer approved",
-  TrainerRejected = "Trainer rejected",
+  Approved = "Trainer has been successfully approved and is now eligible to start offering services.",
+  Rejected = "Trainer's application has been rejected. Please review the feedback for further details.",
   FailedToRetrieveTrainerDetails = "Failed to retrieve trainer details",
   FailedToRetrieveTrainerWithSubscription = "Failed to retrieve trainer with subscription details",
   TrainerDetailsRetrieved = "Trainer details retrieved successfully",
-  TrainersListRetrieved = "Trainer list retrieved successfully",
 }

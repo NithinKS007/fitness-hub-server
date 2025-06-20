@@ -8,13 +8,13 @@ import {
   CancelAppointmentController,
   CancelSubscriptionController,
   ChangePasswordController,
-  ChatController,
   CheckSubscriptionStatusController,
   CheckUserBlockStatusUseCase,
   CreateBookingSlotController,
   CreateMessageUseCase,
   CreatePlaylistController,
   CreateVideoCallLogUseCase,
+  DateService,
   DeleteBookingSlotController,
   DeleteWorkoutController,
   EditPlaylistController,
@@ -28,6 +28,7 @@ import {
   GetAppointmentByIdUseCase,
   GetApprovedTrainersController,
   GetBookingRequestsController,
+  GetChatsController,
   GetPendingSlotsController,
   GetPlatformEarningsController,
   GetPlaylistController,
@@ -97,6 +98,7 @@ import {
   TYPES_VIDEOCALLLOG_CONTROLLER,
   TYPES_WORKOUT_CONTROLLER,
 } from "./types-controllers";
+import { TYPES_SERVICES } from './types-services';
 
 import {
   TYPES_APPOINTMENT_USECASES,
@@ -137,7 +139,9 @@ export const getPendingSlotsController = container.get<GetPendingSlotsController
 export const getUpComingSlotsController = container.get<GetUpComingSlotsController>(TYPES_BOOKING_CONTROLLER.GetUpComingSlotsController);
 
 // Chat Controllers
-export const chatController = container.get<ChatController>(TYPES_CHAT_CONTROLLER.ChatController);
+export const getChatsController = container.get<GetChatsController>(TYPES_CHAT_CONTROLLER.GetChatsController);
+export const getUserContactsController = container.get<GetChatsController>(TYPES_CHAT_CONTROLLER.GetUserContactsController);
+export const getTrainerContactsController = container.get<GetChatsController>(TYPES_CHAT_CONTROLLER.GetTrainerContactsController);
 
 // Dashboard Controllers
 export const adminDashboardController = container.get<AdminDashboardController>(TYPES_DASHBOARD_CONTROLLER.AdminDashboardController);
@@ -212,9 +216,10 @@ export const updateVideoCallStatusUseCase = container.get<UpdateVideoCallStatusU
 export const getAppointmentByIdUseCase = container.get<GetAppointmentByIdUseCase>(TYPES_APPOINTMENT_USECASES.GetAppointmentByIdUseCase);
 export const tokenUseCase = container.get<TokenUseCase>(TYPES_AUTH_USECASES.TokenUseCase)
 export const checkBlockStatusUseCase = container.get<CheckUserBlockStatusUseCase>(TYPES_AUTH_USECASES.CheckUserBlockStatusUseCase)
+export const loggerUseCase = container.get<LoggerUseCase>(TYPES_LOGGER_USECASES.LoggerUseCase);
 
 // Services
-export const loggerUseCase = container.get<LoggerUseCase>(TYPES_LOGGER_USECASES.LoggerUseCase);
+export const dateService = container.get<DateService>(TYPES_SERVICES.DateService)
 
 
 
