@@ -4,6 +4,7 @@ import {
   AddVideoController,
   AddWorkoutController,
   AdminDashboardController,
+  BlockSubPlanController,
   BookAppointmentController,
   CancelAppointmentController,
   CancelSubscriptionController,
@@ -13,11 +14,14 @@ import {
   CreateBookingSlotController,
   CreateMessageUseCase,
   CreatePlaylistController,
+  CreateSubPlanController,
   CreateVideoCallLogUseCase,
   DateService,
   DeleteBookingSlotController,
+  DeleteSubPlanController,
   DeleteWorkoutController,
   EditPlaylistController,
+  EditSubPlanController,
   EditVideoController,
   ForgotPasswordController,
   GetAllPendingSlotsController,
@@ -63,7 +67,6 @@ import {
   SignOutController,
   SignUpTrainerController,
   SignUpUserController,
-  SubscriptionPlanController,
   TokenUseCase,
   TrainerDashboardController,
   UpdateAppointmentController,
@@ -92,6 +95,7 @@ import {
   TYPES_PLATFORM_CONTROLLER,
   TYPES_PLAYLIST_CONTROLLER,
   TYPES_SUBSCRIPTION_CONTROLLER,
+  TYPES_SUBSCRIPTION_PLAN_CONTROLLER,
   TYPES_TRAINER_CONTROLLER,
   TYPES_USER_CONTROLLER,
   TYPES_VIDEO_CONTROLLER,
@@ -166,9 +170,14 @@ export const getTrainerSubscribersController = container.get<GetTrainerSubscribe
 export const getTrainerSubscriptionController = container.get<GetTrainerSubscriptionController>(TYPES_SUBSCRIPTION_CONTROLLER.GetTrainerSubscriptionController);
 export const getUserSubscriptionController = container.get<GetUserSubscriptionController>(TYPES_SUBSCRIPTION_CONTROLLER.GetUserSubscriptionController);
 export const purchaseSubscriptionController = container.get<PurchaseSubscriptionController>(TYPES_SUBSCRIPTION_CONTROLLER.PurchaseSubscriptionController);
-export const subscriptionPlanController = container.get<SubscriptionPlanController>(TYPES_SUBSCRIPTION_CONTROLLER.SubscriptionPlanController);
 export const verifySubscriptionController = container.get<VerifySubscriptionController>(TYPES_SUBSCRIPTION_CONTROLLER.VerifySubscriptionController);
 export const webhookController = container.get<WebhookController>(TYPES_SUBSCRIPTION_CONTROLLER.WebhookController);
+
+// Subcription Plan Controllers
+export const createSubPlanController = container.get<CreateSubPlanController>(TYPES_SUBSCRIPTION_PLAN_CONTROLLER.CreateSubPlanController);
+export const editSubPlanController = container.get<EditSubPlanController>(TYPES_SUBSCRIPTION_PLAN_CONTROLLER.EditSubPlanController);
+export const deleteSubPlanController = container.get<DeleteSubPlanController>(TYPES_SUBSCRIPTION_PLAN_CONTROLLER.DeleteSubPlanController);
+export const blockSubPlanController = container.get<BlockSubPlanController>(TYPES_SUBSCRIPTION_PLAN_CONTROLLER.BlockSubPlanController);
 
 // Trainer Controllers
 export const getAllTrainersController = container.get<GetallTrainersController>(TYPES_TRAINER_CONTROLLER.GetallTrainersController);

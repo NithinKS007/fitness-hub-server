@@ -26,7 +26,7 @@ export class VideoRepository
     }
 
     if (_id) {
-      queryObject._id = { $ne: this.parseId(_id.cast.toString()) };
+      queryObject._id = { $ne: this.parseId(String(_id)) };
     }
 
     return await this.model.findOne(queryObject);

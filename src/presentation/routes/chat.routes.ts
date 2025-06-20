@@ -10,22 +10,8 @@ import {
 const chatRoutes = express.Router();
 
 //CHAT ROUTES
-chatRoutes.get(
-  "/messages/:senderId/:receiverId",
-  authenticate,
-  asyncHandler(getChatsController.handle.bind(getChatsController))
-);
-chatRoutes.get(
-  "/trainer",
-  authenticate,
-  asyncHandler(
-    getTrainerContactsController.handle.bind(getTrainerContactsController)
-  )
-);
-chatRoutes.get(
-  "/user",
-  authenticate,
-  asyncHandler(getUserContactsController.handle.bind(getUserContactsController))
-);
+chatRoutes.get("/messages/:senderId/:receiverId",authenticate,asyncHandler(getChatsController.handle.bind(getChatsController)));
+chatRoutes.get("/trainer",authenticate,asyncHandler(getTrainerContactsController.handle.bind(getTrainerContactsController)));
+chatRoutes.get("/user",authenticate,asyncHandler(getUserContactsController.handle.bind(getUserContactsController)));
 
 export default chatRoutes;

@@ -8,6 +8,7 @@ import {
   TYPES_PLATFORM_CONTROLLER,
   TYPES_PLAYLIST_CONTROLLER,
   TYPES_SUBSCRIPTION_CONTROLLER,
+  TYPES_SUBSCRIPTION_PLAN_CONTROLLER,
   TYPES_TRAINER_CONTROLLER,
   TYPES_USER_CONTROLLER,
   TYPES_VIDEO_CONTROLLER,
@@ -112,6 +113,10 @@ import {
   GetChatsController,
   GetTrainerContactsController,
   GetUserContactsController,
+  CreateSubPlanController,
+  BlockSubPlanController,
+  DeleteSubPlanController,
+  EditSubPlanController,
   // ErrorMiddleware,
   // AuthMiddleware,
 } from "./file-imports-index";
@@ -217,7 +222,6 @@ import {
   PurchaseSubscriptionController,
   GetUserSubscriptionController,
   WebhookController,
-  SubscriptionPlanController,
   GetTrainerSubscribersController,
   GetTrainerSubscriptionController,
   VerifySubscriptionController,
@@ -444,9 +448,14 @@ container.bind(TYPES_SUBSCRIPTION_CONTROLLER.GetTrainerSubscribersController).to
 container.bind(TYPES_SUBSCRIPTION_CONTROLLER.GetTrainerSubscriptionController).to(GetTrainerSubscriptionController);
 container.bind(TYPES_SUBSCRIPTION_CONTROLLER.GetUserSubscriptionController).to(GetUserSubscriptionController);
 container.bind(TYPES_SUBSCRIPTION_CONTROLLER.PurchaseSubscriptionController).to(PurchaseSubscriptionController);
-container.bind(TYPES_SUBSCRIPTION_CONTROLLER.SubscriptionPlanController).to(SubscriptionPlanController);
 container.bind(TYPES_SUBSCRIPTION_CONTROLLER.VerifySubscriptionController).to(VerifySubscriptionController);
 container.bind(TYPES_SUBSCRIPTION_CONTROLLER.WebhookController).to(WebhookController);
+
+// Subcription Plan Controllers
+container.bind(TYPES_SUBSCRIPTION_PLAN_CONTROLLER.CreateSubPlanController).to(CreateSubPlanController),
+container.bind(TYPES_SUBSCRIPTION_PLAN_CONTROLLER.EditSubPlanController).to(EditSubPlanController),
+container.bind(TYPES_SUBSCRIPTION_PLAN_CONTROLLER.DeleteSubPlanController).to(DeleteSubPlanController),
+container.bind(TYPES_SUBSCRIPTION_PLAN_CONTROLLER.BlockSubPlanController).to(BlockSubPlanController),
 
 // Trainer Controllers 
 container.bind(TYPES_TRAINER_CONTROLLER.GetallTrainersController).to(GetallTrainersController);

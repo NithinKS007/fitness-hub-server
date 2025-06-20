@@ -31,7 +31,6 @@ export const TYPES_BOOKING_CONTROLLER = {
 };
 
 export const TYPES_CHAT_CONTROLLER = {
-  // ChatController: Symbol.for("ChatController"),
   GetChatsController: Symbol.for("GetChatsController"),
   GetUserContactsController: Symbol.for("GetUserContactsController"),
   GetTrainerContactsController: Symbol.for("GetTrainerContactsController"),
@@ -71,9 +70,15 @@ export const TYPES_SUBSCRIPTION_CONTROLLER = {
   ),
   GetUserSubscriptionController: Symbol.for("GetUserSubscriptionController"),
   PurchaseSubscriptionController: Symbol.for("PurchaseSubscriptionController"),
-  SubscriptionPlanController: Symbol.for("SubscriptionPlanController"),
   VerifySubscriptionController: Symbol.for("VerifySubscriptionController"),
   WebhookController: Symbol.for("WebhookController"),
+};
+
+export const TYPES_SUBSCRIPTION_PLAN_CONTROLLER = {
+  CreateSubPlanController: Symbol.for("CreateSubPlanController"),
+  EditSubPlanController: Symbol.for("EditSubPlanController"),
+  DeleteSubPlanController: Symbol.for("DeleteSubPlanController"),
+  BlockSubPlanController: Symbol.for("BlockSubPlanController"),
 };
 
 export const TYPES_TRAINER_CONTROLLER = {

@@ -191,9 +191,14 @@ export { GetTrainerSubscribersController } from "@presentation/controllers/subsc
 export { GetTrainerSubscriptionController } from "@presentation/controllers/subscription/get-trainer-subscriptions.controller";
 export { GetUserSubscriptionController } from "@presentation/controllers/subscription/get-user-subscriptions.controller";
 export { PurchaseSubscriptionController } from "@presentation/controllers/subscription/purchase-subscription.controller";
-export { SubscriptionPlanController } from "@presentation/controllers/subscription/subscription-plan.controller";
 export { VerifySubscriptionController } from "@presentation/controllers/subscription/verify-subscription.controller";
 export { WebhookController } from "@presentation/controllers/subscription/webhook.controller";
+
+// Subscription Plan Controllers
+export { CreateSubPlanController } from "@presentation/controllers/subscriptionPlan/create-subscription-plan.controller";
+export { DeleteSubPlanController } from "@presentation/controllers/subscriptionPlan/delete-subscription-plan.controller";
+export { EditSubPlanController } from "@presentation/controllers/subscriptionPlan/edit-subscription-plan.controller";
+export { BlockSubPlanController } from "@presentation/controllers/subscriptionPlan/block-subscription.controller";
 
 // Trainer Controllers
 export { GetallTrainersController } from "@presentation/controllers/trainer/get-all-trainers.controller";
