@@ -15,7 +15,7 @@ export class VerifySubscriptionController {
     private verifySubcriptionSessionUseCase: VerifySubcriptionSessionUseCase
   ) {}
 
-  async handleVerifySubscription(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { sessionId } = req.params;
     const subscriptionData = await this.verifySubcriptionSessionUseCase.execute(
       sessionId

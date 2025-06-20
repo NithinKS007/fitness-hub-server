@@ -15,7 +15,7 @@ export class CheckSubscriptionStatusController {
     private checkSubscriptionStatusUseCase: CheckSubscriptionStatusUseCase
   ) {}
 
-  async handleCheckSubStatus(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { _id: userId } = req?.user || {};
     const { trainerId } = req.params;
 

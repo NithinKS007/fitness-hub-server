@@ -12,7 +12,7 @@ export class ForgotPasswordController {
     private forgotPasswordUseCase: ForgotPasswordUseCase
   ) {}
 
-  async handleForgotPassword(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { token } = req.params;
     const { password } = req.body;
 

@@ -11,7 +11,7 @@ export class ChangePasswordController {
     @inject(TYPES_AUTH_USECASES.ChangePasswordUseCase)
     private changePasswordUseCase: ChangePasswordUseCase
   ) {}
-  async handleChangePassword(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { _id: userId } = req?.user || {};
     const passwordData = { userId, ...req.body };
 

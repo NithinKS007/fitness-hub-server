@@ -15,7 +15,7 @@ export class WebhookController {
     private webHookHandlerUseCase: WebHookHandlerUseCase
   ) {}
 
-  async webHookHandler(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const sig = req.headers["stripe-signature"];
 
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRETKEY;

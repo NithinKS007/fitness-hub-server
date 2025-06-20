@@ -12,7 +12,7 @@ export class DeleteBookingSlotController {
     private deleteBookingSlotUseCase: DeleteBookingSlotUseCase
   ) {}
 
-  async handleDeleteSlot(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { bookingSlotId } = req.params;
 
     const deletedSlotData = await this.deleteBookingSlotUseCase.execute(

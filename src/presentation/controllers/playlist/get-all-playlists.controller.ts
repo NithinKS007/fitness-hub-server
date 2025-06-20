@@ -12,7 +12,7 @@ export class GetAllPlaylistController {
     private getallPlaylistUseCase: GetallPlaylistUseCase
   ) {}
 
-  async handleGetallPlayLists(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { _id: trainerId } = req?.user || {};
 
     const trainerPlaylists = await this.getallPlaylistUseCase.execute(

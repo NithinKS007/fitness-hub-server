@@ -12,7 +12,7 @@ export class GetPublicVideoDetailsController {
     private getVideoDetailsUseCase: GetVideoDetailsUseCase
   ) {}
 
-  async handleGetPublicVideoById(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { videoId } = req.params;
     const privacy = false;
     const videoData = await this.getVideoDetailsUseCase.execute(

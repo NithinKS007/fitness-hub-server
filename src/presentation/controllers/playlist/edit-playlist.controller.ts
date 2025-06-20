@@ -11,8 +11,8 @@ export class EditPlaylistController {
     @inject(TYPES_PLAYLIST_USECASES.EditPlayListUseCase)
     private editPlayListUseCase: EditPlayListUseCase
   ) {}
-  
-  async handleEditPlayList(req: Request, res: Response): Promise<void> {
+
+  async handle(req: Request, res: Response): Promise<void> {
     const { playListId } = req.params;
     const { title } = req.body;
 

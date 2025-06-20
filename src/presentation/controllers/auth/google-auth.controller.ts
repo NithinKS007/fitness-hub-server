@@ -13,7 +13,7 @@ export class GoogleAuthController {
     private googleAuthUseCase: GoogleAuthUseCase
   ) {}
 
-  async handleGoogleLogin(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { userData, accessToken, refreshToken } =
       await this.googleAuthUseCase.execute(req.body);
 

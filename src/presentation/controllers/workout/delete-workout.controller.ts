@@ -12,7 +12,7 @@ export class DeleteWorkoutController {
     private deleteWorkoutUseCase: DeleteWorkoutUseCase
   ) {}
 
-  async handleDeleteWorkout(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { setId } = req.params;
 
     const deletedWorkoutSet = await this.deleteWorkoutUseCase.execute(setId);

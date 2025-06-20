@@ -13,7 +13,7 @@ export class GetallTrainersController {
     private getTrainersUseCase: GetTrainersUseCase
   ) {}
 
-  async handleGetTrainers(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { trainersList, paginationData } =
       await this.getTrainersUseCase.execute(parseQueryParams(req.query));
 

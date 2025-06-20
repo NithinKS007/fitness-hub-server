@@ -12,7 +12,7 @@ export class UpdateVideoStatusController {
     private updateVideoPrivacyUseCase: UpdateVideoPrivacyUseCase
   ) {}
 
-  async handleUpdatePrivacy(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { videoId } = req.params;
     const { privacy } = req.body;
 

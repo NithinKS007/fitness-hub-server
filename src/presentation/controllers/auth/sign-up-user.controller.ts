@@ -12,7 +12,7 @@ export class SignUpUserController {
     private createUserUseCase: CreateUserUseCase
   ) {}
 
-  async handleSignUpUser(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const createdUser = await this.createUserUseCase.execute(req.body);
 
     sendResponse(res, StatusCodes.OK, createdUser, AuthStatus.UserCreated);

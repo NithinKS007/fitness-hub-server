@@ -12,7 +12,7 @@ export class SignUpTrainerController {
     private createTrainerUseCase: CreateTrainerUseCase
   ) {}
 
-  async handleSignUpTrainer(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const createdTrainer = await this.createTrainerUseCase.execute(req.body);
 
     sendResponse(res, StatusCodes.OK, createdTrainer, AuthStatus.UserCreated);

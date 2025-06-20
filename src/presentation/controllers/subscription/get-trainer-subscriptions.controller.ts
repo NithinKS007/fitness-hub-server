@@ -15,10 +15,7 @@ export class GetTrainerSubscriptionController {
     private getTrainerSubscriptionUseCase: GetTrainerSubscriptionsUseCase
   ) {}
 
-  async handleGetTrainerSubscriptions(
-    req: Request,
-    res: Response
-  ): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const trainerId = req?.user?._id || req.params.trainerId;
 
     const subscriptionsData = await this.getTrainerSubscriptionUseCase.execute(

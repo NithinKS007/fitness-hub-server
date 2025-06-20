@@ -1,17 +1,5 @@
 import express from "express";
 import { authenticate } from "@presentation/middlewares/auth.middleware";
-// import {
-//   googleAuthController,
-//   otpController,
-//   signUpUserController,
-//   signUpTrainerController,
-//   passwordResetLinkController,
-//   forgotPasswordController,
-//   changePasswordController,
-//   signInController,
-//   refreshAccessTokenController,
-//   signOutController,
-// } from "../../di/di";
 import { asyncHandler } from "@shared/utils/async-handler";
 import {
   changePasswordController,
@@ -31,23 +19,19 @@ const authRoutes = express.Router();
 //REGISTRATION AND SIGNIN ROUTES
 authRoutes.post(
   "/sign-up",
-  asyncHandler(signUpUserController.handleSignUpUser.bind(signUpUserController))
+  asyncHandler(signUpUserController.handle.bind(signUpUserController))
 );
 authRoutes.post(
   "/trainer-sign-up",
-  asyncHandler(
-    signUpTrainerController.handleSignUpTrainer.bind(signUpTrainerController)
-  )
+  asyncHandler(signUpTrainerController.handle.bind(signUpTrainerController))
 );
 authRoutes.post(
   "/google",
-  asyncHandler(
-    googleAuthController.handleGoogleLogin.bind(googleAuthController)
-  )
+  asyncHandler(googleAuthController.handle.bind(googleAuthController))
 );
 authRoutes.post(
   "/sign-in",
-  asyncHandler(signInController.handleSignin.bind(signInController))
+  asyncHandler(signInController.handle.bind(signInController))
 );
 
 //OTP ROUTES
@@ -64,37 +48,29 @@ authRoutes.post(
 authRoutes.post(
   "/password-reset",
   asyncHandler(
-    passwordResetLinkController.handleResetLink.bind(
-      passwordResetLinkController
-    )
+    passwordResetLinkController.handle.bind(passwordResetLinkController)
   )
 );
 authRoutes.patch(
   "/password-reset/:token",
-  asyncHandler(
-    forgotPasswordController.handleForgotPassword.bind(forgotPasswordController)
-  )
+  asyncHandler(forgotPasswordController.handle.bind(forgotPasswordController))
 );
 authRoutes.patch(
   "/password/change",
   authenticate,
-  asyncHandler(
-    changePasswordController.handleChangePassword.bind(changePasswordController)
-  )
+  asyncHandler(changePasswordController.handle.bind(changePasswordController))
 );
 
 //AUTHENTICATION AND SIGNOUT ROUTES
 authRoutes.post(
   "/refresh-token",
   asyncHandler(
-    refreshAccessTokenController.handleRefreshAccessToken.bind(
-      refreshAccessTokenController
-    )
+    refreshAccessTokenController.handle.bind(refreshAccessTokenController)
   )
 );
 authRoutes.post(
   "/sign-out",
-  asyncHandler(signOutController.handleSignOut.bind(signOutController))
+  asyncHandler(signOutController.handle.bind(signOutController))
 );
 
 export default authRoutes;

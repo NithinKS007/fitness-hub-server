@@ -6,8 +6,7 @@ import { clearRefreshTokenCookie } from "@shared/utils/cookie";
 
 @injectable()
 export class SignOutController {
-  async handleSignOut(req: Request, res: Response): Promise<void> {
-    
+  async handle(req: Request, res: Response): Promise<void> {
     clearRefreshTokenCookie(res);
 
     sendResponse(res, StatusCodes.OK, null, AuthStatus.LogoutSuccess);

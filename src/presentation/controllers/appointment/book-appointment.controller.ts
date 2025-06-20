@@ -15,7 +15,7 @@ export class BookAppointmentController {
     private bookAppointmentUseCase: BookAppointmentUseCase
   ) {}
 
-  async handleBookAppointment(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { slotId } = req.params;
     const { _id: userId } = req?.user || {};
 

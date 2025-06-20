@@ -13,7 +13,7 @@ export class GetVerifyTrainerController {
     private getVerifyTrainerlistUseCase: GetVerifyTrainerlistUseCase
   ) {}
 
-  async handleGetVerifyPendingList(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { trainersList, paginationData } =
       await this.getVerifyTrainerlistUseCase.execute(
         parseQueryParams(req.query)

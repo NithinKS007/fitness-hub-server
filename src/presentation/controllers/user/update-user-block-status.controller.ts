@@ -12,7 +12,7 @@ export class UpdateUserBlockStatusController {
     private updateUserBlockStatusUseCase: UpdateUserBlockStatusUseCase
   ) {}
 
-  async updateBlockStatus(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { userId } = req.params;
     const { isBlocked } = req.body;
 

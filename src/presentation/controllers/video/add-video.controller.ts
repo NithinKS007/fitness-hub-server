@@ -12,7 +12,7 @@ export class AddVideoController {
     private createVideoUseCase: CreateVideoUseCase
   ) {}
 
-  async handleAddVideo(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { _id: trainerId } = req?.user || {};
 
     const createdVideo = await this.createVideoUseCase.execute({

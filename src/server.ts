@@ -14,8 +14,7 @@ import rateLimiter from "@presentation/middlewares/ratelimit.middleware";
 import { notFoundMiddleware } from "@presentation/middlewares/notfound.middleware";
 import { asyncHandler } from "@shared/utils/async-handler";
 import { webhookController } from "di/container-resolver";
-// import expressAsyncHandler from "express-async-handler";
-// import { webhookController } from "./di/di";
+
 dotenv.config();
 
 const app = express();
@@ -32,7 +31,7 @@ app.use(
 app.post(
   "/api/v1/webhook",
   express.raw({ type: "application/json" }),
-  asyncHandler(webhookController.webHookHandler)
+  asyncHandler(webhookController.handle)
 );
 app.get("/", (req: Request, res: Response) => {
   res.json({ message: "message send from server" });

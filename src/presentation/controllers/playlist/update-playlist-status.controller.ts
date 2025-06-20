@@ -12,7 +12,7 @@ export class UpdatePlaylistPrivacyController {
     private updatePlayListPrivacyUseCase: UpdatePlayListPrivacyUseCase
   ) {}
 
-  async handleUpdatePrivacy(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { playListId } = req.params;
     const { privacy } = req.body;
 

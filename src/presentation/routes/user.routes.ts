@@ -1,31 +1,5 @@
 import express from "express";
 import { authenticate } from "@presentation/middlewares/auth.middleware";
-// import {
-//   bookAppointmentController,
-//   purchaseSubscriptionController,
-//   userDashBoardController,
-//   getUserVideoCallLogController,
-//   getUserMyTrainersController,
-//   getTrainerWithSubController,
-//   getApprovedTrainersController,
-//   addWorkoutController,
-//   getWorkoutController,
-//   deleteWorkoutController,
-//   updateWorkoutController,
-//   updateUserProfileController,
-//   getUserSchedulesController,
-//   cancelAppointmentController,
-//   getAllPendingSlotsController,
-//   getUpComingSlotsController,
-//   getAllPlaylistController,
-//   verifySubscriptionController,
-//   cancelSubscriptionController,
-//   checkSubscriptionStatusController,
-//   getUserSubscriptionController,
-//   getPublicVideosController,
-//   getPublicVideoDetailscontroller,
-//   getAllPublicPlaylistController,
-// } from "../../di/di";
 import { asyncHandler } from "@shared/utils/async-handler";
 import {
   addWorkoutController,
@@ -59,26 +33,20 @@ const userRoutes = express.Router();
 userRoutes.get(
   "/trainers",
   asyncHandler(
-    getApprovedTrainersController.handleGetApprovedTrainers.bind(
-      getApprovedTrainersController
-    )
+    getApprovedTrainersController.handle.bind(getApprovedTrainersController)
   )
 );
 userRoutes.get(
   "/trainers/:trainerId",
   asyncHandler(
-    getTrainerWithSubController.handleGetTrainerWithSub.bind(
-      getTrainerWithSubController
-    )
+    getTrainerWithSubController.handle.bind(getTrainerWithSubController)
   )
 );
 userRoutes.get(
   "/my-trainers",
   authenticate,
   asyncHandler(
-    getUserMyTrainersController.handleGetMyTrainers.bind(
-      getUserMyTrainersController
-    )
+    getUserMyTrainersController.handle.bind(getUserMyTrainersController)
   )
 );
 
@@ -87,43 +55,35 @@ userRoutes.post(
   "/subscriptions/checkout",
   authenticate,
   asyncHandler(
-    purchaseSubscriptionController.handlePurchase.bind(
-      purchaseSubscriptionController
-    )
+    purchaseSubscriptionController.handle.bind(purchaseSubscriptionController)
   )
 );
 userRoutes.get(
   "/subscriptions",
   authenticate,
   asyncHandler(
-    getUserSubscriptionController.handleGetUserSub.bind(
-      getUserSubscriptionController
-    )
+    getUserSubscriptionController.handle.bind(getUserSubscriptionController)
   )
 );
 userRoutes.get(
   "/subscriptions/:sessionId/verify",
   authenticate,
   asyncHandler(
-    verifySubscriptionController.handleVerifySubscription.bind(
-      verifySubscriptionController
-    )
+    verifySubscriptionController.handle.bind(verifySubscriptionController)
   )
 );
 userRoutes.patch(
   "/subscriptions/cancel",
   authenticate,
   asyncHandler(
-    cancelSubscriptionController.handleCancelSubscription.bind(
-      cancelSubscriptionController
-    )
+    cancelSubscriptionController.handle.bind(cancelSubscriptionController)
   )
 );
 userRoutes.get(
   "/subscriptions/:trainerId/status/",
   authenticate,
   asyncHandler(
-    checkSubscriptionStatusController.handleCheckSubStatus.bind(
+    checkSubscriptionStatusController.handle.bind(
       checkSubscriptionStatusController
     )
   )
@@ -133,19 +93,13 @@ userRoutes.get(
 userRoutes.get(
   "/trainers/:trainerId/videos",
   authenticate,
-  asyncHandler(
-    getPublicVideosController.handleGetPublicVideos.bind(
-      getPublicVideosController
-    )
-  )
+  asyncHandler(getPublicVideosController.handle.bind(getPublicVideosController))
 );
 userRoutes.get(
   "/videos/:videoId",
   authenticate,
   asyncHandler(
-    getPublicVideoDetailsController.handleGetPublicVideoById.bind(
-      getPublicVideoDetailsController
-    )
+    getPublicVideoDetailsController.handle.bind(getPublicVideoDetailsController)
   )
 );
 
@@ -154,9 +108,7 @@ userRoutes.get(
   "/playlists/:trainerId",
   authenticate,
   asyncHandler(
-    getAllPublicPlaylistController.handleGetallPublicPlayLists.bind(
-      getAllPublicPlaylistController
-    )
+    getAllPublicPlaylistController.handle.bind(getAllPublicPlaylistController)
   )
 );
 
@@ -165,28 +117,20 @@ userRoutes.get(
   "/slots/:trainerId/available",
   authenticate,
   asyncHandler(
-    getAllPendingSlotsController.handleGetAllAvailableSlots.bind(
-      getAllPendingSlotsController
-    )
+    getAllPendingSlotsController.handle.bind(getAllPendingSlotsController)
   )
 );
 userRoutes.get(
   "/slots/:trainerId/upcoming",
   authenticate,
   asyncHandler(
-    getUpComingSlotsController.handleGetUpcomingSlots.bind(
-      getUpComingSlotsController
-    )
+    getUpComingSlotsController.handle.bind(getUpComingSlotsController)
   )
 );
 userRoutes.post(
   "/slots/:slotId",
   authenticate,
-  asyncHandler(
-    bookAppointmentController.handleBookAppointment.bind(
-      bookAppointmentController
-    )
-  )
+  asyncHandler(bookAppointmentController.handle.bind(bookAppointmentController))
 );
 
 //APPOINTMENT ROUTES
@@ -194,27 +138,21 @@ userRoutes.get(
   "/appointments",
   authenticate,
   asyncHandler(
-    getUserSchedulesController.handleGetUserSchedules.bind(
-      getUserSchedulesController
-    )
+    getUserSchedulesController.handle.bind(getUserSchedulesController)
   )
 );
 userRoutes.patch(
   "/appointments/:appointmentId",
   authenticate,
   asyncHandler(
-    cancelAppointmentController.handleCancelAppointment.bind(
-      cancelAppointmentController
-    )
+    cancelAppointmentController.handle.bind(cancelAppointmentController)
   )
 );
 userRoutes.get(
   "/video-call-logs",
   authenticate,
   asyncHandler(
-    getUserVideoCallLogController.handleGetUserLogs.bind(
-      getUserVideoCallLogController
-    )
+    getUserVideoCallLogController.handle.bind(getUserVideoCallLogController)
   )
 );
 
@@ -223,9 +161,7 @@ userRoutes.put(
   "/profile",
   authenticate,
   asyncHandler(
-    updateUserProfileController.handleUpdateUserProfile.bind(
-      updateUserProfileController
-    )
+    updateUserProfileController.handle.bind(updateUserProfileController)
   )
 );
 
@@ -233,35 +169,29 @@ userRoutes.put(
 userRoutes.post(
   "/workouts",
   authenticate,
-  asyncHandler(addWorkoutController.handleAddWorkout.bind(addWorkoutController))
+  asyncHandler(addWorkoutController.handle.bind(addWorkoutController))
 );
 userRoutes.get(
   "/workouts",
   authenticate,
-  asyncHandler(getWorkoutController.handleGetWorkout.bind(getWorkoutController))
+  asyncHandler(getWorkoutController.handle.bind(getWorkoutController))
 );
 userRoutes.delete(
   "/workouts/:setId",
   authenticate,
-  asyncHandler(
-    deleteWorkoutController.handleDeleteWorkout.bind(deleteWorkoutController)
-  )
+  asyncHandler(deleteWorkoutController.handle.bind(deleteWorkoutController))
 );
 userRoutes.patch(
   "/workouts/:setId",
   authenticate,
-  asyncHandler(
-    updateWorkoutController.handlWorkoutComplete.bind(updateWorkoutController)
-  )
+  asyncHandler(updateWorkoutController.handle.bind(updateWorkoutController))
 );
 
 //DASHBOARD ROUTES
 userRoutes.get(
   "/dashBoard",
   authenticate,
-  asyncHandler(
-    userDashboardController.getUserDashBoardData.bind(userDashboardController)
-  )
+  asyncHandler(userDashboardController.handle.bind(userDashboardController))
 );
 
 export default userRoutes;

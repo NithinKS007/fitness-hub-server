@@ -16,7 +16,7 @@ export class GetTrainerVideoCallLogController {
     private getTrainerVideoCallLogUseCase: GetTrainerVideoCallLogUseCase
   ) {}
 
-  async handleGetTrainerLogs(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { _id: trainerId } = req?.user || {};
 
     const queryParams = parseQueryParams(req.query);

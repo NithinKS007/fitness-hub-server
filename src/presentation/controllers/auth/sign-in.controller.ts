@@ -13,7 +13,7 @@ export class SignInController {
     private signinUseCase: SigninUserUseCase
   ) {}
 
-  async handleSignin(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { userData, accessToken, refreshToken } =
       await this.signinUseCase.execute(req.body);
 

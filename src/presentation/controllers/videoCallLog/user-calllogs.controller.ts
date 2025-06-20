@@ -16,7 +16,7 @@ export class GetUserVideoCallLogController {
     private getuserVideoCallLogUseCase: GetUserVideoCallLogUseCase
   ) {}
 
-  async handleGetUserLogs(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { _id: userId } = req?.user || {};
 
     const queryParams = parseQueryParams(req.query);
@@ -31,5 +31,4 @@ export class GetUserVideoCallLogController {
       AppointmentStatus.VideoCallLogsRetrievedSuccessfully
     );
   }
-
 }

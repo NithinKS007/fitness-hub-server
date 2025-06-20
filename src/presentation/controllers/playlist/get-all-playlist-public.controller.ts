@@ -12,10 +12,7 @@ export class GetAllPublicPlaylistController {
     private getallPlaylistUseCase: GetallPlaylistUseCase
   ) {}
 
-  async handleGetallPublicPlayLists(
-    req: Request,
-    res: Response
-  ): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { trainerId } = req.params;
     const privacy = false;
     const playListsOfTrainer = await this.getallPlaylistUseCase.execute(

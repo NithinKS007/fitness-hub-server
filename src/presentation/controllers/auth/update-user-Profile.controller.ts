@@ -13,7 +13,7 @@ export class UpdateUserProfileController {
     private updateUserProfileUseCase: UpdateUserProfileUseCase
   ) {}
 
-  async handleUpdateUserProfile(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { userId, ...bodyWithoutUserId } = req.body;
 
     const userProfileData: UpdateUserDetailsDTO = {

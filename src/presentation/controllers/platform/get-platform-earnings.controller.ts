@@ -13,7 +13,7 @@ export class GetPlatformEarningsController {
     private getPFearningsUseCase: GetPlatformEarningsUsecase
   ) {}
 
-  async handleGetEarnings(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { revenueData, paginationData } =
       await this.getPFearningsUseCase.execute(parseQueryParams(req.query));
 

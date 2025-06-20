@@ -12,7 +12,7 @@ export class RefreshAccessTokenController {
     private tokenUseCase: TokenUseCase
   ) {}
 
-  async handleRefreshAccessToken(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { refreshToken } = req?.cookies;
 
     const newAccessToken = await this.tokenUseCase.refreshAccessToken(

@@ -1,6 +1,5 @@
 import express from "express";
 import { authenticate } from "@presentation/middlewares/auth.middleware";
-// import { chatController } from "../../di/di";
 import { asyncHandler } from "@shared/utils/async-handler";
 import { chatController } from "di/container-resolver";
 

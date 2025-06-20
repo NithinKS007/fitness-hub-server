@@ -27,7 +27,7 @@ export class SubscriptionPlanController {
     private subscriptionBlockUseCase: SubscriptionBlockUseCase
   ) {}
 
-  async addSubscription(req: Request, res: Response): Promise<void> {
+  async handleAdd(req: Request, res: Response): Promise<void> {
     const { _id: trainerId } = req?.user || {};
 
     const subscriptionData = await this.createSubscriptionUseCase.execute({
@@ -43,10 +43,7 @@ export class SubscriptionPlanController {
     );
   }
 
-  async updateSubscriptionBlockStatus(
-    req: Request,
-    res: Response
-  ): Promise<void> {
+  async handleBlockStatus(req: Request, res: Response): Promise<void> {
     const { subscriptionId } = req.params;
     const { isBlocked } = req.body;
 
@@ -66,7 +63,7 @@ export class SubscriptionPlanController {
     );
   }
 
-  async editSubscription(req: Request, res: Response): Promise<void> {
+  async handleEdit(req: Request, res: Response): Promise<void> {
     const { subscriptionId } = req.params;
     const { _id: trainerId } = req?.user || {};
 
@@ -84,7 +81,7 @@ export class SubscriptionPlanController {
     );
   }
 
-  async deleteSubscription(req: Request, res: Response): Promise<void> {
+  async handleDelete(req: Request, res: Response): Promise<void> {
     const { subscriptionId } = req.params;
 
     const deletedSubscriptionData =

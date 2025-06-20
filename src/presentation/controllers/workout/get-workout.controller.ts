@@ -13,7 +13,7 @@ export class GetWorkoutController {
     private getWorkoutUseCase: GetWorkoutUseCase
   ) {}
 
-  async handleGetWorkout(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { _id: userId } = req?.user || {};
 
     const queryParams = parseQueryParams(req.query);

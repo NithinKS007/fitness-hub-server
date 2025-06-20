@@ -12,7 +12,7 @@ export class GetAllPendingSlotsController {
     private getAllPendingSlotsUseCase: GetAllPendingSlotsUseCase
   ) {}
 
-  async handleGetAllAvailableSlots(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { trainerId } = req.params;
 
     const bookingSlotsOfTrainer = await this.getAllPendingSlotsUseCase.execute(

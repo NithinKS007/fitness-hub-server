@@ -12,7 +12,7 @@ export class GetTrainerWithSubController {
     private getTrainerAndSubInfoUseCase: GetTrainerAndSubInfoUseCase
   ) {}
 
-  async handleGetTrainerWithSub(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { trainerId } = req.params;
 
     const trainersData = await this.getTrainerAndSubInfoUseCase.execute(

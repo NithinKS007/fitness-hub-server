@@ -1,19 +1,18 @@
 import express from "express";
 import { authenticate } from "@presentation/middlewares/auth.middleware";
-// import {
-//   adminDashboardController,
-//   getUsersController,
-//   updateUserBlockStatusController,
-//   getallTrainersController,
-//   getTrainerDetailsController,
-//   getVerifyTrainerController,
-//   verifyTrainerController,
-//   getPlatformEarningsController,
-//   getTrainerSubscriptionController,
-//   getUserDetailsController,
-// } from "../../di/di";
 import { asyncHandler } from "@shared/utils/async-handler";
-import { adminDashboardController, getAllTrainersController, getPlatformEarningsController, getTrainerDetailsController, getTrainerSubscriptionController, getUserDetailsController, getUsersController, getVerifyTrainerController, updateUserBlockStatusController, verifyTrainerController } from "di/container-resolver";
+import {
+  adminDashboardController,
+  getAllTrainersController,
+  getPlatformEarningsController,
+  getTrainerDetailsController,
+  getTrainerSubscriptionController,
+  getUserDetailsController,
+  getUsersController,
+  getVerifyTrainerController,
+  updateUserBlockStatusController,
+  verifyTrainerController,
+} from "di/container-resolver";
 
 const adminRoutes = express.Router();
 
@@ -21,22 +20,18 @@ const adminRoutes = express.Router();
 adminRoutes.get(
   "/users",
   authenticate,
-  asyncHandler(getUsersController.handleGetUsers.bind(getUsersController))
+  asyncHandler(getUsersController.handle.bind(getUsersController))
 );
 adminRoutes.get(
   "/users/:userId",
   authenticate,
-  asyncHandler(
-    getUserDetailsController.handleGetUserDetails.bind(getUserDetailsController)
-  )
+  asyncHandler(getUserDetailsController.handle.bind(getUserDetailsController))
 );
 adminRoutes.patch(
   "/users/:userId",
   authenticate,
   asyncHandler(
-    updateUserBlockStatusController.updateBlockStatus.bind(
-      updateUserBlockStatusController
-    )
+    updateUserBlockStatusController.handle.bind(updateUserBlockStatusController)
   )
 );
 
@@ -44,40 +39,32 @@ adminRoutes.patch(
 adminRoutes.get(
   "/trainers",
   authenticate,
-  asyncHandler(
-    getAllTrainersController.handleGetTrainers.bind(getAllTrainersController)
-  )
+  asyncHandler(getAllTrainersController.handle.bind(getAllTrainersController))
 );
 adminRoutes.get(
   "/trainers/:trainerId",
   authenticate,
   asyncHandler(
-    getTrainerDetailsController.handleGetTrainerDetails.bind(
-      getTrainerDetailsController
-    )
+    getTrainerDetailsController.handle.bind(getTrainerDetailsController)
   )
 );
 adminRoutes.get(
   "/trainers/approval",
   authenticate,
   asyncHandler(
-    getVerifyTrainerController.handleGetVerifyPendingList.bind(
-      getVerifyTrainerController
-    )
+    getVerifyTrainerController.handle.bind(getVerifyTrainerController)
   )
 );
 adminRoutes.patch(
   "/trainers/:trainerId/approval",
   authenticate,
-  asyncHandler(
-    verifyTrainerController.handleVerification.bind(verifyTrainerController)
-  )
+  asyncHandler(verifyTrainerController.handle.bind(verifyTrainerController))
 );
 adminRoutes.get(
   "/trainers/:trainerId/subscriptions",
   authenticate,
   asyncHandler(
-    getTrainerSubscriptionController.handleGetTrainerSubscriptions.bind(
+    getTrainerSubscriptionController.handle.bind(
       getTrainerSubscriptionController
     )
   )
@@ -87,11 +74,7 @@ adminRoutes.get(
 adminRoutes.get(
   "/dashboard",
   authenticate,
-  asyncHandler(
-    adminDashboardController.getAdminDashBoardData.bind(
-      adminDashboardController
-    )
-  )
+  asyncHandler(adminDashboardController.handle.bind(adminDashboardController))
 );
 
 //REVENUE MANAGEMENT ROUTES
@@ -99,9 +82,7 @@ adminRoutes.get(
   "/revenue",
   authenticate,
   asyncHandler(
-    getPlatformEarningsController.handleGetEarnings.bind(
-      getPlatformEarningsController
-    )
+    getPlatformEarningsController.handle.bind(getPlatformEarningsController)
   )
 );
 

@@ -15,7 +15,7 @@ export class CancelAppointmentController {
     private cancelAppointmentUseCase: CancelAppointmentUseCase
   ) {}
 
-  async handleCancelAppointment(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { appointmentId } = req.params;
 
     const cancelledAppointmentData =

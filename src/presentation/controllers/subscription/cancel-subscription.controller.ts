@@ -15,7 +15,7 @@ export class CancelSubscriptionController {
     private cancelSubscriptionUseCase: CancelSubscriptionUseCase
   ) {}
 
-  async handleCancelSubscription(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { stripeSubscriptionId, action } = req.body;
 
     const cancelSubData = { stripeSubscriptionId, action };

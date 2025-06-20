@@ -13,7 +13,7 @@ export class GetUserMyTrainersController {
     private getUserTrainerslistUseCase: GetUserTrainerslistUseCase
   ) {}
 
-  async handleGetMyTrainers(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { _id: userId } = req?.user || {};
 
     const { userTrainersList, paginationData } =

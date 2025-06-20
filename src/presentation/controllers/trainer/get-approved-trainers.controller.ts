@@ -13,7 +13,7 @@ export class GetApprovedTrainersController {
     private getApprovedTrainersUseCase: GetApprovedTrainersUseCase
   ) {}
 
-  async handleGetApprovedTrainers(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { trainersList, paginationData } =
       await this.getApprovedTrainersUseCase.execute(
         parseQueryParams(req.query)

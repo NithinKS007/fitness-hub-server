@@ -13,7 +13,7 @@ export class GetUsersController {
     private getUsersUseCase: GetUsersUseCase
   ) {}
 
-  async handleGetUsers(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { usersList, paginationData } = await this.getUsersUseCase.execute(
       parseQueryParams(req.query)
     );

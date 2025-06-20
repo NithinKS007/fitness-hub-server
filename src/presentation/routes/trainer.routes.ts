@@ -1,29 +1,5 @@
 import express from "express";
 import { authenticate } from "@presentation/middlewares/auth.middleware";
-// import {
-//   addVideoController,
-//   editVideoController,
-//   updateVideoStatusController,
-//   updateAppointmentController,
-//   subscriptionPlanController,
-//   trainerDashboardController,
-//   getTrainerVideoCallLogController,
-//   createBookingSlotController,
-//   deleteBookingSlotController,
-//   addPlaylistController,
-//   getPlaylistController,
-//   updatePlaylistPrivacyController,
-//   editPlaylistController,
-//   updateTrainerProfileController,
-//   getBookingRequestsController,
-//   getTrainerSchedulesController,
-//   cancelAppointmentController,
-//   getPendingSlotsController,
-//   getAllPlaylistController,
-//   getTrainerSubscriptionController,
-//   getTrainerSubscribersController,
-//   getAllVideosController,
-// } from "../../di/di";
 import { asyncHandler } from "@shared/utils/async-handler";
 import {
   addVideoController,
@@ -57,14 +33,14 @@ trainerRoutes.post(
   "/subscriptions",
   authenticate,
   asyncHandler(
-    subscriptionPlanController.addSubscription.bind(subscriptionPlanController)
+    subscriptionPlanController.handleAdd.bind(subscriptionPlanController)
   )
 );
 trainerRoutes.get(
   "/subscriptions",
   authenticate,
   asyncHandler(
-    getTrainerSubscriptionController.handleGetTrainerSubscriptions.bind(
+    getTrainerSubscriptionController.handle.bind(
       getTrainerSubscriptionController
     )
   )
@@ -73,7 +49,7 @@ trainerRoutes.patch(
   "/subscriptions/:subscriptionId",
   authenticate,
   asyncHandler(
-    subscriptionPlanController.updateSubscriptionBlockStatus.bind(
+    subscriptionPlanController.handleBlockStatus.bind(
       subscriptionPlanController
     )
   )
@@ -82,25 +58,21 @@ trainerRoutes.put(
   "/subscriptions/:subscriptionId",
   authenticate,
   asyncHandler(
-    subscriptionPlanController.editSubscription.bind(subscriptionPlanController)
+    subscriptionPlanController.handleEdit.bind(subscriptionPlanController)
   )
 );
 trainerRoutes.delete(
   "/subscriptions/:subscriptionId",
   authenticate,
   asyncHandler(
-    subscriptionPlanController.deleteSubscription.bind(
-      subscriptionPlanController
-    )
+    subscriptionPlanController.handleDelete.bind(subscriptionPlanController)
   )
 );
 trainerRoutes.get(
   "/subscribers",
   authenticate,
   asyncHandler(
-    getTrainerSubscribersController.handleGetTrainerSubscribedUsers.bind(
-      getTrainerSubscribersController
-    )
+    getTrainerSubscribersController.handle.bind(getTrainerSubscribersController)
   )
 );
 
@@ -108,69 +80,53 @@ trainerRoutes.get(
 trainerRoutes.post(
   "/playlists",
   authenticate,
-  asyncHandler(
-    createPlaylistController.handleAddPlaylist.bind(createPlaylistController)
-  )
+  asyncHandler(createPlaylistController.handle.bind(createPlaylistController))
 );
 trainerRoutes.get(
   "/playlists",
   authenticate,
-  asyncHandler(
-    getPlaylistController.handleGetPlaylists.bind(getPlaylistController)
-  )
+  asyncHandler(getPlaylistController.handle.bind(getPlaylistController))
 );
 trainerRoutes.get(
   "/playlists/all",
   authenticate,
-  asyncHandler(
-    getAllPlaylistController.handleGetallPlayLists.bind(
-      getAllPlaylistController
-    )
-  )
+  asyncHandler(getAllPlaylistController.handle.bind(getAllPlaylistController))
 );
 trainerRoutes.patch(
   "/playlists/:playListId",
   authenticate,
   asyncHandler(
-    updatePlaylistPrivacyController.handleUpdatePrivacy.bind(
-      updatePlaylistPrivacyController
-    )
+    updatePlaylistPrivacyController.handle.bind(updatePlaylistPrivacyController)
   )
 );
 trainerRoutes.put(
   "/playlists/:playListId",
   authenticate,
-  asyncHandler(
-    editPlaylistController.handleEditPlayList.bind(editPlaylistController)
-  )
+  asyncHandler(editPlaylistController.handle.bind(editPlaylistController))
 );
 
 //VIDEO MANAGEMENT ROUTES
 trainerRoutes.post(
   "/videos/",
   authenticate,
-  asyncHandler(addVideoController.handleAddVideo.bind(addVideoController))
+  asyncHandler(addVideoController.handle.bind(addVideoController))
 );
 trainerRoutes.patch(
   "/videos/:videoId",
   authenticate,
   asyncHandler(
-    updateVideoStatusController.handleUpdatePrivacy.bind(
-      updateVideoStatusController
-    )
+    updateVideoStatusController.handle.bind(updateVideoStatusController)
   )
 );
 trainerRoutes.put(
   "/videos/:videoId",
   authenticate,
-  asyncHandler(editVideoController.handleEditVideo.bind(editVideoController))
+  asyncHandler(editVideoController.handle.bind(editVideoController))
 );
 trainerRoutes.get(
   "/videos",
   authenticate,
-  asyncHandler(
-    getAllVideosController.handleGetAllVideos.bind(getAllVideosController)
-  )
+  asyncHandler(getAllVideosController.handle.bind(getAllVideosController))
 );
 
 //SLOT MANAGEMENT
@@ -178,25 +134,19 @@ trainerRoutes.post(
   "/slots",
   authenticate,
   asyncHandler(
-    createBookingSlotController.handleAddSlot.bind(createBookingSlotController)
+    createBookingSlotController.handle.bind(createBookingSlotController)
   )
 );
 trainerRoutes.get(
   "/slots",
   authenticate,
-  asyncHandler(
-    getPendingSlotsController.handleGetPendingSlots.bind(
-      getPendingSlotsController
-    )
-  )
+  asyncHandler(getPendingSlotsController.handle.bind(getPendingSlotsController))
 );
 trainerRoutes.delete(
   "/slots/:bookingSlotId",
   authenticate,
   asyncHandler(
-    deleteBookingSlotController.handleDeleteSlot.bind(
-      deleteBookingSlotController
-    )
+    deleteBookingSlotController.handle.bind(deleteBookingSlotController)
   )
 );
 
@@ -205,18 +155,14 @@ trainerRoutes.get(
   "/bookings",
   authenticate,
   asyncHandler(
-    getBookingRequestsController.handleGetBookingRequests.bind(
-      getBookingRequestsController
-    )
+    getBookingRequestsController.handle.bind(getBookingRequestsController)
   )
 );
 trainerRoutes.patch(
   "/bookings",
   authenticate,
   asyncHandler(
-    updateAppointmentController.handleBookingRequest.bind(
-      updateAppointmentController
-    )
+    updateAppointmentController.handle.bind(updateAppointmentController)
   )
 );
 
@@ -225,25 +171,21 @@ trainerRoutes.get(
   "/appointments",
   authenticate,
   asyncHandler(
-    getTrainerSchedulesController.handleGetTrainerSchedules.bind(
-      getTrainerSchedulesController
-    )
+    getTrainerSchedulesController.handle.bind(getTrainerSchedulesController)
   )
 );
 trainerRoutes.patch(
   "/appointments/:appointmentId",
   authenticate,
   asyncHandler(
-    cancelAppointmentController.handleCancelAppointment.bind(
-      cancelAppointmentController
-    )
+    cancelAppointmentController.handle.bind(cancelAppointmentController)
   )
 );
 trainerRoutes.get(
   "/video-call-logs",
   authenticate,
   asyncHandler(
-    getTrainerVideoCallLogController.handleGetTrainerLogs.bind(
+    getTrainerVideoCallLogController.handle.bind(
       getTrainerVideoCallLogController
     )
   )
@@ -254,9 +196,7 @@ trainerRoutes.get(
   "/dashboard",
   authenticate,
   asyncHandler(
-    trainerDashboardController.getTrainerDashBoardData.bind(
-      trainerDashboardController
-    )
+    trainerDashboardController.handle.bind(trainerDashboardController)
   )
 );
 
@@ -265,9 +205,7 @@ trainerRoutes.put(
   "/profile",
   authenticate,
   asyncHandler(
-    updateTrainerProfileController.handleUpdateTrainerProfile.bind(
-      updateTrainerProfileController
-    )
+    updateTrainerProfileController.handle.bind(updateTrainerProfileController)
   )
 );
 

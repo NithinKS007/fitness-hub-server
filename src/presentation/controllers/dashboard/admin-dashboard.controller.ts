@@ -16,7 +16,7 @@ export class AdminDashboardController {
     private adminDashBoardUseCase: AdminDashBoardUseCase
   ) {}
 
-  async getAdminDashBoardData(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const period = parseQueryParams(req.query).period;
 
     const {

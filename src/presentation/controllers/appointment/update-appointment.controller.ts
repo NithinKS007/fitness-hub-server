@@ -15,7 +15,7 @@ export class UpdateAppointmentController {
     private handleBookingApprovalUseCase: HandleBookingApprovalUseCase
   ) {}
 
-  async handleBookingRequest(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { appointmentId, bookingSlotId, action } = req.body;
 
     const bookingRequestData = { appointmentId, bookingSlotId, action };

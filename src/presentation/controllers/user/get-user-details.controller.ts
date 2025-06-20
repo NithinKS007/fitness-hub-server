@@ -12,7 +12,7 @@ export class GetUserDetailsController {
     private getUserDetailsUseCase: GetUserDetailsUseCase
   ) {}
 
-  async handleGetUserDetails(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { userId } = req.params;
 
     const userData = await this.getUserDetailsUseCase.execute(userId);

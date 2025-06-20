@@ -11,7 +11,7 @@ export class PasswordResetLinkController {
     @inject(TYPES_AUTH_USECASES.SendPasswordRestLinkUseCase)
     private sendPasswordRestLinkUseCase: SendPasswordRestLinkUseCase
   ) {}
-  async handleResetLink(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { email } = await this.sendPasswordRestLinkUseCase.execute(req.body);
 
     sendResponse(res, StatusCodes.OK, email, AuthStatus.EmailSent);

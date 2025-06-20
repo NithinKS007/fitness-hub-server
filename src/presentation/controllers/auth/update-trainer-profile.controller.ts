@@ -12,7 +12,7 @@ export class UpdateTrainerProfileController {
     private updateTrainerProfileUseCase: UpdateTrainerProfileUseCase
   ) {}
 
-  async handleUpdateTrainerProfile(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { _id: trainerId } = req?.user || {};
     const trainerProfileData = {
       trainerId,

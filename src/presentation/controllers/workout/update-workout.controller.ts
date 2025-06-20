@@ -12,7 +12,7 @@ export class UpdateWorkoutController {
     private completeWorkoutUseCase: CompleteWorkoutUseCase
   ) {}
 
-  async handlWorkoutComplete(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { setId } = req.params;
 
     const workoutSet = await this.completeWorkoutUseCase.execute(setId);

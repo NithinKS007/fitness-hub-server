@@ -16,7 +16,7 @@ export class GetUserSchedulesController {
     private getUserSchedulesUseCase: GetUserSchedulesUseCase
   ) {}
 
-  async handleGetUserSchedules(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { _id: userId } = req?.user || {};
 
     const queryParams = parseQueryParams(req.query);

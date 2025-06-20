@@ -13,7 +13,7 @@ export class GetUpComingSlotsController {
     private getUpComingSlotsUseCase: GetUpComingSlotsUseCase
   ) {}
 
-  async handleGetUpcomingSlots(req: Request, res: Response): Promise<void> {
+  async handle(req: Request, res: Response): Promise<void> {
     const { trainerId } = req.params;
 
     const queryParams = parseQueryParams(req.query);

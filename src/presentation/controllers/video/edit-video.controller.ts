@@ -11,7 +11,8 @@ export class EditVideoController {
     @inject(TYPES_VIDEO_USECASES.EditVideoUseCase)
     private editVideoUseCase: EditVideoUseCase
   ) {}
-  async handleEditVideo(req: Request, res: Response): Promise<void> {
+  
+  async handle(req: Request, res: Response): Promise<void> {
     const { videoId } = req.params;
     const { _id: trainerId } = req?.user || {};
 
