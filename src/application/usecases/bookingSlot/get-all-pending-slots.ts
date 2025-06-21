@@ -3,7 +3,7 @@ import { AuthStatus, SlotStatus } from "@shared/constants/index.constants";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { IBookingSlot } from "@domain/entities/booking-slot.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /**
  * Purpose: Handles the retrieval of all pending booking slots for a given trainer.

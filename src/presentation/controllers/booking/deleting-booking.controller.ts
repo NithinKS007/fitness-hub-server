@@ -3,7 +3,7 @@ import { injectable, inject } from "inversify";
 import { StatusCodes, SlotStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { DeleteBookingSlotUseCase } from "@application/usecases/bookingSlot/delete-booking-slot.usecase";
-import { TYPES_BOOKINGSLOT_USECASAES } from "di/types-usecases";
+import { TYPES_BOOKINGSLOT_USECASAES } from "@di/types-usecases";
 
 @injectable()
 export class DeleteBookingSlotController {

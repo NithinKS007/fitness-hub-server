@@ -7,7 +7,7 @@ import {
 import { sendResponse } from "@shared/utils/http.response";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetAppointmentRequestUseCase } from "@application/usecases/appointment/get-appointment-request.usecase";
-import { TYPES_APPOINTMENT_USECASES } from "di/types-usecases";
+import { TYPES_APPOINTMENT_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class GetBookingRequestsController {

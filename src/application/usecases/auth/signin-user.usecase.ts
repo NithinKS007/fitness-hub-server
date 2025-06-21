@@ -15,8 +15,8 @@ import { IEncryptionService } from "@application/interfaces/security/IEncryption
 import { Trainer } from "@application/dtos/trainer-dtos";
 import { IUser } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
-import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { TYPES_SERVICES } from "@di/types-services";
 
 /**
  * Purpose: Handle the sign-in process for a user or trainer.

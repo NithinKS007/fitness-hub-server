@@ -11,8 +11,8 @@ import { IOTPService } from "@application/interfaces/security/IGenerate-otp.serv
 import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
 import { IUser } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_SERVICES } from "di/types-services";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "@di/types-services";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /*  
     Purpose: Creates a new user, handles OTP verification, and sends OTP email.

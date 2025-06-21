@@ -6,8 +6,8 @@ import {
   WorkoutChartData,
 } from "@application/dtos/workout-dtos";
 import { injectable, inject } from "inversify";
-import { TYPES_SERVICES } from "di/types-services";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_SERVICES } from "@di/types-services";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 @injectable()
 export class UserDashBoardUseCase {

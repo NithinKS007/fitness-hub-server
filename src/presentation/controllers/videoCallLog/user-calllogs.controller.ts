@@ -7,7 +7,7 @@ import {
 import { sendResponse } from "@shared/utils/http.response";
 import { GetUserVideoCallLogUseCase } from "@application/usecases/videoCallLog/get-user-video-calllog.usecase";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { TYPES_VIDEO_CALL_LOG_USECASES } from "di/types-usecases";
+import { TYPES_VIDEO_CALL_LOG_USECASES } from "@di/types-usecases";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
 
 @injectable()

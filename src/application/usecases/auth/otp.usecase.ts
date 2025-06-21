@@ -7,8 +7,8 @@ import { IEmailService } from "@application/interfaces/communication/IEmail.serv
 import { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
 import { IOtp } from "@domain/entities/otp.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
-import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { TYPES_SERVICES } from "@di/types-services";
 
 /*  
     Method  : createOtp

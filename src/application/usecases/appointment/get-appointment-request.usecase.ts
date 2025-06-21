@@ -8,7 +8,7 @@ import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepositor
 import { GetBookingRequestsDTO } from "@application/dtos/query-dtos";
 import { AppointmentRequestsTrainer } from "@application/dtos/appointment-dtos";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /*  
     Purpose: Retrieve a list of booking requests for a specific trainer with pagination and filters

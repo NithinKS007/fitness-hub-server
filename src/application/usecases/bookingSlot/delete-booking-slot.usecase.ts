@@ -8,7 +8,7 @@ import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepositor
 import { BookingSlotStatus } from "@application/dtos/booking-dtos";
 import { IBookingSlot } from "@domain/entities/booking-slot.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /**
  * Purpose: Handles the deletion of a booking slot based on its slot id.

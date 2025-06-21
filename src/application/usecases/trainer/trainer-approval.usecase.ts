@@ -5,7 +5,7 @@ import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { Action } from "@application/dtos/utility-dtos";
 import { ITrainer } from "@domain/entities/trainer.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 @injectable()
 export class TrainerApprovalUseCase {

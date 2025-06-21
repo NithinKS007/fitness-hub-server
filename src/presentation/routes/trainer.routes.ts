@@ -27,7 +27,7 @@ import {
   updatePlaylistPrivacyController,
   updateTrainerProfileController,
   updateVideoStatusController,
-} from "di/container-resolver";
+} from "@di/container-resolver";
 
 const trainerRoutes = express.Router();
 

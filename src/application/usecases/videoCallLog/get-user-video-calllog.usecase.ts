@@ -8,7 +8,7 @@ import { GetVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { UserVideoCallLog } from "@application/dtos/video-call-dtos";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
 
 /**

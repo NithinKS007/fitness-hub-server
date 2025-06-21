@@ -2,7 +2,7 @@ import { IConversationRepository } from "@domain/interfaces/IConversationReposit
 import { UpdateUnReadMessageCount } from "@application/dtos/conversation-dtos";
 import { Conversation } from "@application/dtos/chat-dtos";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 @injectable()
 export class UpdateUnReadMessageCountUseCase {

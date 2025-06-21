@@ -6,8 +6,8 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
 import { IHashService } from "@application/interfaces/security/IHash.service";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
-import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { TYPES_SERVICES } from "@di/types-services";
 
 @injectable()
 export class ForgotPasswordUseCase {

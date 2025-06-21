@@ -7,7 +7,7 @@ import {
 } from "@shared/constants/index.constants";
 import { TrainerDashBoardUseCase } from "@application/usecases/dashboard/trainer-dashboard.usecase";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { TYPES_DASHBOARD_USECASES } from "di/types-usecases";
+import { TYPES_DASHBOARD_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class TrainerDashboardController {

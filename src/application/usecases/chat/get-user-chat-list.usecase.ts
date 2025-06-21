@@ -7,7 +7,7 @@ import {
 import { GetChatListQueryDTO } from "@application/dtos/query-dtos";
 import { UserChatList } from "@application/dtos/chat-dtos";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 @injectable()
 export class GetUserChatListUseCase {

@@ -4,7 +4,7 @@ import { ChatStatus } from "@shared/constants/index.constants";
 import { FindChatDTO } from "@application/dtos/chat-dtos";
 import { IChat } from "@domain/entities/chat.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 @injectable()
 export class GetChatHistoryUseCase {

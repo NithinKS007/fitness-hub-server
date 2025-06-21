@@ -6,7 +6,7 @@ import {
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { IAppointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /*  
     Purpose: Retrieve an appointment by its ID

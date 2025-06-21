@@ -4,7 +4,7 @@ import { sendResponse } from "@shared/utils/http.response";
 import { StatusCodes, WorkoutStatus } from "@shared/constants/index.constants";
 import { GetWorkoutUseCase } from "@application/usecases/workout/get-workout.usecase";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { TYPES_WORKOUT_USECASES } from "di/types-usecases";
+import { TYPES_WORKOUT_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class GetWorkoutController {

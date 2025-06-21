@@ -9,8 +9,8 @@ import { IEmailService } from "@application/interfaces/communication/IEmail.serv
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { IUserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
-import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { TYPES_SERVICES } from "@di/types-services";
 
 @injectable()
 export class WebHookHandlerUseCase {

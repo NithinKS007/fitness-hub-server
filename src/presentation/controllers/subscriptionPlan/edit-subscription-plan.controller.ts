@@ -6,7 +6,7 @@ import {
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
 import { EditSubscriptionUseCase } from "@application/usecases/subscription/edit-subscription.usecase";
-import { TYPES_SUBSCRIPTION_USECASES } from "di/types-usecases";
+import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class EditSubPlanController {

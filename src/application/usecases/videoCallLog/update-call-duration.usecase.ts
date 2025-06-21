@@ -4,7 +4,7 @@ import { ApplicationStatus } from "@shared/constants/index.constants";
 import { UpdateVideoCallLogDTO } from "@application/dtos/video-call-dtos";
 import { IVideoCallLog } from "@domain/entities/video-calllog.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /**
  * Purpose: Handle the process of updating the status of a video call log, including

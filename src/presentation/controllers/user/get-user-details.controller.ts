@@ -3,7 +3,7 @@ import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { ProfileStatus, StatusCodes } from "@shared/constants/index.constants";
 import { GetUserDetailsUseCase } from "@application/usecases/user/get-user-details.usecase";
-import { TYPES_USER_USECASES } from "di/types-usecases";
+import { TYPES_USER_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class GetUserDetailsController {

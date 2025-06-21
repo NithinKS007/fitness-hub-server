@@ -12,7 +12,7 @@ import {
   getVerifyTrainerController,
   updateUserBlockStatusController,
   verifyTrainerController,
-} from "di/container-resolver";
+} from "@di/container-resolver";
 
 const adminRoutes = express.Router();
 

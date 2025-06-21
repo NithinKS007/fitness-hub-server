@@ -3,7 +3,7 @@ import { injectable, inject } from "inversify";
 import { StatusCodes, PlayListStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { EditPlayListUseCase } from "@application/usecases/playlist/edit-playlist.usecase";
-import { TYPES_PLAYLIST_USECASES } from "di/types-usecases";
+import { TYPES_PLAYLIST_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class EditPlaylistController {

@@ -6,7 +6,7 @@ import {
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
 import { CancelSubscriptionUseCase } from "@application/usecases/subscription/cancel-subscription.usecase";
-import { TYPES_SUBSCRIPTION_USECASES } from "di/types-usecases";
+import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class CancelSubscriptionController {

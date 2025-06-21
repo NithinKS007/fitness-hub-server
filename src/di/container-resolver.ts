@@ -1,4 +1,4 @@
-import { container } from './container'; 
+import { container } from '@di/container'; 
 
 import {
   AddVideoController,
@@ -84,7 +84,7 @@ import {
   VerifySubscriptionController,
   VerifyTrainerController,
   WebhookController,
-} from "./file-imports-index";
+} from "@di/file-imports-index";
 
 import {
   TYPES_APPOINTMENT_CONTROLLER,
@@ -101,8 +101,8 @@ import {
   TYPES_VIDEO_CONTROLLER,
   TYPES_VIDEOCALLLOG_CONTROLLER,
   TYPES_WORKOUT_CONTROLLER,
-} from "./types-controllers";
-import { TYPES_SERVICES } from './types-services';
+} from "@di/types-controllers";
+import { TYPES_SERVICES } from '@di/types-services';
 
 import {
   TYPES_APPOINTMENT_USECASES,
@@ -111,7 +111,7 @@ import {
   TYPES_LOGGER_USECASES,
   TYPES_TRAINER_USECASES,
   TYPES_VIDEO_CALL_LOG_USECASES,
-} from "./types-usecases";
+} from "@di/types-usecases";
 
 // Appointment Controllers
 export const bookAppointmentController = container.get<BookAppointmentController>(TYPES_APPOINTMENT_CONTROLLER.BookAppointmentController);

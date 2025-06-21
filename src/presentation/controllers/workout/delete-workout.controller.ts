@@ -3,7 +3,7 @@ import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { StatusCodes, WorkoutStatus } from "@shared/constants/index.constants";
 import { DeleteWorkoutUseCase } from "@application/usecases/workout/delete-workout-usecase";
-import { TYPES_WORKOUT_USECASES } from "di/types-usecases";
+import { TYPES_WORKOUT_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class DeleteWorkoutController {

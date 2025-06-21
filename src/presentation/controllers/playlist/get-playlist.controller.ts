@@ -4,7 +4,7 @@ import { StatusCodes, PlayListStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { GetPlayListUseCase } from "@application/usecases/playlist/get-playlist.usecase";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { TYPES_PLAYLIST_USECASES } from "di/types-usecases";
+import { TYPES_PLAYLIST_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class GetPlaylistController {

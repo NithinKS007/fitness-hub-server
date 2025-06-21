@@ -4,7 +4,7 @@ import {
   ApplicationStatus,
 } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
-import { loggerUseCase } from "di/container-resolver";
+import { loggerUseCase } from "@di/container-resolver";
 
 class AppError extends Error {
   statusCode: number;

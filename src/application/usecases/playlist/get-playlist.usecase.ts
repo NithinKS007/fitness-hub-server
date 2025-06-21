@@ -5,7 +5,7 @@ import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 import { GetPlayListsQueryDTO } from "@application/dtos/query-dtos";
 import { IPlayList } from "@domain/entities/playlist.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 @injectable()
 export class GetPlayListUseCase {

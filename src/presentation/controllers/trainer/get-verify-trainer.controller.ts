@@ -4,7 +4,7 @@ import { sendResponse } from "@shared/utils/http.response";
 import { TrainerStatus, StatusCodes } from "@shared/constants/index.constants";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetVerifyTrainerlistUseCase } from "@application/usecases/trainer/get-verify-trainer-list.usecase";
-import { TYPES_TRAINER_USECASES } from "di/types-usecases";
+import { TYPES_TRAINER_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class GetVerifyTrainerController {

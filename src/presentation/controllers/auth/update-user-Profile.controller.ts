@@ -4,7 +4,7 @@ import { sendResponse } from "@shared/utils/http.response";
 import { StatusCodes, ProfileStatus } from "@shared/constants/index.constants";
 import { UpdateUserDetailsDTO } from "@application/dtos/user-dtos";
 import { UpdateUserProfileUseCase } from "@application/usecases/auth/update-user-profile.usecase";
-import { TYPES_AUTH_USECASES } from "di/types-usecases";
+import { TYPES_AUTH_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class UpdateUserProfileController {

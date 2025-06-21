@@ -6,7 +6,7 @@ import {
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
 import { CheckSubscriptionStatusUseCase } from "@application/usecases/subscription/check-subscription-status.usecase";
-import { TYPES_SUBSCRIPTION_USECASES } from "di/types-usecases";
+import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class CheckSubscriptionStatusController {

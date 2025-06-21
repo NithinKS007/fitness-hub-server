@@ -5,7 +5,7 @@ import { IConversationRepository } from "@domain/interfaces/IConversationReposit
 import { UserMyTrainersList } from "@application/dtos/subscription-dtos";
 import { UserStatus } from "@shared/constants/index.constants";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 @injectable()
 export class GetUserTrainerslistUseCase {

@@ -7,8 +7,8 @@ import { RoleType } from "@application/dtos/auth-dtos";
 import { AdminChartData } from "@application/dtos/chart-dtos";
 import { AdminDashBoardStats, Top5List } from "@application/dtos/trainer-dtos";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
-import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { TYPES_SERVICES } from "@di/types-services";
 
 @injectable()
 export class AdminDashBoardUseCase {

@@ -12,7 +12,7 @@ import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepositor
 import { Action } from "@application/dtos/utility-dtos";
 import { IAppointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /*  
     Purpose: Approve or reject a booking request, and update the booking slot and appointment status accordingly

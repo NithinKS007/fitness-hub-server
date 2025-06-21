@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AuthStatus, JwtStatus } from "@shared/constants/index.constants";
 import { JwtPayload } from "jsonwebtoken";
 import { ForbiddenError, UnauthorizedError } from "./error.middleware";
-import { checkBlockStatusUseCase, tokenUseCase } from "di/container-resolver";
+import { checkBlockStatusUseCase, tokenUseCase } from "@di/container-resolver";
 
 export const authenticate = async (
   req: Request,

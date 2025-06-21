@@ -5,7 +5,7 @@ import { GetRevenueQueryDTO } from "@application/dtos/query-dtos";
 import { PlatformRevenue } from "@application/dtos/revenue-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 @injectable()
 export class GetPlatformEarningsUsecase {

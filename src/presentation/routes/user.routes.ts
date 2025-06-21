@@ -25,7 +25,7 @@ import {
   updateWorkoutController,
   userDashboardController,
   verifySubscriptionController,
-} from "di/container-resolver";
+} from "@di/container-resolver";
 
 const userRoutes = express.Router();
 

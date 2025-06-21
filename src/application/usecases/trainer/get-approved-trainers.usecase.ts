@@ -5,7 +5,7 @@ import { TrainerStatus } from "@shared/constants/index.constants";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { Trainer } from "@application/dtos/trainer-dtos";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 @injectable()
 export class GetApprovedTrainersUseCase {

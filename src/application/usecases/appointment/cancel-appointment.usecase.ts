@@ -8,7 +8,7 @@ import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepositor
 import { BookingSlotStatus } from "@application/dtos/booking-dtos";
 import { IAppointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /*  
     Purpose: Cancel an existing appointment and update the booking slot status to "pending"

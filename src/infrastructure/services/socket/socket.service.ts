@@ -29,7 +29,7 @@ import {
   createVideoCallLogUseCase,
   updateVideoCallStatusUseCase,
   updateVideoCallDurationUseCase,
-} from "di/container-resolver";
+} from "@di/container-resolver";
 
 export const socketService = (io: Server) => {
   io.on("connection", (socket: Socket) => {

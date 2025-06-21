@@ -3,7 +3,7 @@ import { injectable, inject } from "inversify";
 import { StatusCodes, VideoStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { CreateVideoUseCase } from "@application/usecases/video/create-video.usecase";
-import { TYPES_VIDEO_USECASES } from "di/types-usecases";
+import { TYPES_VIDEO_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class AddVideoController {

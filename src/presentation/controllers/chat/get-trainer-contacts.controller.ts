@@ -4,7 +4,7 @@ import { sendResponse } from "@shared/utils/http.response";
 import { StatusCodes, TrainerStatus } from "@shared/constants/index.constants";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetTrainerChatListUseCase } from "@application/usecases/chat/get-trainer-chat-list.usecase";
-import { TYPES_CHAT_USECASES } from "di/types-usecases";
+import { TYPES_CHAT_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class GetTrainerContactsController {

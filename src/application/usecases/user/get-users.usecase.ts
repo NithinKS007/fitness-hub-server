@@ -5,7 +5,7 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { GetUsersQueryDTO } from "@application/dtos/query-dtos";
 import { IUser } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 @injectable()
 export class GetUsersUseCase {

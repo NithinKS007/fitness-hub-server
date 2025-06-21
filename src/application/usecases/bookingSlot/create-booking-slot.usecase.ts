@@ -7,7 +7,7 @@ import {
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { IBookingSlot } from "@domain/entities/booking-slot.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /**
  * Purpose: Handles the creation of a booking slot for a given date and other slot data.

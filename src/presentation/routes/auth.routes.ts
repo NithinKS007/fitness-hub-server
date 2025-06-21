@@ -12,7 +12,7 @@ import {
   signOutController,
   signUpTrainerController,
   signUpUserController,
-} from "di/container-resolver";
+} from "@di/container-resolver";
 
 const authRoutes = express.Router();
 

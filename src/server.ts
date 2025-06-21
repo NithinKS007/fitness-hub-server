@@ -13,7 +13,7 @@ import morganMiddleware from "@infrastructure/services/logging/morgan";
 import rateLimiter from "@presentation/middlewares/ratelimit.middleware";
 import { notFoundMiddleware } from "@presentation/middlewares/notfound.middleware";
 import { asyncHandler } from "@shared/utils/async-handler";
-import { webhookController } from "di/container-resolver";
+import { webhookController } from "@di/container-resolver";
 
 dotenv.config();
 

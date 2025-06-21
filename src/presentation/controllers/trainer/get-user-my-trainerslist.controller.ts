@@ -4,7 +4,7 @@ import { sendResponse } from "@shared/utils/http.response";
 import { StatusCodes, TrainerStatus } from "@shared/constants/index.constants";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetUserTrainerslistUseCase } from "@application/usecases/subscription/get-user-trainers-list.usecase";
-import { TYPES_SUBSCRIPTION_USECASES } from "di/types-usecases";
+import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class GetUserMyTrainersController {

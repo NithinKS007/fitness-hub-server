@@ -4,7 +4,7 @@ import { StatusCodes, SlotStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetUpComingSlotsUseCase } from "@application/usecases/bookingSlot/get-upcoming-slots";
-import { TYPES_BOOKINGSLOT_USECASAES } from "di/types-usecases";
+import { TYPES_BOOKINGSLOT_USECASAES } from "@di/types-usecases";
 
 @injectable()
 export class GetUpComingSlotsController {

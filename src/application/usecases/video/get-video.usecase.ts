@@ -5,7 +5,7 @@ import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 import { GetVideoQueryDTO } from "@application/dtos/query-dtos";
 import { VideoWithPlayLists } from "@application/dtos/video-dtos";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /**
  * Purpose: Fetch videos for a specific trainer with pagination, search, filters, and optional privacy setting.

@@ -3,7 +3,7 @@ import { JwtStatus } from "@shared/constants/index.constants";
 import { IAuthService } from "@application/interfaces/auth/IAuth.service";
 import { JwtPayload } from "jsonwebtoken";
 import { injectable, inject } from "inversify";
-import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_SERVICES } from "@di/types-services";
 
 /**
  * refreshAccessToken:

@@ -9,7 +9,7 @@ import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 import { IVideoPlayListRepository } from "@domain/interfaces/IVideoPlayListRepository";
 import { IVideo } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /**
  * Purpose: Edit a video by updating its details, such as description, duration, playlists, thumbnail, and title.

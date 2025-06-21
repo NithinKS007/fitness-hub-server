@@ -3,7 +3,7 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "@shared/constants/index.constants";
 import { CreateVideoCallLogDTO } from "@application/dtos/video-call-dtos";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /**
  * Purpose: Create a video call log entry for a given appointment.

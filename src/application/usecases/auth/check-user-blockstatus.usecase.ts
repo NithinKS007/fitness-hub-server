@@ -3,7 +3,7 @@ import { AuthStatus } from "@shared/constants/index.constants";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /*  
     Purpose: Check if a user or trainer is blocked based on their ID

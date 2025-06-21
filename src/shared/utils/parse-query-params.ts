@@ -1,5 +1,5 @@
 import { ParsedQs } from "qs";
-import { dateService } from "di/container-resolver";
+import { dateService } from "@di/container-resolver";
 
 export const parseQueryParams = (query: ParsedQs) => {
   const filters: string[] = Array.isArray(query.filters)

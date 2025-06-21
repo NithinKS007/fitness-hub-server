@@ -7,7 +7,7 @@ import {
 import { sendResponse } from "@shared/utils/http.response";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetUserSchedulesUseCase } from "@application/usecases/appointment/get-user-schedules";
-import { TYPES_APPOINTMENT_USECASES } from "di/types-usecases";
+import { TYPES_APPOINTMENT_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class GetUserSchedulesController {

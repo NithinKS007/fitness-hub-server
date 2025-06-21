@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { ILoggerService } from "../interfaces/logging/ILogger.service";
 import { LogLevel } from "@application/dtos/logger-dtos";
-import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_SERVICES } from "@di/types-services";
 
 @injectable()
 export class LoggerUseCase {

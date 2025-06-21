@@ -5,7 +5,7 @@ import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepositor
 import { AvailableSlotsQueryDTO } from "@application/dtos/query-dtos";
 import { IBookingSlot } from "@domain/entities/booking-slot.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /**
  * Purpose: Handles the retrieval of pending booking slots with pagination and filtering based on the given query.

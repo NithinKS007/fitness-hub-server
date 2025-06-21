@@ -3,7 +3,7 @@ import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { AuthStatus, StatusCodes } from "@shared/constants/index.constants";
 import { CreateTrainerUseCase } from "@application/usecases/auth/create-trainer.usecase";
-import { TYPES_AUTH_USECASES } from "di/types-usecases";
+import { TYPES_AUTH_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class SignUpTrainerController {

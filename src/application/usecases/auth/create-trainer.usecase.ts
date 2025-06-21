@@ -13,8 +13,8 @@ import { IEncryptionService } from "@application/interfaces/security/IEncryption
 import { RoleType } from "@application/dtos/auth-dtos";
 import { IUser } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
-import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { TYPES_SERVICES } from "@di/types-services";
 
 /*  
     Purpose: Creates a new trainer and handles OTP verification during registration.

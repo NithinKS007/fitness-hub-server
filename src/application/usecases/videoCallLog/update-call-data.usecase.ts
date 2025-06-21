@@ -3,7 +3,7 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "@shared/constants/index.constants";
 import { UpdateVideoCallDurationDTO } from "@application/dtos/video-call-dtos";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /**
  * Purpose: Handle the process of updating the duration of a video call.

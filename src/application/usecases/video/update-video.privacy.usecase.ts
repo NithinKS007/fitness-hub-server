@@ -7,7 +7,7 @@ import {
 import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 import { IVideo } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /**
  * Purpose: Update the privacy setting of a given video.

@@ -5,7 +5,7 @@ import {
   getChatsController,
   getTrainerContactsController,
   getUserContactsController,
-} from "di/container-resolver";
+} from "@di/container-resolver";
 
 const chatRoutes = express.Router();
 

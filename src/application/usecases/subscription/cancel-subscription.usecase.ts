@@ -10,7 +10,7 @@ import {
 } from "@shared/constants/index.constants";
 import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
 import { injectable, inject } from "inversify";
-import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_SERVICES } from "@di/types-services";
 
 @injectable()
 export class CancelSubscriptionUseCase {

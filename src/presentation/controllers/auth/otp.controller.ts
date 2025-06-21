@@ -7,7 +7,7 @@ import {
   OTPStatus,
 } from "@shared/constants/index.constants";
 import { OtpUseCase } from "@application/usecases/auth/otp.usecase";
-import { TYPES_AUTH_USECASES } from "di/types-usecases";
+import { TYPES_AUTH_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class OtpController {

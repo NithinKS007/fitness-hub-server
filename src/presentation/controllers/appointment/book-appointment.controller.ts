@@ -6,7 +6,7 @@ import {
 } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { BookAppointmentUseCase } from "@application/usecases/appointment/book-appointment-usecase";
-import { TYPES_APPOINTMENT_USECASES } from "di/types-usecases";
+import { TYPES_APPOINTMENT_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class BookAppointmentController {

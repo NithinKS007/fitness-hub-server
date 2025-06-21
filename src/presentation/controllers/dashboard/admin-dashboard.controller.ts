@@ -7,7 +7,7 @@ import {
 } from "@shared/constants/index.constants";
 import { AdminDashBoardUseCase } from "@application/usecases/dashboard/admin-dashboard.usecase";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { TYPES_DASHBOARD_USECASES } from "di/types-usecases";
+import { TYPES_DASHBOARD_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class AdminDashboardController {

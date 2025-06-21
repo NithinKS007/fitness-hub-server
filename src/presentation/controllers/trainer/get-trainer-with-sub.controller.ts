@@ -3,7 +3,7 @@ import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { StatusCodes, TrainerStatus } from "@shared/constants/index.constants";
 import { GetTrainerAndSubInfoUseCase } from "@application/usecases/trainer/get-trainer-with-subscription";
-import { TYPES_TRAINER_USECASES } from "di/types-usecases";
+import { TYPES_TRAINER_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class GetTrainerWithSubController {

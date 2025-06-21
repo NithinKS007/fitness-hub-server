@@ -2,7 +2,7 @@ import { GetTrainersQueryDTO } from "@application/dtos/query-dtos";
 import { Trainer } from "@application/dtos/trainer-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { injectable, inject } from "inversify";
 
 @injectable()

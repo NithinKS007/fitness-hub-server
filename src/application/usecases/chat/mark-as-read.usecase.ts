@@ -1,6 +1,6 @@
 import { IChat } from "@domain/entities/chat.entity";
 import { IChatRepository } from "@domain/interfaces/IChatRepository";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { injectable, inject } from "inversify";
 
 @injectable()

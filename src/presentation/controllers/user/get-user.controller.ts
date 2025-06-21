@@ -4,7 +4,7 @@ import { sendResponse } from "@shared/utils/http.response";
 import { UserStatus, StatusCodes } from "@shared/constants/index.constants";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetUsersUseCase } from "@application/usecases/user/get-users.usecase";
-import { TYPES_USER_USECASES } from "di/types-usecases";
+import { TYPES_USER_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class GetUsersController {

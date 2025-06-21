@@ -4,7 +4,7 @@ import { WorkoutStatus } from "@shared/constants/index.constants";
 import { WorkoutdbDTO, WorkoutDTO } from "@application/dtos/workout-dtos";
 import { IWorkout } from "@domain/entities/workout.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 /**
  * Purpose: Create a new workout by adding multiple workout sets for the user on a specific date.

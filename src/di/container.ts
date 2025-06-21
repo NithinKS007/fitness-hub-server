@@ -14,7 +14,7 @@ import {
   TYPES_VIDEO_CONTROLLER,
   TYPES_VIDEOCALLLOG_CONTROLLER,
   TYPES_WORKOUT_CONTROLLER,
-} from "./types-controllers";
+} from "@di/types-controllers";
 
 import {
   TYPES_APPOINTMENT_USECASES,
@@ -31,9 +31,9 @@ import {
   TYPES_VIDEO_CALL_LOG_USECASES,
   TYPES_WORKOUT_USECASES,
   TYPES_LOGGER_USECASES,
-} from "./types-usecases";
-import { TYPES_SERVICES } from "./types-services";
-import { TYPES_REPOSITORIES } from "./types-repositories";
+} from "@di/types-usecases";
+import { TYPES_SERVICES } from "@di/types-services";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 import {
   UserRepository,
@@ -117,9 +117,7 @@ import {
   BlockSubPlanController,
   DeleteSubPlanController,
   EditSubPlanController,
-  // ErrorMiddleware,
-  // AuthMiddleware,
-} from "./file-imports-index";
+} from "@di/file-imports-index";
 
 // Services
 import {
@@ -132,7 +130,7 @@ import {
   EncryptionService,
   HashService,
   DateService,
-} from "./file-imports-index";
+} from "@di/file-imports-index";
 
 // Use Cases
 import {
@@ -213,7 +211,7 @@ import {
   UpdateVideoCallDurationUseCase,
   UpdateUnReadMessageCountUseCase,
   IncrementUnReadMessageCountUseCase,
-} from "./file-imports-index";
+} from "@di/file-imports-index";
 
 // Controllers
 import {
@@ -251,7 +249,7 @@ import {
   EditPlaylistController,
   GetPlaylistController,
   UpdatePlaylistPrivacyController,
-} from "./file-imports-index";
+} from "@di/file-imports-index";
 
 
 const container = new Container();

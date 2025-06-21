@@ -3,7 +3,7 @@ import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { StatusCodes, PasswordStatus } from "@shared/constants/index.constants";
 import { ChangePasswordUseCase } from "@application/usecases/auth/change-password.usecase";
-import { TYPES_AUTH_USECASES } from "di/types-usecases";
+import { TYPES_AUTH_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class ChangePasswordController {

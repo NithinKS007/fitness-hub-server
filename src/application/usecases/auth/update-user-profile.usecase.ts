@@ -6,8 +6,8 @@ import dotenv from "dotenv";
 import { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
 import { IUser } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
-import { TYPES_SERVICES } from "di/types-services";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { TYPES_SERVICES } from "@di/types-services";
 dotenv.config();
 
 /**

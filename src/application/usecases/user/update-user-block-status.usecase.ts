@@ -7,7 +7,7 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { UpdateBlockStatusDTO } from "@application/dtos/auth-dtos";
 import { IUser } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
-import { TYPES_REPOSITORIES } from "di/types-repositories";
+import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
 @injectable()
 export class UpdateUserBlockStatusUseCase {

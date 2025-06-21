@@ -7,7 +7,7 @@ import {
 } from "@shared/constants/index.constants";
 import { GetUserSubscriptionUseCase } from "@application/usecases/subscription/get-user-subscription.usecase";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { TYPES_SUBSCRIPTION_USECASES } from "di/types-usecases";
+import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
 
 @injectable()
 export class GetUserSubscriptionController {
