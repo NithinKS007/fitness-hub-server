@@ -26,6 +26,8 @@ import {
   userDashboardController,
   verifySubscriptionController,
 } from "@di/container-resolver";
+import { wrkoutSchema } from "@presentation/middlewares/validation-schemas/workout-schema";
+import { validate } from "@presentation/middlewares/validation.middleware";
 
 const userRoutes = express.Router();
 
@@ -62,7 +64,7 @@ userRoutes.get("/video-call-logs",authenticate,asyncHandler(getUserVideoCallLogC
 userRoutes.put("/profile",authenticate,asyncHandler(updateUserProfileController.handle.bind(updateUserProfileController)));
 
 //WORKOUT ROUTES
-userRoutes.post("/workouts",authenticate,asyncHandler(addWorkoutController.handle.bind(addWorkoutController)));
+userRoutes.post("/workouts",wrkoutSchema,validate,authenticate,asyncHandler(addWorkoutController.handle.bind(addWorkoutController)));
 userRoutes.get("/workouts",authenticate,asyncHandler(getWorkoutController.handle.bind(getWorkoutController)));
 userRoutes.delete("/workouts/:setId",authenticate,asyncHandler(deleteWorkoutController.handle.bind(deleteWorkoutController)));
 userRoutes.patch("/workouts/:setId",authenticate,asyncHandler(updateWorkoutController.handle.bind(updateWorkoutController)));

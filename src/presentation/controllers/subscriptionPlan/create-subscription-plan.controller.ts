@@ -24,7 +24,7 @@ export class CreateSubPlanController {
 
     sendResponse(
       res,
-      StatusCodes.OK,
+      StatusCodes.Created,
       subscriptionData,
       SubscriptionStatus.Created
     );

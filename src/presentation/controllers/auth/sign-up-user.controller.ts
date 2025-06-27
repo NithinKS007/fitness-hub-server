@@ -15,6 +15,6 @@ export class SignUpUserController {
   async handle(req: Request, res: Response): Promise<void> {
     const createdUser = await this.createUserUseCase.execute(req.body);
 
-    sendResponse(res, StatusCodes.OK, createdUser, AuthStatus.UserCreated);
+    sendResponse(res, StatusCodes.Created, createdUser, AuthStatus.UserCreated);
   }
 }

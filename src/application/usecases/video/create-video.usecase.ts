@@ -5,7 +5,7 @@ import {
   ApplicationStatus,
   VideoStatus,
 } from "@shared/constants/index.constants";
-import { ReqCreateVideo } from "@application/dtos/video-dtos";
+import { CreateVideo } from "@application/dtos/video-dtos";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { IVideo } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
@@ -39,7 +39,7 @@ export class CreateVideoUseCase {
     thumbnail,
     title,
     trainerId,
-  }: ReqCreateVideo): Promise<IVideo> {
+  }: CreateVideo): Promise<IVideo> {
     if (
       !video ||
       !description ||
@@ -73,12 +73,10 @@ export class CreateVideoUseCase {
         playListId: list,
       }));
 
-      const [_, playlistVideoCounts] = await Promise.all([
-        this.videoPlayListRepository.insertMany(
-          playlistEntries as unknown as any
-        ),
-        this.playListRepository.getPlaylistCounts(playLists),
-      ]);
+      await this.videoPlayListRepository.insertMany(playlistEntries as any);
+
+      const playlistVideoCounts =
+        await this.playListRepository.getPlaylistCounts(playLists);
 
       if (playlistVideoCounts.length > 0) {
         await this.playListRepository.updateVideosCount(playlistVideoCounts);

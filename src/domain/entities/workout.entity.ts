@@ -1,7 +1,7 @@
-import mongoose, { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 
 export interface IWorkout extends Document {
-  userId: string | mongoose.Schema.Types.ObjectId;
+  userId: string | ObjectId;
   date: Date;
   bodyPart: string;
   exerciseName: string;

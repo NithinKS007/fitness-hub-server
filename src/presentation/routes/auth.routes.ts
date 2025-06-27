@@ -13,14 +13,17 @@ import {
   signUpTrainerController,
   signUpUserController,
 } from "@di/container-resolver";
+import { signinSchema, userSchema } from "@presentation/middlewares/validation-schemas/user-schema";
+import { validate } from "@presentation/middlewares/validation.middleware";
+import { trainerSchema } from "@presentation/middlewares/validation-schemas/trainer-schema";
 
 const authRoutes = express.Router();
 
 //REGISTRATION AND SIGNIN ROUTES
-authRoutes.post("/user/sign-up",asyncHandler(signUpUserController.handle.bind(signUpUserController)));
-authRoutes.post("/trainer/sign-up",asyncHandler(signUpTrainerController.handle.bind(signUpTrainerController)));
+authRoutes.post("/user/sign-up",userSchema,validate,asyncHandler(signUpUserController.handle.bind(signUpUserController)));
+authRoutes.post("/trainer/sign-up",trainerSchema,validate, asyncHandler(signUpTrainerController.handle.bind(signUpTrainerController)));
 authRoutes.post("/google",asyncHandler(googleAuthController.handle.bind(googleAuthController)));
-authRoutes.post("/sign-in",asyncHandler(signInController.handle.bind(signInController)));
+authRoutes.post("/sign-in",signinSchema,validate,asyncHandler(signInController.handle.bind(signInController)));
 
 //OTP ROUTES
 authRoutes.post("/otp/verify",asyncHandler(otpController.verifyOtp.bind(otpController)));

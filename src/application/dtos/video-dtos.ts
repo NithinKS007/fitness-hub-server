@@ -9,7 +9,7 @@ interface VideoMetadata {
   video: string;
 }
 
-export interface ReqCreateVideo extends VideoMetadata {
+export interface CreateVideo extends VideoMetadata {
   trainerId: string;
   playLists: string[];
 }
@@ -23,7 +23,7 @@ export interface UpdateVideoPrivacyDTO {
   privacy: boolean;
 }
 
-export interface ReqEditVideoDTO extends VideoMetadata {
+export interface EditVideoDTO extends VideoMetadata {
   _id: string;
   trainerId: string;
   playLists: string[];

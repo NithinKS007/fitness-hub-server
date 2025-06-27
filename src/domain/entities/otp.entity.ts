@@ -1,7 +1,7 @@
-import mongoose, { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 
 export interface IOtp extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
+  _id: ObjectId;
   email: string;
   otp: string;
 }

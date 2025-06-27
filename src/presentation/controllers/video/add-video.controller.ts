@@ -15,11 +15,17 @@ export class AddVideoController {
   async handle(req: Request, res: Response): Promise<void> {
     const { _id: trainerId } = req?.user || {};
 
+    console.log("data",req.body)
     const createdVideo = await this.createVideoUseCase.execute({
       trainerId: trainerId,
       ...req.body,
     });
 
-    sendResponse(res, StatusCodes.OK, createdVideo, VideoStatus.UploadSuccess);
+    sendResponse(
+      res,
+      StatusCodes.Created,
+      createdVideo,
+      VideoStatus.UploadSuccess
+    );
   }
 }

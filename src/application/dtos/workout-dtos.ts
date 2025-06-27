@@ -16,7 +16,7 @@ interface Workout {
 
 export interface WorkoutDTO {
   userId: string;
-  date: Date | string;
+  date: string;
   workouts: Workout[];
 }
 

@@ -1,4 +1,4 @@
-import { ReqEditVideoDTO } from "@application/dtos/video-dtos";
+import { EditVideoDTO } from "@application/dtos/video-dtos";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
@@ -39,7 +39,7 @@ export class EditVideoUseCase {
     title,
     trainerId,
     video,
-  }: ReqEditVideoDTO): Promise<IVideo> {
+  }: EditVideoDTO): Promise<IVideo> {
     if (
       !_id ||
       !description ||
@@ -86,15 +86,12 @@ export class EditVideoUseCase {
       }));
 
       const videoIdsToDelete = videoPlayListDocs.map((list) => list.videoId);
+
+      this.videoPlayListRepository.insertMany(videoPlayListDocs as any),
+        await this.videoPlayListRepository.deleteMany(videoIdsToDelete);
+
       const videoCountWithPlayList =
         await this.playListRepository.getPlaylistCounts(playLists);
-
-      await Promise.all([
-        this.videoPlayListRepository.insertMany(
-          videoPlayListDocs as unknown as any
-        ),
-        this.videoPlayListRepository.deleteMany(videoIdsToDelete),
-      ]);
 
       if (videoCountWithPlayList.length > 0) {
         await this.playListRepository.updateVideosCount(videoCountWithPlayList);

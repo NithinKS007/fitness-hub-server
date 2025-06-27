@@ -23,6 +23,6 @@ export class CreateBookingSlotController {
       bookingSlotData
     );
 
-    sendResponse(res, StatusCodes.OK, createdSlotData, SlotStatus.Created);
+    sendResponse(res, StatusCodes.Created, createdSlotData, SlotStatus.Created);
   }
 }

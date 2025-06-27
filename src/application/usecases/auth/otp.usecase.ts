@@ -4,7 +4,7 @@ import { OtpDTO } from "@application/dtos/auth-dtos";
 import { OTPStatus } from "@shared/constants/index.constants";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/communication/IEmail.service";
-import { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
+import { IOTPService } from "@application/interfaces/security/IOtp.service";
 import { IOtp } from "@domain/entities/otp.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";

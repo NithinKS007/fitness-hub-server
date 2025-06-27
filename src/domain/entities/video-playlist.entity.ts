@@ -1,7 +1,7 @@
-import mongoose, { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 
 export interface IVideoPlaylist extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  videoId: mongoose.Schema.Types.ObjectId | string;
-  playlistId: mongoose.Schema.Types.ObjectId | string;
+  _id: ObjectId;
+  videoId: ObjectId | string;
+  playlistId: ObjectId | string;
 }

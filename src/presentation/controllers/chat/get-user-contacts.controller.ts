@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
-import { StatusCodes, UserStatus } from "@shared/constants/index.constants";
+import { ChatStatus, StatusCodes } from "@shared/constants/index.constants";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { GetUserChatListUseCase } from "@application/usecases/chat/get-user-chat-list.usecase";
 import { TYPES_CHAT_USECASES } from "@di/types-usecases";
@@ -22,6 +22,6 @@ export class GetUserContactsController {
       search: search,
     });
 
-    sendResponse(res, StatusCodes.OK, userChatList, UserStatus.UserList);
+    sendResponse(res, StatusCodes.OK, userChatList, ChatStatus.UserContacts);
   }
 }

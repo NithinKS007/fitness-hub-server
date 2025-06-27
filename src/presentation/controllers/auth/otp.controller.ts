@@ -24,6 +24,6 @@ export class OtpController {
   async resendOtp(req: Request, res: Response): Promise<void> {
     await this.otpUseCase.resendOtp(req.body);
 
-    sendResponse(res, StatusCodes.OK, null, OTPStatus.Sent);
+    sendResponse(res, StatusCodes.Created, null, OTPStatus.Sent);
   }
 }

@@ -7,7 +7,7 @@ import {
 } from "@shared/constants/index.constants";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/communication/IEmail.service";
-import { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
+import { IOTPService } from "@application/interfaces/security/IOtp.service";
 import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
 import { IUser } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";

@@ -28,11 +28,16 @@ import {
   updateTrainerProfileController,
   updateVideoStatusController,
 } from "@di/container-resolver";
+import { validate } from "@presentation/middlewares/validation.middleware";
+import { subscriptionSchema } from "@presentation/middlewares/validation-schemas/subscription-schema";
+import { playlistSchema } from "@presentation/middlewares/validation-schemas/playlist-schema";
+import { slotSchema } from "@presentation/middlewares/validation-schemas/slot-schema";
+import { videoSchema } from "@presentation/middlewares/validation-schemas/video-schema";
 
 const trainerRoutes = express.Router();
 
 // SUBSCRIPTION ROUTES
-trainerRoutes.post("/subscriptions",authenticate,asyncHandler(createSubPlanController.handle.bind(createSubPlanController)));
+trainerRoutes.post("/subscriptions",subscriptionSchema,validate,authenticate,asyncHandler(createSubPlanController.handle.bind(createSubPlanController)));
 trainerRoutes.get("/subscriptions",authenticate,asyncHandler(getTrainerSubscriptionController.handle.bind(getTrainerSubscriptionController)));
 trainerRoutes.patch("/subscriptions/:subscriptionId",authenticate,asyncHandler(blockSubPlanController.handle.bind(blockSubPlanController)));
 trainerRoutes.put("/subscriptions/:subscriptionId",authenticate,asyncHandler(editSubPlanController.handle.bind(editSubPlanController)));
@@ -40,20 +45,20 @@ trainerRoutes.delete("/subscriptions/:subscriptionId",authenticate,asyncHandler(
 trainerRoutes.get("/subscribers",authenticate,asyncHandler(getTrainerSubscribersController.handle.bind(getTrainerSubscribersController)));
 
 //PLAYLIST MANAGEMENT ROUTES
-trainerRoutes.post("/playlists",authenticate,asyncHandler(createPlaylistController.handle.bind(createPlaylistController)));
+trainerRoutes.post("/playlists",playlistSchema,validate,authenticate,asyncHandler(createPlaylistController.handle.bind(createPlaylistController)));
 trainerRoutes.get("/playlists",authenticate,asyncHandler(getPlaylistController.handle.bind(getPlaylistController)));
 trainerRoutes.get("/playlists/all",authenticate,asyncHandler(getAllPlaylistController.handle.bind(getAllPlaylistController)));
 trainerRoutes.patch("/playlists/:playListId",authenticate,asyncHandler(updatePlaylistPrivacyController.handle.bind(updatePlaylistPrivacyController)));
 trainerRoutes.put("/playlists/:playListId",authenticate,asyncHandler(editPlaylistController.handle.bind(editPlaylistController)));
 
 //VIDEO MANAGEMENT ROUTES
-trainerRoutes.post("/videos",authenticate,asyncHandler(addVideoController.handle.bind(addVideoController)));
+trainerRoutes.post("/videos",videoSchema,validate,authenticate,asyncHandler(addVideoController.handle.bind(addVideoController)));
 trainerRoutes.patch("/videos/:videoId",authenticate,asyncHandler(updateVideoStatusController.handle.bind(updateVideoStatusController)));
 trainerRoutes.put("/videos/:videoId",authenticate,asyncHandler(editVideoController.handle.bind(editVideoController)));
 trainerRoutes.get("/videos",authenticate,asyncHandler(getAllVideosController.handle.bind(getAllVideosController)));
 
 //SLOT MANAGEMENT
-trainerRoutes.post("/slots",authenticate,asyncHandler(createBookingSlotController.handle.bind(createBookingSlotController)));
+trainerRoutes.post("/slots",slotSchema,validate,authenticate,asyncHandler(createBookingSlotController.handle.bind(createBookingSlotController)));
 trainerRoutes.get("/slots",authenticate,asyncHandler(getPendingSlotsController.handle.bind(getPendingSlotsController)));
 trainerRoutes.delete("/slots/:bookingSlotId",authenticate,asyncHandler(deleteBookingSlotController.handle.bind(deleteBookingSlotController)));
 

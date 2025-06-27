@@ -20,6 +20,6 @@ export class AddWorkoutController {
       req.body
     );
 
-    sendResponse(res, StatusCodes.OK, addedWorkOut, WorkoutStatus.Added);
+    sendResponse(res, StatusCodes.Created, addedWorkOut, WorkoutStatus.Added);
   }
 }

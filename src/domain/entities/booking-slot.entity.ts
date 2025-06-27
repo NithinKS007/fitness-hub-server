@@ -1,8 +1,8 @@
-import mongoose, { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 
 export interface IBookingSlot extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  trainerId: string | mongoose.Schema.Types.ObjectId;
+  _id: ObjectId;
+  trainerId: string | ObjectId;
   status: "pending" | "booked" | "completed";
   time: string;
   date: Date;

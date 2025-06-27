@@ -257,7 +257,7 @@ export { IAuthService } from "@application/interfaces/auth/IAuth.service";
 export { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
 export { IGoogleAuthService } from "@application/interfaces/auth/IGoogle.auth.service";
 export { IEmailService } from "@application/interfaces/communication/IEmail.service";
-export { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
+export { IOTPService } from "@application/interfaces/security/IOtp.service";
 export { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
 export { IHashService } from "@application/interfaces/security/IHash.service";
 export { IDateService } from "@application/interfaces/date/IDate.service";

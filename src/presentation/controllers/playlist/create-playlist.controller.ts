@@ -24,6 +24,11 @@ export class CreatePlaylistController {
     const createdPlayList = await this.createPlayListUseCase.execute(
       createdData
     );
-    sendResponse(res, StatusCodes.OK, createdPlayList, PlayListStatus.Created);
+    sendResponse(
+      res,
+      StatusCodes.Created,
+      createdPlayList,
+      PlayListStatus.Created
+    );
   }
 }
