@@ -16,6 +16,7 @@ import {
 import { signinSchema, userSchema } from "@presentation/middlewares/validation-schemas/user-schema";
 import { validate } from "@presentation/middlewares/validation.middleware";
 import { trainerSchema } from "@presentation/middlewares/validation-schemas/trainer-schema";
+import { authorizeRole } from "@presentation/middlewares/autherisation.middleware";
 
 const authRoutes = express.Router();
 
@@ -32,7 +33,7 @@ authRoutes.post("/otp/resend",asyncHandler(otpController.resendOtp.bind(otpContr
 //PASSWORD ROUTES
 authRoutes.post("/password-reset",asyncHandler(passwordResetLinkController.handle.bind(passwordResetLinkController)));
 authRoutes.patch("/password-reset/:token",asyncHandler(forgotPasswordController.handle.bind(forgotPasswordController)));
-authRoutes.patch("/password/change",authenticate,asyncHandler(changePasswordController.handle.bind(changePasswordController)));
+authRoutes.patch("/password/change",authenticate,authorizeRole(["user","trainer","admin"]),asyncHandler(changePasswordController.handle.bind(changePasswordController)));
 
 //AUTHENTICATION AND SIGNOUT ROUTES
 authRoutes.post("/refresh-token",asyncHandler(refreshAccessTokenController.handle.bind(refreshAccessTokenController)));

@@ -14,6 +14,7 @@ import rateLimiter from "@presentation/middlewares/ratelimit.middleware";
 import { notFoundMiddleware } from "@presentation/middlewares/notfound.middleware";
 import { asyncHandler } from "@shared/utils/async-handler";
 import { webhookController } from "@di/container-resolver";
+import publicRoutes from "@presentation/routes/public.routes";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
+app.use("/api/v1/public", publicRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/trainer", trainerRoutes);
