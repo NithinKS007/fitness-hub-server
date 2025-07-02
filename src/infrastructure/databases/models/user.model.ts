@@ -1,7 +1,7 @@
 import { IUser } from "@domain/entities/user.entity";
 import mongoose, { Schema } from "mongoose";
 
-const userSchema = new Schema<IUser>(
+const userSchema: Schema = new Schema(
   {
     fname: { type: String, required: true },
     lname: { type: String, required: true },

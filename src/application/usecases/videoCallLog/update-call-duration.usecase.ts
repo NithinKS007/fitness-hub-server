@@ -5,6 +5,7 @@ import { UpdateVideoCallLogDTO } from "@application/dtos/video-call-dtos";
 import { IVideoCallLog } from "@domain/entities/video-calllog.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
 
 /**
  * Purpose: Handle the process of updating the status of a video call log, including
@@ -20,16 +21,25 @@ export class UpdateVideoCallStatusUseCase {
     @inject(TYPES_REPOSITORIES.VideoCallLogRepository)
     private videoCallLogRepository: IVideoCallLogRepository
   ) {}
-  
+
   async execute({
     callEndTime,
     callRoomId,
     callStatus,
-  }: UpdateVideoCallLogDTO): Promise<IVideoCallLog | null> {
+  }: UpdateVideoCallLogDTO): Promise<IVideoCallLog> {
     if (!callEndTime || !callRoomId || !callStatus) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
     const updatedCallData = { callEndTime, callRoomId, callStatus };
-    return await this.videoCallLogRepository.updateStatus(updatedCallData);
+
+    const updatedCall = await this.videoCallLogRepository.updateStatus(
+      updatedCallData
+    );
+
+    if (!updatedCall) {
+      throw new validationError(VideoCallStatus.UnableToUpdateStatus);
+    }
+
+    return updatedCall;
   }
 }

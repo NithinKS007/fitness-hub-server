@@ -1,7 +1,7 @@
 import { IConversation } from "@domain/entities/conversation.entity";
 import mongoose, { Schema } from "mongoose";
 
-const conversationSchema = new Schema(
+const conversationSchema: Schema  = new Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,

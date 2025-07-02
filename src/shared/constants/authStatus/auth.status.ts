@@ -12,7 +12,7 @@ export enum AuthStatus {
   GoogleAuthFailed = "Google authentication Failed",
   DifferentLoginMethod = "Please try a different signin method",
   InvalidRole = "IThe role you have selected is invalid or not recognized. Please choose a valid role.",
-  LogoutSuccess = "You have successfully logged out of your account. You can log in again at any time.",
+  LogoutSuccess = "You have successfully logged out of your account.",
   UserIdRequired = "A valid User ID is required to proceed with this action.",
   IdRequired = "Unique id is required to continue with this process.",
   InvalidId = "The ID you provided is not valid. Please check and try again.",

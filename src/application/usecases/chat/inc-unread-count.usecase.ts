@@ -12,24 +12,24 @@ export class IncrementUnReadMessageCountUseCase {
     @inject(TYPES_REPOSITORIES.ConversationRepository)
     private conversationRepository: IConversationRepository
   ) {}
-  
+
   async execute({
     userId,
     otherUserId,
   }: IncrementUnReadMessageCount): Promise<Conversation> {
-    const incrementUnReadMessageDoc =
+    const incUnReadMessage =
       await this.conversationRepository.incrementUnReadMessageCount({
         userId,
         otherUserId,
       });
 
-    if (!incrementUnReadMessageDoc) {
+    if (!incUnReadMessage) {
       throw new validationError(ChatStatus.FailedtoUpdateUnReadCount);
     }
-    const updatedMessageDoc =
+    const updatedMessage =
       await this.conversationRepository.findChatWithLastMessage(
-        String(incrementUnReadMessageDoc._id)
+        String(incUnReadMessage._id)
       );
-    return updatedMessageDoc;
+    return updatedMessage;
   }
 }

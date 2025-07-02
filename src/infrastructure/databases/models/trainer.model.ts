@@ -1,7 +1,7 @@
 import { ITrainer } from "@domain/entities/trainer.entity";
 import mongoose, { Schema } from "mongoose";
 
-const trainerSchema = new Schema(
+const trainerSchema: Schema  = new Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,

@@ -17,7 +17,7 @@ import { authorizeRole } from "@presentation/middlewares/autherisation.middlewar
 
 const adminRoutes = express.Router();
 adminRoutes.use(authenticate);  
-adminRoutes.use(authorizeRole(['admin']));
+adminRoutes.use(authorizeRole(["admin"]));
 
 //USER MANAGEMENT ROUTES
 adminRoutes.get("/users",asyncHandler(getUsersController.handle.bind(getUsersController)));

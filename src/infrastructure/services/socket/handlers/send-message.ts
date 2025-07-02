@@ -28,47 +28,56 @@ export const handleSendMessage = async (
     isRead: isChatOpen,
   });
 
+  const { _id: svdmsgId, createdAt, updatedAt, isRead } = savedMessage;
+
   await updateLastMessageUseCase.execute({
     userId: senderId,
     otherUserId: receiverId,
-    lastMessageId: savedMessage._id.toString(),
+    lastMessageId: svdmsgId.toString(),
   });
 
-  let incrementedMessageDoc;
-  if (!isChatOpen) {
-    incrementedMessageDoc = await incUnReadCountUseCase.execute({
-      userId: senderId,
-      otherUserId: receiverId,
-    });
-  }
-
+  const receiverSocketId = socketStore.userSocketMap.get(receiverId);
+  const senderSocketId = socketStore.userSocketMap.get(senderId);
   const messageData = {
-    _id: savedMessage._id.toString(),
+    _id: svdmsgId.toString(),
     senderId,
     receiverId,
     message,
-    createdAt: savedMessage.createdAt,
-    updatedAt: savedMessage.updatedAt,
-    isRead: savedMessage.isRead,
+    createdAt,
+    updatedAt,
+    isRead,
   };
 
-  const receiverSocketId = socketStore.userSocketMap.get(receiverId);
-  if (receiverSocketId) {
-    io.to(receiverSocketId).emit("receiveMessage", messageData);
-    if (incrementedMessageDoc) {
+  if (!isChatOpen) {
+    // If the receiver's chat is not open, increment unread count for the receiver
+    const incrementedMessageDoc = await incUnReadCountUseCase.execute({
+      userId: senderId,
+      otherUserId: receiverId,
+    });
+
+    // Send the message to the receiver
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("receiveMessage", messageData);
       io.to(receiverSocketId).emit("unreadCountUpdated", incrementedMessageDoc);
     }
-  }
 
-  const senderSocketId = socketStore.userSocketMap.get(senderId);
-  if (senderSocketId) {
-    io.to(senderSocketId).emit("receiveMessage", messageData);
-
-    if (isChatOpen) {
-      io.to(senderSocketId).emit("messageRead", {
-        messageIds: [savedMessage._id.toString()],
-      });
+    // Send the message to the sender
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("receiveMessage", messageData);
       io.to(senderSocketId).emit("unreadCountUpdated", incrementedMessageDoc);
+    }
+  } else {
+    // If the receiver's chat is open, no unread count increment
+    // Send the message to the receiver
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("receiveMessage", messageData);
+    }
+
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("receiveMessage", messageData);
+      io.to(senderSocketId).emit("messageRead", {
+        messageIds: [svdmsgId.toString()],
+      });
     }
   }
 };

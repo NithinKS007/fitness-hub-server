@@ -17,10 +17,7 @@ export class VideoCallLogRepository
   extends BaseRepository<IVideoCallLog>
   implements IVideoCallLogRepository
 {
-  constructor(
-
-    model: Model<IVideoCallLog> = VideoCallLogModel
-  ) {
+  constructor(model: Model<IVideoCallLog> = VideoCallLogModel) {
     super(model);
   }
 
@@ -46,8 +43,8 @@ export class VideoCallLogRepository
   async updateDuration({
     callRoomId,
     callDuration,
-  }: UpdateVideoCallDurationDTO): Promise<void> {
-    await this.updateLogField(callRoomId, { callDuration });
+  }: UpdateVideoCallDurationDTO): Promise<IVideoCallLog | null> {
+    return await this.updateLogField(callRoomId, { callDuration });
   }
 
   async getTrainerVideoCallLogs(

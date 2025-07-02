@@ -10,7 +10,7 @@ export class UpdateUnReadMessageCountUseCase {
     @inject(TYPES_REPOSITORIES.ConversationRepository)
     private conversationRepository: IConversationRepository
   ) {}
-  
+
   async execute({
     userId,
     otherUserId,
@@ -22,26 +22,25 @@ export class UpdateUnReadMessageCountUseCase {
         otherUserId
       );
 
-    if (conversationData) {
-      const { _id: conversationId } = conversationData;
+    if (!conversationData) return null;
 
-      const updatedMessageDoc = await this.conversationRepository.update(
-        String(conversationId),
-        {
-          unreadCount: count,
-        }
-      );
+    const { _id: conversationId } = conversationData;
 
-      if (updatedMessageDoc) {
-        const { _id: updatedMessageDocId } = updatedMessageDoc;
-
-        const finalMessageDocument =
-          await this.conversationRepository.findChatWithLastMessage(
-            String(updatedMessageDocId)
-          );
-        return finalMessageDocument;
+    const updatedMessage = await this.conversationRepository.update(
+      String(conversationId),
+      {
+        unreadCount: count,
       }
-    }
-    return null;
+    );
+
+    if (!updatedMessage) return null;
+
+    const { _id: updatedMessageId } = updatedMessage;
+
+    const finalMessageDocument =
+      await this.conversationRepository.findChatWithLastMessage(
+        String(updatedMessageId)
+      );
+    return finalMessageDocument;
   }
 }

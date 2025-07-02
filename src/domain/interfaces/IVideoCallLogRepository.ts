@@ -12,7 +12,9 @@ import { IVideoCallLog } from "@domain/entities/video-calllog.entity";
 export interface IVideoCallLogRepository
   extends IBaseRepository<IVideoCallLog> {
   updateStatus(data: UpdateVideoCallLogDTO): Promise<IVideoCallLog | null>;
-  updateDuration(data: UpdateVideoCallDurationDTO): Promise<void>;
+  updateDuration(
+    data: UpdateVideoCallDurationDTO
+  ): Promise<IVideoCallLog | null>;
   getTrainerVideoCallLogs(
     trainerId: string,
     videoCallLogQuery: GetVideoCallLogQueryDTO

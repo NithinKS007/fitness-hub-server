@@ -6,7 +6,7 @@ import {
 import { sendResponse } from "@shared/utils/http.response";
 import { loggerUseCase } from "@di/container-resolver";
 
-class AppError extends Error {
+export class AppError extends Error {
   statusCode: number;
   constructor(message: string, statusCode: number) {
     super(message);

@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
 const connectDB = async (): Promise<void> => {
   const uri: string = process.env.ATLAS_DATABASE_CONFIG!;

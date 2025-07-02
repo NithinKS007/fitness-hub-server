@@ -11,6 +11,16 @@ export const handleAcceptCall = async ({
   io,
   roomId,
 }: AcceptVideoCall) => {
-  socket.join(roomId);
-  io.to(roomId).emit("callStarted", { roomId });
+  try {
+    socket.join(roomId);
+    io.to(roomId).emit("callStarted", { roomId });
+  } catch (error: any) {
+    io.to(roomId).emit("error", {
+      message:
+        error.message ||
+        "An unexpected error occurred while attempting to accept the call.",
+      status: "error",
+      code: error.code || 500,
+    });
+  }
 };

@@ -1,6 +1,5 @@
-import { Server, Socket } from "socket.io";
+import { Server as SocketIOServer, Socket } from "socket.io";
 import { handleConnect } from "@infrastructure/services/socket/handlers/connect";
-import { handleRegister } from "@infrastructure/services/socket/handlers/register";
 import {
   handleSetActiveChat,
   SetActiveChatData,
@@ -11,7 +10,7 @@ import {
 } from "@infrastructure/services/socket/handlers/send-message";
 import { handleTyping } from "@infrastructure/services/socket/handlers/typing";
 import { handleCheckOnline } from "@infrastructure/services/socket/handlers/check-online";
-import { handleCloseChat } from "@infrastructure/services/socket/handlers/close-chat";
+import { handleCloseChat } from "@infrastructure/services/socket/handlers/close-active-chat";
 import { handleStopTyping } from "@infrastructure/services/socket/handlers/stop-typing";
 import { handleDisconnect } from "@infrastructure/services/socket/handlers/disconnect";
 import { handleInitiateCall } from "@infrastructure/services/socket/handlers/videocall/call-Initiated";
@@ -31,14 +30,10 @@ import {
   updateVideoCallDurationUseCase,
 } from "@di/container-resolver";
 
-export const socketService = (io: Server) => {
+export const socketService = async (io: SocketIOServer) => {
   io.on("connection", (socket: Socket) => {
-    handleConnect(socket);
 
-    //CHAT BASED SOCKETS
-    socket.on("register", (userId: string) => {
-      handleRegister(io, socket, userId);
-    });
+    handleConnect(socket, io);
 
     socket.on("checkOnlineStatus", (targetId: string) => {
       handleCheckOnline(socket, targetId);
@@ -133,5 +128,13 @@ export const socketService = (io: Server) => {
     socket.on("disconnect", () => {
       handleDisconnect(socket);
     });
+
+    socket.on("connect_error", (err) => {
+      console.log("Connection error:", err);
+    });
+  });
+
+  io.on("error", (err) => {
+    console.log("Server error:", err);
   });
 };

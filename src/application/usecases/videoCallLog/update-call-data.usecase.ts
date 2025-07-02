@@ -4,6 +4,8 @@ import { ApplicationStatus } from "@shared/constants/index.constants";
 import { UpdateVideoCallDurationDTO } from "@application/dtos/video-call-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
+import { IVideoCallLog } from "@domain/entities/video-calllog.entity";
 
 /**
  * Purpose: Handle the process of updating the duration of a video call.
@@ -18,15 +20,24 @@ export class UpdateVideoCallDurationUseCase {
     @inject(TYPES_REPOSITORIES.VideoCallLogRepository)
     private videoCallLogRepository: IVideoCallLogRepository
   ) {}
-  
+
   async execute({
     callDuration,
     callRoomId,
-  }: UpdateVideoCallDurationDTO): Promise<void> {
+  }: UpdateVideoCallDurationDTO): Promise<IVideoCallLog> {
     if (typeof callDuration !== "number" || !callRoomId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
     const callData = { callDuration, callRoomId };
-    await this.videoCallLogRepository.updateDuration(callData);
+
+    const updatedCall = await this.videoCallLogRepository.updateDuration(
+      callData
+    );
+
+    if (!updatedCall) {
+      throw new validationError(VideoCallStatus.UnableToUpdateDuration);
+    }
+
+    return updatedCall;
   }
 }
