@@ -134,6 +134,9 @@ export { TrainerDashBoardUseCase } from "@application/usecases/dashboard/trainer
 // Logger Use Cases
 export { LoggerUseCase } from "@application/usecases/handle-log.usecase";
 
+// Cloudinary Use Cases
+export { CloudinaryUseCase} from "@application/usecases/cloudinary/cloudinary-signature.usecase";
+
 // Appointment Controllers
 export { BookAppointmentController } from "@presentation/controllers/appointment/book-appointment.controller";
 export { CancelAppointmentController } from "@presentation/controllers/appointment/cancel-appointment.controller";
@@ -232,6 +235,9 @@ export { AddWorkoutController } from "@presentation/controllers/workout/add-work
 export { DeleteWorkoutController } from "@presentation/controllers/workout/delete-workout.controller";
 export { GetWorkoutController } from "@presentation/controllers/workout/get-workout.controller";
 export { UpdateWorkoutController } from "@presentation/controllers/workout/update-workout.controller";
+
+// Cloudinary Controllers
+export {CloudinaryController} from "@presentation/controllers/cloudinary/cloudinary.controller";
 
 // Repository Interfaces
 export { IUserRepository } from "@domain/interfaces/IUserRepository";

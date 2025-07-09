@@ -8,6 +8,8 @@ export const parseQueryParams = (query: ParsedQs) => {
     ? [query.filters]
     : [];
 
+  const folder =
+    query.folder && typeof query.folder === "string" ? query.folder : "";
   const fromDate =
     query.fromDate && typeof query.fromDate === "string"
       ? dateService.parseDate(query.fromDate)
@@ -75,5 +77,6 @@ export const parseQueryParams = (query: ParsedQs) => {
     sort,
     period,
     bodyPart,
+    folder,
   };
 };

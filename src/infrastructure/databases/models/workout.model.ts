@@ -1,5 +1,15 @@
-import { IWorkout } from "@domain/entities/workout.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
+
+export interface IWorkout extends Document {
+  userId: string | ObjectId;
+  date: Date;
+  bodyPart: string;
+  exerciseName: string;
+  kg: number;
+  reps: number;
+  time: number;
+  isCompleted: boolean;
+}
 
 const WorkoutSchema: Schema = new Schema(
   {
@@ -11,7 +21,9 @@ const WorkoutSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid user id");
+            })();
       },
     },
     date: {

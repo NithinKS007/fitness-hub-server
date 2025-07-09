@@ -123,3 +123,7 @@ export const TYPES_WORKOUT_USECASES = {
 export const TYPES_LOGGER_USECASES = {
   LoggerUseCase: Symbol.for("LoggerUseCase"),
 };
+
+export const TYPES_CLOUDINARY_USECASES = {
+  CloudinaryUseCase:Symbol.for("CloudinaryUseCase")
+}

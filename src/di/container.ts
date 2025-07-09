@@ -4,6 +4,7 @@ import {
   TYPES_AUTH_CONTROLLER,
   TYPES_BOOKING_CONTROLLER,
   TYPES_CHAT_CONTROLLER,
+  TYPES_CLOUDINARY_CONTROLLER,
   TYPES_DASHBOARD_CONTROLLER,
   TYPES_PLATFORM_CONTROLLER,
   TYPES_PLAYLIST_CONTROLLER,
@@ -31,6 +32,7 @@ import {
   TYPES_VIDEO_CALL_LOG_USECASES,
   TYPES_WORKOUT_USECASES,
   TYPES_LOGGER_USECASES,
+  TYPES_CLOUDINARY_USECASES,
 } from "@di/types-usecases";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
@@ -117,6 +119,8 @@ import {
   BlockSubPlanController,
   DeleteSubPlanController,
   EditSubPlanController,
+  CloudinaryController,
+  CloudinaryUseCase,
 } from "@di/file-imports-index";
 
 // Services
@@ -389,6 +393,9 @@ container.bind(TYPES_WORKOUT_USECASES.GetWorkoutUseCase).to(GetWorkoutUseCase);
 //Logger Use Cases
 container.bind(TYPES_LOGGER_USECASES.LoggerUseCase).to(LoggerUseCase)
 
+//Cloudinary Use Cases
+container.bind(TYPES_CLOUDINARY_USECASES.CloudinaryUseCase).to(CloudinaryUseCase)
+
 // Appointment Controllers 
 container.bind(TYPES_APPOINTMENT_CONTROLLER.BookAppointmentController).to(BookAppointmentController);
 container.bind(TYPES_APPOINTMENT_CONTROLLER.CancelAppointmentController).to(CancelAppointmentController);
@@ -487,5 +494,8 @@ container.bind(TYPES_WORKOUT_CONTROLLER.AddWorkoutController).to(AddWorkoutContr
 container.bind(TYPES_WORKOUT_CONTROLLER.DeleteWorkoutController).to(DeleteWorkoutController);
 container.bind(TYPES_WORKOUT_CONTROLLER.GetWorkoutController).to(GetWorkoutController);
 container.bind(TYPES_WORKOUT_CONTROLLER.UpdateWorkoutController).to(UpdateWorkoutController);
+
+// CloudinaryControllers
+container.bind(TYPES_CLOUDINARY_CONTROLLER.CloudinaryController).to(CloudinaryController)
 
 export { container };

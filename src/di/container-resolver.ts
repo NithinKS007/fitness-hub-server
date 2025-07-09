@@ -91,6 +91,7 @@ import {
   TYPES_AUTH_CONTROLLER,
   TYPES_BOOKING_CONTROLLER,
   TYPES_CHAT_CONTROLLER,
+  TYPES_CLOUDINARY_CONTROLLER,
   TYPES_DASHBOARD_CONTROLLER,
   TYPES_PLATFORM_CONTROLLER,
   TYPES_PLAYLIST_CONTROLLER,
@@ -112,6 +113,7 @@ import {
   TYPES_TRAINER_USECASES,
   TYPES_VIDEO_CALL_LOG_USECASES,
 } from "@di/types-usecases";
+import { CloudinaryController } from '@presentation/controllers/cloudinary/cloudinary.controller';
 
 // Appointment Controllers
 export const bookAppointmentController = container.get<BookAppointmentController>(TYPES_APPOINTMENT_CONTROLLER.BookAppointmentController);
@@ -211,6 +213,9 @@ export const addWorkoutController = container.get<AddWorkoutController>(TYPES_WO
 export const deleteWorkoutController = container.get<DeleteWorkoutController>(TYPES_WORKOUT_CONTROLLER.DeleteWorkoutController);
 export const getWorkoutController = container.get<GetWorkoutController>(TYPES_WORKOUT_CONTROLLER.GetWorkoutController);
 export const updateWorkoutController = container.get<UpdateWorkoutController>(TYPES_WORKOUT_CONTROLLER.UpdateWorkoutController);
+
+// Cloudinary Controllers
+export const cloudinaryController = container.get<CloudinaryController>(TYPES_CLOUDINARY_CONTROLLER.CloudinaryController)
 
 // Use Cases
 export const getTrainerDetailsUseCase = container.get<GetTrainerDetailsUseCase>(TYPES_TRAINER_USECASES.GetTrainerDetailsUseCase);

@@ -1,6 +1,14 @@
-import { IChat } from "@domain/entities/chat.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
+export interface IChat extends Document {
+  _id: ObjectId;
+  senderId: string | ObjectId;
+  receiverId: string | ObjectId;
+  message: string;
+  isRead: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 const chatSchema: Schema = new Schema(
   {
@@ -11,7 +19,9 @@ const chatSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid sender id");
+            })();
       },
     },
     receiverId: {
@@ -21,7 +31,9 @@ const chatSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid receiver id");
+            })();
       },
     },
     message: { type: String, required: true },

@@ -1,5 +1,16 @@
-import { IVideoCallLog } from "@domain/entities/video-calllog.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
+
+export interface IVideoCallLog extends Document {
+  _id: ObjectId;
+  appointmentId: string | ObjectId;
+  callerId: string | ObjectId;
+  receiverId: string | ObjectId;
+  callDuration: number;
+  callRoomId: string;
+  callStatus: "pending" | "completed" | "missed";
+  callStartTime: Date;
+  callEndTime: Date;
+}
 
 const videoCallLogSchema: Schema = new Schema(
   {
@@ -11,7 +22,9 @@ const videoCallLogSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid appointment id");
+            })();
       },
     },
     callerId: {
@@ -22,7 +35,9 @@ const videoCallLogSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid caller id");
+            })();
       },
     },
     receiverId: {
@@ -33,7 +48,9 @@ const videoCallLogSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid receiver id");
+            })();
       },
     },
     callDuration: { type: Number, default: 0 },

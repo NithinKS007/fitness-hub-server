@@ -1,5 +1,12 @@
-import { IBookingSlot } from "@domain/entities/booking-slot.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
+
+export interface IBookingSlot extends Document {
+  _id: ObjectId;
+  trainerId: string | ObjectId;
+  status: "pending" | "booked" | "completed";
+  time: string;
+  date: Date;
+}
 
 const bookingSlotSchema: Schema = new Schema(
   {
@@ -11,7 +18,9 @@ const bookingSlotSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid trainer id");
+            })();
       },
     },
     time: { type: String, required: true },

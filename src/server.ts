@@ -15,12 +15,16 @@ import { notFoundMiddleware } from "@presentation/middlewares/notfound.middlewar
 import { asyncHandler } from "@shared/utils/async-handler";
 import { webhookController } from "@di/container-resolver";
 import publicRoutes from "@presentation/routes/public.routes";
+import cloudinaryRoutes from "@presentation/routes/cloudinary.routes";
+import helmet from "helmet";
 
 dotenv.config();
 
 const app = express();
 const allowedOrigins = process.env.CLIENT_ORIGINS;
-app.use("/api/v1", rateLimiter);
+
+app.use(helmet());
+app.use("/api", rateLimiter);
 app.use(morganMiddleware);
 app.use(
   cors({
@@ -32,7 +36,7 @@ app.use(
 app.post(
   "/api/v1/webhook",
   express.raw({ type: "application/json" }),
-  asyncHandler(webhookController.handle)
+  asyncHandler(webhookController.handle.bind(webhookController))
 );
 app.get("/", (req: Request, res: Response) => {
   res.json({ message: "message send from server" });
@@ -45,6 +49,7 @@ app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/trainer", trainerRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chat", chatRoutes);
+app.use("/api/v1/cloudinary", cloudinaryRoutes);
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 

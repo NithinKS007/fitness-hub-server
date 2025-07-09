@@ -1,7 +1,14 @@
-import { IPlayList } from "@domain/entities/playlist.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
-const playlistSchema: Schema = new Schema(
+export interface IPlayList extends Document {
+  _id: ObjectId;
+  trainerId: string | ObjectId;
+  title: string;
+  videoCount: number;
+  privacy: boolean;
+}
+
+const playListSchema: Schema = new Schema(
   {
     trainerId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -11,7 +18,9 @@ const playlistSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid trainer id");
+            })();
       },
     },
     title: {
@@ -31,7 +40,7 @@ const playlistSchema: Schema = new Schema(
   },
   { timestamps: true }
 );
-playlistSchema.index({ trainerId: 1, title: "text" });
-const PlayListModel = mongoose.model<IPlayList>("PlayList", playlistSchema);
+playListSchema.index({ trainerId: 1, title: "text" });
+const PlayListModel = mongoose.model<IPlayList>("PlayList", playListSchema);
 
 export default PlayListModel;

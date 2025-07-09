@@ -124,3 +124,7 @@ export const TYPES_WORKOUT_CONTROLLER = {
   GetWorkoutController: Symbol.for("GetWorkoutController"),
   UpdateWorkoutController: Symbol.for("UpdateWorkoutController"),
 };
+
+export const TYPES_CLOUDINARY_CONTROLLER = {
+  CloudinaryController: Symbol.for("CloudinaryController"),
+};

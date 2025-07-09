@@ -1,5 +1,20 @@
-import { IUserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
+
+type SubPeriod = "monthly" | "yearly" | "quarterly" | "halfYearly";
+
+export interface IUserSubscriptionPlan extends Document {
+  _id: ObjectId;
+  userId: string | ObjectId;
+  trainerId: string | ObjectId;
+  subPeriod: SubPeriod;
+  price: number;
+  durationInWeeks: number;
+  sessionsPerWeek: number;
+  totalSessions: number;
+  stripePriceId: string;
+  stripeSubscriptionId: string;
+  stripeSubscriptionStatus: string;
+}
 
 const userSubscriptionPlanSchema: Schema = new Schema(
   {
@@ -11,7 +26,9 @@ const userSubscriptionPlanSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid user id");
+            })();
       },
     },
 
@@ -23,7 +40,9 @@ const userSubscriptionPlanSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          :(() => {
+              throw new Error("Please provide a valid trainer id");
+            })();
       },
     },
     subPeriod: {

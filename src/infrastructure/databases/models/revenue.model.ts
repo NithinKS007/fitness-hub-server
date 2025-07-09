@@ -1,5 +1,16 @@
-import { IRevenue } from "@domain/entities/revenue.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
+
+export interface IRevenue extends Document {
+  _id: ObjectId;
+  subscriptionId: string | ObjectId;
+  userSubscriptionPlanId: string | ObjectId;
+  trainerId: string | ObjectId;
+  userId: string | ObjectId;
+  amountPaid: number;
+  platformRevenue: number;
+  trainerRevenue: number;
+  commission: number;
+}
 
 const revenueSchema: Schema = new Schema(
   {
@@ -11,7 +22,9 @@ const revenueSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid subscription id");
+            })();
       },
     },
     userSubscriptionPlanId: {
@@ -22,7 +35,9 @@ const revenueSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid user subscription plan id");
+            })();
       },
     },
     trainerId: {
@@ -33,7 +48,9 @@ const revenueSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid trainer id");
+            })();
       },
     },
     userId: {
@@ -44,7 +61,9 @@ const revenueSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid user id");
+            })();
       },
     },
     amountPaid: { type: Number, required: true },

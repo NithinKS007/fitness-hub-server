@@ -1,5 +1,15 @@
-import { IVideo } from "@domain/entities/video.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
+
+export interface IVideo extends Document {
+  _id: ObjectId;
+  trainerId: string | ObjectId;
+  title: string;
+  description: string;
+  duration: Number;
+  thumbnail: string;
+  video: string;
+  privacy: boolean;
+}
 
 const videoSchema: Schema = new Schema(
   {
@@ -11,7 +21,9 @@ const videoSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid trainer id");
+            })();
       },
     },
     title: { type: String, required: true },

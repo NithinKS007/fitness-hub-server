@@ -1,7 +1,16 @@
-import { ITrainer } from "@domain/entities/trainer.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
-const trainerSchema: Schema  = new Schema(
+export interface ITrainer extends Document {
+  _id: string;
+  userId: string | ObjectId;
+  yearsOfExperience: string;
+  specializations: string[];
+  certifications: { fileName: string; url: string }[];
+  isApproved: boolean;
+  aboutMe?: string;
+}
+
+const trainerSchema: Schema = new Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -11,7 +20,9 @@ const trainerSchema: Schema  = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid user id");
+            })();
       },
     },
     yearsOfExperience: { type: String, required: true },

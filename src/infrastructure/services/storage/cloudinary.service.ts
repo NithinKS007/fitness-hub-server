@@ -3,7 +3,11 @@ import cloudinary from "@infrastructure/config/cloudinary.config";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "@shared/constants/index.constants";
 import { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
-import { UploadImage } from "@application/dtos/service/cloud.storage.service";
+import {
+  GenerateURLDTO,
+  UploadImage,
+  UploadSignature,
+} from "@application/dtos/service/cloud.storage.service";
 import { injectable } from "inversify";
 
 @injectable()
@@ -20,6 +24,46 @@ export class CloudinaryService implements ICloudStorageService {
     } catch (error: any) {
       console.log("Error while uploading to cloudinary:", error.message);
       throw new validationError(ApplicationStatus.FailedToUploadToCloudinary);
+    }
+  }
+
+  async getSignature(generateURL: GenerateURLDTO): Promise<UploadSignature> {
+    try {
+      const { folder, publicId, timestamp } = generateURL;
+
+      const cloudName = cloudinary.config().cloud_name;
+      const apiSecret = cloudinary.config().api_secret;
+      const apiKey = cloudinary.config().api_key;
+
+      if (!apiSecret || !folder || !publicId || !apiKey || !cloudName) {
+        throw new validationError(ApplicationStatus.AllFieldsAreRequired);
+      }
+
+      const paramsToSign = {
+        timestamp: timestamp,
+        folder: folder,
+        public_id: publicId,
+      };
+
+      const signature = cloudinary.utils.api_sign_request(
+        paramsToSign,
+        apiSecret
+      );
+
+      return {
+        signature,
+        timestamp,
+        apiKey,
+        publicId,
+        cloudName,
+        folder,
+      };
+    } catch (error: any) {
+      console.log(
+        "Error while generating signature from cloudinary:",
+        error.message
+      );
+      throw new validationError(ApplicationStatus.FailedToGenSignature);
     }
   }
 }

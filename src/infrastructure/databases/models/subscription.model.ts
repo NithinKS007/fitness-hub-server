@@ -1,5 +1,18 @@
-import { ISubscription } from "@domain/entities/subscription.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
+
+type SubPeriod = "monthly" | "yearly" | "quarterly" | "halfYearly";
+
+export interface ISubscription extends Document {
+  _id: ObjectId;
+  trainerId: string | ObjectId;
+  subPeriod: SubPeriod;
+  price: number;
+  durationInWeeks: number;
+  sessionsPerWeek: number;
+  totalSessions: number;
+  isBlocked: boolean;
+  stripePriceId: string;
+}
 
 const subscriptionSchema: Schema = new Schema(
   {
@@ -11,7 +24,9 @@ const subscriptionSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid trainer id");
+            })();
       },
     },
     subPeriod: {

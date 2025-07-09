@@ -43,7 +43,7 @@ trainerRoutes.use(authorizeRole(["trainer"]))
 trainerRoutes.post("/subscriptions",subscriptionSchema,validate,asyncHandler(createSubPlanController.handle.bind(createSubPlanController)));
 trainerRoutes.get("/subscriptions",asyncHandler(getTrainerSubscriptionController.handle.bind(getTrainerSubscriptionController)));
 trainerRoutes.patch("/subscriptions/:subscriptionId",asyncHandler(blockSubPlanController.handle.bind(blockSubPlanController)));
-trainerRoutes.put("/subscriptions/:subscriptionId",asyncHandler(editSubPlanController.handle.bind(editSubPlanController)));
+trainerRoutes.put("/subscriptions/:subscriptionId",subscriptionSchema,validate,asyncHandler(editSubPlanController.handle.bind(editSubPlanController)));
 trainerRoutes.delete("/subscriptions/:subscriptionId",asyncHandler(deleteSubPlanController.handle.bind(deleteSubPlanController)));
 trainerRoutes.get("/subscribers",asyncHandler(getTrainerSubscribersController.handle.bind(getTrainerSubscribersController)));
 
@@ -52,12 +52,12 @@ trainerRoutes.post("/playlists",playlistSchema,validate,asyncHandler(createPlayl
 trainerRoutes.get("/playlists",asyncHandler(getPlaylistController.handle.bind(getPlaylistController)));
 trainerRoutes.get("/playlists/all",asyncHandler(getAllPlaylistController.handle.bind(getAllPlaylistController)));
 trainerRoutes.patch("/playlists/:playListId",asyncHandler(updatePlaylistPrivacyController.handle.bind(updatePlaylistPrivacyController)));
-trainerRoutes.put("/playlists/:playListId",asyncHandler(editPlaylistController.handle.bind(editPlaylistController)));
+trainerRoutes.put("/playlists/:playListId",playlistSchema,validate,asyncHandler(editPlaylistController.handle.bind(editPlaylistController)));
 
 //VIDEO MANAGEMENT ROUTES
 trainerRoutes.post("/videos",videoSchema,validate,asyncHandler(addVideoController.handle.bind(addVideoController)));
 trainerRoutes.patch("/videos/:videoId",asyncHandler(updateVideoStatusController.handle.bind(updateVideoStatusController)));
-trainerRoutes.put("/videos/:videoId",asyncHandler(editVideoController.handle.bind(editVideoController)));
+trainerRoutes.put("/videos/:videoId",videoSchema,validate,asyncHandler(editVideoController.handle.bind(editVideoController)));
 trainerRoutes.get("/videos",asyncHandler(getAllVideosController.handle.bind(getAllVideosController)));
 
 //SLOT MANAGEMENT

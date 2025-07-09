@@ -1,5 +1,14 @@
-import { IAppointment } from "@domain/entities/appointment.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
+
+export interface IAppointment extends Document {
+  _id: ObjectId;
+  bookingSlotId: string | ObjectId;
+  userId: string | ObjectId;
+  trainerId: string | ObjectId;
+  appointmentDate: Date;
+  appointmentTime: string;
+  status: "pending" | "approved" | "rejected" | "cancelled";
+}
 
 const appointmentSchema: Schema = new Schema(
   {
@@ -11,7 +20,9 @@ const appointmentSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid user id");
+            })();
       },
     },
     bookingSlotId: {
@@ -22,7 +33,9 @@ const appointmentSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid booking id");
+            })();
       },
     },
     trainerId: {
@@ -33,7 +46,9 @@ const appointmentSchema: Schema = new Schema(
         return typeof value === "string" &&
           mongoose.Types.ObjectId.isValid(value)
           ? new mongoose.Types.ObjectId(value)
-          : value;
+          : (() => {
+              throw new Error("Please provide a valid trainer id");
+            })();
       },
     },
     appointmentDate: { type: Date, required: true },

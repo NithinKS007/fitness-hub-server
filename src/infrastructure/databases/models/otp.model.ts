@@ -1,5 +1,10 @@
-import { IOtp } from "@domain/entities/otp.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
+
+export interface IOtp extends Document {
+  _id: ObjectId;
+  email: string;
+  otp: string;
+}
 
 const otpSchema: Schema = new Schema(
   {
