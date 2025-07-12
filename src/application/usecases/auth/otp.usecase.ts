@@ -5,7 +5,7 @@ import { OTPStatus } from "@shared/constants/index.constants";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/communication/IEmail.service";
 import { IOTPService } from "@application/interfaces/security/IOtp.service";
-import { IOtp } from "@domain/entities/otp.entity";
+import { Otp } from "@domain/entities/otp.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
@@ -55,7 +55,7 @@ export class OtpUseCase {
     private otpService: IOTPService
   ) {}
 
-  async createOtp({ email, otp }: OtpDTO): Promise<IOtp> {
+  async createOtp({ email, otp }: OtpDTO): Promise<Otp> {
     return await this.otpRepository.create({ email, otp });
   }
   async verifyOtp({ email, otp }: OtpDTO): Promise<void> {

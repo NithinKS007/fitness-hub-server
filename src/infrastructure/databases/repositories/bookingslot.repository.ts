@@ -4,11 +4,11 @@ import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepositor
 import { AvailableSlotsQueryDTO } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
-import BookingSlotModel from "../models/booking-slot.model";
-import { IBookingSlot } from "@domain/entities/booking-slot.entity";
+import BookingSlotModel, { IBookingSlot } from "../models/booking-slot.model";
+import { BookingSlot } from "@domain/entities/booking-slot.entity";
 
 export class BookingSlotRepository
-  extends BaseRepository<IBookingSlot>
+  extends BaseRepository<IBookingSlot, BookingSlot>
   implements IBookingSlotRepository
 {
   constructor(model: Model<IBookingSlot> = BookingSlotModel) {
@@ -23,7 +23,7 @@ export class BookingSlotRepository
     trainerId: string,
     { page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
   ): Promise<{
-    availableSlotsList: IBookingSlot[];
+    availableSlotsList: BookingSlot[];
     paginationData: PaginationDTO;
   }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
@@ -51,8 +51,10 @@ export class BookingSlotRepository
       pageNumber,
       limitNumber,
     });
+
+    const toDomainList = availableSlotsList.map((slot) => this.toDomain(slot));
     return {
-      availableSlotsList,
+      availableSlotsList: toDomainList,
       paginationData,
     };
   }
@@ -61,7 +63,7 @@ export class BookingSlotRepository
     trainerId: string,
     { page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
   ): Promise<{
-    availableSlotsList: IBookingSlot[];
+    availableSlotsList: BookingSlot[];
     paginationData: PaginationDTO;
   }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
@@ -110,17 +112,21 @@ export class BookingSlotRepository
       pageNumber,
       limitNumber,
     });
+
+    const toDomainList = availableSlotsList.map((slot) => this.toDomain(slot));
     return {
-      availableSlotsList,
+      availableSlotsList: toDomainList,
       paginationData,
     };
   }
 
-  async getAllPendingSlots(trainerId: string): Promise<IBookingSlot[]> {
-    return await this.model.find({
+  async getAllPendingSlots(trainerId: string): Promise<BookingSlot[]> {
+    const result = await this.model.find({
       trainerId: trainerId,
       date: { $gte: this.resetToUTCStartOfDay() },
       status: "pending",
     });
+
+    return result.map((slot) => this.toDomain(slot));
   }
 }

@@ -2,7 +2,7 @@ export enum SubscriptionStatus {
   Created = "Subscription added successfully",
   AlreadyExists = "Cannot made changes, subscription already exists",
   ListRetrieved = "Subscriptions list retrieved successfully",
-  NotFound = "Subscription not found or unavailable",
+  NotFound = "Subscription not found or unavailable, Please try again.",
   SessionCreateFailed = "Failed to create subscription session",
   WebHookCredentialsMissing = "Web hook credentials are missing",
   WebHookVerificationFailed = "Webhook signature verification failed",

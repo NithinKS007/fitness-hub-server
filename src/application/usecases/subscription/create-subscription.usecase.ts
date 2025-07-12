@@ -8,7 +8,7 @@ import {
   SubPeriod,
   SubscriptionInterval,
 } from "@application/dtos/subscription-dtos";
-import { ISubscription } from "@domain/entities/subscription.entity";
+import { Subscription } from "@domain/entities/subscription.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
@@ -50,7 +50,7 @@ export class CreateSubscriptionUseCase {
     durationInWeeks: number;
     sessionsPerWeek: number;
     totalSessions: number;
-  }): Promise<ISubscription> {
+  }): Promise<Subscription> {
     const { trainerId, subPeriod, totalSessions, price } =
       createSubscriptionData;
 

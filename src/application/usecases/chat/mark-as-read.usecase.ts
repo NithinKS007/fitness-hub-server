@@ -1,4 +1,4 @@
-import { IChat } from "@domain/entities/chat.entity";
+import { Chat } from "@domain/entities/chat.entity";
 import { IChatRepository } from "@domain/interfaces/IChatRepository";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { injectable, inject } from "inversify";
@@ -16,7 +16,7 @@ export class MarkMessageAsReadUseCase {
   }: {
     userId: string;
     otherUserId: string;
-  }): Promise<IChat[] | null> {
+  }): Promise<Chat[] | null> {
     const unreadMessages = await this.chatRepository.findUnreadMessages(
       userId,
       otherUserId

@@ -1,40 +1,40 @@
 import { FindEmailDTO, UpdatePasswordDTO } from "@application/dtos/auth-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
-import UserModel from "@infrastructure/databases/models/user.model";
+import UserModel, { IUser } from "@infrastructure/databases/models/user.model";
 import { GetUsersQueryDTO } from "@application/dtos/query-dtos";
 import { Model } from "mongoose";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
-import { IUser } from "@domain/entities/user.entity";
+import { User } from "@domain/entities/user.entity";
 
 export class UserRepository
-  extends BaseRepository<IUser>
+  extends BaseRepository<IUser, User>
   implements IUserRepository
 {
-  constructor( model: Model<IUser> = UserModel) {
+  constructor(model: Model<IUser> = UserModel) {
     super(model);
   }
 
   async updateUserVerificationStatus({
     email,
-  }: FindEmailDTO): Promise<IUser | null> {
-    return await this.model
+  }: FindEmailDTO): Promise<User | null> {
+    const result = await this.model
       .findOneAndUpdate({ email }, { otpVerified: true })
-      .lean();
+    return result ? this.toDomain(result) : null;
   }
 
   async forgotPassword({
     email,
     password,
-  }: UpdatePasswordDTO): Promise<IUser | null> {
-    return await this.model
+  }: UpdatePasswordDTO): Promise<User | null> {
+    const result = await this.model
       .findOneAndUpdate({ email }, { password: password })
-      .lean();
+    return result ? this.toDomain(result) : null;
   }
 
   async getUsers({ page, limit, search, filters }: GetUsersQueryDTO): Promise<{
-    usersList: IUser[];
+    usersList: User[];
     paginationData: PaginationDTO;
   }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
@@ -75,16 +75,15 @@ export class UserRepository
       .skip(skip)
       .limit(limitNumber)
       .sort({ createdAt: -1 })
-      .lean();
 
     const paginationData = paginateRes({
       totalCount,
       pageNumber,
       limitNumber,
     });
-
+    const toDomainList = usersList.map((user) => this.toDomain(user));
     return {
-      usersList,
+      usersList: toDomainList,
       paginationData,
     };
   }

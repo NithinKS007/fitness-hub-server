@@ -13,7 +13,7 @@ import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IAuthService } from "@application/interfaces/auth/IAuth.service";
 import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
 import { Trainer } from "@application/dtos/trainer-dtos";
-import { IUser } from "@domain/entities/user.entity";
+import { User } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
@@ -38,13 +38,13 @@ export class SigninUserUseCase {
     private encryptionService: IEncryptionService
   ) {}
 
-  private generateAccessToken(user: IUser | Trainer): string {
+  private generateAccessToken(user: User | Trainer): string {
     return this.authService.generateAccessToken({
       _id: user._id.toString(),
       role: user.role,
     });
   }
-  private generateRefreshToken(user: IUser | Trainer): string {
+  private generateRefreshToken(user: User | Trainer): string {
     return this.authService.generateRefreshToken({
       _id: user._id.toString(),
       role: user.role,
@@ -54,7 +54,7 @@ export class SigninUserUseCase {
   private async validateUserLogin(
     email: string,
     password: string
-  ): Promise<IUser | Trainer> {
+  ): Promise<User | Trainer> {
     const userData = await this.userRepository.findOne({ email: email });
     if (!userData) {
       throw new validationError(AuthStatus.EmailNotFound);
@@ -81,7 +81,7 @@ export class SigninUserUseCase {
   async execute({ email, password }: SignInDTO): Promise<{
     accessToken: string;
     refreshToken: string;
-    userData: IUser | Trainer;
+    userData: User | Trainer;
   }> {
     const userData = await this.validateUserLogin(email, password);
 

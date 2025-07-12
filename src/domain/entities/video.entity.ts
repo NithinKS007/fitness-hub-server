@@ -1,8 +1,6 @@
-import { Document, ObjectId } from "mongoose";
-
-export interface IVideo extends Document {
-  _id: ObjectId;
-  trainerId: string | ObjectId;
+export interface Video {
+  _id: string;
+  trainerId: string;
   title: string;
   description: string;
   duration: Number;

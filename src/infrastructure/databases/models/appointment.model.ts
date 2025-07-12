@@ -2,9 +2,9 @@ import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
 export interface IAppointment extends Document {
   _id: ObjectId;
-  bookingSlotId: string | ObjectId;
-  userId: string | ObjectId;
-  trainerId: string | ObjectId;
+  bookingSlotId: ObjectId;
+  userId: ObjectId;
+  trainerId: ObjectId;
   appointmentDate: Date;
   appointmentTime: string;
   status: "pending" | "approved" | "rejected" | "cancelled";
@@ -17,12 +17,11 @@ const appointmentSchema: Schema = new Schema(
       required: true,
       ref: "User",
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid user id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid user id");
+        }
       },
     },
     bookingSlotId: {
@@ -30,12 +29,11 @@ const appointmentSchema: Schema = new Schema(
       required: true,
       ref: "BookingSlot",
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid booking id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid booking id");
+        }
       },
     },
     trainerId: {
@@ -43,16 +41,30 @@ const appointmentSchema: Schema = new Schema(
       required: true,
       ref: "Trainer",
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid trainer id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid trainer id");
+        }
       },
     },
-    appointmentDate: { type: Date, required: true },
-    appointmentTime: { type: String, required: true },
+    appointmentDate: {
+      type: Date,
+      required: true,
+      validate: {
+        validator: (v: Date) => v > new Date(),
+        message: "Appointment date must be in the future",
+      },
+    },
+    appointmentTime: {
+      type: String,
+      required: true,
+      validate: {
+        validator: (v: string) =>
+          /^([0-9]{1,2}):([0-9]{2})\s?(AM|PM)$/.test(v),
+        message: "Appointment time must be in 'hh:mm AM/PM' format",
+      },
+    },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected", "cancelled"],

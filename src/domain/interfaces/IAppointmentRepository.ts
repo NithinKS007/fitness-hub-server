@@ -7,10 +7,11 @@ import {
   GetBookingSchedulesDTO,
 } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import { IAppointment } from "@domain/entities/appointment.entity";
+import { Appointment } from "@domain/entities/appointment.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
+import { IAppointment } from "@infrastructure/databases/models/appointment.model";
 
-export interface IAppointmentRepository extends IBaseRepository<IAppointment> {
+export interface IAppointmentRepository extends IBaseRepository<IAppointment,Appointment> {
   getBookingRequests(
     trainerId: string,
     searchFilterQuery: GetBookingRequestsDTO

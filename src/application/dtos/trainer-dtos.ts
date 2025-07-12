@@ -1,6 +1,6 @@
 import { ObjectId } from "mongoose";
 import { AdminChartData } from "./chart-dtos";
-import { ISubscription } from "@domain/entities/subscription.entity";
+import { Subscription } from "@domain/entities/subscription.entity";
 
 export interface CreateTrainerDTO {
   fname: string;
@@ -39,7 +39,7 @@ export interface TrainerVerificationDTO {
 }
 
 export interface TrainerWithSubscription extends Trainer {
-  subscriptionDetails: ISubscription[];
+  subscriptionDetails: Subscription[];
 }
 
 export interface Trainer {

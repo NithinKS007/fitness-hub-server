@@ -5,7 +5,7 @@ import {
   SlotStatus,
 } from "@shared/constants/index.constants";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
-import { IBookingSlot } from "@domain/entities/booking-slot.entity";
+import { BookingSlot } from "@domain/entities/booking-slot.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -23,7 +23,7 @@ export class CreateBookingSlotUseCase {
     private bookingSlotRepository: IBookingSlotRepository
   ) {}
 
-  async execute(slotData: CreateBookingSlotDTO): Promise<IBookingSlot> {
+  async execute(slotData: CreateBookingSlotDTO): Promise<BookingSlot> {
     const { date, ...otherSlotData } = slotData;
     if (!slotData) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);

@@ -25,9 +25,31 @@ export interface IUser extends Document {
 
 const userSchema: Schema = new Schema(
   {
-    fname: { type: String, required: true },
-    lname: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    fname: {
+      type: String,
+      required: true,
+      validate: {
+        validator: (value: string) => /^[A-Za-z\s]+$/.test(value),
+        message: "First name can only contain letters and spaces",
+      },
+    },
+    lname: {
+      type: String,
+      required: true,
+      validate: {
+        validator: (value: string) => /^[A-Za-z\s]+$/.test(value),
+        message: "Last name can only contain letters and spaces",
+      },
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      validate: {
+        validator: (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+        message: "Please provide a valid email address",
+      },
+    },
     isBlocked: { type: Boolean, default: false },
     role: {
       type: String,

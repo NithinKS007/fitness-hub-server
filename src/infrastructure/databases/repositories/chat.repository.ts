@@ -1,19 +1,19 @@
 import { Model } from "mongoose";
 import { FindChatDTO } from "@application/dtos/chat-dtos";
 import { IChatRepository } from "@domain/interfaces/IChatRepository";
-import ChatModel from "@infrastructure/databases/models/chat.model";
+import ChatModel, { IChat } from "@infrastructure/databases/models/chat.model";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
-import { IChat } from "@domain/entities/chat.entity";
+import { Chat } from "@domain/entities/chat.entity";
 
 export class ChatRepository
-  extends BaseRepository<IChat>
+  extends BaseRepository<IChat, Chat>
   implements IChatRepository
 {
   constructor(model: Model<IChat> = ChatModel) {
     super(model);
   }
 
-  async getChatHistory({ userId, otherUserId }: FindChatDTO): Promise<IChat[]> {
+  async getChatHistory({ userId, otherUserId }: FindChatDTO): Promise<Chat[]> {
     const chats = await this.model
       .find({
         $or: [
@@ -28,18 +28,20 @@ export class ChatRepository
         ],
       })
       .sort({ createdAt: 1 });
-    return chats;
+
+    return chats.map((slot) => this.toDomain(slot));
   }
 
   async findUnreadMessages(
     userId: string,
     receiverId: string
-  ): Promise<IChat[]> {
-    return this.model.find({
+  ): Promise<Chat[]> {
+    const result = await this.model.find({
       senderId: this.parseId(receiverId),
       receiverId: this.parseId(userId),
       isRead: false,
     });
+    return result.map((slot) => this.toDomain(slot));
   }
 
   async markMessagesRead(userId: string, receiverId: string): Promise<void> {

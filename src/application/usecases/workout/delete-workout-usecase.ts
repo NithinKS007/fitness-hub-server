@@ -1,4 +1,4 @@
-import { IWorkout } from "@domain/entities/workout.entity";
+import { Workout } from "@domain/entities/workout.entity";
 import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { WorkoutStatus } from "@shared/constants/index.constants";
@@ -19,7 +19,7 @@ export class DeleteWorkoutUseCase {
     private workoutRepository: IWorkoutRepository
   ) {}
   
-  async execute(setId: string): Promise<IWorkout> {
+  async execute(setId: string): Promise<Workout> {
     const deletedWorkoutSet = await this.workoutRepository.delete(setId);
     if (!deletedWorkoutSet) {
       throw new validationError(WorkoutStatus.FailedToDelete);

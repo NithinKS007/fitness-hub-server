@@ -10,7 +10,7 @@ import {
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { Action } from "@application/dtos/utility-dtos";
-import { IAppointment } from "@domain/entities/appointment.entity";
+import { Appointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -34,7 +34,7 @@ export class HandleBookingApprovalUseCase {
     appointmentId,
     bookingSlotId,
     action,
-  }: HandleBookingDTO): Promise<IAppointment> {
+  }: HandleBookingDTO): Promise<Appointment> {
     if (!appointmentId || !bookingSlotId || !action) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

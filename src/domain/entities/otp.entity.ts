@@ -1,7 +1,5 @@
-import { Document, ObjectId } from "mongoose";
-
-export interface IOtp extends Document {
-  _id: ObjectId;
+export interface Otp {
+  _id: string;
   email: string;
   otp: string;
 }

@@ -2,7 +2,7 @@ import { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogReposit
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "@shared/constants/index.constants";
 import { UpdateVideoCallLogDTO } from "@application/dtos/video-call-dtos";
-import { IVideoCallLog } from "@domain/entities/video-calllog.entity";
+import { VideoCallLog } from "@domain/entities/video-calllog.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
@@ -26,7 +26,7 @@ export class UpdateVideoCallStatusUseCase {
     callEndTime,
     callRoomId,
     callStatus,
-  }: UpdateVideoCallLogDTO): Promise<IVideoCallLog> {
+  }: UpdateVideoCallLogDTO): Promise<VideoCallLog> {
     if (!callEndTime || !callRoomId || !callStatus) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

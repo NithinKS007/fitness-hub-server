@@ -1,8 +1,6 @@
-import { Document, ObjectId } from "mongoose";
-
-export interface IPlayList extends Document {
-  _id: ObjectId;
-  trainerId: string | ObjectId;
+export interface PlayList {
+  _id: string;
+  trainerId: string;
   title: string;
   videoCount: number;
   privacy: boolean;

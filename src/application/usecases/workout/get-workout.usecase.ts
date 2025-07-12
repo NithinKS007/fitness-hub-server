@@ -3,7 +3,7 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus } from "@shared/constants/index.constants";
 import { GetWorkoutQueryDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import { IWorkout } from "@domain/entities/workout.entity";
+import { Workout } from "@domain/entities/workout.entity";
 import { inject, injectable } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -24,7 +24,7 @@ export class GetWorkoutUseCase {
   async execute(
     userId: string,
     { page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
-  ): Promise<{ workoutList: IWorkout[]; paginationData: PaginationDTO }> {
+  ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }> {
     if (!userId) {
       throw new validationError(AuthStatus.IdRequired);
     }

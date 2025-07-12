@@ -2,8 +2,8 @@ import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
 export interface IVideoPlaylist extends Document {
   _id: ObjectId;
-  videoId: ObjectId | string;
-  playlistId: ObjectId | string;
+  videoId: ObjectId;
+  playListId: ObjectId;
 }
 
 const videoPlaylistSchema: Schema = new Schema(
@@ -13,12 +13,11 @@ const videoPlaylistSchema: Schema = new Schema(
       ref: "Video",
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid video id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid video id");
+        }
       },
     },
     playListId: {
@@ -26,12 +25,11 @@ const videoPlaylistSchema: Schema = new Schema(
       ref: "PlayList",
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid playlist id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid playlist id");
+        }
       },
     },
   },

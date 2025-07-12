@@ -6,7 +6,7 @@ import {
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { BookingSlotStatus } from "@application/dtos/booking-dtos";
-import { IAppointment } from "@domain/entities/appointment.entity";
+import { Appointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -25,8 +25,8 @@ export class CancelAppointmentUseCase {
     @inject(TYPES_REPOSITORIES.AppointmentRepository)
     private appointmentRepository: IAppointmentRepository
   ) {}
-  
-  async execute(appointmentId: string): Promise<IAppointment> {
+
+  async execute(appointmentId: string): Promise<Appointment> {
     if (!appointmentId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
@@ -41,7 +41,7 @@ export class CancelAppointmentUseCase {
       );
     }
     const changeStatusPending = await this.bookingSlotRepository.update(
-      cancelledAppointment.bookingSlotId.toString(),
+      cancelledAppointment.bookingSlotId,
       { status: BookingSlotStatus.PENDING }
     );
     if (!changeStatusPending) {

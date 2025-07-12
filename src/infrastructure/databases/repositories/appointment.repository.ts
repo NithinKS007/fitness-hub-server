@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
-import AppointmentModel from "@infrastructure/databases/models/appointment.model";
+import AppointmentModel, { IAppointment } from "@infrastructure/databases/models/appointment.model";
 import {
   GetBookingRequestsDTO,
   GetBookingSchedulesDTO,
@@ -12,10 +12,10 @@ import {
   AppointmentRequestsTrainer,
   AppointmentRequestsUser,
 } from "@application/dtos/appointment-dtos";
-import { IAppointment } from "@domain/entities/appointment.entity";
+import { Appointment } from "@domain/entities/appointment.entity";
 
 export class AppointmentRepository
-  extends BaseRepository<IAppointment>
+  extends BaseRepository<IAppointment,Appointment>
   implements IAppointmentRepository
 {
   constructor(model: Model<IAppointment> = AppointmentModel) {

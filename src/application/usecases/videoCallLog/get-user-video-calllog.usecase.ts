@@ -1,9 +1,6 @@
 import { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogRepository";
 import { validationError } from "@presentation/middlewares/error.middleware";
-import {
-  AppointmentStatus,
-  ApplicationStatus,
-} from "@shared/constants/index.constants";
+import { ApplicationStatus } from "@shared/constants/index.constants";
 import { GetVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { UserVideoCallLog } from "@application/dtos/video-call-dtos";

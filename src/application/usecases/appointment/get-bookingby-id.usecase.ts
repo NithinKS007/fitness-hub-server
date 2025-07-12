@@ -4,7 +4,7 @@ import {
   AppointmentStatus,
 } from "@shared/constants/index.constants";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
-import { IAppointment } from "@domain/entities/appointment.entity";
+import { Appointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -21,8 +21,8 @@ export class GetAppointmentByIdUseCase {
     @inject(TYPES_REPOSITORIES.AppointmentRepository)
     private appointmentRepository: IAppointmentRepository
   ) {}
-  
-  async execute(appointmentId: string): Promise<IAppointment | null> {
+
+  async execute(appointmentId: string): Promise<Appointment | null> {
     if (!appointmentId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

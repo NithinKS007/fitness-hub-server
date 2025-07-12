@@ -8,7 +8,15 @@ export interface IOtp extends Document {
 
 const otpSchema: Schema = new Schema(
   {
-    email: { type: String, required: true },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      validate: {
+        validator: (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+        message: "Please provide a valid email address",
+      },
+    },
     otp: { type: String, required: true },
   },
   { timestamps: true }

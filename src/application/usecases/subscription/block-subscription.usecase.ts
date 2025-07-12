@@ -6,7 +6,7 @@ import {
   BlockStatus,
 } from "@shared/constants/index.constants";
 import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
-import { ISubscription } from "@domain/entities/subscription.entity";
+import { Subscription } from "@domain/entities/subscription.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -20,7 +20,7 @@ export class SubscriptionBlockUseCase {
   async execute({
     subscriptionId,
     isBlocked,
-  }: UpdateSubscriptionBlockStatusDTO): Promise<ISubscription> {
+  }: UpdateSubscriptionBlockStatusDTO): Promise<Subscription> {
     if (!subscriptionId || typeof isBlocked !== "boolean") {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

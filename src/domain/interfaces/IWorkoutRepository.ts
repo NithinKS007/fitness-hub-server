@@ -4,14 +4,15 @@ import {
 } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { WorkoutChartData } from "@application/dtos/workout-dtos";
-import { IWorkout } from "@domain/entities/workout.entity";
+import { Workout } from "@domain/entities/workout.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
+import { IWorkout } from "@infrastructure/databases/models/workout.model";
 
-export interface IWorkoutRepository extends IBaseRepository<IWorkout> {
+export interface IWorkoutRepository extends IBaseRepository<IWorkout, Workout> {
   getWorkoutsByUserId(
     userId: string,
     searchFilterQuery: GetWorkoutQueryDTO
-  ): Promise<{ workoutList: IWorkout[]; paginationData: PaginationDTO }>;
+  ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }>;
   getUserDashBoardChartData(
     searchFilterQuery: CustomUserDashBoardQueryDTO
   ): Promise<WorkoutChartData[]>;

@@ -11,11 +11,12 @@ import {
 } from "@application/dtos/query-dtos";
 import { UserMyTrainersList } from "@application/dtos/subscription-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import { IConversation } from "@domain/entities/conversation.entity";
+import { Conversation as ConversationDomain } from "@domain/entities/conversation.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
+import { IConversation } from "@infrastructure/databases/models/conversation.model";
 
 export interface IConversationRepository
-  extends IBaseRepository<IConversation> {
+  extends IBaseRepository<IConversation,ConversationDomain> {
   updateSubscriptionStatus({
     userId,
     trainerId,
@@ -36,7 +37,7 @@ export interface IConversationRepository
 
   updateLastMessage(
     UpdateLastMessage: UpdateLastMessage
-  ): Promise<IConversation | null>;
+  ): Promise<ConversationDomain | null>;
   findChatWithLastMessage(conversationId: string): Promise<Conversation>;
   findChatUpdateCount(
     userId: string,
@@ -44,7 +45,7 @@ export interface IConversationRepository
   ): Promise<Conversation | null>;
   incrementUnReadMessageCount(
     incrementUnReadMessageCount: IncrementUnReadMessageCount
-  ): Promise<IConversation | null>;
+  ): Promise<ConversationDomain | null>;
   getUserTrainersList(
     userId: string,
     searchFilterQuery: GetUserTrainersListQueryDTO

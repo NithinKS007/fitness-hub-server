@@ -1,10 +1,8 @@
-import { Document, ObjectId } from "mongoose";
-
-export interface IAppointment extends Document {
-  _id: ObjectId;
-  bookingSlotId: string | ObjectId;
-  userId: string | ObjectId;
-  trainerId: string | ObjectId;
+export interface Appointment {
+  _id: string;
+  bookingSlotId: string;
+  userId: string;
+  trainerId: string;
   appointmentDate: Date;
   appointmentTime: string;
   status: "pending" | "approved" | "rejected" | "cancelled";

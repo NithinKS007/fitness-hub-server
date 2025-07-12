@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
 export interface ITrainer extends Document {
   _id: string;
-  userId: string | ObjectId;
+  userId: ObjectId;
   yearsOfExperience: string;
   specializations: string[];
   certifications: { fileName: string; url: string }[];
@@ -17,15 +17,21 @@ const trainerSchema: Schema = new Schema(
       ref: "User",
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid user id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid user id.");
+        }
       },
     },
-    yearsOfExperience: { type: String, required: true },
+    yearsOfExperience: {
+      type: String,
+      required: true,
+      validate: {
+        validator: (value: string) => /^[0-9]+$/.test(value),
+        message: "Years of experience must be a positive integer",
+      },
+    },
     specializations: [{ type: String, required: true }],
     certifications: [
       {
@@ -34,7 +40,13 @@ const trainerSchema: Schema = new Schema(
       },
     ],
     isApproved: { type: Boolean, default: false },
-    aboutMe: { type: String },
+    aboutMe: {
+      type: String,
+      validate: {
+        validator: (value: string) => value == null || value.length <= 500,
+        message: "About Me text should not exceed 500 characters",
+      },
+    },
   },
   { timestamps: true }
 );

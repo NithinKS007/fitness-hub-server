@@ -2,7 +2,7 @@ import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { WorkoutStatus } from "@shared/constants/index.constants";
 import { WorkoutdbDTO, WorkoutDTO } from "@application/dtos/workout-dtos";
-import { IWorkout } from "@domain/entities/workout.entity";
+import { Workout } from "@domain/entities/workout.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -26,7 +26,7 @@ export class CreateWorkoutUseCase {
   async execute(
     userId: string,
     { date, workouts }: WorkoutDTO
-  ): Promise<IWorkout[]> {
+  ): Promise<Workout[]> {
     const workoutDate = new Date(date);
     const workoutItems: WorkoutdbDTO[] = Object.entries(workouts).flatMap(
       ([bodyPart, workout]: [string, any]) =>

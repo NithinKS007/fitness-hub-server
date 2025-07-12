@@ -7,7 +7,7 @@ import { IConversationRepository } from "@domain/interfaces/IConversationReposit
 import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
 import { IEmailService } from "@application/interfaces/communication/IEmail.service";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
-import { IUserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
+import { UserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
@@ -161,7 +161,7 @@ export class WebHookHandlerUseCase {
   }
 
   private async manageConversationStatus(
-    createdSubscription: IUserSubscriptionPlan,
+    createdSubscription: UserSubscriptionPlan,
     trainerId: string,
     subscriptionStatus: string
   ): Promise<void> {

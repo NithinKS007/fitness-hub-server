@@ -1,7 +1,7 @@
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { VideoStatus } from "@shared/constants/index.constants";
 import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
-import { IVideo } from "@domain/entities/video.entity";
+import { Video } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -19,7 +19,7 @@ export class GetVideoDetailsUseCase {
     private videoRepository: IVideoRepository
   ) {}
   
-  async execute(videoId: string, privacy?: boolean): Promise<IVideo> {
+  async execute(videoId: string, privacy?: boolean): Promise<Video> {
     const videoData = await this.videoRepository.findById(videoId);
     if (!videoData) {
       throw new validationError(VideoStatus.FailedToGet);

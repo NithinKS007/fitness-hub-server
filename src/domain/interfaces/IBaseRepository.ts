@@ -1,8 +1,9 @@
-export interface IBaseRepository<T> {
-  create(entity: Partial<T>): Promise<T>;
-  findById(id: string): Promise<T | null>;
-  update(id: string, entity: Partial<T>): Promise<T | null>;
-  delete(id: string): Promise<T | null>;
-  findOne(query: Partial<T>): Promise<T | null>;
-  insertMany(entities: T[]): Promise<void>;
+export interface IBaseRepository<T, D> {
+  create(entity: Partial<D>): Promise<D>;
+  findById(id: string): Promise<D | null>;
+  update(id: string, entity: Partial<D>): Promise<D | null>;
+  delete(id: string): Promise<D | null>;
+  findOne(query: Partial<D>): Promise<D | null>;
+  insertMany(entities: D[]): Promise<void>;
+  toDomain(entity: T): D;
 }

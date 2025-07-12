@@ -6,7 +6,9 @@ import {
   UpdateLastMessage,
 } from "@application/dtos/conversation-dtos";
 import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
-import ConversationModel from "@infrastructure/databases/models/conversation.model";
+import ConversationModel, {
+  IConversation,
+} from "@infrastructure/databases/models/conversation.model";
 import {
   GetChatListQueryDTO,
   GetUserTrainersListQueryDTO,
@@ -14,7 +16,7 @@ import {
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
-import { IConversation } from "@domain/entities/conversation.entity";
+import { Conversation as ConversationDomain } from "@domain/entities/conversation.entity";
 import {
   Conversation,
   TrainerChatList,
@@ -23,7 +25,7 @@ import {
 import { UserMyTrainersList } from "@application/dtos/subscription-dtos";
 
 export class ConversationRepository
-  extends BaseRepository<IConversation>
+  extends BaseRepository<IConversation, ConversationDomain>
   implements IConversationRepository
 {
   constructor(model: Model<IConversation> = ConversationModel) {
@@ -35,7 +37,7 @@ export class ConversationRepository
     trainerId,
     stripeSubscriptionStatus,
   }: ConversationSubscriptionUpdate): Promise<void> {
-    await ConversationModel.findOneAndUpdate(
+    await this.model.findOneAndUpdate(
       {
         userId: this.parseId(userId),
         trainerId: this.parseId(trainerId),
@@ -49,7 +51,7 @@ export class ConversationRepository
     userId,
     trainerId,
   }: FindConversation): Promise<Conversation | null> {
-    const result = await ConversationModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $match: {
           userId: this.parseId(userId),
@@ -89,29 +91,31 @@ export class ConversationRepository
     userId,
     otherUserId,
     lastMessageId,
-  }: UpdateLastMessage): Promise<IConversation | null> {
-    return await ConversationModel.findOneAndUpdate(
-      {
-        $or: [
-          {
-            userId: this.parseId(userId),
-            trainerId: this.parseId(otherUserId),
-          },
-          {
-            userId: this.parseId(otherUserId),
-            trainerId: this.parseId(userId),
-          },
-        ],
-      },
-      { lastMessage: this.parseId(lastMessageId) },
-      { new: true }
-    )
+  }: UpdateLastMessage): Promise<ConversationDomain | null> {
+    const result = await this.model
+      .findOneAndUpdate(
+        {
+          $or: [
+            {
+              userId: this.parseId(userId),
+              trainerId: this.parseId(otherUserId),
+            },
+            {
+              userId: this.parseId(otherUserId),
+              trainerId: this.parseId(userId),
+            },
+          ],
+        },
+        { lastMessage: this.parseId(lastMessageId) },
+        { new: true }
+      )
       .lean()
       .exec();
+    return result ? this.toDomain(result) : null;
   }
 
   async findChatWithLastMessage(conversationId: string): Promise<Conversation> {
-    const result = await ConversationModel.aggregate([
+    const result = await this.model.aggregate([
       { $match: { _id: this.parseId(conversationId) } },
       {
         $lookup: {
@@ -130,7 +134,7 @@ export class ConversationRepository
     userId: string,
     otherUserId: string
   ): Promise<Conversation | null> {
-    const result = await ConversationModel.aggregate([
+    const result = await this.model.aggregate([
       {
         $match: {
           $or: [
@@ -168,27 +172,29 @@ export class ConversationRepository
   async incrementUnReadMessageCount({
     userId,
     otherUserId,
-  }: IncrementUnReadMessageCount): Promise<IConversation | null> {
-    return await ConversationModel.findOneAndUpdate(
-      {
-        $or: [
-          {
-            userId: this.parseId(userId),
-            trainerId: this.parseId(otherUserId),
-          },
-          {
-            userId: this.parseId(otherUserId),
-            trainerId: this.parseId(userId),
-          },
-        ],
-      },
-      {
-        $inc: { unreadCount: 1 },
-      },
-      { new: true }
-    )
+  }: IncrementUnReadMessageCount): Promise<ConversationDomain | null> {
+    const result = await this.model
+      .findOneAndUpdate(
+        {
+          $or: [
+            {
+              userId: this.parseId(userId),
+              trainerId: this.parseId(otherUserId),
+            },
+            {
+              userId: this.parseId(otherUserId),
+              trainerId: this.parseId(userId),
+            },
+          ],
+        },
+        {
+          $inc: { unreadCount: 1 },
+        },
+        { new: true }
+      )
       .lean()
       .exec();
+    return result ? this.toDomain(result) : null;
   }
 
   async findUserChatList(
@@ -203,7 +209,7 @@ export class ConversationRepository
         { "subscribedTrainerData.email": { $regex: search, $options: "i" } },
       ];
     }
-    const result = await ConversationModel.aggregate([
+    const result = await this.model.aggregate([
       { $match: { userId: this.parseId(userId) } },
       { $sort: { createdAt: -1 } },
       {
@@ -278,7 +284,7 @@ export class ConversationRepository
         { "subscribedUserData.email": { $regex: search, $options: "i" } },
       ];
     }
-    const result = await ConversationModel.aggregate([
+    const result = await this.model.aggregate([
       { $match: { trainerId: this.parseId(trainerId) } },
       { $sort: { createdAt: -1 } },
       {

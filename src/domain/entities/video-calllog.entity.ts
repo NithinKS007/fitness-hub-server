@@ -1,10 +1,8 @@
-import { Document, ObjectId } from "mongoose";
-
-export interface IVideoCallLog extends Document {
-  _id: ObjectId;
-  appointmentId: string | ObjectId;
-  callerId: string | ObjectId;
-  receiverId: string | ObjectId;
+export interface VideoCallLog {
+  _id: string;
+  appointmentId: string;
+  callerId: string;
+  receiverId: string;
   callDuration: number;
   callRoomId: string;
   callStatus: "pending" | "completed" | "missed";

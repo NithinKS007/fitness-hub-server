@@ -29,7 +29,7 @@ export class CheckUserBlockStatusUseCase {
     }
     const [userData, trainerData] = await Promise.all([
       this.userRepository.findById(_id),
-      this.trainerRepository.getTrainerDetailsById(_id.toString()),
+      this.trainerRepository.getTrainerDetailsById(_id),
     ]);
 
     if (!userData && !trainerData) {

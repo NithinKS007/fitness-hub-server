@@ -11,7 +11,7 @@ import { IEmailService } from "@application/interfaces/communication/IEmail.serv
 import { IOTPService } from "@application/interfaces/security/IOtp.service";
 import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
 import { RoleType } from "@application/dtos/auth-dtos";
-import { IUser } from "@domain/entities/user.entity";
+import { User } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
@@ -61,7 +61,7 @@ export class CreateTrainerUseCase {
     yearsOfExperience,
     specializations,
     certificate,
-  }: CreateTrainerDTO): Promise<Trainer | IUser> {
+  }: CreateTrainerDTO): Promise<Trainer | User> {
     if (
       !fname ||
       !lname ||

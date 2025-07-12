@@ -1,11 +1,9 @@
-import { Document, ObjectId } from "mongoose";
-
-export interface IRevenue extends Document {
-  _id: ObjectId;
-  subscriptionId: string | ObjectId;
-  userSubscriptionPlanId: string | ObjectId;
-  trainerId: string | ObjectId;
-  userId: string | ObjectId;
+export interface Revenue {
+  _id: string;
+  subscriptionId: string;
+  userSubscriptionPlanId: string;
+  trainerId: string;
+  userId: string;
   amountPaid: number;
   platformRevenue: number;
   trainerRevenue: number;

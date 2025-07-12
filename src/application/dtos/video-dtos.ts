@@ -1,5 +1,5 @@
-import { IPlayList } from "@domain/entities/playlist.entity";
-import { IVideo } from "@domain/entities/video.entity";
+import { PlayList } from "@domain/entities/playlist.entity";
+import { Video } from "@domain/entities/video.entity";
 
 interface VideoMetadata {
   title: string;
@@ -29,6 +29,6 @@ export interface EditVideoDTO extends VideoMetadata {
   playLists: string[];
 }
 
-export interface VideoWithPlayLists extends IVideo {
-  playLists: IPlayList[];
+export interface VideoWithPlayLists extends Video {
+  playLists: PlayList[];
 }

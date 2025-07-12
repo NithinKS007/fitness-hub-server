@@ -2,8 +2,8 @@ import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
 export interface IChat extends Document {
   _id: ObjectId;
-  senderId: string | ObjectId;
-  receiverId: string | ObjectId;
+  senderId: ObjectId;
+  receiverId: ObjectId;
   message: string;
   isRead: boolean;
   createdAt: Date;
@@ -16,28 +16,31 @@ const chatSchema: Schema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid sender id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid sender id");
+        }
       },
     },
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid receiver id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid receiver id");
+        }
       },
     },
-    message: { type: String, required: true },
-    isRead: { type: Boolean, default: false },
+    message: {
+      type: String,
+      required: true,
+      minlength: [1, "Message must contain at least 1 character"],
+      maxlength: [500, "Message cannot be longer than 500 characters"],
+    },
+    isRead: { type: Boolean, default: false, required: true },
   },
   { timestamps: true }
 );

@@ -5,7 +5,7 @@ import { IPasswordResetRepository } from "@domain/interfaces/IPasswordResetToken
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/communication/IEmail.service";
 import { IHashService } from "@application/interfaces/security/IHash.service";
-import { IPasswordResetToken } from "@domain/entities/pass-reset-token.entity";
+import { PasswordResetToken } from "@domain/entities/pass-reset-token.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
@@ -23,7 +23,7 @@ export class SendPasswordRestLinkUseCase {
 
   async execute({
     email,
-  }: CreatePassResetTokenDTO): Promise<IPasswordResetToken> {
+  }: CreatePassResetTokenDTO): Promise<PasswordResetToken> {
     const userData = await this.userRepository.findOne({ email: email });
     if (!userData) {
       throw new validationError(AuthStatus.EmailNotFound);
@@ -48,7 +48,7 @@ export class SendPasswordRestLinkUseCase {
       `If you did not request this, please ignore this email and your password will remain unchanged.`;
 
     const [tokenData, _] = await Promise.all([
-      this.passwordResetRepository.createToken({
+      this.passwordResetRepository.create({
         email,
         resetToken: hashedToken,
       }),

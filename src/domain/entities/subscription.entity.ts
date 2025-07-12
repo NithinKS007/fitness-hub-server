@@ -1,8 +1,7 @@
-import { Document, ObjectId } from "mongoose";
 export type SubPeriod = "monthly" | "yearly" | "quarterly" | "halfYearly";
-export interface ISubscription extends Document {
-  _id: ObjectId;
-  trainerId: string | ObjectId;
+export interface Subscription {
+  _id: string;
+  trainerId: string;
   subPeriod: SubPeriod;
   price: number;
   durationInWeeks: number;

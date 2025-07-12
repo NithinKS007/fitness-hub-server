@@ -4,19 +4,19 @@ import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 import { GetPlayListsQueryDTO } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
-import { IPlayList } from "@domain/entities/playlist.entity";
-import PlayListModel from "../models/playlist.model";
+import { PlayList } from "@domain/entities/playlist.entity";
+import PlayListModel, { IPlayList } from "../models/playlist.model";
 import { VideoPerPlayList } from "@application/dtos/playlist-dtos";
 
 export class PlayListRepository
-  extends BaseRepository<IPlayList>
+  extends BaseRepository<IPlayList, PlayList>
   implements IPlayListRepository
 {
   constructor(model: Model<IPlayList> = PlayListModel) {
     super(model);
   }
 
-  async findOne(query: Partial<IPlayList>): Promise<IPlayList | null> {
+  async findOne(query: Partial<PlayList>): Promise<PlayList | null> {
     const { title, _id } = query;
 
     const queryObject: any = {};
@@ -29,13 +29,14 @@ export class PlayListRepository
       queryObject._id = { $ne: this.parseId(String(_id)) };
     }
 
-    return await this.model.findOne(queryObject);
+    const result = await this.model.findOne(queryObject);
+    return result ? this.toDomain(result) : null;
   }
 
   async getPlaylists(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
-  ): Promise<{ playList: IPlayList[]; paginationData: PaginationDTO }> {
+  ): Promise<{ playList: PlayList[]; paginationData: PaginationDTO }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
     let matchQuery: any = {};
 
@@ -59,7 +60,7 @@ export class PlayListRepository
         matchQuery.createdAt.$lte = toDate;
       }
     }
-    const [totalCount, trainerPlaylists] = await Promise.all([
+    const [totalCount, playlists] = await Promise.all([
       this.model.countDocuments({
         trainerId: this.parseId(trainerId),
         ...matchQuery,
@@ -72,7 +73,6 @@ export class PlayListRepository
         .skip(skip)
         .limit(limitNumber)
         .sort({ createdAt: -1 })
-        .lean(),
     ]);
 
     const paginationData = paginateRes({
@@ -80,9 +80,9 @@ export class PlayListRepository
       pageNumber,
       limitNumber,
     });
-
+    const toDomainList = playlists.map((p) => this.toDomain(p));
     return {
-      playList: trainerPlaylists,
+      playList: toDomainList,
       paginationData,
     };
   }
@@ -115,14 +115,12 @@ export class PlayListRepository
     return result;
   }
 
-  async updateVideosCount(
-    VideoPerPlayList: VideoPerPlayList[]
-  ): Promise<void> {
+  async updateVideosCount(VideoPerPlayList: VideoPerPlayList[]): Promise<void> {
     await Promise.all(
       VideoPerPlayList.map((item) =>
         this.model.updateOne(
-          { _id: item.playListId }, 
-          { $set: { videoCount: item.videoCount } } 
+          { _id: item.playListId },
+          { $set: { videoCount: item.videoCount } }
         )
       )
     );
@@ -131,11 +129,12 @@ export class PlayListRepository
   async getallPlaylists(
     trainerId: string,
     privacy: boolean
-  ): Promise<IPlayList[]> {
+  ): Promise<PlayList[]> {
     const query: any = { trainerId };
     if (privacy !== undefined) {
       query.privacy = privacy;
     }
-    return await this.model.find(query);
+    const result = await this.model.find(query);
+    return result.map((re) => this.toDomain(re));
   }
 }

@@ -1,7 +1,7 @@
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus, SlotStatus } from "@shared/constants/index.constants";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
-import { IBookingSlot } from "@domain/entities/booking-slot.entity";
+import { BookingSlot } from "@domain/entities/booking-slot.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -19,7 +19,7 @@ export class GetAllPendingSlotsUseCase {
     private bookingSlotRepository: IBookingSlotRepository
   ) {}
   
-  async execute(trainerId: string): Promise<IBookingSlot[]> {
+  async execute(trainerId: string): Promise<BookingSlot[]> {
     if (!trainerId) {
       throw new validationError(AuthStatus.IdRequired);
     }

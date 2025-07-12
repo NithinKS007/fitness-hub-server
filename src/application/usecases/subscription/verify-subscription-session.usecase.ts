@@ -4,7 +4,7 @@ import {
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
 import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
-import { IUserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
+import { UserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
 import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
@@ -21,7 +21,7 @@ export class VerifySubcriptionSessionUseCase {
 
   async execute(
     sessionId: string
-  ): Promise<IUserSubscriptionPlan & { isSubscribed: boolean }> {
+  ): Promise<UserSubscriptionPlan & { isSubscribed: boolean }> {
     if (!sessionId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
@@ -52,6 +52,6 @@ export class VerifySubcriptionSessionUseCase {
     return {
       ...userTakenSubscription,
       isSubscribed: subscriptionStatus,
-    } as IUserSubscriptionPlan & { isSubscribed: boolean };
+    } as UserSubscriptionPlan & { isSubscribed: boolean };
   }
 }

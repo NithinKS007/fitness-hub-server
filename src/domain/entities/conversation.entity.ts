@@ -1,10 +1,8 @@
-import { Document, ObjectId } from "mongoose";
-
-export interface IConversation extends Document {
-  _id: ObjectId;
-  userId: string | ObjectId;
-  trainerId: string | ObjectId;
-  lastMessage: string | ObjectId;
+export interface Conversation {
+  _id: string;
+  userId: string;
+  trainerId: string;
+  lastMessage: string;
   unreadCount: number;
   stripeSubscriptionStatus: string;
 }

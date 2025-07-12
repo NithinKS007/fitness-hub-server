@@ -1,8 +1,6 @@
-import { Document, ObjectId } from "mongoose";
-
-export interface ITrainer extends Document {
+export interface Trainer {
   _id: string;
-  userId: string | ObjectId;
+  userId: string;
   yearsOfExperience: string;
   specializations: string[];
   certifications: { fileName: string; url: string }[];

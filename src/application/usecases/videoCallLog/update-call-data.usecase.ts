@@ -5,7 +5,7 @@ import { UpdateVideoCallDurationDTO } from "@application/dtos/video-call-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
-import { IVideoCallLog } from "@domain/entities/video-calllog.entity";
+import { VideoCallLog } from "@domain/entities/video-calllog.entity";
 
 /**
  * Purpose: Handle the process of updating the duration of a video call.
@@ -24,7 +24,7 @@ export class UpdateVideoCallDurationUseCase {
   async execute({
     callDuration,
     callRoomId,
-  }: UpdateVideoCallDurationDTO): Promise<IVideoCallLog> {
+  }: UpdateVideoCallDurationDTO): Promise<VideoCallLog> {
     if (typeof callDuration !== "number" || !callRoomId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

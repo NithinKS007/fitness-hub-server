@@ -9,7 +9,7 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/communication/IEmail.service";
 import { IOTPService } from "@application/interfaces/security/IOtp.service";
 import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
-import { IUser } from "@domain/entities/user.entity";
+import { User } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
@@ -53,7 +53,7 @@ export class CreateUserUseCase {
     lname,
     email,
     password,
-  }: CreateUserDTO): Promise<IUser> {
+  }: CreateUserDTO): Promise<User> {
     if (!fname || !lname || !email || !password) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

@@ -4,19 +4,19 @@ import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 import { GetVideoQueryDTO } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
-import { IVideo } from "@domain/entities/video.entity";
-import VideoModel from "../models/video.model";
+import { Video } from "@domain/entities/video.entity";
+import VideoModel, { IVideo } from "../models/video.model";
 import { VideoWithPlayLists } from "@application/dtos/video-dtos";
 
 export class VideoRepository
-  extends BaseRepository<IVideo>
+  extends BaseRepository<IVideo, Video>
   implements IVideoRepository
 {
   constructor(model: Model<IVideo> = VideoModel) {
     super(model);
   }
 
-  async findOne(query: Partial<IVideo>): Promise<IVideo | null> {
+  async findOne(query: Partial<Video>): Promise<Video | null> {
     const { title, _id } = query;
 
     const queryObject: any = {};
@@ -29,7 +29,8 @@ export class VideoRepository
       queryObject._id = { $ne: this.parseId(String(_id)) };
     }
 
-    return await this.model.findOne(queryObject);
+    const result = await this.model.findOne(queryObject);
+    return result ? this.toDomain(result) : null;
   }
 
   async getVideos(

@@ -7,7 +7,7 @@ import {
 import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 import { IVideoPlayListRepository } from "@domain/interfaces/IVideoPlayListRepository";
-import { IVideo } from "@domain/entities/video.entity";
+import { Video } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -39,7 +39,7 @@ export class EditVideoUseCase {
     title,
     trainerId,
     video,
-  }: EditVideoDTO): Promise<IVideo> {
+  }: EditVideoDTO): Promise<Video> {
     if (
       !_id ||
       !description ||
@@ -66,6 +66,7 @@ export class EditVideoUseCase {
     if (existingNameExcludingId) {
       throw new validationError(VideoStatus.NameExists);
     }
+
     const editedVideo = await this.videoRepository.update(_id, {
       description,
       duration,
@@ -81,7 +82,7 @@ export class EditVideoUseCase {
 
     if (editedVideo && playLists && playLists.length > 0) {
       const videoPlayListDocs = playLists.map((list) => ({
-        videoId: editedVideo._id.toString(),
+        videoId: editedVideo._id,
         playListId: list,
       }));
 

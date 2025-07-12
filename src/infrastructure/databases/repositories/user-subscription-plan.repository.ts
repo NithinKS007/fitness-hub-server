@@ -12,7 +12,9 @@ import {
   GetTrainerSubscribersQueryDTO,
   GetUserSubscriptionsQueryDTO,
 } from "@application/dtos/query-dtos";
-import UserSubscriptionPlanModel from "@infrastructure/databases/models/user-subscription-plan";
+import UserSubscriptionPlanModel, {
+  IUserSubscriptionPlan,
+} from "@infrastructure/databases/models/user-subscription-plan";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import {
@@ -20,10 +22,10 @@ import {
   TrainerPieChartData,
 } from "@application/dtos/chart-dtos";
 import { Top5List } from "@application/dtos/trainer-dtos";
-import { IUserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
+import { UserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
 
 export class UserSubscriptionPlanRepository
-  extends BaseRepository<IUserSubscriptionPlan>
+  extends BaseRepository<IUserSubscriptionPlan, UserSubscriptionPlan>
   implements IUserSubscriptionPlanRepository
 {
   constructor(model: Model<IUserSubscriptionPlan> = UserSubscriptionPlanModel) {
@@ -269,7 +271,7 @@ export class UserSubscriptionPlanRepository
 
   async getSubscriptionByStripeId(
     stripeSubscriptionId: string
-  ): Promise<IUserSubscriptionPlan> {
+  ): Promise<UserSubscriptionPlan> {
     const result = await this.model.aggregate([
       { $match: { stripeSubscriptionId: stripeSubscriptionId } },
       {
@@ -318,7 +320,7 @@ export class UserSubscriptionPlanRepository
   async getSubscriptionsByUserAndTrainerId({
     userId,
     trainerId,
-  }: CheckSubscriptionStatusDTO): Promise<IUserSubscriptionPlan[] | null> {
+  }: CheckSubscriptionStatusDTO): Promise<UserSubscriptionPlan[] | null> {
     const result = await this.model.aggregate([
       {
         $match: {
@@ -334,13 +336,13 @@ export class UserSubscriptionPlanRepository
   async updateSubscriptionStatusByStripeId({
     status,
     stripeSubscriptionId,
-  }: UpdateSubscriptionStatusDTO): Promise<IUserSubscriptionPlan | null> {
+  }: UpdateSubscriptionStatusDTO): Promise<UserSubscriptionPlan | null> {
     const result = await this.model.findOneAndUpdate(
       { stripeSubscriptionId: stripeSubscriptionId },
       { stripeSubscriptionStatus: status },
       { new: true }
     );
-    return result;
+    return result ? this.toDomain(result) : null;
   }
 
   async countAllTrainerSubscribers(trainerId: string): Promise<number> {

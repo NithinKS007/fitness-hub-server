@@ -3,7 +3,7 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus, SlotStatus } from "@shared/constants/index.constants";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { AvailableSlotsQueryDTO } from "@application/dtos/query-dtos";
-import { IBookingSlot } from "@domain/entities/booking-slot.entity";
+import { BookingSlot } from "@domain/entities/booking-slot.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -26,7 +26,7 @@ export class GetUpComingSlotsUseCase {
     trainerId: string,
     { page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
   ): Promise<{
-    availableSlotsList: IBookingSlot[];
+    availableSlotsList: BookingSlot[];
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {

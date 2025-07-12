@@ -2,10 +2,10 @@ import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
 export interface IRevenue extends Document {
   _id: ObjectId;
-  subscriptionId: string | ObjectId;
-  userSubscriptionPlanId: string | ObjectId;
-  trainerId: string | ObjectId;
-  userId: string | ObjectId;
+  subscriptionId: ObjectId;
+  userSubscriptionPlanId: ObjectId;
+  trainerId: ObjectId;
+  userId: ObjectId;
   amountPaid: number;
   platformRevenue: number;
   trainerRevenue: number;
@@ -19,12 +19,11 @@ const revenueSchema: Schema = new Schema(
       ref: "Subscription",
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid subscription id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid subscription id");
+        }
       },
     },
     userSubscriptionPlanId: {
@@ -32,12 +31,11 @@ const revenueSchema: Schema = new Schema(
       ref: "UserSubscriptionPlan",
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid user subscription plan id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid user subscription plan id");
+        }
       },
     },
     trainerId: {
@@ -45,12 +43,11 @@ const revenueSchema: Schema = new Schema(
       ref: "Trainer",
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid trainer id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid trainer id");
+        }
       },
     },
     userId: {
@@ -58,18 +55,53 @@ const revenueSchema: Schema = new Schema(
       ref: "User",
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid user id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid user id");
+        }
       },
     },
-    amountPaid: { type: Number, required: true },
-    platformRevenue: { type: Number, required: true },
-    trainerRevenue: { type: Number, required: true },
-    commission: { type: Number, required: true },
+    amountPaid: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: (value: number) => {
+          return value >= 0;
+        },
+        message: "Amount paid must be a positive number",
+      },
+    },
+    platformRevenue: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: (value: number) => {
+          return value >= 0;
+        },
+        message: "Platform revenue must be a positive number",
+      },
+    },
+    trainerRevenue: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: (value: number) => {
+          return value >= 0;
+        },
+        message: "Trainer revenue must be a positive number",
+      },
+    },
+    commission: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: (value: number) => {
+          return value >= 0;
+        },
+        message: "Commission must be a positive number",
+      },
+    },
   },
   { timestamps: true }
 );

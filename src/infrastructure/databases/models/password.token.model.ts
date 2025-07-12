@@ -9,7 +9,15 @@ export interface IPasswordResetToken extends Document {
 
 const passwordResetTokenSchema: Schema = new Schema(
   {
-    email: { type: String, required: true },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      validate: {
+        validator: (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+        message: "Please provide a valid email address",
+      },
+    },
     resetToken: { type: String, required: true },
     resetTokenCreatedAt: { type: Date, required: true },
   },

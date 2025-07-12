@@ -9,9 +9,9 @@ import {
 } from "@shared/constants/index.constants";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
-import { IAppointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { Appointment } from "@domain/entities/appointment.entity";
 
 /*  
     Purpose: Book an appointment by reserving a slot and creating an appointment record
@@ -28,7 +28,7 @@ export class BookAppointmentUseCase {
     @inject(TYPES_REPOSITORIES.AppointmentRepository)
     private appointmentRepository: IAppointmentRepository
   ) {}
-  async execute({ slotId, userId }: BookAppointmentDTO): Promise<IAppointment> {
+  async execute({ slotId, userId }: BookAppointmentDTO): Promise<Appointment> {
     if (!slotId || !userId) {
       throw new validationError(AuthStatus.IdRequired);
     }
@@ -60,7 +60,7 @@ export class BookAppointmentUseCase {
     };
     const [appointmentData, bookingSlotData] = await Promise.all([
       this.appointmentRepository.create(appointmentToCreate),
-      this.bookingSlotRepository.update(bookingSlotId.toString(), {
+      this.bookingSlotRepository.update(bookingSlotId, {
         status: BookingSlotStatus.BOOKED,
       }),
     ]);

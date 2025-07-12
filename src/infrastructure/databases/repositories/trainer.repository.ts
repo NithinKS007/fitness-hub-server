@@ -8,15 +8,15 @@ import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
-import TrainerModel from "../models/trainer.model";
-import { ITrainer } from "@domain/entities/trainer.entity";
+import TrainerModel, { ITrainer } from "../models/trainer.model";
+import { Trainer as TrainerDomain } from "@domain/entities/trainer.entity";
 import {
   Trainer,
   TrainerWithSubscription,
 } from "@application/dtos/trainer-dtos";
 
 export class TrainerRepository
-  extends BaseRepository<ITrainer>
+  extends BaseRepository<ITrainer,TrainerDomain>
   implements ITrainerRepository
 {
   constructor(model: Model<ITrainer> = TrainerModel) {

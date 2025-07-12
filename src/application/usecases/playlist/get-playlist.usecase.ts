@@ -3,7 +3,7 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus } from "@shared/constants/index.constants";
 import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 import { GetPlayListsQueryDTO } from "@application/dtos/query-dtos";
-import { IPlayList } from "@domain/entities/playlist.entity";
+import { PlayList } from "@domain/entities/playlist.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -17,7 +17,7 @@ export class GetPlayListUseCase {
   async execute(
     trainerId: string,
     { page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
-  ): Promise<{ playList: IPlayList[]; paginationData: PaginationDTO }> {
+  ): Promise<{ playList: PlayList[]; paginationData: PaginationDTO }> {
     if (!trainerId) {
       throw new validationError(AuthStatus.IdRequired);
     }

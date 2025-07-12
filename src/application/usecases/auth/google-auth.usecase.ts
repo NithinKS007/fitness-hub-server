@@ -7,7 +7,7 @@ import { AuthStatus } from "@shared/constants/index.constants";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { IAuthService } from "@application/interfaces/auth/IAuth.service";
 import { IGoogleAuthService } from "@application/interfaces/auth/IGoogle.auth.service";
-import { IUser } from "@domain/entities/user.entity";
+import { User } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
@@ -35,13 +35,13 @@ export class GoogleAuthUseCase {
     private googleAuthService: IGoogleAuthService
   ) {}
 
-  private generateAccessToken(user: IUser): string {
+  private generateAccessToken(user: User): string {
     return this.authService.generateAccessToken({
       _id: user._id.toString(),
       role: user.role,
     });
   }
-  private generateRefreshToken(user: IUser): string {
+  private generateRefreshToken(user: User): string {
     return this.authService.generateRefreshToken({
       _id: user._id.toString(),
       role: user.role,
@@ -51,7 +51,7 @@ export class GoogleAuthUseCase {
   async execute({ token }: GoogleTokenDTO): Promise<{
     accessToken: string;
     refreshToken: string;
-    userData: IUser;
+    userData: User;
   }> {
     const googleUserInfo = await this.googleAuthService.verifyToken(token);
     if (!googleUserInfo || !googleUserInfo.email) {
@@ -59,7 +59,7 @@ export class GoogleAuthUseCase {
     }
     const { email } = googleUserInfo;
 
-    const userData = await this.userRepository.findOne({ email });
+    let userData = await this.userRepository.findOne({ email });
     if (userData && userData.isBlocked) {
       throw new ForbiddenError(AuthStatus.AccountBlocked);
     }
@@ -76,14 +76,7 @@ export class GoogleAuthUseCase {
         googleVerified: true,
         otpVerified: undefined,
       };
-      const userData = await this.userRepository.create(userObj);
-      const accessToken = this.generateAccessToken(userData);
-      const refreshToken = this.generateRefreshToken(userData);
-      return {
-        userData,
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-      };
+      userData = await this.userRepository.create(userObj);
     }
     const accessToken = this.generateAccessToken(userData);
     const refreshToken = this.generateRefreshToken(userData);

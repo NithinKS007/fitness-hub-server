@@ -7,7 +7,7 @@ import {
 } from "@shared/constants/index.constants";
 import { CreateVideo } from "@application/dtos/video-dtos";
 import { validationError } from "@presentation/middlewares/error.middleware";
-import { IVideo } from "@domain/entities/video.entity";
+import { Video } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -39,7 +39,7 @@ export class CreateVideoUseCase {
     thumbnail,
     title,
     trainerId,
-  }: CreateVideo): Promise<IVideo> {
+  }: CreateVideo): Promise<Video> {
     if (
       !video ||
       !description ||

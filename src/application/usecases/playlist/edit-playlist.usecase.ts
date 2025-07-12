@@ -2,7 +2,7 @@ import { EditPlayListDTO } from "@application/dtos/playlist-dtos";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { PlayListStatus, VideoStatus } from "@shared/constants/index.constants";
 import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
-import { IPlayList } from "@domain/entities/playlist.entity";
+import { PlayList } from "@domain/entities/playlist.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 
@@ -13,7 +13,7 @@ export class EditPlayListUseCase {
     private playListRepository: IPlayListRepository
   ) {}
 
-  async execute({ playListId, title }: EditPlayListDTO): Promise<IPlayList> {
+  async execute({ playListId, title }: EditPlayListDTO): Promise<PlayList> {
     const playlistData = await this.playListRepository.findById(playListId);
 
     if (!playlistData) {
@@ -28,12 +28,14 @@ export class EditPlayListUseCase {
     if (existingName) {
       throw new validationError(PlayListStatus.NameExists);
     }
-    const playListData = await this.playListRepository.update(playListId, {
+
+    const updatedPlaylist = await this.playListRepository.update(playListId, {
       title,
     });
-    if (!playListData) {
+
+    if (!updatedPlaylist) {
       throw new validationError(VideoStatus.FailedToGet);
     }
-    return playListData;
+    return updatedPlaylist;
   }
 }

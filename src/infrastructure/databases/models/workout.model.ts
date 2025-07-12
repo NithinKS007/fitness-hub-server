@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
 export interface IWorkout extends Document {
-  userId: string | ObjectId;
+  userId: ObjectId;
   date: Date;
   bodyPart: string;
   exerciseName: string;
@@ -18,12 +18,11 @@ const WorkoutSchema: Schema = new Schema(
       ref: "User",
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : (() => {
-              throw new Error("Please provide a valid user id");
-            })();
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid user id");
+        }
       },
     },
     date: {
@@ -41,14 +40,17 @@ const WorkoutSchema: Schema = new Schema(
     kg: {
       type: Number,
       required: true,
+      min: [0, "Kg must be positive"],
     },
     reps: {
       type: Number,
       required: true,
+      min: [1, "Reps must be at least 1"],
     },
     time: {
       type: Number,
       required: true,
+      min: [0, "Time must be positive"],
     },
     isCompleted: {
       type: Boolean,

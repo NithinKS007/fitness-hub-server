@@ -1,7 +1,5 @@
-import { Document, ObjectId } from "mongoose";
-
-export interface IWorkout extends Document {
-  userId: string | ObjectId;
+export interface Workout {
+  userId: string;
   date: Date;
   bodyPart: string;
   exerciseName: string;
