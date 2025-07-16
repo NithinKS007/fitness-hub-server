@@ -10,6 +10,7 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { Video } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICreateVideoUC } from "@application/interfaces/usecases/IVideoUC";
 
 /**
  * Purpose: Handles the logic for creating a new video, including saving video details and managing
@@ -21,7 +22,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class CreateVideoUseCase {
+export class CreateVideoUseCase implements ICreateVideoUC {
   constructor(
     @inject(TYPES_REPOSITORIES.PlayListRepository)
     private playListRepository: IPlayListRepository,

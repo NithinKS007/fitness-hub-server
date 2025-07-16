@@ -5,6 +5,7 @@ import { WorkoutdbDTO, WorkoutDTO } from "@application/dtos/workout-dtos";
 import { Workout } from "@domain/entities/workout.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICreateWorkoutUC } from "@application/interfaces/usecases/IWorkoutUC";
 
 /**
  * Purpose: Create a new workout by adding multiple workout sets for the user on a specific date.
@@ -17,16 +18,13 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class CreateWorkoutUseCase {
+export class CreateWorkoutUseCase implements ICreateWorkoutUC{
   constructor(
     @inject(TYPES_REPOSITORIES.WorkoutRepository)
     private workoutRepository: IWorkoutRepository
   ) {}
-  
-  async execute(
-    userId: string,
-    { date, workouts }: WorkoutDTO
-  ): Promise<Workout[]> {
+
+  async execute({ date, workouts, userId }: WorkoutDTO): Promise<Workout[]> {
     const workoutDate = new Date(date);
     const workoutItems: WorkoutdbDTO[] = Object.entries(workouts).flatMap(
       ([bodyPart, workout]: [string, any]) =>

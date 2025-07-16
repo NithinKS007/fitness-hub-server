@@ -21,17 +21,11 @@ import { IUserSubscriptionPlan } from "@infrastructure/databases/models/user-sub
 
 export interface IUserSubscriptionPlanRepository
   extends IBaseRepository<IUserSubscriptionPlan, UserSubscriptionPlan> {
-  getUserSubscriptions(
-    userId: string,
-    searchFilterQuery: GetUserSubscriptionsQueryDTO
-  ): Promise<{
+  getUserSubscriptions(dtos: GetUserSubscriptionsQueryDTO): Promise<{
     userSubscriptionRecord: UserSubscriptionRecord[];
     paginationData: PaginationDTO;
   }>;
-  getTrainerSubscriptions(
-    trainerId: string,
-    searchFilterQuery: GetTrainerSubscribersQueryDTO
-  ): Promise<{
+  getTrainerSubscriptions(dtos: GetTrainerSubscribersQueryDTO): Promise<{
     trainerSubscriberRecord: TrainerSubscriberRecord[];
     paginationData: PaginationDTO;
   }>;

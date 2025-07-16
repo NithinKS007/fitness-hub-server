@@ -7,10 +7,7 @@ import { IVideo } from "@infrastructure/databases/models/video.model";
 
 export interface IVideoRepository extends IBaseRepository<IVideo, Video> {
   getVideos(
-    trainerId: string,
-    data: GetVideoQueryDTO,
-    videoPrivacy?: boolean,
-    playlistPrivacy?: boolean
+    dtos: GetVideoQueryDTO,
   ): Promise<{
     videoList: VideoWithPlayLists[];
     paginationData: PaginationDTO;

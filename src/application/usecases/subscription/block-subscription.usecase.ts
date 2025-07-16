@@ -9,14 +9,15 @@ import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionReposit
 import { Subscription } from "@domain/entities/subscription.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ISubscriptionBlockUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
 
 @injectable()
-export class SubscriptionBlockUseCase {
+export class SubscriptionBlockUseCase implements ISubscriptionBlockUC {
   constructor(
     @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository
   ) {}
-  
+
   async execute({
     subscriptionId,
     isBlocked,

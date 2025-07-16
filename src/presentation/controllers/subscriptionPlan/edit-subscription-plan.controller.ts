@@ -5,17 +5,17 @@ import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
-import { EditSubscriptionUseCase } from "@application/usecases/subscription/edit-subscription.usecase";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
+import { IEditSubscriptionUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
 
 @injectable()
 export class EditSubPlanController {
   constructor(
     @inject(TYPES_SUBSCRIPTION_USECASES.EditSubscriptionUseCase)
-    private editSubscriptionUseCase: EditSubscriptionUseCase
+    private editSubscriptionUseCase: IEditSubscriptionUC
   ) {}
   async handle(req: Request, res: Response): Promise<void> {
-    const { subscriptionId } = req.params;
+    const { id: subscriptionId } = req.params;
     const { _id: trainerId } = req?.user || {};
 
     const editSubscriptionData = await this.editSubscriptionUseCase.execute({

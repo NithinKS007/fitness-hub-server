@@ -2,9 +2,10 @@ import { Chat } from "@domain/entities/chat.entity";
 import { IChatRepository } from "@domain/interfaces/IChatRepository";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { injectable, inject } from "inversify";
+import { IMarkMessageRead } from "@application/interfaces/usecases/IChatUC";
 
 @injectable()
-export class MarkMessageAsReadUseCase {
+export class MarkMessageReadUseCase implements IMarkMessageRead {
   constructor(
     @inject(TYPES_REPOSITORIES.ChatRepository)
     private chatRepository: IChatRepository

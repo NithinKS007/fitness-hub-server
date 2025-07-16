@@ -8,6 +8,7 @@ import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepositor
 import { BookingSlot } from "@domain/entities/booking-slot.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICreateBookingSlotUC } from "@application/interfaces/usecases/ISlotUC";
 
 /**
  * Purpose: Handles the creation of a booking slot for a given date and other slot data.
@@ -17,7 +18,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class CreateBookingSlotUseCase {
+export class CreateBookingSlotUseCase implements ICreateBookingSlotUC {
   constructor(
     @inject(TYPES_REPOSITORIES.BookingSlotRepository)
     private bookingSlotRepository: IBookingSlotRepository

@@ -25,7 +25,6 @@ export const TYPES_AUTH_CONTROLLER = {
 export const TYPES_BOOKING_CONTROLLER = {
   CreateBookingSlotController: Symbol.for("CreateBookingSlotController"),
   DeleteBookingSlotController: Symbol.for("DeleteBookingSlotController"),
-  GetAllPendingSlotsController: Symbol.for("GetAllPendingSlotsController"),
   GetPendingSlotsController: Symbol.for("GetPendingSlotsController"),
   GetUpComingSlotsController: Symbol.for("GetUpComingSlotsController"),
 };

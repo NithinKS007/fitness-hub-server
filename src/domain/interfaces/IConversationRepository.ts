@@ -1,4 +1,8 @@
-import { Conversation, TrainerChatList, UserChatList } from "@application/dtos/chat-dtos";
+import {
+  Conversation,
+  TrainerChatList,
+  UserChatList,
+} from "@application/dtos/chat-dtos";
 import {
   ConversationSubscriptionUpdate,
   FindConversation,
@@ -6,7 +10,8 @@ import {
   IncrementUnReadMessageCount,
 } from "@application/dtos/conversation-dtos";
 import {
-  GetChatListQueryDTO,
+  GetUserChatListDTO,
+  GetTrainerChatListDTO,
   GetUserTrainersListQueryDTO,
 } from "@application/dtos/query-dtos";
 import { UserMyTrainersList } from "@application/dtos/subscription-dtos";
@@ -16,7 +21,7 @@ import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
 import { IConversation } from "@infrastructure/databases/models/conversation.model";
 
 export interface IConversationRepository
-  extends IBaseRepository<IConversation,ConversationDomain> {
+  extends IBaseRepository<IConversation, ConversationDomain> {
   updateSubscriptionStatus({
     userId,
     trainerId,
@@ -26,15 +31,8 @@ export interface IConversationRepository
     userId,
     trainerId,
   }: FindConversation): Promise<Conversation | null>;
-  findUserChatList(
-    userId: string,
-    { search }: GetChatListQueryDTO
-  ): Promise<UserChatList[]>;
-  findTrainerChatList(
-    trainerId: string,
-    { search }: GetChatListQueryDTO
-  ): Promise<TrainerChatList[]>;
-
+  findUserChatList(dtos: GetUserChatListDTO): Promise<UserChatList[]>;
+  findTrainerChatList(dtos: GetTrainerChatListDTO): Promise<TrainerChatList[]>;
   updateLastMessage(
     UpdateLastMessage: UpdateLastMessage
   ): Promise<ConversationDomain | null>;
@@ -46,10 +44,7 @@ export interface IConversationRepository
   incrementUnReadMessageCount(
     incrementUnReadMessageCount: IncrementUnReadMessageCount
   ): Promise<ConversationDomain | null>;
-  getUserTrainersList(
-    userId: string,
-    searchFilterQuery: GetUserTrainersListQueryDTO
-  ): Promise<{
+  getUserTrainersList(dtos: GetUserTrainersListQueryDTO): Promise<{
     userTrainersList: UserMyTrainersList[];
     paginationData: PaginationDTO;
   }>;

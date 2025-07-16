@@ -3,15 +3,16 @@ import { AuthStatus } from "@shared/constants/index.constants";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { IPasswordResetRepository } from "@domain/interfaces/IPasswordResetTokenRepository";
 import { validationError } from "@presentation/middlewares/error.middleware";
-import { IEmailService } from "@application/interfaces/communication/IEmail.service";
-import { IHashService } from "@application/interfaces/security/IHash.service";
+import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
+import { IHashService } from "@application/interfaces/services/security/IHash.service";
 import { PasswordResetToken } from "@domain/entities/pass-reset-token.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { ISendPasswordRestLinkUC } from "@application/interfaces/usecases/IAuthUC";
 
 @injectable()
-export class SendPasswordRestLinkUseCase {
+export class SendPasswordRestLinkUseCase implements ISendPasswordRestLinkUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,

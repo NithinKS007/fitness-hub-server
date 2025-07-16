@@ -6,6 +6,7 @@ import { VideoCallLog } from "@domain/entities/video-calllog.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
+import { IUpdateVideoCallStatusUC } from "@application/interfaces/usecases/IVideoCallLogUC";
 
 /**
  * Purpose: Handle the process of updating the status of a video call log, including
@@ -16,7 +17,7 @@ import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.sta
  */
 
 @injectable()
-export class UpdateVideoCallStatusUseCase {
+export class UpdateVideoCallStatusUseCase implements IUpdateVideoCallStatusUC  {
   constructor(
     @inject(TYPES_REPOSITORIES.VideoCallLogRepository)
     private videoCallLogRepository: IVideoCallLogRepository

@@ -5,14 +5,15 @@ import {
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
 import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
-import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { Subscription } from "@domain/entities/subscription.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IDeleteSubscriptionUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
 
 @injectable()
-export class DeleteSubscriptionUseCase {
+export class DeleteSubscriptionUseCase implements IDeleteSubscriptionUC {
   constructor(
     @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository,

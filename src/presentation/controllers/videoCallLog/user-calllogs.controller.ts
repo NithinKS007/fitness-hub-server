@@ -2,19 +2,18 @@ import { Request, Response } from "express";
 import { injectable, inject } from "inversify";
 import {
   StatusCodes,
-  AppointmentStatus,
 } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
-import { GetUserVideoCallLogUseCase } from "@application/usecases/videoCallLog/get-user-video-calllog.usecase";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { TYPES_VIDEO_CALL_LOG_USECASES } from "@di/types-usecases";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
+import { IGetUserVideoCallLogUC } from "@application/interfaces/usecases/IVideoCallLogUC";
 
 @injectable()
 export class GetUserVideoCallLogController {
   constructor(
     @inject(TYPES_VIDEO_CALL_LOG_USECASES.GetUserVideoCallLogUseCase)
-    private getuserVideoCallLogUseCase: GetUserVideoCallLogUseCase
+    private getuserVideoCallLogUseCase: IGetUserVideoCallLogUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
@@ -23,7 +22,7 @@ export class GetUserVideoCallLogController {
     const queryParams = parseQueryParams(req.query);
 
     const { userVideoCallLogList, paginationData } =
-      await this.getuserVideoCallLogUseCase.execute(userId, queryParams);
+      await this.getuserVideoCallLogUseCase.execute({userId,...queryParams});
 
     sendResponse(
       res,

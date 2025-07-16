@@ -10,7 +10,6 @@ export const validate = async (
   next: NextFunction
 ) => {
   const errors = validationResult(req);
-
   if (!errors.isEmpty()) {
     sendResponse(
       res,

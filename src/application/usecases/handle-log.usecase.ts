@@ -1,10 +1,11 @@
 import { inject, injectable } from "inversify";
-import { ILoggerService } from "../interfaces/logging/ILogger.service";
+import { ILoggerService } from "../interfaces/services/logging/ILogger.service";
 import { LogLevel } from "@application/dtos/logger-dtos";
 import { TYPES_SERVICES } from "@di/types-services";
+import { ILoggerUC } from "@application/interfaces/usecases/ILoggerUC";
 
 @injectable()
-export class LoggerUseCase {
+export class LoggerUseCase implements ILoggerUC {
   constructor(
     @inject(TYPES_SERVICES.LoggerService)
     private logger: ILoggerService

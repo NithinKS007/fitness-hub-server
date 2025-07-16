@@ -1,10 +1,10 @@
 import { Server } from "socket.io";
-import { GetAppointmentByIdUseCase } from "@application/usecases/appointment/get-bookingby-id.usecase";
-import { CreateVideoCallLogUseCase } from "@application/usecases/videoCallLog/create-videocalllog.usecase";
 import { socketStore } from "@infrastructure/services/socket/store/socket.store";
-import { GetTrainerDetailsUseCase } from "@application/usecases/trainer/get-trainer-details.usecase";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
+import { IGetTrainerDetailsUC } from "@application/interfaces/usecases/ITrainerUC";
+import { IGetAppointmentByIdUC } from "@application/interfaces/usecases/IAppointmentUC";
+import { ICreateVideoCallLogUC } from "@application/interfaces/usecases/IVideoCallLogUC";
 
 interface InitiateVideoCall {
   io: Server;
@@ -12,9 +12,9 @@ interface InitiateVideoCall {
   receiverId: string;
   roomId: string;
   appointmentId: string;
-  getTrainerDetailsUseCase: GetTrainerDetailsUseCase;
-  getAppointmentByIdUseCase: GetAppointmentByIdUseCase;
-  createVideoCallLogUseCase: CreateVideoCallLogUseCase;
+  getTrainerDetailsUseCase: IGetTrainerDetailsUC;
+  getAppointmentByIdUseCase: IGetAppointmentByIdUC;
+  createVideoCallLogUseCase: ICreateVideoCallLogUC;
 }
 
 export const handleInitiateCall = async ({
@@ -41,7 +41,7 @@ export const handleInitiateCall = async ({
     const appointmentTime = appointmentData?.appointmentTime ?? "N/A";
     const appointmentDate = appointmentData?.appointmentDate ?? "N/A";
 
-    await createVideoCallLogUseCase.execute({
+    const createCall =  await createVideoCallLogUseCase.execute({
       callerId: callerId,
       receiverId: receiverId,
       callRoomId: roomId,

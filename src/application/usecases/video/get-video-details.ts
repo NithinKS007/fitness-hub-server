@@ -4,6 +4,8 @@ import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 import { Video } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { GetVideoDetails } from "@application/dtos/video-dtos";
+import { IGetVideoDetailsUC } from "@application/interfaces/usecases/IVideoUC";
 
 /**
  * Purpose: Fetch detailed information of a specific video by its ID.
@@ -13,14 +15,21 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class GetVideoDetailsUseCase {
+export class GetVideoDetailsUseCase implements IGetVideoDetailsUC{
   constructor(
     @inject(TYPES_REPOSITORIES.VideoRepository)
     private videoRepository: IVideoRepository
   ) {}
-  
-  async execute(videoId: string, privacy?: boolean): Promise<Video> {
-    const videoData = await this.videoRepository.findById(videoId);
+
+  async execute({
+    trainerId,
+    videoId,
+    privacy,
+  }: GetVideoDetails): Promise<Video> {
+    const videoData = await this.videoRepository.findOne({
+      _id: videoId,
+      trainerId,
+    });
     if (!videoData) {
       throw new validationError(VideoStatus.FailedToGet);
     }

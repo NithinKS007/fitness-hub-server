@@ -1,20 +1,28 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { IConnectDB } from "@domain/interfaces/IConnectdb";
+import { DatabaseError } from "@presentation/middlewares/error.middleware";
+import { injectable } from "inversify";
 dotenv.config();
 
-const connectDB = async (): Promise<void> => {
-  const uri: string = process.env.ATLAS_DATABASE_CONFIG!;
-  if (!uri) {
-    console.error("Database URI is not defined in environment variables");
-    process.exit(1);
+@injectable()
+export class ConnectDB implements IConnectDB {
+  constructor(private uri = process.env.ATLAS_DATABASE_CONFIG) {
+    this.uri = uri;
   }
-  try {
-    await mongoose.connect(uri);
-    console.log("Database connected successfully");
-  } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
-    process.exit(1);
-  }
-};
 
-export default connectDB;
+  async connectMongo(): Promise<void> {
+    if (!this.uri) {
+      throw new DatabaseError(
+        "Database URI is not defined in environment variables"
+      );
+    }
+    try {
+      await mongoose.connect(this.uri);
+      console.log("Database connected successfully");
+    } catch (error) {
+      console.error("Error connecting to MongoDB:", error);
+      process.exit(1);
+    }
+  }
+}

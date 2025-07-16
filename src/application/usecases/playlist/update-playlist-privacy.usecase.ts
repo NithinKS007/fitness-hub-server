@@ -8,14 +8,15 @@ import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 import { PlayList } from "@domain/entities/playlist.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IUpdatePlayListPrivacyUC } from "@application/interfaces/usecases/IPlaylistUC";
 
 @injectable()
-export class UpdatePlayListPrivacyUseCase {
+export class UpdatePlayListPrivacyUseCase implements IUpdatePlayListPrivacyUC {
   constructor(
     @inject(TYPES_REPOSITORIES.PlayListRepository)
     private playListRepository: IPlayListRepository
   ) {}
-  
+
   async execute({
     playListId,
     privacy,

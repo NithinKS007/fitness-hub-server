@@ -3,12 +3,13 @@ import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { OtpDTO } from "@application/dtos/auth-dtos";
 import { OTPStatus } from "@shared/constants/index.constants";
 import { validationError } from "@presentation/middlewares/error.middleware";
-import { IEmailService } from "@application/interfaces/communication/IEmail.service";
-import { IOTPService } from "@application/interfaces/security/IOtp.service";
+import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
+import { IOTPService } from "@application/interfaces/services/security/IOtp.service";
 import { Otp } from "@domain/entities/otp.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { IOtpUC } from "@application/interfaces/usecases/IAuthUC";
 
 /*  
     Method  : createOtp
@@ -43,7 +44,7 @@ import { TYPES_SERVICES } from "@di/types-services";
 */
 
 @injectable()
-export class OtpUseCase {
+export class OtpUseCase implements IOtpUC {
   constructor(
     @inject(TYPES_REPOSITORIES.OtpRepository)
     private otpRepository: IOtpRepository,

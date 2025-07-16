@@ -1,7 +1,6 @@
 import { Server } from "socket.io";
 import { socketStore } from "@infrastructure/services/socket/store/socket.store";
-import { MarkMessageAsReadUseCase } from "@application/usecases/chat/mark-as-read.usecase";
-import { UpdateUnReadMessageCountUseCase } from "@application/usecases/chat/update-unread-count.usecase";
+import { IMarkMessageRead, IUpdateUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
 
 export interface SetActiveChatData {
   userId: string;
@@ -10,8 +9,8 @@ export interface SetActiveChatData {
 
 export const handleSetActiveChat = async (
   io: Server,
-  markMessageAsReadUseCase: MarkMessageAsReadUseCase,
-  UpdateUnReadMessageCountUseCase: UpdateUnReadMessageCountUseCase,
+  markMessageAsReadUseCase: IMarkMessageRead,
+  UpdateUnReadMessageCountUseCase: IUpdateUnReadMessageCountUC,
   userId: string,
   partnerId: string
 ) => {

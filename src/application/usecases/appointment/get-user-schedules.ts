@@ -5,10 +5,11 @@ import {
   AuthStatus,
 } from "@shared/constants/index.constants";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
-import { GetBookingSchedulesDTO } from "@application/dtos/query-dtos";
+import { GetUserSchedulesDTO } from "@application/dtos/query-dtos";
 import { AppointmentRequestsUser } from "@application/dtos/appointment-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IGetUserSchedulesUC } from "@application/interfaces/usecases/IAppointmentUC";
 
 /*  
     Purpose: Retrieve a list of booking schedules for a specific user with pagination and filters
@@ -18,25 +19,25 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 */
 
 @injectable()
-export class GetUserSchedulesUseCase {
+export class GetUserSchedulesUseCase implements IGetUserSchedulesUC {
   constructor(
     @inject(TYPES_REPOSITORIES.AppointmentRepository)
     private appointmentRepository: IAppointmentRepository
   ) {}
 
   async execute(
-    userId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetBookingSchedulesDTO
-  ): Promise<{
+    { userId, page, limit, fromDate, toDate, search, filters }: GetUserSchedulesDTO
+  )
+  : Promise<{
     appointmentList: AppointmentRequestsUser[];
     paginationData: PaginationDTO;
   }> {
     if (!userId) {
       throw new validationError(AuthStatus.IdRequired);
     }
-    const query = { page, limit, fromDate, toDate, search, filters };
+    const query = { userId, page, limit, fromDate, toDate, search, filters };
     const { appointmentList, paginationData } =
-      await this.appointmentRepository.getUserSchedules(userId, query);
+      await this.appointmentRepository.getUserSchedules(query);
     if (!appointmentList) {
       throw new validationError(AppointmentStatus.BookingRequestsFetchFailed);
     }

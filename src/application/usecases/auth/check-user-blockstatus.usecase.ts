@@ -4,6 +4,7 @@ import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICheckUserBlockStatusUC } from "@application/interfaces/usecases/IAuthUC";
 
 /*  
     Purpose: Check if a user or trainer is blocked based on their ID
@@ -15,7 +16,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 */
 
 @injectable()
-export class CheckUserBlockStatusUseCase {
+export class CheckUserBlockStatusUseCase implements ICheckUserBlockStatusUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,

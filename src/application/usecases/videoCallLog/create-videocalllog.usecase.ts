@@ -4,6 +4,7 @@ import { ApplicationStatus } from "@shared/constants/index.constants";
 import { CreateVideoCallLogDTO } from "@application/dtos/video-call-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICreateVideoCallLogUC } from "@application/interfaces/usecases/IVideoCallLogUC";
 
 /**
  * Purpose: Create a video call log entry for a given appointment.
@@ -13,7 +14,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class CreateVideoCallLogUseCase {
+export class CreateVideoCallLogUseCase implements ICreateVideoCallLogUC{
   constructor(
     @inject(TYPES_REPOSITORIES.VideoCallLogRepository)
     private videoCallLogRepository: IVideoCallLogRepository

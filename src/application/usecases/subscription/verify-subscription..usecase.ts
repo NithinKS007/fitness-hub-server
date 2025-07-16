@@ -5,13 +5,16 @@ import {
 } from "@shared/constants/index.constants";
 import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
 import { UserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
-import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IVerifySubscriptionSessionUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
-export class VerifySubcriptionSessionUseCase {
+export class VerifySubcriptionSessionUseCase
+  implements IVerifySubscriptionSessionUC
+{
   constructor(
     @inject(TYPES_REPOSITORIES.UserSubscriptionPlanRepository)
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
@@ -34,16 +37,19 @@ export class VerifySubcriptionSessionUseCase {
         ? session.subscription
         : session.subscription?.id;
 
+    if (!stripeSubscriptionId) {
+      throw new validationError("Failed");
+    }
     const userTakenSubscription =
       await this.userSubscriptionPlanRepository.getSubscriptionByStripeId(
-        stripeSubscriptionId as string
+        stripeSubscriptionId
       );
 
     if (!userTakenSubscription) {
       throw new validationError(SubscriptionStatus.NotFound);
     }
     const stripeSubscription = await this.paymentService.getSubscription(
-      stripeSubscriptionId as string
+      stripeSubscriptionId
     );
     const subscriptionStatus =
       stripeSubscription.status === "active" &&
@@ -52,6 +58,6 @@ export class VerifySubcriptionSessionUseCase {
     return {
       ...userTakenSubscription,
       isSubscribed: subscriptionStatus,
-    } as UserSubscriptionPlan & { isSubscribed: boolean };
+    };
   }
 }

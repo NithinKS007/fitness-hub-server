@@ -11,7 +11,7 @@ import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import TrainerModel, { ITrainer } from "../models/trainer.model";
 import { Trainer as TrainerDomain } from "@domain/entities/trainer.entity";
 import {
-  Trainer,
+  TrainerDTO,
   TrainerWithSubscription,
 } from "@application/dtos/trainer-dtos";
 
@@ -23,7 +23,7 @@ export class TrainerRepository
     super(model);
   }
 
-  async getTrainerDetailsById(trainerId: string): Promise<Trainer> {
+  async getTrainerDetailsById(trainerId: string): Promise<TrainerDTO> {
     const trainerData = await this.model.aggregate([
       {
         $match: {
@@ -127,7 +127,7 @@ export class TrainerRepository
     return result[0];
   }
 
-  async getTrainerDetailsByUserIdRef(userId: string): Promise<Trainer> {
+  async getTrainerDetailsByUserIdRef(userId: string): Promise<TrainerDTO> {
     const trainerData = await this.model.aggregate([
       {
         $match: {
@@ -180,7 +180,7 @@ export class TrainerRepository
     search,
     filters,
   }: GetTrainersQueryDTO): Promise<{
-    trainersList: Trainer[];
+    trainersList: TrainerDTO[];
     paginationData: PaginationDTO;
   }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
@@ -293,7 +293,7 @@ export class TrainerRepository
     gender,
     sort,
   }: GetApprovedTrainerQueryDTO): Promise<{
-    trainersList: Trainer[];
+    trainersList: TrainerDTO[];
     paginationData: PaginationDTO;
   }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
@@ -437,7 +437,7 @@ export class TrainerRepository
     toDate,
     search,
   }: GetTrainersApprovalQueryDTO): Promise<{
-    trainersList: Trainer[];
+    trainersList: TrainerDTO[];
     paginationData: PaginationDTO;
   }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);

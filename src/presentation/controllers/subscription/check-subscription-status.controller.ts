@@ -5,19 +5,19 @@ import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
-import { CheckSubscriptionStatusUseCase } from "@application/usecases/subscription/check-subscription-status.usecase";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
+import { ICheckSubscriptionStatusUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
 export class CheckSubscriptionStatusController {
   constructor(
     @inject(TYPES_SUBSCRIPTION_USECASES.CheckSubscriptionStatusUseCase)
-    private checkSubscriptionStatusUseCase: CheckSubscriptionStatusUseCase
+    private checkSubscriptionStatusUseCase: ICheckSubscriptionStatusUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
     const { _id: userId } = req?.user || {};
-    const { trainerId } = req.params;
+    const { id: trainerId } = req.params;
 
     const isUserSubscribedToTheTrainer =
       await this.checkSubscriptionStatusUseCase.execute({

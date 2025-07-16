@@ -38,11 +38,11 @@ export interface TrainerVerificationDTO {
   action: "approved" | "rejected";
 }
 
-export interface TrainerWithSubscription extends Trainer {
+export interface TrainerWithSubscription extends TrainerDTO {
   subscriptionDetails: Subscription[];
 }
 
-export interface Trainer {
+export interface TrainerDTO {
   fname: string;
   lname: string;
   email: string;
@@ -59,8 +59,8 @@ export interface Trainer {
   weight?: string;
   gender?: string;
 
-  _id: string | ObjectId;
-  userId: string | ObjectId;
+  _id: string;
+  userId: string;
   yearsOfExperience?: string;
   specializations?: string[];
   certifications?: { fileName: string; url: string }[];

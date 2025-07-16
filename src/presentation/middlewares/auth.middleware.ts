@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AuthStatus, JwtStatus } from "@shared/constants/index.constants";
 import { JwtPayload } from "jsonwebtoken";
 import { ForbiddenError, UnauthorizedError } from "./error.middleware";
-import { checkBlockStatusUseCase, tokenUseCase } from "@di/container-resolver";
+import { checkUserBlockStatusUseCase, tokenUseCase } from "@di/container-resolver";
 
 export const authenticate = async (
   req: Request,
@@ -20,10 +20,10 @@ export const authenticate = async (
     return;
   }
   try {
-    const decoded = await tokenUseCase.authAccessToken(accessToken);
+    const decoded = await tokenUseCase.validateToken(accessToken);
     req.user = decoded as JwtPayload;
     const { _id } = req?.user;
-    const isBlocked = await checkBlockStatusUseCase.execute(_id);
+    const isBlocked = await checkUserBlockStatusUseCase.execute(_id);
     if (isBlocked) {
       next(new ForbiddenError(AuthStatus.AccountBlocked));
       return;

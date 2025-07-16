@@ -5,17 +5,17 @@ import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
-import { SubscriptionBlockUseCase } from "@application/usecases/subscription/block-subscription.usecase";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
+import { ISubscriptionBlockUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
 
 @injectable()
 export class BlockSubPlanController {
   constructor(
     @inject(TYPES_SUBSCRIPTION_USECASES.SubscriptionBlockUseCase)
-    private subscriptionBlockUseCase: SubscriptionBlockUseCase
+    private subscriptionBlockUseCase: ISubscriptionBlockUC
   ) {}
   async handle(req: Request, res: Response): Promise<void> {
-    const { subscriptionId } = req.params;
+    const { id: subscriptionId } = req.params;
     const { isBlocked } = req.body;
 
     const updatedSubData = {

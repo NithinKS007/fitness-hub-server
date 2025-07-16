@@ -1,18 +1,19 @@
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus, TrainerStatus } from "@shared/constants/index.constants";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
-import { Trainer } from "@application/dtos/trainer-dtos";
+import { TrainerDTO } from "@application/dtos/trainer-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IGetTrainerDetailsUC } from "@application/interfaces/usecases/ITrainerUC";
 
 @injectable()
-export class GetTrainerDetailsUseCase {
+export class GetTrainerDetailsUseCase implements IGetTrainerDetailsUC {
   constructor(
     @inject(TYPES_REPOSITORIES.TrainerRepository)
     private trainerRepository: ITrainerRepository
   ) {}
-  
-  async execute(trainerId: string): Promise<Trainer> {
+
+  async execute(trainerId: string): Promise<TrainerDTO> {
     if (!trainerId) {
       throw new validationError(AuthStatus.IdRequired);
     }

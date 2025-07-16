@@ -9,6 +9,7 @@ export interface CreateBookingSlotDTO {
 export interface BookAppointmentDTO {
   slotId: string;
   userId: string;
+  trainerId:string
 }
 
 export interface HandleBookingDTO {

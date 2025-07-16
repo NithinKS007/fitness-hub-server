@@ -15,13 +15,8 @@ export class BookingSlotRepository
     super(model);
   }
 
-  protected resetToUTCStartOfDay() {
-    return new Date(new Date().setUTCHours(0, 0, 0, 0));
-  }
-
   async getPendingSlots(
-    trainerId: string,
-    { page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
+    { trainerId, page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
   ): Promise<{
     availableSlotsList: BookingSlot[];
     paginationData: PaginationDTO;
@@ -60,14 +55,13 @@ export class BookingSlotRepository
   }
 
   async getUpcomingSlots(
-    trainerId: string,
-    { page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
+    { trainerId, page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
   ): Promise<{
     availableSlotsList: BookingSlot[];
     paginationData: PaginationDTO;
   }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
-    const currentDate = this.resetToUTCStartOfDay();
+    const currentDate = new Date(new Date().setUTCHours(0, 0, 0, 0));
     let matchQuery: any = {
       $gte: currentDate,
     };
@@ -118,15 +112,5 @@ export class BookingSlotRepository
       availableSlotsList: toDomainList,
       paginationData,
     };
-  }
-
-  async getAllPendingSlots(trainerId: string): Promise<BookingSlot[]> {
-    const result = await this.model.find({
-      trainerId: trainerId,
-      date: { $gte: this.resetToUTCStartOfDay() },
-      status: "pending",
-    });
-
-    return result.map((slot) => this.toDomain(slot));
   }
 }

@@ -1,5 +1,5 @@
 import otpGenerator from "otp-generator";
-import { IOTPService } from "@application/interfaces/security/IOtp.service";
+import { IOTPService } from "@application/interfaces/services/security/IOtp.service";
 import { injectable } from "inversify";
 
 @injectable()

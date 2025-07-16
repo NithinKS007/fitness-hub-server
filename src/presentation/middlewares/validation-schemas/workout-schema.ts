@@ -38,7 +38,7 @@ export const wrkoutSchema = [
     .withMessage("At least one set is required"),
 
   body("workouts.*.exercises.*.sets.*.kg")
-    .isFloat({ min: 0 })
+    .isFloat({ min: 1 })
     .withMessage("Kg must be a positive number")
     .notEmpty()
     .withMessage("Kg is required"),
@@ -50,7 +50,7 @@ export const wrkoutSchema = [
     .withMessage("Reps is required"),
 
   body("workouts.*.exercises.*.sets.*.time")
-    .isFloat({ min: 0 })
+    .isFloat({ min: 1 })
     .withMessage("Time must be a positive number")
     .notEmpty()
     .withMessage("Time is required"),

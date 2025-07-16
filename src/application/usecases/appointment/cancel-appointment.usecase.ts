@@ -9,6 +9,7 @@ import { BookingSlotStatus } from "@application/dtos/booking-dtos";
 import { Appointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICancelAppointmentUC } from "@application/interfaces/usecases/IAppointmentUC";
 
 /*  
     Purpose: Cancel an existing appointment and update the booking slot status to "pending"
@@ -18,7 +19,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 */
 
 @injectable()
-export class CancelAppointmentUseCase {
+export class CancelAppointmentUseCase implements ICancelAppointmentUC {
   constructor(
     @inject(TYPES_REPOSITORIES.BookingSlotRepository)
     private bookingSlotRepository: IBookingSlotRepository,

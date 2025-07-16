@@ -1,5 +1,10 @@
+import { IGetAppointmentByIdUC } from '@application/interfaces/usecases/IAppointmentUC';
+import { ICheckUserBlockStatusUC, ITokenUC } from '@application/interfaces/usecases/IAuthUC';
+import { ICreateMessageUC, IincrementUnReadMessageCountUC, IMarkMessageRead, IUpdateLastMessageUC, IUpdateUnReadMessageCountUC } from '@application/interfaces/usecases/IChatUC';
+import { ILoggerUC } from '@application/interfaces/usecases/ILoggerUC';
+import { IGetTrainerDetailsUC } from '@application/interfaces/usecases/ITrainerUC';
+import { ICreateVideoCallLogUC, IUpdateVideoCallDurationUC, IUpdateVideoCallStatusUC } from '@application/interfaces/usecases/IVideoCallLogUC';
 import { container } from '@di/container'; 
-
 import {
   AddVideoController,
   AddWorkoutController,
@@ -24,7 +29,6 @@ import {
   EditSubPlanController,
   EditVideoController,
   ForgotPasswordController,
-  GetAllPendingSlotsController,
   GetAllPlaylistController,
   GetAllPublicPlaylistController,
   GetallTrainersController,
@@ -56,9 +60,10 @@ import {
   GetVideoDetailsController,
   GetWorkoutController,
   GoogleAuthController,
+  IDateService,
   IncrementUnReadMessageCountUseCase,
   LoggerUseCase,
-  MarkMessageAsReadUseCase,
+  MarkMessageReadUseCase,
   OtpController,
   PasswordResetLinkController,
   PurchaseSubscriptionController,
@@ -113,7 +118,9 @@ import {
   TYPES_TRAINER_USECASES,
   TYPES_VIDEO_CALL_LOG_USECASES,
 } from "@di/types-usecases";
+import { IConnectDB } from '@domain/interfaces/IConnectdb';
 import { CloudinaryController } from '@presentation/controllers/cloudinary/cloudinary.controller';
+import { TYPES_CONFIG } from './types-config';
 
 // Appointment Controllers
 export const bookAppointmentController = container.get<BookAppointmentController>(TYPES_APPOINTMENT_CONTROLLER.BookAppointmentController);
@@ -140,7 +147,6 @@ export const updateUserProfileController = container.get<UpdateUserProfileContro
 // Booking Controllers
 export const createBookingSlotController = container.get<CreateBookingSlotController>(TYPES_BOOKING_CONTROLLER.CreateBookingSlotController);
 export const deleteBookingSlotController = container.get<DeleteBookingSlotController>(TYPES_BOOKING_CONTROLLER.DeleteBookingSlotController);
-export const getAllPendingSlotsController = container.get<GetAllPendingSlotsController>(TYPES_BOOKING_CONTROLLER.GetAllPendingSlotsController);
 export const getPendingSlotsController = container.get<GetPendingSlotsController>(TYPES_BOOKING_CONTROLLER.GetPendingSlotsController);
 export const getUpComingSlotsController = container.get<GetUpComingSlotsController>(TYPES_BOOKING_CONTROLLER.GetUpComingSlotsController);
 
@@ -218,22 +224,24 @@ export const updateWorkoutController = container.get<UpdateWorkoutController>(TY
 export const cloudinaryController = container.get<CloudinaryController>(TYPES_CLOUDINARY_CONTROLLER.CloudinaryController)
 
 // Use Cases
-export const getTrainerDetailsUseCase = container.get<GetTrainerDetailsUseCase>(TYPES_TRAINER_USECASES.GetTrainerDetailsUseCase);
-export const createMessageUseCase = container.get<CreateMessageUseCase>(TYPES_CHAT_USECASES.CreateMessageUseCase);
-export const markMessageAsReadUseCase = container.get<MarkMessageAsReadUseCase>(TYPES_CHAT_USECASES.MarkMessageAsReadUseCase);
-export const updateUnReadMessageCount = container.get<UpdateUnReadMessageCountUseCase>(TYPES_CHAT_USECASES.UpdateUnReadMessageCountUseCase1);
-export const incUnReadCountUseCase = container.get<IncrementUnReadMessageCountUseCase>(TYPES_CHAT_USECASES.IncrementUnReadMessageCountUseCase);
-export const updateLastMessageUseCase = container.get<UpdateLastMessageUseCase>(TYPES_CHAT_USECASES.UpdateLastMessageUseCase);
-export const createVideoCallLogUseCase = container.get<CreateVideoCallLogUseCase>(TYPES_VIDEO_CALL_LOG_USECASES.CreateVideoCallLogUseCase);
-export const updateVideoCallDurationUseCase = container.get<UpdateVideoCallDurationUseCase>(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallDurationUseCase);
-export const updateVideoCallStatusUseCase = container.get<UpdateVideoCallStatusUseCase>(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallStatusUseCase);
-export const getAppointmentByIdUseCase = container.get<GetAppointmentByIdUseCase>(TYPES_APPOINTMENT_USECASES.GetAppointmentByIdUseCase);
-export const tokenUseCase = container.get<TokenUseCase>(TYPES_AUTH_USECASES.TokenUseCase)
-export const checkBlockStatusUseCase = container.get<CheckUserBlockStatusUseCase>(TYPES_AUTH_USECASES.CheckUserBlockStatusUseCase)
-export const loggerUseCase = container.get<LoggerUseCase>(TYPES_LOGGER_USECASES.LoggerUseCase);
+export const getTrainerDetailsUseCase = container.get<IGetTrainerDetailsUC>(TYPES_TRAINER_USECASES.GetTrainerDetailsUseCase);
+export const createMessageUseCase = container.get<ICreateMessageUC>(TYPES_CHAT_USECASES.CreateMessageUseCase);
+export const markMessageAsReadUseCase = container.get<IMarkMessageRead>(TYPES_CHAT_USECASES.MarkMessageReadUseCase);
+export const updateUnReadMessageCount = container.get<IUpdateUnReadMessageCountUC>(TYPES_CHAT_USECASES.UpdateUnReadMessageCountUseCase);
+export const incUnReadCountUseCase = container.get<IincrementUnReadMessageCountUC>(TYPES_CHAT_USECASES.IncrementUnReadMessageCountUseCase);
+export const updateLastMessageUseCase = container.get<IUpdateLastMessageUC>(TYPES_CHAT_USECASES.UpdateLastMessageUseCase);
+export const createVideoCallLogUseCase = container.get<ICreateVideoCallLogUC>(TYPES_VIDEO_CALL_LOG_USECASES.CreateVideoCallLogUseCase);
+export const updateVideoCallDurationUseCase = container.get<IUpdateVideoCallDurationUC>(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallDurationUseCase);
+export const updateVideoCallStatusUseCase = container.get<IUpdateVideoCallStatusUC>(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallStatusUseCase);
+export const getAppointmentByIdUseCase = container.get<IGetAppointmentByIdUC>(TYPES_APPOINTMENT_USECASES.GetAppointmentByIdUseCase);
+export const tokenUseCase = container.get<ITokenUC>(TYPES_AUTH_USECASES.TokenUseCase)
+export const checkUserBlockStatusUseCase = container.get<ICheckUserBlockStatusUC>(TYPES_AUTH_USECASES.CheckUserBlockStatusUseCase)
+export const loggerUseCase = container.get<ILoggerUC>(TYPES_LOGGER_USECASES.LoggerUseCase);
 
 // Services
-export const dateService = container.get<DateService>(TYPES_SERVICES.DateService)
+export const dateService = container.get<IDateService>(TYPES_SERVICES.DateService)
 
+// Config
+export const connectDB = container.get<IConnectDB>(TYPES_CONFIG.ConnectDB)
 
 

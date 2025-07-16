@@ -5,14 +5,14 @@ import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
-import { WebHookHandlerUseCase } from "@application/usecases/subscription/webhook-handler.usecase";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
+import { IWebHookHandlerUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
 export class WebhookController {
   constructor(
     @inject(TYPES_SUBSCRIPTION_USECASES.WebHookHandlerUseCase)
-    private webHookHandlerUseCase: WebHookHandlerUseCase
+    private webHookHandlerUseCase: IWebHookHandlerUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
@@ -20,11 +20,13 @@ export class WebhookController {
 
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRETKEY;
 
-    await this.webHookHandlerUseCase.execute(
-      sig as string,
-      webhookSecret as string,
-      req.body
-    );
+    typeof sig === "string" &&
+      typeof webhookSecret === "string" &&
+      (await this.webHookHandlerUseCase.execute({
+        sig,
+        webhookSecret,
+        body: req.body,
+      }));
 
     sendResponse(res, StatusCodes.OK, null, SubscriptionStatus.Created);
   }

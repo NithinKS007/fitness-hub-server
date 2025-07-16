@@ -4,6 +4,7 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { WorkoutStatus } from "@shared/constants/index.constants";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { injectable, inject } from "inversify";
+import { ICompleteWorkoutUC } from "@application/interfaces/usecases/IWorkoutUC";
 
 /**
  * Purpose: Complete a workout session by marking it as completed in the database.
@@ -13,12 +14,12 @@ import { injectable, inject } from "inversify";
  */
 
 @injectable()
-export class CompleteWorkoutUseCase {
+export class CompleteWorkoutUseCase implements ICompleteWorkoutUC {
   constructor(
     @inject(TYPES_REPOSITORIES.WorkoutRepository)
     private workoutRepository: IWorkoutRepository
   ) {}
-  
+
   async execute(setId: string): Promise<Workout> {
     const workout = await this.workoutRepository.findById(setId);
     if (!workout) {

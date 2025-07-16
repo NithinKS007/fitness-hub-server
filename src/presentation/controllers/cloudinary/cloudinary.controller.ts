@@ -6,20 +6,23 @@ import {
   StatusCodes,
 } from "@shared/constants/index.constants";
 import { TYPES_CLOUDINARY_USECASES } from "@di/types-usecases";
-import { CloudinaryUseCase } from "@application/usecases/cloudinary/cloudinary-signature.usecase";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
+import { ICloudinaryUC } from "@application/interfaces/usecases/ICloudinaryUC";
 
 @injectable()
 export class CloudinaryController {
   constructor(
     @inject(TYPES_CLOUDINARY_USECASES.CloudinaryUseCase)
-    private CloudinaryUseCase: CloudinaryUseCase
+    private CloudinaryUseCase: ICloudinaryUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
     const { folder } = parseQueryParams(req.query);
     const { _id } = req?.user || {};
-    const signatureData = await this.CloudinaryUseCase.execute(folder, _id);
+    const signatureData = await this.CloudinaryUseCase.execute({
+      folder,
+      id: _id,
+    });
     sendResponse(
       res,
       StatusCodes.OK,

@@ -6,21 +6,16 @@ import { PlatformRevenue } from "@application/dtos/revenue-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IGetPlatformEarningsUC } from "@application/interfaces/usecases/IPlatformRevenueUC";
 
 @injectable()
-export class GetPlatformEarningsUsecase {
+export class GetPlatformEarningsUsecase implements IGetPlatformEarningsUC {
   constructor(
     @inject(TYPES_REPOSITORIES.RevenueRepository)
     private platformEarningsRepository: IPlatformEarningsRepository
   ) {}
   
-  async execute({
-    page,
-    limit,
-    fromDate,
-    toDate,
-    search,
-    filters,
+  async execute({ page, limit, fromDate, toDate, search,filters,
   }: GetRevenueQueryDTO): Promise<{
     revenueData: PlatformRevenue[];
     paginationData: PaginationDTO;

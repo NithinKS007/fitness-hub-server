@@ -3,14 +3,15 @@ import { AuthStatus, PasswordStatus } from "@shared/constants/index.constants";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { IPasswordResetRepository } from "@domain/interfaces/IPasswordResetTokenRepository";
 import { validationError } from "@presentation/middlewares/error.middleware";
-import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
-import { IHashService } from "@application/interfaces/security/IHash.service";
+import { IEncryptionService } from "@application/interfaces/services/security/IEncryption.service";
+import { IHashService } from "@application/interfaces/services/security/IHash.service";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { IForgotPasswordUC } from "@application/interfaces/usecases/IAuthUC";
 
 @injectable()
-export class ForgotPasswordUseCase {
+export class ForgotPasswordUseCase implements IForgotPasswordUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,

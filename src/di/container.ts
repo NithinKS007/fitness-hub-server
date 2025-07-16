@@ -121,6 +121,7 @@ import {
   EditSubPlanController,
   CloudinaryController,
   CloudinaryUseCase,
+  IBaseUseCase,
 } from "@di/file-imports-index";
 
 // Services
@@ -184,7 +185,6 @@ import {
   GetVideoDetailsUseCase,
   GetUserSchedulesUseCase,
   GetUpComingSlotsUseCase,
-  GetAllPendingSlotsUseCase,
   GetUserSubscriptionUseCase,
   GetTrainerSchedulesUseCase,
   SendPasswordRestLinkUseCase,
@@ -200,7 +200,7 @@ import {
   CancelAppointmentUseCase,
   CreateBookingSlotUseCase,
   DeleteBookingSlotUseCase,
-  MarkMessageAsReadUseCase,
+  MarkMessageReadUseCase,
   CancelSubscriptionUseCase,
   CreateVideoCallLogUseCase,
   GetAppointmentByIdUseCase,
@@ -246,7 +246,6 @@ import {
   GetTrainerSchedulesController,
   CancelAppointmentController,
   GetPendingSlotsController,
-  GetAllPendingSlotsController,
   GetUpComingSlotsController,
   GetAllPlaylistController,
   CreatePlaylistController,
@@ -254,6 +253,26 @@ import {
   GetPlaylistController,
   UpdatePlaylistPrivacyController,
 } from "@di/file-imports-index";
+import { IBookAppointmentUC, ICancelAppointmentUC, IGetAppointmentByIdUC, IGetAppointmentRequestsUC, IGetTrainerSchedulesUC, IGetUserSchedulesUC, IHandleBookingApprovalUC } from "@application/interfaces/usecases/IAppointmentUC";
+import { IChangePasswordUC, ICheckUserBlockStatusUC, ICreateTrainerUC, ICreateUserUC, IForgotPasswordUC, IGoogleAuthUC, IOtpUC, ISendPasswordRestLinkUC, ISigninUserUC, ITokenUC, IUpdateTRProfileUC, IUpdateUserProfileUC } from "@application/interfaces/usecases/IAuthUC";
+import { ICreateBookingSlotUC, IDeleteBookingSlotUC, IGetPendingSlotsUC, IGetUpComingSlotsUC } from "@application/interfaces/usecases/ISlotUC";
+import { IGetApprovedTrainers, IGetTrainerAndSubInfoUC, IGetTrainerDetailsUC, IGetTrainersUC, IGetVeryfyTrainerlist, ITrainerApprovalUC } from "@application/interfaces/usecases/ITrainerUC";
+import { ICreateMessageUC, IGetChatHistoryUC, IGetTrainerChatListUC, IGetUserChatListUC, IincrementUnReadMessageCountUC, IMarkMessageRead, IUpdateLastMessageUC, IUpdateUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
+import { IAdminDashBoardUC, ITrainerDashBoardUC, IUserDashBoardUC } from "@application/interfaces/usecases/IDashBoardUC";
+import { IGetPlatformEarningsUC } from "@application/interfaces/usecases/IPlatformRevenueUC";
+import { ICreatePlayListUC, IEditPlayListUC, IGetallPlaylistUC, IGetPlayListUC, IUpdatePlayListPrivacyUC } from "@application/interfaces/usecases/IPlaylistUC";
+import { ICreateSubscriptionUC, IDeleteSubscriptionUC, IEditSubscriptionUC, ISubscriptionBlockUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
+import { ICancelSubscriptionUC, ICheckSubscriptionStatusUC, IGetTrainerSubscribersUC, IGetTrainerSubscriptionsUC, IGetUserSubscriptionsUC, IGetUserTrainerslistUC, IPurchaseSubscriptionUC, IVerifySubscriptionSessionUC, IWebHookHandlerUC } from "@application/interfaces/usecases/ISubscriptionUC";
+import { ICloudinaryUC } from "@application/interfaces/usecases/ICloudinaryUC";
+import { IGetUserDetailsUC, IGetUsersUC, IUpdateUserBlockStatusUC } from "@application/interfaces/usecases/IUserUC";
+import { ICreateVideoUC, IEditVideoUC, IGetVideoDetailsUC, IGetVideosUC, IUpdateVideoPrivacyUC } from "@application/interfaces/usecases/IVideoUC";
+import { ICreateVideoCallLogUC, IGetTrainerVideoCallLogUC, IGetUserVideoCallLogUC, IUpdateVideoCallDurationUC, IUpdateVideoCallStatusUC } from "@application/interfaces/usecases/IVideoCallLogUC";
+import { ICompleteWorkoutUC, ICreateWorkoutUC, IDeleteWorkoutUC, IGetWorkoutUC } from "@application/interfaces/usecases/IWorkoutUC";
+import { ILoggerUC } from "@application/interfaces/usecases/ILoggerUC";
+import { TYPES_CONFIG } from "./types-config";
+import { IConnectDB } from "@domain/interfaces/IConnectdb";
+import { ConnectDB } from "@infrastructure/config/db.config";
+
 
 
 const container = new Container();
@@ -276,6 +295,9 @@ container.bind<IBookingSlotRepository>(TYPES_REPOSITORIES.BookingSlotRepository)
 container.bind<IAppointmentRepository>(TYPES_REPOSITORIES.AppointmentRepository).to(AppointmentRepository);
 container.bind<IVideoCallLogRepository>(TYPES_REPOSITORIES.VideoCallLogRepository).to(VideoCallLogRepository);
 
+// Config
+container.bind<IConnectDB>(TYPES_CONFIG.ConnectDB).to(ConnectDB)
+
 // Bind Services
 container.bind<IPaymentService>(TYPES_SERVICES.PaymentService).to(StripePaymentService);
 container.bind<IAuthService>(TYPES_SERVICES.AuthService).to(JwtService);
@@ -289,112 +311,112 @@ container.bind<IDateService>(TYPES_SERVICES.DateService).to(DateService);
 container.bind<ILoggerService>(TYPES_SERVICES.LoggerService).to(LoggerService)
 
 // Bind Appointment Use Cases
-container.bind(TYPES_APPOINTMENT_USECASES.BookAppointmentUseCase).to(BookAppointmentUseCase);
-container.bind(TYPES_APPOINTMENT_USECASES.CancelAppointmentUseCase).to(CancelAppointmentUseCase);
-container.bind(TYPES_APPOINTMENT_USECASES.GetAppointmentRequestUseCase).to(GetAppointmentRequestUseCase);
-container.bind(TYPES_APPOINTMENT_USECASES.GetAppointmentByIdUseCase).to(GetAppointmentByIdUseCase);
-container.bind(TYPES_APPOINTMENT_USECASES.GetTrainerSchedulesUseCase).to(GetTrainerSchedulesUseCase);
-container.bind(TYPES_APPOINTMENT_USECASES.GetUserSchedulesUseCase).to(GetUserSchedulesUseCase);
-container.bind(TYPES_APPOINTMENT_USECASES.HandleBookingApprovalUseCase).to(HandleBookingApprovalUseCase);
+container.bind<IBookAppointmentUC>(TYPES_APPOINTMENT_USECASES.BookAppointmentUseCase).to(BookAppointmentUseCase);
+container.bind<ICancelAppointmentUC>(TYPES_APPOINTMENT_USECASES.CancelAppointmentUseCase).to(CancelAppointmentUseCase);
+container.bind<IGetAppointmentRequestsUC>(TYPES_APPOINTMENT_USECASES.GetAppointmentRequestUseCase).to(GetAppointmentRequestUseCase);
+container.bind<IGetAppointmentByIdUC>(TYPES_APPOINTMENT_USECASES.GetAppointmentByIdUseCase).to(GetAppointmentByIdUseCase);
+container.bind<IGetTrainerSchedulesUC>(TYPES_APPOINTMENT_USECASES.GetTrainerSchedulesUseCase).to(GetTrainerSchedulesUseCase);
+container.bind<IGetUserSchedulesUC>(TYPES_APPOINTMENT_USECASES.GetUserSchedulesUseCase).to(GetUserSchedulesUseCase);
+container.bind<IHandleBookingApprovalUC>(TYPES_APPOINTMENT_USECASES.HandleBookingApprovalUseCase).to(HandleBookingApprovalUseCase);
 
 // Bind Auth Use Cases
-container.bind(TYPES_AUTH_USECASES.ChangePasswordUseCase).to(ChangePasswordUseCase);
-container.bind(TYPES_AUTH_USECASES.CheckUserBlockStatusUseCase).to(CheckUserBlockStatusUseCase);
-container.bind(TYPES_AUTH_USECASES.CreateTrainerUseCase).to(CreateTrainerUseCase);
-container.bind(TYPES_AUTH_USECASES.CreateUserUseCase).to(CreateUserUseCase);
-container.bind(TYPES_AUTH_USECASES.ForgotPasswordUseCase).to(ForgotPasswordUseCase);
-container.bind(TYPES_AUTH_USECASES.GoogleAuthUseCase).to(GoogleAuthUseCase);
-container.bind(TYPES_AUTH_USECASES.OtpUseCase).to(OtpUseCase);
-container.bind(TYPES_AUTH_USECASES.SendPasswordRestLinkUseCase).to(SendPasswordRestLinkUseCase);
-container.bind(TYPES_AUTH_USECASES.SigninUserUseCase).to(SigninUserUseCase);
-container.bind(TYPES_AUTH_USECASES.TokenUseCase).to(TokenUseCase);
-container.bind(TYPES_AUTH_USECASES.UpdateTrainerProfileUseCase).to(UpdateTrainerProfileUseCase);
-container.bind(TYPES_AUTH_USECASES.UpdateUserProfileUseCase).to(UpdateUserProfileUseCase);
+container.bind<IChangePasswordUC>(TYPES_AUTH_USECASES.ChangePasswordUseCase).to(ChangePasswordUseCase);
+container.bind<ICheckUserBlockStatusUC>(TYPES_AUTH_USECASES.CheckUserBlockStatusUseCase).to(CheckUserBlockStatusUseCase);
+container.bind<ICreateTrainerUC>(TYPES_AUTH_USECASES.CreateTrainerUseCase).to(CreateTrainerUseCase);
+container.bind<ICreateUserUC>(TYPES_AUTH_USECASES.CreateUserUseCase).to(CreateUserUseCase);
+container.bind<IForgotPasswordUC>(TYPES_AUTH_USECASES.ForgotPasswordUseCase).to(ForgotPasswordUseCase);
+container.bind<IGoogleAuthUC>(TYPES_AUTH_USECASES.GoogleAuthUseCase).to(GoogleAuthUseCase);
+container.bind<IOtpUC>(TYPES_AUTH_USECASES.OtpUseCase).to(OtpUseCase);
+container.bind<ISendPasswordRestLinkUC>(TYPES_AUTH_USECASES.SendPasswordRestLinkUseCase).to(SendPasswordRestLinkUseCase);
+container.bind<ISigninUserUC>(TYPES_AUTH_USECASES.SigninUserUseCase).to(SigninUserUseCase);
+container.bind<ITokenUC>(TYPES_AUTH_USECASES.TokenUseCase).to(TokenUseCase);
+container.bind<IUpdateTRProfileUC>(TYPES_AUTH_USECASES.UpdateTrainerProfileUseCase).to(UpdateTrainerProfileUseCase);
+container.bind<IUpdateUserProfileUC>(TYPES_AUTH_USECASES.UpdateUserProfileUseCase).to(UpdateUserProfileUseCase);
 
 //Bind Booking Slot Use Cases
-container.bind(TYPES_BOOKINGSLOT_USECASAES.CreateBookingSlotUseCase).to(CreateBookingSlotUseCase);
-container.bind(TYPES_BOOKINGSLOT_USECASAES.DeleteBookingSlotUseCase).to(DeleteBookingSlotUseCase);
-container.bind(TYPES_BOOKINGSLOT_USECASAES.GetAllPendingSlotsUseCase).to(GetAllPendingSlotsUseCase);
-container.bind(TYPES_BOOKINGSLOT_USECASAES.GetPendingSlotsUseCase).to(GetPendingSlotsUseCase);
-container.bind(TYPES_BOOKINGSLOT_USECASAES.GetUpComingSlotsUseCase).to(GetUpComingSlotsUseCase);
+container.bind<ICreateBookingSlotUC>(TYPES_BOOKINGSLOT_USECASAES.CreateBookingSlotUseCase).to(CreateBookingSlotUseCase);
+container.bind<IDeleteBookingSlotUC>(TYPES_BOOKINGSLOT_USECASAES.DeleteBookingSlotUseCase).to(DeleteBookingSlotUseCase);
+container.bind<IGetPendingSlotsUC>(TYPES_BOOKINGSLOT_USECASAES.GetPendingSlotsUseCase).to(GetPendingSlotsUseCase);
+container.bind<IGetUpComingSlotsUC>(TYPES_BOOKINGSLOT_USECASAES.GetUpComingSlotsUseCase).to(GetUpComingSlotsUseCase);
 
 //Bind Chat Use Cases
-container.bind(TYPES_CHAT_USECASES.CreateMessageUseCase).to(CreateMessageUseCase);
-container.bind(TYPES_CHAT_USECASES.GetChatHistoryUseCase).to(GetChatHistoryUseCase);
-container.bind(TYPES_CHAT_USECASES.GetTrainerChatListUseCase).to(GetTrainerChatListUseCase);
-container.bind(TYPES_CHAT_USECASES.GetUserChatListUseCase).to(GetUserChatListUseCase);
-container.bind(TYPES_CHAT_USECASES.IncrementUnReadMessageCountUseCase).to(IncrementUnReadMessageCountUseCase);
-container.bind(TYPES_CHAT_USECASES.MarkMessageAsReadUseCase).to(MarkMessageAsReadUseCase);
-container.bind(TYPES_CHAT_USECASES.UpdateLastMessageUseCase).to(UpdateLastMessageUseCase);
-container.bind(TYPES_CHAT_USECASES.UpdateUnReadMessageCountUseCase1).to(UpdateUnReadMessageCountUseCase);
+container.bind<ICreateMessageUC>(TYPES_CHAT_USECASES.CreateMessageUseCase).to(CreateMessageUseCase);
+container.bind<IGetChatHistoryUC>(TYPES_CHAT_USECASES.GetChatHistoryUseCase).to(GetChatHistoryUseCase);
+container.bind<IGetTrainerChatListUC>(TYPES_CHAT_USECASES.GetTrainerChatListUseCase).to(GetTrainerChatListUseCase);
+container.bind<IGetUserChatListUC>(TYPES_CHAT_USECASES.GetUserChatListUseCase).to(GetUserChatListUseCase);
+container.bind<IincrementUnReadMessageCountUC>(TYPES_CHAT_USECASES.IncrementUnReadMessageCountUseCase).to(IncrementUnReadMessageCountUseCase);
+container.bind<IMarkMessageRead>(TYPES_CHAT_USECASES.MarkMessageReadUseCase).to(MarkMessageReadUseCase);
+container.bind<IUpdateLastMessageUC>(TYPES_CHAT_USECASES.UpdateLastMessageUseCase).to(UpdateLastMessageUseCase);
+container.bind<IUpdateUnReadMessageCountUC>(TYPES_CHAT_USECASES.UpdateUnReadMessageCountUseCase).to(UpdateUnReadMessageCountUseCase);
 
 //Bind Dashboard Use Cases
-container.bind(TYPES_DASHBOARD_USECASES.AdminDashBoardUseCase).to(AdminDashBoardUseCase);
-container.bind(TYPES_DASHBOARD_USECASES.TrainerDashBoardUseCase).to(TrainerDashBoardUseCase);
-container.bind(TYPES_DASHBOARD_USECASES.UserDashBoardUseCase).to(UserDashBoardUseCase);
+container.bind<IAdminDashBoardUC>(TYPES_DASHBOARD_USECASES.AdminDashBoardUseCase).to(AdminDashBoardUseCase);
+container.bind<ITrainerDashBoardUC>(TYPES_DASHBOARD_USECASES.TrainerDashBoardUseCase).to(TrainerDashBoardUseCase);
+container.bind<IUserDashBoardUC>(TYPES_DASHBOARD_USECASES.UserDashBoardUseCase).to(UserDashBoardUseCase);
 
 //Bind Platform Use Cases
-container.bind(TYPES_PLATFORM_USECASES.GetPlatformEarningsUsecase).to(GetPlatformEarningsUsecase);
+container.bind<IGetPlatformEarningsUC>(TYPES_PLATFORM_USECASES.GetPlatformEarningsUsecase).to(GetPlatformEarningsUsecase);
 
 //Bind Playlist Use Cases
-container.bind(TYPES_PLAYLIST_USECASES.CreatePlayListUseCase).to(CreatePlayListUseCase);
-container.bind(TYPES_PLAYLIST_USECASES.EditPlayListUseCase).to(EditPlayListUseCase);
-container.bind(TYPES_PLAYLIST_USECASES.GetallPlaylistUseCase).to(GetallPlaylistUseCase);
-container.bind(TYPES_PLAYLIST_USECASES.GetPlayListUseCase).to(GetPlayListUseCase);
-container.bind(TYPES_PLAYLIST_USECASES.UpdatePlayListPrivacyUseCase).to(UpdatePlayListPrivacyUseCase);
+container.bind<ICreatePlayListUC>(TYPES_PLAYLIST_USECASES.CreatePlayListUseCase).to(CreatePlayListUseCase);
+container.bind<IEditPlayListUC>(TYPES_PLAYLIST_USECASES.EditPlayListUseCase).to(EditPlayListUseCase);
+container.bind<IGetallPlaylistUC>(TYPES_PLAYLIST_USECASES.GetallPlaylistUseCase).to(GetallPlaylistUseCase);
+container.bind<IGetPlayListUC>(TYPES_PLAYLIST_USECASES.GetPlayListUseCase).to(GetPlayListUseCase);
+container.bind<IUpdatePlayListPrivacyUC>(TYPES_PLAYLIST_USECASES.UpdatePlayListPrivacyUseCase).to(UpdatePlayListPrivacyUseCase);
 
 //Bind Subscription Use Cases
-container.bind(TYPES_SUBSCRIPTION_USECASES.SubscriptionBlockUseCase).to(SubscriptionBlockUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.CancelSubscriptionUseCase).to(CancelSubscriptionUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.CheckSubscriptionStatusUseCase).to(CheckSubscriptionStatusUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.CreateSubscriptionUseCase).to(CreateSubscriptionUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.DeleteSubscriptionUseCase).to(DeleteSubscriptionUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.EditSubscriptionUseCase).to(EditSubscriptionUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.GetTrainerSubscribersUseCase).to(GetTrainerSubscribersUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.GetTrainerSubscriptionsUseCase).to(GetTrainerSubscriptionsUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.GetUserSubscriptionUseCase).to(GetUserSubscriptionUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.GetUserTrainerslistUseCase).to(GetUserTrainerslistUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.PurchaseSubscriptionUseCase).to(PurchaseSubscriptionUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.VerifySubcriptionSessionUseCase).to(VerifySubcriptionSessionUseCase);
-container.bind(TYPES_SUBSCRIPTION_USECASES.WebHookHandlerUseCase).to(WebHookHandlerUseCase);
+container.bind<ISubscriptionBlockUC>(TYPES_SUBSCRIPTION_USECASES.SubscriptionBlockUseCase).to(SubscriptionBlockUseCase);
+container.bind<ICancelSubscriptionUC>(TYPES_SUBSCRIPTION_USECASES.CancelSubscriptionUseCase).to(CancelSubscriptionUseCase);
+container.bind<ICheckSubscriptionStatusUC>(TYPES_SUBSCRIPTION_USECASES.CheckSubscriptionStatusUseCase).to(CheckSubscriptionStatusUseCase);
+container.bind<ICreateSubscriptionUC>(TYPES_SUBSCRIPTION_USECASES.CreateSubscriptionUseCase).to(CreateSubscriptionUseCase);
+container.bind<IDeleteSubscriptionUC>(TYPES_SUBSCRIPTION_USECASES.DeleteSubscriptionUseCase).to(DeleteSubscriptionUseCase);
+container.bind<IEditSubscriptionUC>(TYPES_SUBSCRIPTION_USECASES.EditSubscriptionUseCase).to(EditSubscriptionUseCase);
+container.bind<IGetTrainerSubscribersUC>(TYPES_SUBSCRIPTION_USECASES.GetTrainerSubscribersUseCase).to(GetTrainerSubscribersUseCase);
+container.bind<IGetTrainerSubscriptionsUC>(TYPES_SUBSCRIPTION_USECASES.GetTrainerSubscriptionsUseCase).to(GetTrainerSubscriptionsUseCase);
+container.bind<IGetUserSubscriptionsUC>(TYPES_SUBSCRIPTION_USECASES.GetUserSubscriptionUseCase).to(GetUserSubscriptionUseCase);
+container.bind<IGetUserTrainerslistUC>(TYPES_SUBSCRIPTION_USECASES.GetUserTrainerslistUseCase).to(GetUserTrainerslistUseCase);
+container.bind<IPurchaseSubscriptionUC>(TYPES_SUBSCRIPTION_USECASES.PurchaseSubscriptionUseCase).to(PurchaseSubscriptionUseCase);
+container.bind<IVerifySubscriptionSessionUC>(TYPES_SUBSCRIPTION_USECASES.VerifySubcriptionSessionUseCase).to(VerifySubcriptionSessionUseCase);
+container.bind<IWebHookHandlerUC>(TYPES_SUBSCRIPTION_USECASES.WebHookHandlerUseCase).to(WebHookHandlerUseCase);
 
 //Bind Trainer Use Cases
-container.bind(TYPES_TRAINER_USECASES.GetApprovedTrainersUseCase).to(GetApprovedTrainersUseCase);
-container.bind(TYPES_TRAINER_USECASES.GetTrainerDetailsUseCase).to(GetTrainerDetailsUseCase);
-container.bind(TYPES_TRAINER_USECASES.GetTrainerAndSubInfoUseCase).to(GetTrainerAndSubInfoUseCase);
-container.bind(TYPES_TRAINER_USECASES.GetTrainersUseCase).to(GetTrainersUseCase);
-container.bind(TYPES_TRAINER_USECASES.GetVerifyTrainerlistUseCase).to(GetVerifyTrainerlistUseCase);
-container.bind(TYPES_TRAINER_USECASES.TrainerApprovalUseCase).to(TrainerApprovalUseCase);
+container.bind<IGetApprovedTrainers>(TYPES_TRAINER_USECASES.GetApprovedTrainersUseCase).to(GetApprovedTrainersUseCase);
+container.bind<IGetTrainerDetailsUC>(TYPES_TRAINER_USECASES.GetTrainerDetailsUseCase).to(GetTrainerDetailsUseCase);
+container.bind<IGetTrainerAndSubInfoUC>(TYPES_TRAINER_USECASES.GetTrainerAndSubInfoUseCase).to(GetTrainerAndSubInfoUseCase);
+container.bind<IGetTrainersUC>(TYPES_TRAINER_USECASES.GetTrainersUseCase).to(GetTrainersUseCase);
+container.bind<IGetVeryfyTrainerlist>(TYPES_TRAINER_USECASES.GetVerifyTrainerlistUseCase).to(GetVerifyTrainerlistUseCase);
+container.bind<ITrainerApprovalUC>(TYPES_TRAINER_USECASES.TrainerApprovalUseCase).to(TrainerApprovalUseCase);
 
 //Bind User Use Cases
-container.bind(TYPES_USER_USECASES.GetUserDetailsUseCase).to(GetUserDetailsUseCase);
-container.bind(TYPES_USER_USECASES.GetUsersUseCase).to(GetUsersUseCase);
-container.bind(TYPES_USER_USECASES.UpdateUserBlockStatusUseCase).to(UpdateUserBlockStatusUseCase);
+container.bind<IGetUserDetailsUC>(TYPES_USER_USECASES.GetUserDetailsUseCase).to(GetUserDetailsUseCase);
+container.bind<IGetUsersUC>(TYPES_USER_USECASES.GetUsersUseCase).to(GetUsersUseCase);
+container.bind<IUpdateUserBlockStatusUC>(TYPES_USER_USECASES.UpdateUserBlockStatusUseCase).to(UpdateUserBlockStatusUseCase);
 
 //Bind Video Use Cases
-container.bind(TYPES_VIDEO_USECASES.CreateVideoUseCase).to(CreateVideoUseCase);
-container.bind(TYPES_VIDEO_USECASES.EditVideoUseCase).to(EditVideoUseCase);
-container.bind(TYPES_VIDEO_USECASES.GetVideoDetailsUseCase).to(GetVideoDetailsUseCase);
-container.bind(TYPES_VIDEO_USECASES.GetVideosUseCase).to(GetVideosUseCase);
-container.bind(TYPES_VIDEO_USECASES.UpdateVideoPrivacyUseCase).to(UpdateVideoPrivacyUseCase);
+container.bind<ICreateVideoUC>(TYPES_VIDEO_USECASES.CreateVideoUseCase).to(CreateVideoUseCase);
+container.bind<IEditVideoUC>(TYPES_VIDEO_USECASES.EditVideoUseCase).to(EditVideoUseCase);
+container.bind<IGetVideoDetailsUC>(TYPES_VIDEO_USECASES.GetVideoDetailsUseCase).to(GetVideoDetailsUseCase);
+container.bind<IGetVideosUC>(TYPES_VIDEO_USECASES.GetVideosUseCase).to(GetVideosUseCase);
+container.bind<IUpdateVideoPrivacyUC>(TYPES_VIDEO_USECASES.UpdateVideoPrivacyUseCase).to(UpdateVideoPrivacyUseCase);
 
 //Bind Video Call Use Cases
-container.bind(TYPES_VIDEO_CALL_LOG_USECASES.CreateVideoCallLogUseCase).to(CreateVideoCallLogUseCase);
-container.bind(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallDurationUseCase).to(UpdateVideoCallDurationUseCase);
-container.bind(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallStatusUseCase).to(UpdateVideoCallStatusUseCase);
-container.bind(TYPES_VIDEO_CALL_LOG_USECASES.GetTrainerVideoCallLogUseCase).to(GetTrainerVideoCallLogUseCase);
-container.bind(TYPES_VIDEO_CALL_LOG_USECASES.GetUserVideoCallLogUseCase).to(GetUserVideoCallLogUseCase);
+container.bind<ICreateVideoCallLogUC>(TYPES_VIDEO_CALL_LOG_USECASES.CreateVideoCallLogUseCase).to(CreateVideoCallLogUseCase);
+container.bind<IUpdateVideoCallDurationUC>(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallDurationUseCase).to(UpdateVideoCallDurationUseCase);
+container.bind<IUpdateVideoCallStatusUC>(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallStatusUseCase).to(UpdateVideoCallStatusUseCase);
+container.bind<IGetTrainerVideoCallLogUC>(TYPES_VIDEO_CALL_LOG_USECASES.GetTrainerVideoCallLogUseCase).to(GetTrainerVideoCallLogUseCase);
+container.bind<IGetUserVideoCallLogUC>(TYPES_VIDEO_CALL_LOG_USECASES.GetUserVideoCallLogUseCase).to(GetUserVideoCallLogUseCase);
 
-container.bind(TYPES_WORKOUT_USECASES.CompleteWorkoutUseCase).to(CompleteWorkoutUseCase);
-container.bind(TYPES_WORKOUT_USECASES.CreateWorkoutUseCase).to(CreateWorkoutUseCase);
-container.bind(TYPES_WORKOUT_USECASES.DeleteWorkoutUseCase).to(DeleteWorkoutUseCase);
-container.bind(TYPES_WORKOUT_USECASES.GetWorkoutUseCase).to(GetWorkoutUseCase);
+//Bind Workout Use Cases
+container.bind<ICompleteWorkoutUC>(TYPES_WORKOUT_USECASES.CompleteWorkoutUseCase).to(CompleteWorkoutUseCase);
+container.bind<ICreateWorkoutUC>(TYPES_WORKOUT_USECASES.CreateWorkoutUseCase).to(CreateWorkoutUseCase);
+container.bind<IDeleteWorkoutUC>(TYPES_WORKOUT_USECASES.DeleteWorkoutUseCase).to(DeleteWorkoutUseCase);
+container.bind<IGetWorkoutUC>(TYPES_WORKOUT_USECASES.GetWorkoutUseCase).to(GetWorkoutUseCase);
 
 //Logger Use Cases
-container.bind(TYPES_LOGGER_USECASES.LoggerUseCase).to(LoggerUseCase)
+container.bind<ILoggerUC>(TYPES_LOGGER_USECASES.LoggerUseCase).to(LoggerUseCase)
 
 //Cloudinary Use Cases
-container.bind(TYPES_CLOUDINARY_USECASES.CloudinaryUseCase).to(CloudinaryUseCase)
+container.bind<ICloudinaryUC>(TYPES_CLOUDINARY_USECASES.CloudinaryUseCase).to(CloudinaryUseCase)
 
 // Appointment Controllers 
 container.bind(TYPES_APPOINTMENT_CONTROLLER.BookAppointmentController).to(BookAppointmentController);
@@ -421,7 +443,6 @@ container.bind(TYPES_AUTH_CONTROLLER.UpdateUserProfileController).to(UpdateUserP
 // Booking Controllers 
 container.bind(TYPES_BOOKING_CONTROLLER.CreateBookingSlotController).to(CreateBookingSlotController);
 container.bind(TYPES_BOOKING_CONTROLLER.DeleteBookingSlotController).to(DeleteBookingSlotController);
-container.bind(TYPES_BOOKING_CONTROLLER.GetAllPendingSlotsController).to(GetAllPendingSlotsController);
 container.bind(TYPES_BOOKING_CONTROLLER.GetPendingSlotsController).to(GetPendingSlotsController);
 container.bind(TYPES_BOOKING_CONTROLLER.GetUpComingSlotsController).to(GetUpComingSlotsController);
 

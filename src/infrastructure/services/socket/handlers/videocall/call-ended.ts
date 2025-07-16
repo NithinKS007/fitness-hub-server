@@ -1,13 +1,15 @@
 import { Server } from "socket.io";
-import { UpdateVideoCallStatusUseCase } from "@application/usecases/videoCallLog/update-call-duration.usecase";
-import { UpdateVideoCallDurationUseCase } from "@application/usecases/videoCallLog/update-call-data.usecase";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
+import {
+  IUpdateVideoCallDurationUC,
+  IUpdateVideoCallStatusUC,
+} from "@application/interfaces/usecases/IVideoCallLogUC";
 
 interface EndVideoCall {
   io: Server;
-  updateVideoCallStatusUseCase: UpdateVideoCallStatusUseCase;
-  updateVideoCallDurationUseCase: UpdateVideoCallDurationUseCase;
+  updateVideoCallStatusUseCase: IUpdateVideoCallStatusUC;
+  updateVideoCallDurationUseCase: IUpdateVideoCallDurationUC;
   roomId: string;
 }
 

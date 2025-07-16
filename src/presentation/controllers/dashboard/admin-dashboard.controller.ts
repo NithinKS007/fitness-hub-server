@@ -5,15 +5,15 @@ import {
   DashboardStatus,
   StatusCodes,
 } from "@shared/constants/index.constants";
-import { AdminDashBoardUseCase } from "@application/usecases/dashboard/admin-dashboard.usecase";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { TYPES_DASHBOARD_USECASES } from "@di/types-usecases";
+import { IAdminDashBoardUC } from "@application/interfaces/usecases/IDashBoardUC";
 
 @injectable()
 export class AdminDashboardController {
   constructor(
     @inject(TYPES_DASHBOARD_USECASES.AdminDashBoardUseCase)
-    private adminDashBoardUseCase: AdminDashBoardUseCase
+    private adminDashBoardUseCase: IAdminDashBoardUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {

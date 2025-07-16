@@ -6,14 +6,14 @@ import {
 } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { GetAppointmentRequestUseCase } from "@application/usecases/appointment/get-appointment-request.usecase";
 import { TYPES_APPOINTMENT_USECASES } from "@di/types-usecases";
+import { IGetAppointmentRequestsUC } from "@application/interfaces/usecases/IAppointmentUC";
 
 @injectable()
 export class GetBookingRequestsController {
   constructor(
     @inject(TYPES_APPOINTMENT_USECASES.GetAppointmentRequestUseCase)
-    private getAppointmentRequestUseCase: GetAppointmentRequestUseCase
+    private getAppointmentRequestUC: IGetAppointmentRequestsUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
@@ -22,7 +22,10 @@ export class GetBookingRequestsController {
     const queryParams = parseQueryParams(req.query);
 
     const { bookingRequestsList, paginationData } =
-      await this.getAppointmentRequestUseCase.execute(trainerId, queryParams);
+      await this.getAppointmentRequestUC.execute({
+        trainerId,
+        ...queryParams,
+      });
 
     sendResponse(
       res,

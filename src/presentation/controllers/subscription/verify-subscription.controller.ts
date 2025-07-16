@@ -5,18 +5,18 @@ import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
-import { VerifySubcriptionSessionUseCase } from "@application/usecases/subscription/verify-subscription-session.usecase";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
+import { IVerifySubscriptionSessionUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
 export class VerifySubscriptionController {
   constructor(
     @inject(TYPES_SUBSCRIPTION_USECASES.VerifySubcriptionSessionUseCase)
-    private verifySubcriptionSessionUseCase: VerifySubcriptionSessionUseCase
+    private verifySubcriptionSessionUseCase: IVerifySubscriptionSessionUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { sessionId } = req.params;
+    const { id: sessionId } = req.params;
     const subscriptionData = await this.verifySubcriptionSessionUseCase.execute(
       sessionId
     );

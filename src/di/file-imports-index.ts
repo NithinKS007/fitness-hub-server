@@ -48,7 +48,7 @@ export { PurchaseSubscriptionUseCase } from "@application/usecases/subscription/
 export { CancelSubscriptionUseCase } from "@application/usecases/subscription/cancel-subscription.usecase";
 export { GetUserSubscriptionUseCase } from "@application/usecases/subscription/get-user-subscription.usecase";
 export { GetTrainerSubscribersUseCase } from "@application/usecases/subscription/get-trainer-subscribed-users.usecase";
-export { VerifySubcriptionSessionUseCase } from "@application/usecases/subscription/verify-subscription-session.usecase";
+export { VerifySubcriptionSessionUseCase } from "@application/usecases/subscription/verify-subscription..usecase";
 export { GetUserTrainerslistUseCase } from "@application/usecases/subscription/get-user-trainers-list.usecase";
 
 // Trainer Use Cases
@@ -108,7 +108,7 @@ export { GetTrainerChatListUseCase } from "@application/usecases/chat/get-traine
 export { GetUserChatListUseCase } from "@application/usecases/chat/get-user-chat-list.usecase";
 export { UpdateUnReadMessageCountUseCase } from "@application/usecases/chat/update-unread-count.usecase";
 export { UpdateLastMessageUseCase } from "@application/usecases/chat/update-last-message.usecase";
-export { MarkMessageAsReadUseCase } from "@application/usecases/chat/mark-as-read.usecase";
+export { MarkMessageReadUseCase } from "@application/usecases/chat/mark-as-read.usecase";
 export { IncrementUnReadMessageCountUseCase } from "@application/usecases/chat/inc-unread-count.usecase";
 export { CreateMessageUseCase } from "@application/usecases/chat/create-message.usecase";
 
@@ -116,7 +116,6 @@ export { CreateMessageUseCase } from "@application/usecases/chat/create-message.
 export { CreateBookingSlotUseCase } from "@application/usecases/bookingSlot/create-booking-slot.usecase";
 export { DeleteBookingSlotUseCase } from "@application/usecases/bookingSlot/delete-booking-slot.usecase";
 export { GetPendingSlotsUseCase } from "@application/usecases/bookingSlot/get-pending-slots";
-export { GetAllPendingSlotsUseCase } from "@application/usecases/bookingSlot/get-all-pending-slots";
 export { GetUpComingSlotsUseCase } from "@application/usecases/bookingSlot/get-upcoming-slots";
 
 // Playlist Use Cases
@@ -162,7 +161,6 @@ export { UpdateUserProfileController } from "@presentation/controllers/auth/upda
 // Booking Controllers
 export { CreateBookingSlotController } from "@presentation/controllers/booking/create-booking.controller";
 export { DeleteBookingSlotController } from "@presentation/controllers/booking/deleting-booking.controller";
-export { GetAllPendingSlotsController } from "@presentation/controllers/booking/get-all-pending-slots.controller";
 export { GetPendingSlotsController } from "@presentation/controllers/booking/get-pending-slots.controller";
 export { GetUpComingSlotsController } from "@presentation/controllers/booking/get-upcoming-slots.controller";
 
@@ -182,7 +180,7 @@ export { GetPlatformEarningsController } from "@presentation/controllers/platfor
 // Playlist Controllers
 export { CreatePlaylistController } from "@presentation/controllers/playlist/create-playlist.controller";
 export { EditPlaylistController } from "@presentation/controllers/playlist/edit-playlist.controller";
-export { GetAllPublicPlaylistController } from "@presentation/controllers/playlist/get-all-playlist-public.controller";
+export { GetAllPublicPlaylistController } from "@presentation/controllers/playlist/get-all-public-playlist.controller";
 export { GetAllPlaylistController } from "@presentation/controllers/playlist/get-all-playlists.controller";
 export { GetPlaylistController } from "@presentation/controllers/playlist/get-playlist.controller";
 export { UpdatePlaylistPrivacyController } from "@presentation/controllers/playlist/update-playlist-status.controller";
@@ -256,17 +254,18 @@ export { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
 export { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 export { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 export { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogRepository";
-export { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+export { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 
 // Service Interfaces
-export { IAuthService } from "@application/interfaces/auth/IAuth.service";
-export { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
-export { IGoogleAuthService } from "@application/interfaces/auth/IGoogle.auth.service";
-export { IEmailService } from "@application/interfaces/communication/IEmail.service";
-export { IOTPService } from "@application/interfaces/security/IOtp.service";
-export { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
-export { IHashService } from "@application/interfaces/security/IHash.service";
-export { IDateService } from "@application/interfaces/date/IDate.service";
-export { ILoggerService } from "@application/interfaces/logging/ILogger.service";
+export { IAuthService } from "@application/interfaces/services/auth/IAuth.service";
+export { ICloudStorageService } from "@application/interfaces/services/storage/ICloud.storage.service";
+export { IGoogleAuthService } from "@application/interfaces/services/auth/IGoogle.auth.service";
+export { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
+export { IOTPService } from "@application/interfaces/services/security/IOtp.service";
+export { IEncryptionService } from "@application/interfaces/services/security/IEncryption.service";
+export { IHashService } from "@application/interfaces/services/security/IHash.service";
+export { IDateService } from "@application/interfaces/services/date/IDate.service";
+export { ILoggerService } from "@application/interfaces/services/logging/ILogger.service";
 
-
+// Usecase Interfaces 
+export { IBaseUseCase } from "@application/interfaces/usecases/IBase.UC";

@@ -4,7 +4,7 @@ import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepositor
 import AppointmentModel, { IAppointment } from "@infrastructure/databases/models/appointment.model";
 import {
   GetBookingRequestsDTO,
-  GetBookingSchedulesDTO,
+  GetTrainerSchedulesDTO,GetUserSchedulesDTO,
 } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
@@ -23,8 +23,7 @@ export class AppointmentRepository
   }
 
   async getBookingRequests(
-    trainerId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO
+    {trainerId,page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO
   ): Promise<{
     bookingRequestsList: AppointmentRequestsTrainer[];
     paginationData: PaginationDTO;
@@ -133,8 +132,7 @@ export class AppointmentRepository
   }
 
   async getTrainerSchedules(
-    trainerId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetBookingSchedulesDTO
+    { trainerId, page, limit, fromDate, toDate, search, filters }: GetTrainerSchedulesDTO
   ): Promise<{
     trainerBookingSchedulesList: AppointmentRequestsTrainer[];
     paginationData: PaginationDTO;
@@ -240,8 +238,7 @@ export class AppointmentRepository
     };
   }
   async getUserSchedules(
-    userId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetBookingSchedulesDTO
+    { userId,page, limit, fromDate, toDate, search, filters }: GetUserSchedulesDTO
   ): Promise<{
     appointmentList: AppointmentRequestsUser[];
     paginationData: PaginationDTO;

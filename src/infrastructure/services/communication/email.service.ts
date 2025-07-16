@@ -5,7 +5,7 @@ import {
 } from "@shared/constants/index.constants";
 import dotenv from "dotenv";
 import { validationError } from "@presentation/middlewares/error.middleware";
-import { IEmailService } from "@application/interfaces/communication/IEmail.service";
+import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
 import { SendEmail } from "@application/dtos/service/email.service";
 import { injectable } from "inversify";
 dotenv.config();

@@ -1,8 +1,10 @@
 import { Server } from "socket.io";
 import { socketStore } from "@infrastructure/services/socket/store/socket.store";
-import { CreateMessageUseCase } from "@application/usecases/chat/create-message.usecase";
-import { IncrementUnReadMessageCountUseCase } from "@application/usecases/chat/inc-unread-count.usecase";
-import { UpdateLastMessageUseCase } from "@application/usecases/chat/update-last-message.usecase";
+import {
+  ICreateMessageUC,
+  IincrementUnReadMessageCountUC,
+  IUpdateLastMessageUC,
+} from "@application/interfaces/usecases/IChatUC";
 
 export interface SendMessageData {
   senderId: string;
@@ -12,9 +14,9 @@ export interface SendMessageData {
 
 export const handleSendMessage = async (
   io: Server,
-  createMessageUseCase: CreateMessageUseCase,
-  incUnReadCountUseCase: IncrementUnReadMessageCountUseCase,
-  updateLastMessageUseCase: UpdateLastMessageUseCase,
+  createMessageUseCase: ICreateMessageUC,
+  incUnReadCountUseCase: IincrementUnReadMessageCountUC,
+  updateLastMessageUseCase: IUpdateLastMessageUC,
   senderId: string,
   receiverId: string,
   message: string
@@ -33,13 +35,13 @@ export const handleSendMessage = async (
   await updateLastMessageUseCase.execute({
     userId: senderId,
     otherUserId: receiverId,
-    lastMessageId: svdmsgId.toString(),
+    lastMessageId: svdmsgId,
   });
 
   const receiverSocketId = socketStore.userSocketMap.get(receiverId);
   const senderSocketId = socketStore.userSocketMap.get(senderId);
   const messageData = {
-    _id: svdmsgId.toString(),
+    _id: svdmsgId,
     senderId,
     receiverId,
     message,

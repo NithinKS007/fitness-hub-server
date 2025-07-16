@@ -4,7 +4,7 @@ import {
   DashboardStatus,
 } from "@shared/constants/index.constants";
 import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
-import { IDateService } from "@application/interfaces/date/IDate.service";
+import { IDateService } from "@application/interfaces/services/date/IDate.service";
 import { TrainerDashboardStats } from "@application/dtos/trainer-dtos";
 import {
   TrainerChartData,
@@ -13,20 +13,24 @@ import {
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ITrainerDashBoardUC } from "@application/interfaces/usecases/IDashBoardUC";
 
 @injectable()
-export class TrainerDashBoardUseCase {
+export class TrainerDashBoardUseCase implements ITrainerDashBoardUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserSubscriptionPlanRepository)
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
     @inject(TYPES_SERVICES.DateService)
     private dateService: IDateService
   ) {}
-  
-  async execute(
-    trainerId: string,
-    period: string
-  ): Promise<TrainerDashboardStats> {
+
+  async execute({
+    trainerId,
+    period,
+  }: {
+    trainerId: string;
+    period: string;
+  }): Promise<TrainerDashboardStats> {
     if (!trainerId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

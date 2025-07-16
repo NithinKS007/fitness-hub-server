@@ -1,9 +1,10 @@
 import { ForbiddenError } from "@presentation/middlewares/error.middleware";
 import { JwtStatus } from "@shared/constants/index.constants";
-import { IAuthService } from "@application/interfaces/auth/IAuth.service";
+import { IAuthService } from "@application/interfaces/services/auth/IAuth.service";
 import { JwtPayload } from "jsonwebtoken";
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
+import { ITokenUC } from "@application/interfaces/usecases/IAuthUC";
 
 /**
  * refreshAccessToken:
@@ -21,23 +22,23 @@ import { TYPES_SERVICES } from "@di/types-services";
  */
 
 @injectable()
-export class TokenUseCase {
+export class TokenUseCase implements ITokenUC {
   constructor(
     @inject(TYPES_SERVICES.AuthService)
     private authService: IAuthService
   ) {}
 
-  async refreshAccessToken(refreshToken: string): Promise<string> {
+  async refreshToken(refreshToken: string): Promise<string> {
     if (!refreshToken) {
       throw new ForbiddenError(JwtStatus.NoRefreshToken);
     }
-    const decoded = this.authService.authenticateRefreshToken(refreshToken);
-    return this.authService.generateAccessToken({
+    const decoded = this.authService.authRefreshToken(refreshToken);
+    return this.authService.createAccessToken({
       _id: decoded._id,
       role: decoded.role,
     });
   }
-  async authAccessToken(accessToken: string): Promise<JwtPayload> {
-    return this.authService.authenticateAccessToken(accessToken);
+  async validateToken(accessToken: string): Promise<JwtPayload> {
+    return this.authService.authAccessToken(accessToken);
   }
 }

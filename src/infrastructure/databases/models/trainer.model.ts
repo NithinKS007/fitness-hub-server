@@ -43,7 +43,7 @@ const trainerSchema: Schema = new Schema(
     aboutMe: {
       type: String,
       validate: {
-        validator: (value: string) => value == null || value.length <= 500,
+        validator: (value: string) => value.length >= 500,
         message: "About Me text should not exceed 500 characters",
       },
     },

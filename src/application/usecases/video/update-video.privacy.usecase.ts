@@ -8,6 +8,7 @@ import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 import { Video } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IUpdateVideoPrivacyUC } from "@application/interfaces/usecases/IVideoUC";
 
 /**
  * Purpose: Update the privacy setting of a given video.
@@ -17,7 +18,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class UpdateVideoPrivacyUseCase {
+export class UpdateVideoPrivacyUseCase implements IUpdateVideoPrivacyUC {
   constructor(
     @inject(TYPES_REPOSITORIES.VideoRepository)
     private videoRepository: IVideoRepository

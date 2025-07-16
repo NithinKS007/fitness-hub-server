@@ -9,6 +9,12 @@ interface VideoMetadata {
   video: string;
 }
 
+export interface GetVideoDetails {
+  videoId: string;
+  trainerId: string;
+  privacy?: boolean;
+}
+
 export interface CreateVideo extends VideoMetadata {
   trainerId: string;
   playLists: string[];

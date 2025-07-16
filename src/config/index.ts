@@ -1,22 +1,19 @@
 import dotenv from "dotenv";
 import app from "@server";
-import connectDB from "@infrastructure/config/db.config";
 import { socketService } from "@infrastructure/services/socket/socket.service";
 import { createServer } from "http";
 import "reflect-metadata";
 import { socketConfig } from "@infrastructure/config/socket.config";
-// Importing the type augmentation for the global 'Request' interface to ensure
-// TypeScript recognizes the custom properties on the request object.
 import types from "../types/express";
+import { connectDB } from "@di/container-resolver";
 
 dotenv.config();
 
 const startServer = async () => {
   try {
-    await connectDB();
 
+    await connectDB.connectMongo();
     const httpServer = createServer(app);
-
     const io = await socketConfig(httpServer);
     await socketService(io);
 

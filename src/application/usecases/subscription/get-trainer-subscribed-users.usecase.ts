@@ -5,15 +5,16 @@ import {
 } from "@shared/constants/index.constants";
 import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
 import { GetTrainerSubscribersQueryDTO } from "@application/dtos/query-dtos";
-import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { TrainerSubscribersList } from "@application/dtos/subscription-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IGetTrainerSubscribersUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
-export class GetTrainerSubscribersUseCase {
+export class GetTrainerSubscribersUseCase implements IGetTrainerSubscribersUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserSubscriptionPlanRepository)
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
@@ -21,8 +22,7 @@ export class GetTrainerSubscribersUseCase {
     private paymentService: IPaymentService
   ) {}
   async execute(
-    trainerId: string,
-    { page, limit, search, filters }: GetTrainerSubscribersQueryDTO
+    { trainerId, page, limit, search, filters }: GetTrainerSubscribersQueryDTO
   ): Promise<{
     trainerSubscribers: TrainerSubscribersList[];
     paginationData: PaginationDTO;
@@ -30,10 +30,9 @@ export class GetTrainerSubscribersUseCase {
     if (!trainerId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const query = { page, limit, search, filters };
+    const query = { trainerId, page, limit, search, filters };
     const { trainerSubscriberRecord, paginationData } =
       await this.userSubscriptionPlanRepository.getTrainerSubscriptions(
-        trainerId,
         query
       );
     if (!trainerSubscriberRecord) {

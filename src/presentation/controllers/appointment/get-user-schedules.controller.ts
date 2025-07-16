@@ -6,14 +6,14 @@ import {
 } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { GetUserSchedulesUseCase } from "@application/usecases/appointment/get-user-schedules";
 import { TYPES_APPOINTMENT_USECASES } from "@di/types-usecases";
+import { IGetUserSchedulesUC } from "@application/interfaces/usecases/IAppointmentUC";
 
 @injectable()
 export class GetUserSchedulesController {
   constructor(
     @inject(TYPES_APPOINTMENT_USECASES.GetUserSchedulesUseCase)
-    private getUserSchedulesUseCase: GetUserSchedulesUseCase
+    private getUserSchedulesUC: IGetUserSchedulesUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
@@ -22,7 +22,7 @@ export class GetUserSchedulesController {
     const queryParams = parseQueryParams(req.query);
 
     const { appointmentList, paginationData } =
-      await this.getUserSchedulesUseCase.execute(userId, queryParams);
+      await this.getUserSchedulesUC.execute({ userId, ...queryParams });
 
     sendResponse(
       res,

@@ -6,9 +6,10 @@ import { Action } from "@application/dtos/utility-dtos";
 import { Trainer } from "@domain/entities/trainer.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ITrainerApprovalUC } from "@application/interfaces/usecases/ITrainerUC";
 
 @injectable()
-export class TrainerApprovalUseCase {
+export class TrainerApprovalUseCase implements ITrainerApprovalUC {
   constructor(
     @inject(TYPES_REPOSITORIES.TrainerRepository)
     private trainerRepository: ITrainerRepository

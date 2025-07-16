@@ -14,7 +14,7 @@ import {
   Session,
   SubscriptionMetadata,
 } from "@application/dtos/service/payment.service";
-import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { injectable } from "inversify";
 
 @injectable()

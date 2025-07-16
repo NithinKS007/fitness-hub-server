@@ -10,6 +10,7 @@ import { IVideoPlayListRepository } from "@domain/interfaces/IVideoPlayListRepos
 import { Video } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IEditVideoUC } from "@application/interfaces/usecases/IVideoUC";
 
 /**
  * Purpose: Edit a video by updating its details, such as description, duration, playlists, thumbnail, and title.
@@ -20,7 +21,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class EditVideoUseCase {
+export class EditVideoUseCase implements IEditVideoUC {
   constructor(
     @inject(TYPES_REPOSITORIES.PlayListRepository)
     private playListRepository: IPlayListRepository,

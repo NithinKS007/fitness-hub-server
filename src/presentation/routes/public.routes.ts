@@ -8,6 +8,6 @@ import {
 const publicRoutes = express.Router();
 
 publicRoutes.get("/trainers",asyncHandler(getApprovedTrainersController.handle.bind(getApprovedTrainersController)));
-publicRoutes.get("/trainers/:trainerId",asyncHandler(getTrainerWithSubController.handle.bind(getTrainerWithSubController)));
+publicRoutes.get("/trainers/:id",asyncHandler(getTrainerWithSubController.handle.bind(getTrainerWithSubController)));
 
 export default publicRoutes

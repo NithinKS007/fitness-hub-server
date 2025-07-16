@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { IDateService } from "@application/interfaces/date/IDate.service";
+import { IDateService } from "@application/interfaces/services/date/IDate.service";
 import { DateRange } from "@application/dtos/service/date.service";
 import { injectable } from "inversify";
 

@@ -2,13 +2,14 @@ import { PurchaseSubscriptionDTO } from "@application/dtos/subscription-dtos";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { SubscriptionStatus } from "@shared/constants/index.constants";
 import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
-import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { IPurchaseSubscriptionUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
-export class PurchaseSubscriptionUseCase {
+export class PurchaseSubscriptionUseCase implements IPurchaseSubscriptionUC {
   constructor(
     @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository,
@@ -31,8 +32,8 @@ export class PurchaseSubscriptionUseCase {
     const sessionId = await this.paymentService.createSubscriptionSession({
       stripePriceId: subscriptionData.stripePriceId,
       userId: userId,
-      trainerId: subscriptionData.trainerId.toString(),
-      subscriptionId: subscriptionData._id.toString(),
+      trainerId: subscriptionData.trainerId,
+      subscriptionId: subscriptionData._id,
     });
     if (!sessionId) {
       throw new validationError(SubscriptionStatus.SessionCreateFailed);

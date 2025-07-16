@@ -3,11 +3,12 @@ import { UpdateUserDetailsDTO } from "@application/dtos/user-dtos";
 import { AuthStatus, ProfileStatus } from "@shared/constants/index.constants";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import dotenv from "dotenv";
-import { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
+import { ICloudStorageService } from "@application/interfaces/services/storage/ICloud.storage.service";
 import { User } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { IUpdateUserProfileUC } from "@application/interfaces/usecases/IAuthUC";
 dotenv.config();
 
 /**
@@ -18,7 +19,7 @@ dotenv.config();
  */
 
 @injectable()
-export class UpdateUserProfileUseCase {
+export class UpdateUserProfileUseCase implements IUpdateUserProfileUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,

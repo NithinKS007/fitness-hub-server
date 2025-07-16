@@ -4,19 +4,26 @@ import { UploadSignature } from "@application/dtos/service/cloud.storage.service
 import { ICloudStorageService } from "@di/file-imports-index";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "@shared/constants/index.constants";
+import { ICloudinaryUC } from "@application/interfaces/usecases/ICloudinaryUC";
 
 @injectable()
-export class CloudinaryUseCase {
+export class CloudinaryUseCase implements ICloudinaryUC {
   constructor(
     @inject(TYPES_SERVICES.CloudStorageService)
     private cloudinaryService: ICloudStorageService
   ) {}
 
-  async execute(folder: string, userId: string): Promise<UploadSignature> {
+  async execute({
+    folder,
+    id,
+  }: {
+    folder: string;
+    id: string;
+  }): Promise<UploadSignature> {
     const timestamp = Math.round(new Date().getTime() / 1000);
     const randomNum = Math.floor(Math.random() * 1000000);
 
-    const uniqueId = `${userId}_${timestamp}_${randomNum}`;
+    const uniqueId = `${id}_${timestamp}_${randomNum}`;
     const publicId = `${uniqueId}`;
 
     const signature = await this.cloudinaryService.getSignature({

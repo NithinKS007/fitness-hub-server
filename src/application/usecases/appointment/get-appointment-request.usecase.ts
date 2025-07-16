@@ -9,6 +9,7 @@ import { GetBookingRequestsDTO } from "@application/dtos/query-dtos";
 import { AppointmentRequestsTrainer } from "@application/dtos/appointment-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IGetAppointmentRequestsUC } from "@application/interfaces/usecases/IAppointmentUC";
 
 /*  
     Purpose: Retrieve a list of booking requests for a specific trainer with pagination and filters
@@ -19,15 +20,14 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 */
 
 @injectable()
-export class GetAppointmentRequestUseCase {
+export class GetAppointmentRequestUseCase implements IGetAppointmentRequestsUC {
   constructor(
     @inject(TYPES_REPOSITORIES.AppointmentRepository)
     private appointmentRepository: IAppointmentRepository
   ) {}
 
   async execute(
-    trainerId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO
+    { trainerId ,page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO
   ): Promise<{
     bookingRequestsList: AppointmentRequestsTrainer[];
     paginationData: PaginationDTO;
@@ -35,9 +35,9 @@ export class GetAppointmentRequestUseCase {
     if (!trainerId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const query = { page, limit, fromDate, toDate, search, filters };
+    const dtos = { trainerId,page, limit, fromDate, toDate, search, filters };
     const { bookingRequestsList, paginationData } =
-      await this.appointmentRepository.getBookingRequests(trainerId, query);
+      await this.appointmentRepository.getBookingRequests(dtos);
 
     if (!bookingRequestsList) {
       throw new validationError(AppointmentStatus.BookingRequestsFetchFailed);

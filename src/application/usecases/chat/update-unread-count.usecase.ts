@@ -3,9 +3,12 @@ import { UpdateUnReadMessageCount } from "@application/dtos/conversation-dtos";
 import { Conversation } from "@application/dtos/chat-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IUpdateUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
 
 @injectable()
-export class UpdateUnReadMessageCountUseCase {
+export class UpdateUnReadMessageCountUseCase
+  implements IUpdateUnReadMessageCountUC
+{
   constructor(
     @inject(TYPES_REPOSITORIES.ConversationRepository)
     private conversationRepository: IConversationRepository

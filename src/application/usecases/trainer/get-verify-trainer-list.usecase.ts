@@ -3,25 +3,21 @@ import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { TrainerStatus } from "@shared/constants/index.constants";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
-import { Trainer } from "@application/dtos/trainer-dtos";
+import { TrainerDTO } from "@application/dtos/trainer-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IGetVeryfyTrainerlist } from "@application/interfaces/usecases/ITrainerUC";
 
 @injectable()
-export class GetVerifyTrainerlistUseCase {
+export class GetVerifyTrainerlistUseCase implements IGetVeryfyTrainerlist {
   constructor(
     @inject(TYPES_REPOSITORIES.TrainerRepository)
     private trainerRepository: ITrainerRepository
   ) {}
-  
-  async execute({
-    page,
-    limit,
-    fromDate,
-    toDate,
-    search,
+
+  async execute({ page, limit, fromDate, toDate, search,
   }: GetTrainersApprovalQueryDTO): Promise<{
-    trainersList: Trainer[];
+    trainersList: TrainerDTO[];
     paginationData: PaginationDTO;
   }> {
     const query = { page, limit, fromDate, toDate, search };

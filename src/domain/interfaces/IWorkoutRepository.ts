@@ -10,8 +10,7 @@ import { IWorkout } from "@infrastructure/databases/models/workout.model";
 
 export interface IWorkoutRepository extends IBaseRepository<IWorkout, Workout> {
   getWorkoutsByUserId(
-    userId: string,
-    searchFilterQuery: GetWorkoutQueryDTO
+    dtos: GetWorkoutQueryDTO
   ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }>;
   getUserDashBoardChartData(
     searchFilterQuery: CustomUserDashBoardQueryDTO

@@ -2,7 +2,7 @@ import { UploadApiResponse } from "cloudinary";
 import cloudinary from "@infrastructure/config/cloudinary.config";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "@shared/constants/index.constants";
-import { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
+import { ICloudStorageService } from "@application/interfaces/services/storage/ICloud.storage.service";
 import {
   GenerateURLDTO,
   UploadImage,
@@ -58,6 +58,7 @@ export class CloudinaryService implements ICloudStorageService {
         cloudName,
         folder,
       };
+      
     } catch (error: any) {
       console.log(
         "Error while generating signature from cloudinary:",

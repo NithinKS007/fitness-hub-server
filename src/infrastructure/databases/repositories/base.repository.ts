@@ -48,13 +48,11 @@ export abstract class BaseRepository<T extends Document, D>
 
   toDomain(entity: T): D {
     const { _id, __v, ...domainEntity } =
-      entity instanceof mongoose.Document
-        ? entity.toObject() // If it's a Mongoose document, convert it to a plain object
-        : entity; // If it's already a plain object, use it as is
+      entity instanceof mongoose.Document ? entity.toObject() : entity;
 
     return {
       ...domainEntity,
-      _id: _id.toString(), // Always convert _id to string
+      _id: _id.toString(),
     };
   }
 }

@@ -6,13 +6,14 @@ import {
   AuthStatus,
 } from "@shared/constants/index.constants";
 import { validationError } from "@presentation/middlewares/error.middleware";
-import { IEmailService } from "@application/interfaces/communication/IEmail.service";
-import { IOTPService } from "@application/interfaces/security/IOtp.service";
-import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
+import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
+import { IOTPService } from "@application/interfaces/services/security/IOtp.service";
+import { IEncryptionService } from "@application/interfaces/services/security/IEncryption.service";
 import { User } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICreateUserUC } from "@application/interfaces/usecases/IAuthUC";
 
 /*  
     Purpose: Creates a new user, handles OTP verification, and sends OTP email.
@@ -26,7 +27,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 */
 
 @injectable()
-export class CreateUserUseCase {
+export class CreateUserUseCase implements ICreateUserUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,

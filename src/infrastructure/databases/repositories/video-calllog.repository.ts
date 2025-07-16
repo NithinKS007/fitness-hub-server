@@ -7,7 +7,7 @@ import {
 } from "@application/dtos/video-call-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogRepository";
-import { GetVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
+import { GetTrainerVideoCallLogQueryDTO, GetUserVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import { VideoCallLog } from "@domain/entities/video-calllog.entity";
@@ -52,8 +52,7 @@ export class VideoCallLogRepository
   }
 
   async getTrainerVideoCallLogs(
-    trainerId: string,
-    { page, limit, search, fromDate, toDate, filters }: GetVideoCallLogQueryDTO
+    { trainerId, page, limit, search, fromDate, toDate, filters }: GetTrainerVideoCallLogQueryDTO
   ): Promise<{
     trainerVideoCallLogList: TrainerVideoCallLog[];
     paginationData: PaginationDTO;
@@ -129,8 +128,7 @@ export class VideoCallLogRepository
   }
 
   async getUserVideoCallLogs(
-    userId: string,
-    { page, limit, search, fromDate, toDate, filters }: GetVideoCallLogQueryDTO
+    { userId, page, limit, search, fromDate, toDate, filters }: GetUserVideoCallLogQueryDTO
   ): Promise<{
     userVideoCallLogList: UserVideoCallLog[];
     paginationData: PaginationDTO;

@@ -17,6 +17,6 @@ export const socketConfig = async (
   });
 
   io.use((socket: Socket, next) => socketAuth(socket, next));
-  console.log("socket connecting...in server")
+  console.log("socket connecting in server")
   return io;
 };

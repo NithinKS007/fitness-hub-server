@@ -29,18 +29,18 @@ import {
   updateVideoCallStatusUseCase,
   updateVideoCallDurationUseCase,
 } from "@di/container-resolver";
+import { EventTypes } from "@application/dtos/service/socket.service";
 
 export const socketService = async (io: SocketIOServer) => {
-  io.on("connection", (socket: Socket) => {
-
+  io.on(EventTypes.Connection, (socket: Socket) => {
     handleConnect(socket, io);
 
-    socket.on("checkOnlineStatus", (targetId: string) => {
+    socket.on(EventTypes.CheckOnline, (targetId: string) => {
       handleCheckOnline(socket, targetId);
     });
 
     socket.on(
-      "setActiveChat",
+      EventTypes.OpenChat,
       async ({ userId, partnerId }: SetActiveChatData) => {
         await handleSetActiveChat(
           io,
@@ -52,12 +52,12 @@ export const socketService = async (io: SocketIOServer) => {
       }
     );
 
-    socket.on("closeChat", (userId: string) => {
+    socket.on(EventTypes.CloseChat, (userId: string) => {
       handleCloseChat(userId, socket);
     });
 
     socket.on(
-      "sendMessage",
+      EventTypes.SendMessage,
       async ({ senderId, receiverId, message }: SendMessageData) => {
         await handleSendMessage(
           io,
@@ -72,14 +72,14 @@ export const socketService = async (io: SocketIOServer) => {
     );
 
     socket.on(
-      "typing",
+      EventTypes.StartTyping,
       ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
         handleTyping({ io, senderId, receiverId });
       }
     );
 
     socket.on(
-      "stopTyping",
+      EventTypes.StopTyping,
       ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
         handleStopTyping({ io, senderId, receiverId });
       }
@@ -87,7 +87,7 @@ export const socketService = async (io: SocketIOServer) => {
 
     //VIDEO CALL BASED SOCKETS
     socket.on(
-      "initiateVideoCall",
+      EventTypes.StartVC,
       async ({ callerId, receiverId, roomId, appointmentId }) => {
         handleInitiateCall({
           io,
@@ -102,11 +102,11 @@ export const socketService = async (io: SocketIOServer) => {
       }
     );
 
-    socket.on("acceptVideoCall", async ({ roomId, userId }) => {
+    socket.on(EventTypes.AcceptVC, async ({ roomId, userId }) => {
       handleAcceptCall({ socket, io, roomId });
     });
 
-    socket.on("rejectVideoCall", async ({ roomId }) => {
+    socket.on(EventTypes.RejectVC, async ({ roomId }) => {
       handleCallRejected({
         roomId,
         io,
@@ -115,7 +115,7 @@ export const socketService = async (io: SocketIOServer) => {
       });
     });
 
-    socket.on("videoCallEnded", async ({ roomId }) => {
+    socket.on(EventTypes.EndVC, async ({ roomId }) => {
       handleCallEnded({
         io,
         updateVideoCallStatusUseCase,
@@ -125,11 +125,11 @@ export const socketService = async (io: SocketIOServer) => {
     });
 
     //DISCONNECTION BASED SOCKET
-    socket.on("disconnect", () => {
+    socket.on(EventTypes.Disconnect, () => {
       handleDisconnect(socket);
     });
 
-    socket.on("connect_error", (err) => {
+    socket.on(EventTypes.Connect_error, (err) => {
       console.log("Connection error:", err);
     });
   });

@@ -4,16 +4,17 @@ import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionReposit
 import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
 import { IPlatformEarningsRepository } from "@domain/interfaces/IPlatformEarningsRepository";
 import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
-import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
-import { IEmailService } from "@application/interfaces/communication/IEmail.service";
+import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
+import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { UserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { IWebHookHandlerUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
-export class WebHookHandlerUseCase {
+export class WebHookHandlerUseCase implements IWebHookHandlerUC {
   constructor(
     @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository,
@@ -246,7 +247,15 @@ export class WebHookHandlerUseCase {
     }
   }
 
-  async execute(sig: string, webhookSecret: string, body: any): Promise<void> {
+  async execute({
+    sig,
+    webhookSecret,
+    body,
+  }: {
+    sig: string;
+    webhookSecret: string;
+    body: string | Buffer;
+  }): Promise<void> {
     this.validateWebhookInput(sig, webhookSecret, body);
     const event = await this.paymentService.constructStripeEvent(
       body,

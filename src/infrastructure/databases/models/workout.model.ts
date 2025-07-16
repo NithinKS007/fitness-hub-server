@@ -40,7 +40,7 @@ const WorkoutSchema: Schema = new Schema(
     kg: {
       type: Number,
       required: true,
-      min: [0, "Kg must be positive"],
+      min: [1, "Kg must be at least 1"],
     },
     reps: {
       type: Number,
@@ -50,7 +50,7 @@ const WorkoutSchema: Schema = new Schema(
     time: {
       type: Number,
       required: true,
-      min: [0, "Time must be positive"],
+      min: [1, "Time must be at least 1"],
     },
     isCompleted: {
       type: Boolean,

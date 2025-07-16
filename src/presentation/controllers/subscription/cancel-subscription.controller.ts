@@ -5,14 +5,14 @@ import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
-import { CancelSubscriptionUseCase } from "@application/usecases/subscription/cancel-subscription.usecase";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
+import { ICancelSubscriptionUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
 export class CancelSubscriptionController {
   constructor(
     @inject(TYPES_SUBSCRIPTION_USECASES.CancelSubscriptionUseCase)
-    private cancelSubscriptionUseCase: CancelSubscriptionUseCase
+    private cancelSubscriptionUseCase: ICancelSubscriptionUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {

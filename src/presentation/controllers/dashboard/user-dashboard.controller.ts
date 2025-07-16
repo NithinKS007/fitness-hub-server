@@ -5,15 +5,15 @@ import {
   DashboardStatus,
   StatusCodes,
 } from "@shared/constants/index.constants";
-import { UserDashBoardUseCase } from "@application/usecases/dashboard/user-dashboard.usecase";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { TYPES_DASHBOARD_USECASES } from "@di/types-usecases";
+import { IUserDashBoardUC } from "@application/interfaces/usecases/IDashBoardUC";
 
 @injectable()
 export class UserDashboardController {
   constructor(
     @inject(TYPES_DASHBOARD_USECASES.UserDashBoardUseCase)
-    private userDashBoardUseCase: UserDashBoardUseCase
+    private userDashBoardUseCase: IUserDashBoardUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {

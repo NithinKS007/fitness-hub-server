@@ -8,8 +8,7 @@ import { IPlayList } from "@infrastructure/databases/models/playlist.model";
 export interface IPlayListRepository
   extends IBaseRepository<IPlayList, PlayList> {
   getPlaylists(
-    trainerId: string,
-    data: GetPlayListsQueryDTO
+    dtos: GetPlayListsQueryDTO
   ): Promise<{ playList: PlayList[]; paginationData: PaginationDTO }>;
   getPlaylistCounts(playListIds: string[]): Promise<VideoPerPlayList[]>;
   updateVideosCount(VideoPerPlayList: VideoPerPlayList[]): Promise<void>;

@@ -2,14 +2,14 @@ import { Request, Response } from "express";
 import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { AuthStatus, StatusCodes } from "@shared/constants/index.constants";
-import { CreateUserUseCase } from "@application/usecases/auth/create-user.usecase";
 import { TYPES_AUTH_USECASES } from "@di/types-usecases";
+import { ICreateUserUC } from "@application/interfaces/usecases/IAuthUC";
 
 @injectable()
 export class SignUpUserController {
   constructor(
     @inject(TYPES_AUTH_USECASES.CreateUserUseCase)
-    private createUserUseCase: CreateUserUseCase
+    private createUserUseCase: ICreateUserUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {

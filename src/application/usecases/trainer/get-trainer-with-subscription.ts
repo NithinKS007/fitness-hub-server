@@ -4,9 +4,10 @@ import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { TrainerWithSubscription } from "@application/dtos/trainer-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IGetTrainerAndSubInfoUC } from "@application/interfaces/usecases/ITrainerUC";
 
 @injectable()
-export class GetTrainerAndSubInfoUseCase {
+export class GetTrainerAndSubInfoUseCase implements IGetTrainerAndSubInfoUC {
   constructor(
     @inject(TYPES_REPOSITORIES.TrainerRepository)
     private trainerRepository: ITrainerRepository

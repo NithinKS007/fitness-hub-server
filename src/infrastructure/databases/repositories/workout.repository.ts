@@ -22,8 +22,7 @@ export class WorkoutRepository
   }
 
   async getWorkoutsByUserId(
-    userId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
+    { userId, page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
   ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 

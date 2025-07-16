@@ -8,9 +8,10 @@ import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 import { PlayList } from "@domain/entities/playlist.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICreatePlayListUC } from "@application/interfaces/usecases/IPlaylistUC";
 
 @injectable()
-export class CreatePlayListUseCase {
+export class CreatePlayListUseCase implements ICreatePlayListUC{
   constructor(
     @inject(TYPES_REPOSITORIES.PlayListRepository)
     private playListRepository: IPlayListRepository

@@ -9,4 +9,5 @@ export const TYPES_SERVICES = {
   HashService: Symbol.for("HashService"),
   CloudStorageService: Symbol.for("CloudStorageService"),
   LoggerService: Symbol.for("LoggerService"),
+  WebSocketService:Symbol.for("WebSocketService")
 };

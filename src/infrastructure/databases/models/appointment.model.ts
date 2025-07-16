@@ -51,17 +51,12 @@ const appointmentSchema: Schema = new Schema(
     appointmentDate: {
       type: Date,
       required: true,
-      validate: {
-        validator: (v: Date) => v > new Date(),
-        message: "Appointment date must be in the future",
-      },
     },
     appointmentTime: {
       type: String,
       required: true,
       validate: {
-        validator: (v: string) =>
-          /^([0-9]{1,2}):([0-9]{2})\s?(AM|PM)$/.test(v),
+        validator: (v: string) => /^([0-9]{1,2}):([0-9]{2})\s?(AM|PM)$/.test(v),
         message: "Appointment time must be in 'hh:mm AM/PM' format",
       },
     },

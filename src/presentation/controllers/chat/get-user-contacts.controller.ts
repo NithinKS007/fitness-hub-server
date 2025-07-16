@@ -3,14 +3,14 @@ import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { ChatStatus, StatusCodes } from "@shared/constants/index.constants";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { GetUserChatListUseCase } from "@application/usecases/chat/get-user-chat-list.usecase";
 import { TYPES_CHAT_USECASES } from "@di/types-usecases";
+import { IGetUserChatListUC } from "@application/interfaces/usecases/IChatUC";
 
 @injectable()
 export class GetUserContactsController {
   constructor(
     @inject(TYPES_CHAT_USECASES.GetUserChatListUseCase)
-    private getUserChatListUseCase: GetUserChatListUseCase
+    private getUserChatListUseCase: IGetUserChatListUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
@@ -18,8 +18,9 @@ export class GetUserContactsController {
 
     const { search } = parseQueryParams(req.query);
 
-    const userChatList = await this.getUserChatListUseCase.execute(userId, {
-      search: search,
+    const userChatList = await this.getUserChatListUseCase.execute({
+      userId,
+      search,
     });
 
     sendResponse(res, StatusCodes.OK, userChatList, ChatStatus.UserContacts);

@@ -89,8 +89,7 @@ export class UserSubscriptionPlanRepository
   }
 
   async getUserSubscriptions(
-    userId: string,
-    { page, limit, search, filters }: GetUserSubscriptionsQueryDTO
+    { userId, page, limit, search, filters }: GetUserSubscriptionsQueryDTO
   ): Promise<{
     userSubscriptionRecord: UserSubscriptionRecord[];
     paginationData: PaginationDTO;
@@ -183,8 +182,7 @@ export class UserSubscriptionPlanRepository
   }
 
   async getTrainerSubscriptions(
-    trainerId: string,
-    { page, limit, search, filters }: GetTrainerSubscribersQueryDTO
+    { trainerId, page, limit, search, filters }: GetTrainerSubscribersQueryDTO
   ): Promise<{
     trainerSubscriberRecord: TrainerSubscriberRecord[];
     paginationData: PaginationDTO;

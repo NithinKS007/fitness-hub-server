@@ -1,6 +1,6 @@
 import { Logger } from "winston";
 import { createWinstonLogger } from "../../config/logger.config";
-import { ILoggerService } from "@application/interfaces/logging/ILogger.service";
+import { ILoggerService } from "@application/interfaces/services/logging/ILogger.service";
 import { injectable } from "inversify";
 
 @injectable()

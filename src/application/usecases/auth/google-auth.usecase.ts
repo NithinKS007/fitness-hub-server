@@ -5,12 +5,13 @@ import {
 } from "@presentation/middlewares/error.middleware";
 import { AuthStatus } from "@shared/constants/index.constants";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
-import { IAuthService } from "@application/interfaces/auth/IAuth.service";
-import { IGoogleAuthService } from "@application/interfaces/auth/IGoogle.auth.service";
+import { IAuthService } from "@application/interfaces/services/auth/IAuth.service";
+import { IGoogleAuthService } from "@application/interfaces/services/auth/IGoogle.auth.service";
 import { User } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { IGoogleAuthUC } from "@application/interfaces/usecases/IAuthUC";
 
 /*  
     Purpose: Handles the Google authentication process. It verifies the provided Google token, 
@@ -26,7 +27,7 @@ import { TYPES_SERVICES } from "@di/types-services";
 */
 
 @injectable()
-export class GoogleAuthUseCase {
+export class GoogleAuthUseCase implements IGoogleAuthUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
@@ -36,14 +37,14 @@ export class GoogleAuthUseCase {
   ) {}
 
   private generateAccessToken(user: User): string {
-    return this.authService.generateAccessToken({
-      _id: user._id.toString(),
+    return this.authService.createAccessToken({
+      _id: user._id,
       role: user.role,
     });
   }
   private generateRefreshToken(user: User): string {
-    return this.authService.generateRefreshToken({
-      _id: user._id.toString(),
+    return this.authService.createRefreshToken({
+      _id: user._id,
       role: user.role,
     });
   }

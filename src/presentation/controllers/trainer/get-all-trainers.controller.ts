@@ -3,14 +3,14 @@ import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { TrainerStatus, StatusCodes } from "@shared/constants/index.constants";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { GetTrainersUseCase } from "@application/usecases/trainer/get-trainers-usecase";
 import { TYPES_TRAINER_USECASES } from "@di/types-usecases";
+import { IGetTrainersUC } from "@application/interfaces/usecases/ITrainerUC";
 
 @injectable()
 export class GetallTrainersController {
   constructor(
     @inject(TYPES_TRAINER_USECASES.GetTrainersUseCase)
-    private getTrainersUseCase: GetTrainersUseCase
+    private getTrainersUseCase: IGetTrainersUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {

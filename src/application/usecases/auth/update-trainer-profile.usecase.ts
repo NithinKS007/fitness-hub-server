@@ -1,14 +1,15 @@
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import {
-  Trainer,
+  TrainerDTO,
   UpdateTrainerDetailsDTO,
 } from "@application/dtos/trainer-dtos";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import dotenv from "dotenv";
-import { ICloudStorageService } from "@application/interfaces/storage/ICloud.storage.service";
+import { ICloudStorageService } from "@application/interfaces/services/storage/ICloud.storage.service";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { IUpdateTRProfileUC } from "@application/interfaces/usecases/IAuthUC";
 dotenv.config();
 
 /**
@@ -20,7 +21,7 @@ dotenv.config();
  */
 
 @injectable()
-export class UpdateTrainerProfileUseCase {
+export class UpdateTrainerProfileUseCase implements IUpdateTRProfileUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
@@ -80,7 +81,7 @@ export class UpdateTrainerProfileUseCase {
     dateOfBirth,
     _id,
     ...profileData
-  }: UpdateTrainerDetailsDTO): Promise<Trainer> {
+  }: UpdateTrainerDetailsDTO): Promise<TrainerDTO> {
     const [updatedCertifications, updatedSpecializations, profilePicData] =
       await Promise.all([
         this.handleCertifications(certifications),

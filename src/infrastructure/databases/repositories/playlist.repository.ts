@@ -34,8 +34,7 @@ export class PlayListRepository
   }
 
   async getPlaylists(
-    trainerId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
+    { trainerId, page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
   ): Promise<{ playList: PlayList[]; paginationData: PaginationDTO }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
     let matchQuery: any = {};

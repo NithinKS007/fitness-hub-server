@@ -5,14 +5,14 @@ import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
-import { CreateSubscriptionUseCase } from "@application/usecases/subscription/create-subscription.usecase";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
+import { ICreateSubscriptionUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
 
 @injectable()
 export class CreateSubPlanController {
   constructor(
     @inject(TYPES_SUBSCRIPTION_USECASES.CreateSubscriptionUseCase)
-    private createSubscriptionUseCase: CreateSubscriptionUseCase
+    private createSubscriptionUseCase: ICreateSubscriptionUC
   ) {}
   async handle(req: Request, res: Response): Promise<void> {
     const { _id: trainerId } = req?.user || {};

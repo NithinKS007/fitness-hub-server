@@ -2,14 +2,14 @@ import { Request, Response } from "express";
 import { injectable, inject } from "inversify";
 import { StatusCodes, PlayListStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
-import { CreatePlayListUseCase } from "@application/usecases/playlist/create-playlist.usecase";
 import { TYPES_PLAYLIST_USECASES } from "@di/types-usecases";
+import { ICreatePlayListUC } from "@application/interfaces/usecases/IPlaylistUC";
 
 @injectable()
 export class CreatePlaylistController {
   constructor(
     @inject(TYPES_PLAYLIST_USECASES.CreatePlayListUseCase)
-    private createPlayListUseCase: CreatePlayListUseCase
+    private createPlayListUseCase: ICreatePlayListUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {

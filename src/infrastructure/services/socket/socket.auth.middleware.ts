@@ -1,14 +1,22 @@
 import { Socket } from "socket.io";
-import { checkBlockStatusUseCase, tokenUseCase } from "@di/container-resolver";
+import {
+  checkUserBlockStatusUseCase,
+  tokenUseCase,
+} from "@di/container-resolver";
 import {
   AppError,
   ForbiddenError,
   UnauthorizedError,
 } from "@presentation/middlewares/error.middleware";
-import { AuthStatus, JwtStatus } from "@shared/constants/index.constants";
+import {
+  AuthStatus,
+  JwtStatus,
+  StatusCodes,
+} from "@shared/constants/index.constants";
 
 const handleError = (socket: Socket, error: AppError) => {
-  const statusCode = error instanceof AppError ? error.statusCode : 401;
+  const statusCode =
+    error instanceof AppError ? error.statusCode : StatusCodes.Unauthorized;
   const errorMessage =
     error instanceof AppError ? error.message : JwtStatus.NoAccessToken;
   console.log("Socket Error Message: ", errorMessage);
@@ -31,7 +39,7 @@ export const socketAuth = async (
       next(new UnauthorizedError(JwtStatus.NoAccessToken));
       return;
     }
-    const decoded = await tokenUseCase.authAccessToken(accessToken);
+    const decoded = await tokenUseCase.validateToken(accessToken);
     const { _id } = decoded;
 
     if (!_id) {
@@ -41,7 +49,7 @@ export const socketAuth = async (
     }
 
     socket.user = decoded;
-    const isBlocked = await checkBlockStatusUseCase.execute(_id);
+    const isBlocked = await checkUserBlockStatusUseCase.execute(_id);
     if (isBlocked) {
       console.log("User is blocked in socket middleware");
       next(new ForbiddenError(AuthStatus.AccountBlocked));

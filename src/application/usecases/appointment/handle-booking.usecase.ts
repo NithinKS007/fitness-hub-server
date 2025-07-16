@@ -13,6 +13,7 @@ import { Action } from "@application/dtos/utility-dtos";
 import { Appointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IHandleBookingApprovalUC } from "@application/interfaces/usecases/IAppointmentUC";
 
 /*  
     Purpose: Approve or reject a booking request, and update the booking slot and appointment status accordingly
@@ -22,7 +23,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 */
 
 @injectable()
-export class HandleBookingApprovalUseCase {
+export class HandleBookingApprovalUseCase implements IHandleBookingApprovalUC {
   constructor(
     @inject(TYPES_REPOSITORIES.BookingSlotRepository)
     private bookingSlotRepository: IBookingSlotRepository,
@@ -58,9 +59,7 @@ export class HandleBookingApprovalUseCase {
     );
 
     if (!appointmentData) {
-      throw new validationError(
-        AppointmentStatus.FailedToApproveRejectBookingStatus
-      );
+      throw new validationError(AppointmentStatus.FailedToChangeBookingStatus);
     }
     return appointmentData;
   }

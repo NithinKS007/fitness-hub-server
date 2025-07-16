@@ -4,27 +4,29 @@ import {
   ApplicationStatus,
   ChatStatus,
 } from "@shared/constants/index.constants";
-import { GetChatListQueryDTO } from "@application/dtos/query-dtos";
+import { GetTrainerChatListDTO } from "@application/dtos/query-dtos";
 import { TrainerChatList } from "@application/dtos/chat-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IGetTrainerChatListUC } from "@application/interfaces/usecases/IChatUC";
 
 @injectable()
-export class GetTrainerChatListUseCase {
+export class GetTrainerChatListUseCase implements IGetTrainerChatListUC {
   constructor(
     @inject(TYPES_REPOSITORIES.ConversationRepository)
     private conversationRepository: IConversationRepository
   ) {}
-  
-  async execute(
-    trainerId: string,
-    { search }: GetChatListQueryDTO
-  ): Promise<TrainerChatList[]> {
+
+  async execute({
+    trainerId,
+    search,
+  }: GetTrainerChatListDTO): Promise<TrainerChatList[]> {
     if (!trainerId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
     const trainerChatList =
-      await this.conversationRepository.findTrainerChatList(trainerId, {
+      await this.conversationRepository.findTrainerChatList({
+        trainerId,
         search,
       });
     if (!trainerChatList) {

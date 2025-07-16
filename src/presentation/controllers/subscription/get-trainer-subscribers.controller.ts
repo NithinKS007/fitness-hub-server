@@ -6,14 +6,14 @@ import {
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { GetTrainerSubscribersUseCase } from "@application/usecases/subscription/get-trainer-subscribed-users.usecase";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
+import { IGetTrainerSubscribersUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
 export class GetTrainerSubscribersController {
   constructor(
     @inject(TYPES_SUBSCRIPTION_USECASES.GetTrainerSubscribersUseCase)
-    private getTrainerSubscribersUseCase: GetTrainerSubscribersUseCase
+    private getTrainerSubscribersUseCase: IGetTrainerSubscribersUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
@@ -22,7 +22,10 @@ export class GetTrainerSubscribersController {
     const queryParams = parseQueryParams(req.query);
 
     const { trainerSubscribers, paginationData } =
-      await this.getTrainerSubscribersUseCase.execute(trainerId, queryParams);
+      await this.getTrainerSubscribersUseCase.execute({
+        trainerId,
+        ...queryParams,
+      });
 
     sendResponse(
       res,

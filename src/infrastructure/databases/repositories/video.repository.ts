@@ -34,8 +34,7 @@ export class VideoRepository
   }
 
   async getVideos(
-    trainerId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO,
+    { trainerId, page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO,
     videoPrivacy?: boolean,
     playlistPrivacy?: boolean
   ): Promise<{
@@ -70,7 +69,7 @@ export class VideoRepository
     }
 
     if (filters && filters.length > 0 && !filters.includes("All")) {
-      const conditions: any = [];
+      const conditions = [];
       if (filters.includes("Active")) conditions.push({ privacy: false });
       if (filters.includes("Inactive")) conditions.push({ privacy: true });
       if (conditions.length > 0) matchQuery.$and = conditions;

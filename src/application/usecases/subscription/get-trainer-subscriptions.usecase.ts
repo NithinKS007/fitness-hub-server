@@ -4,9 +4,12 @@ import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionReposit
 import { Subscription } from "@domain/entities/subscription.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IGetTrainerSubscriptionsUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
-export class GetTrainerSubscriptionsUseCase {
+export class GetTrainerSubscriptionsUseCase
+  implements IGetTrainerSubscriptionsUC
+{
   constructor(
     @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository

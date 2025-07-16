@@ -10,7 +10,8 @@ import ConversationModel, {
   IConversation,
 } from "@infrastructure/databases/models/conversation.model";
 import {
-  GetChatListQueryDTO,
+  GetTrainerChatListDTO,
+  GetUserChatListDTO,
   GetUserTrainersListQueryDTO,
 } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
@@ -198,8 +199,7 @@ export class ConversationRepository
   }
 
   async findUserChatList(
-    userId: string,
-    { search }: GetChatListQueryDTO
+    { userId,search }: GetUserChatListDTO
   ): Promise<UserChatList[]> {
     let matchQuery: any = {};
     if (search) {
@@ -272,10 +272,10 @@ export class ConversationRepository
     return result;
   }
 
-  async findTrainerChatList(
-    trainerId: string,
-    { search }: GetChatListQueryDTO
-  ): Promise<TrainerChatList[]> {
+  async findTrainerChatList({
+    trainerId,
+    search,
+  }: GetTrainerChatListDTO): Promise<TrainerChatList[]> {
     let matchQuery: any = {};
     if (search) {
       matchQuery.$or = [
@@ -335,8 +335,7 @@ export class ConversationRepository
   }
 
   async getUserTrainersList(
-    userId: string,
-    { page, limit, search }: GetUserTrainersListQueryDTO
+    {userId, page, limit, search }: GetUserTrainersListQueryDTO
   ): Promise<{
     userTrainersList: UserMyTrainersList[];
     paginationData: PaginationDTO;

@@ -5,15 +5,15 @@ import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
-import { GetUserSubscriptionUseCase } from "@application/usecases/subscription/get-user-subscription.usecase";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
+import { IGetUserSubscriptionsUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
 export class GetUserSubscriptionController {
   constructor(
     @inject(TYPES_SUBSCRIPTION_USECASES.GetUserSubscriptionUseCase)
-    private getUserSubscriptionUseCase: GetUserSubscriptionUseCase
+    private getUserSubscriptionUseCase: IGetUserSubscriptionsUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
@@ -22,7 +22,7 @@ export class GetUserSubscriptionController {
     const queryParams = parseQueryParams(req.query);
 
     const { userSubscriptionsList, paginationData } =
-      await this.getUserSubscriptionUseCase.execute(userId, queryParams);
+      await this.getUserSubscriptionUseCase.execute({ userId, ...queryParams });
 
     sendResponse(
       res,
