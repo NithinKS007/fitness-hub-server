@@ -11,6 +11,8 @@ interface InitiateVideoCall {
   callerId: string;
   receiverId: string;
   roomId: string;
+  token: string;
+  appId:number
   appointmentId: string;
   getTrainerDetailsUseCase: IGetTrainerDetailsUC;
   getAppointmentByIdUseCase: IGetAppointmentByIdUC;
@@ -25,6 +27,8 @@ export const handleInitiateCall = async ({
   callerId,
   receiverId,
   roomId,
+  token,
+  appId,
   appointmentId,
 }: InitiateVideoCall) => {
   try {
@@ -41,7 +45,7 @@ export const handleInitiateCall = async ({
     const appointmentTime = appointmentData?.appointmentTime ?? "N/A";
     const appointmentDate = appointmentData?.appointmentDate ?? "N/A";
 
-    const createCall =  await createVideoCallLogUseCase.execute({
+    const createCall = await createVideoCallLogUseCase.execute({
       callerId: callerId,
       receiverId: receiverId,
       callRoomId: roomId,
@@ -57,12 +61,16 @@ export const handleInitiateCall = async ({
         appointmentDate: appointmentDate,
         callerId: callerId,
         roomId: roomId,
+        token: token,
+        appId:appId,
         appointmentId: appointmentId,
       });
     }
   } catch (error: any) {
     io.to(receiverId).emit("error", {
-      message: error.message || "An unexpected error occurred while attempting to call.",
+      message:
+        error.message ||
+        "An unexpected error occurred while attempting to call.",
       status: "error",
       code: error.code || 500,
     });

@@ -13,7 +13,7 @@ import {
   TYPES_TRAINER_CONTROLLER,
   TYPES_USER_CONTROLLER,
   TYPES_VIDEO_CONTROLLER,
-  TYPES_VIDEOCALLLOG_CONTROLLER,
+  TYPES_VIDEOCALL_CONTROLLER,
   TYPES_WORKOUT_CONTROLLER,
 } from "@di/types-controllers";
 
@@ -29,7 +29,7 @@ import {
   TYPES_TRAINER_USECASES,
   TYPES_USER_USECASES,
   TYPES_VIDEO_USECASES,
-  TYPES_VIDEO_CALL_LOG_USECASES,
+  TYPES_VIDEO_CALL_USECASES,
   TYPES_WORKOUT_USECASES,
   TYPES_LOGGER_USECASES,
   TYPES_CLOUDINARY_USECASES,
@@ -120,8 +120,8 @@ import {
   DeleteSubPlanController,
   EditSubPlanController,
   CloudinaryController,
-  CloudinaryUseCase,
-  IBaseUseCase,
+  CloudinarySigUseCase,
+  ZegoCloudTokenController,
 } from "@di/file-imports-index";
 
 // Services
@@ -263,7 +263,7 @@ import { IGetPlatformEarningsUC } from "@application/interfaces/usecases/IPlatfo
 import { ICreatePlayListUC, IEditPlayListUC, IGetallPlaylistUC, IGetPlayListUC, IUpdatePlayListPrivacyUC } from "@application/interfaces/usecases/IPlaylistUC";
 import { ICreateSubscriptionUC, IDeleteSubscriptionUC, IEditSubscriptionUC, ISubscriptionBlockUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
 import { ICancelSubscriptionUC, ICheckSubscriptionStatusUC, IGetTrainerSubscribersUC, IGetTrainerSubscriptionsUC, IGetUserSubscriptionsUC, IGetUserTrainerslistUC, IPurchaseSubscriptionUC, IVerifySubscriptionSessionUC, IWebHookHandlerUC } from "@application/interfaces/usecases/ISubscriptionUC";
-import { ICloudinaryUC } from "@application/interfaces/usecases/ICloudinaryUC";
+import { ICloudinarySigUC } from "@application/interfaces/usecases/ICloudinaryUC";
 import { IGetUserDetailsUC, IGetUsersUC, IUpdateUserBlockStatusUC } from "@application/interfaces/usecases/IUserUC";
 import { ICreateVideoUC, IEditVideoUC, IGetVideoDetailsUC, IGetVideosUC, IUpdateVideoPrivacyUC } from "@application/interfaces/usecases/IVideoUC";
 import { ICreateVideoCallLogUC, IGetTrainerVideoCallLogUC, IGetUserVideoCallLogUC, IUpdateVideoCallDurationUC, IUpdateVideoCallStatusUC } from "@application/interfaces/usecases/IVideoCallLogUC";
@@ -272,6 +272,10 @@ import { ILoggerUC } from "@application/interfaces/usecases/ILoggerUC";
 import { TYPES_CONFIG } from "./types-config";
 import { IConnectDB } from "@domain/interfaces/IConnectdb";
 import { ConnectDB } from "@infrastructure/config/db.config";
+import { IZegoCloudCreateTokenUC } from "@application/interfaces/usecases/IZegoCloud";
+import { ZegoCloudCreateTokenUseCase } from "@application/usecases/videoCall/zego-cloud-create-token.usecase";
+import { IVideoCallService } from "@application/interfaces/services/videocall/IVideocall.service";
+import { VideoCallService } from "@infrastructure/services/videocall/video-call.service";
 
 
 
@@ -309,6 +313,7 @@ container.bind<IEncryptionService>(TYPES_SERVICES.EncryptionService).to(Encrypti
 container.bind<IHashService>(TYPES_SERVICES.HashService).to(HashService);
 container.bind<IDateService>(TYPES_SERVICES.DateService).to(DateService);
 container.bind<ILoggerService>(TYPES_SERVICES.LoggerService).to(LoggerService)
+container.bind<IVideoCallService>(TYPES_SERVICES.VideoCallService).to(VideoCallService)
 
 // Bind Appointment Use Cases
 container.bind<IBookAppointmentUC>(TYPES_APPOINTMENT_USECASES.BookAppointmentUseCase).to(BookAppointmentUseCase);
@@ -400,11 +405,12 @@ container.bind<IGetVideosUC>(TYPES_VIDEO_USECASES.GetVideosUseCase).to(GetVideos
 container.bind<IUpdateVideoPrivacyUC>(TYPES_VIDEO_USECASES.UpdateVideoPrivacyUseCase).to(UpdateVideoPrivacyUseCase);
 
 //Bind Video Call Use Cases
-container.bind<ICreateVideoCallLogUC>(TYPES_VIDEO_CALL_LOG_USECASES.CreateVideoCallLogUseCase).to(CreateVideoCallLogUseCase);
-container.bind<IUpdateVideoCallDurationUC>(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallDurationUseCase).to(UpdateVideoCallDurationUseCase);
-container.bind<IUpdateVideoCallStatusUC>(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallStatusUseCase).to(UpdateVideoCallStatusUseCase);
-container.bind<IGetTrainerVideoCallLogUC>(TYPES_VIDEO_CALL_LOG_USECASES.GetTrainerVideoCallLogUseCase).to(GetTrainerVideoCallLogUseCase);
-container.bind<IGetUserVideoCallLogUC>(TYPES_VIDEO_CALL_LOG_USECASES.GetUserVideoCallLogUseCase).to(GetUserVideoCallLogUseCase);
+container.bind<ICreateVideoCallLogUC>(TYPES_VIDEO_CALL_USECASES.CreateVideoCallLogUseCase).to(CreateVideoCallLogUseCase);
+container.bind<IUpdateVideoCallDurationUC>(TYPES_VIDEO_CALL_USECASES.UpdateVideoCallDurationUseCase).to(UpdateVideoCallDurationUseCase);
+container.bind<IUpdateVideoCallStatusUC>(TYPES_VIDEO_CALL_USECASES.UpdateVideoCallStatusUseCase).to(UpdateVideoCallStatusUseCase);
+container.bind<IGetTrainerVideoCallLogUC>(TYPES_VIDEO_CALL_USECASES.GetTrainerVideoCallLogUseCase).to(GetTrainerVideoCallLogUseCase);
+container.bind<IGetUserVideoCallLogUC>(TYPES_VIDEO_CALL_USECASES.GetUserVideoCallLogUseCase).to(GetUserVideoCallLogUseCase);
+container.bind<IZegoCloudCreateTokenUC>(TYPES_VIDEO_CALL_USECASES.ZegoCloudCreateTokenUC).to(ZegoCloudCreateTokenUseCase)
 
 //Bind Workout Use Cases
 container.bind<ICompleteWorkoutUC>(TYPES_WORKOUT_USECASES.CompleteWorkoutUseCase).to(CompleteWorkoutUseCase);
@@ -416,7 +422,7 @@ container.bind<IGetWorkoutUC>(TYPES_WORKOUT_USECASES.GetWorkoutUseCase).to(GetWo
 container.bind<ILoggerUC>(TYPES_LOGGER_USECASES.LoggerUseCase).to(LoggerUseCase)
 
 //Cloudinary Use Cases
-container.bind<ICloudinaryUC>(TYPES_CLOUDINARY_USECASES.CloudinaryUseCase).to(CloudinaryUseCase)
+container.bind<ICloudinarySigUC>(TYPES_CLOUDINARY_USECASES.CloudinarySigUseCase).to(CloudinarySigUseCase)
 
 // Appointment Controllers 
 container.bind(TYPES_APPOINTMENT_CONTROLLER.BookAppointmentController).to(BookAppointmentController);
@@ -506,9 +512,10 @@ container.bind(TYPES_VIDEO_CONTROLLER.GetPublicVideoDetailsController).to(GetPub
 container.bind(TYPES_VIDEO_CONTROLLER.GetVideoDetailsController).to(GetVideoDetailsController);
 container.bind(TYPES_VIDEO_CONTROLLER.UpdateVideoStatusController).to(UpdateVideoStatusController);
 
-// Video Call Log Controllers 
-container.bind(TYPES_VIDEOCALLLOG_CONTROLLER.GetTrainerVideoCallLogController).to(GetTrainerVideoCallLogController);
-container.bind(TYPES_VIDEOCALLLOG_CONTROLLER.GetUserVideoCallLogController).to(GetUserVideoCallLogController);
+// Video Call Controllers 
+container.bind(TYPES_VIDEOCALL_CONTROLLER.GetTrainerVideoCallLogController).to(GetTrainerVideoCallLogController);
+container.bind(TYPES_VIDEOCALL_CONTROLLER.GetUserVideoCallLogController).to(GetUserVideoCallLogController);
+container.bind(TYPES_VIDEOCALL_CONTROLLER.ZegoCloudTokenController).to(ZegoCloudTokenController);
 
 // Workout Controllers 
 container.bind(TYPES_WORKOUT_CONTROLLER.AddWorkoutController).to(AddWorkoutController);
@@ -516,7 +523,7 @@ container.bind(TYPES_WORKOUT_CONTROLLER.DeleteWorkoutController).to(DeleteWorkou
 container.bind(TYPES_WORKOUT_CONTROLLER.GetWorkoutController).to(GetWorkoutController);
 container.bind(TYPES_WORKOUT_CONTROLLER.UpdateWorkoutController).to(UpdateWorkoutController);
 
-// CloudinaryControllers
+// Cloudinary Controllers
 container.bind(TYPES_CLOUDINARY_CONTROLLER.CloudinaryController).to(CloudinaryController)
 
 export { container };

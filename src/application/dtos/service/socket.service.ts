@@ -1,4 +1,4 @@
-export enum EventTypes {
+export enum OnEvents {
   Connection = "connection",
   CheckOnline = "checkOnlineStatus",
   OpenChat = "openChat",
@@ -12,4 +12,9 @@ export enum EventTypes {
   EndVC = "endVC",
   Disconnect = "disconnect",
   Connect_error = "connect_error",
+}
+
+export enum EmitEvents {
+  onlineUpdate = "onlineStatusUpdate",
+  
 }

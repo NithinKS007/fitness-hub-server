@@ -4,10 +4,10 @@ import { UploadSignature } from "@application/dtos/service/cloud.storage.service
 import { ICloudStorageService } from "@di/file-imports-index";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "@shared/constants/index.constants";
-import { ICloudinaryUC } from "@application/interfaces/usecases/ICloudinaryUC";
+import { ICloudinarySigUC } from "@application/interfaces/usecases/ICloudinaryUC";
 
 @injectable()
-export class CloudinaryUseCase implements ICloudinaryUC {
+export class CloudinarySigUseCase implements ICloudinarySigUC {
   constructor(
     @inject(TYPES_SERVICES.CloudStorageService)
     private cloudinaryService: ICloudStorageService

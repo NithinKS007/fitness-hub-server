@@ -17,6 +17,7 @@ import { webhookController } from "@di/container-resolver";
 import publicRoutes from "@presentation/routes/public.routes";
 import cloudinaryRoutes from "@presentation/routes/cloudinary.routes";
 import helmet from "helmet";
+import zegocloudRoutes from "@presentation/routes/zegocloud.routes";
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use("/api/v1/trainer", trainerRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chat", chatRoutes);
 app.use("/api/v1/cloudinary", cloudinaryRoutes);
+app.use("/api/v1/zegocloud",zegocloudRoutes)
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 

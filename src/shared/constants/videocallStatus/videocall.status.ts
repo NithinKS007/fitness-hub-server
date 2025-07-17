@@ -5,4 +5,5 @@ export enum VideoCallStatus {
   UnableToConnect = "We're unable to connect at the moment. Please try again later.",
   UnableToUpdateStatus = "There was an issue while updating the call status. Please try again later.",
   UnableToUpdateDuration = "There was an issue while updating the call duration. Please try again later.",
+  TokenCreatedSuccess  = "Video call token was created successfully",
 }

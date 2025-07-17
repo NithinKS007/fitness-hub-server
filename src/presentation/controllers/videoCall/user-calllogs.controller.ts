@@ -5,14 +5,14 @@ import {
 } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { TYPES_VIDEO_CALL_LOG_USECASES } from "@di/types-usecases";
+import { TYPES_VIDEO_CALL_USECASES } from "@di/types-usecases";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
 import { IGetUserVideoCallLogUC } from "@application/interfaces/usecases/IVideoCallLogUC";
 
 @injectable()
 export class GetUserVideoCallLogController {
   constructor(
-    @inject(TYPES_VIDEO_CALL_LOG_USECASES.GetUserVideoCallLogUseCase)
+    @inject(TYPES_VIDEO_CALL_USECASES.GetUserVideoCallLogUseCase)
     private getuserVideoCallLogUseCase: IGetUserVideoCallLogUC
   ) {}
 

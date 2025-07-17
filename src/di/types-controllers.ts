@@ -110,11 +110,12 @@ export const TYPES_VIDEO_CONTROLLER = {
   UpdateVideoStatusController: Symbol.for("UpdateVideoStatusController"),
 };
 
-export const TYPES_VIDEOCALLLOG_CONTROLLER = {
+export const TYPES_VIDEOCALL_CONTROLLER = {
   GetTrainerVideoCallLogController: Symbol.for(
     "GetTrainerVideoCallLogController"
   ),
   GetUserVideoCallLogController: Symbol.for("GetUserVideoCallLogController"),
+  ZegoCloudTokenController: Symbol.for("ZegoCloudTokenController"),
 };
 
 export const TYPES_WORKOUT_CONTROLLER = {

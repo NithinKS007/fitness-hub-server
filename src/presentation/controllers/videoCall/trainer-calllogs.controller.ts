@@ -3,14 +3,14 @@ import { injectable, inject } from "inversify";
 import { StatusCodes } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { TYPES_VIDEO_CALL_LOG_USECASES } from "@di/types-usecases";
+import { TYPES_VIDEO_CALL_USECASES } from "@di/types-usecases";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
 import { IGetTrainerVideoCallLogUC } from "@application/interfaces/usecases/IVideoCallLogUC";
 
 @injectable()
 export class GetTrainerVideoCallLogController {
   constructor(
-    @inject(TYPES_VIDEO_CALL_LOG_USECASES.GetTrainerVideoCallLogUseCase)
+    @inject(TYPES_VIDEO_CALL_USECASES.GetTrainerVideoCallLogUseCase)
     private getTrainerVideoCallLogUseCase: IGetTrainerVideoCallLogUC
   ) {}
 

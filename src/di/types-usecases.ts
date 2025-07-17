@@ -104,12 +104,13 @@ export const TYPES_VIDEO_USECASES = {
   UpdateVideoPrivacyUseCase: Symbol.for("UpdateVideoPrivacyUseCase"),
 };
 
-export const TYPES_VIDEO_CALL_LOG_USECASES = {
+export const TYPES_VIDEO_CALL_USECASES = {
   CreateVideoCallLogUseCase: Symbol.for("CreateVideoCallLogUseCase"),
   UpdateVideoCallDurationUseCase: Symbol.for("UpdateVideoCallDurationUseCase"),
   UpdateVideoCallStatusUseCase: Symbol.for("UpdateVideoCallStatusUseCase"),
   GetTrainerVideoCallLogUseCase: Symbol.for("GetTrainerVideoCallLogUseCase"),
   GetUserVideoCallLogUseCase: Symbol.for("GetUserVideoCallLogUseCase"),
+  ZegoCloudCreateTokenUC: Symbol.for("ZegoCloudCreateTokenUC"),
 };
 
 export const TYPES_WORKOUT_USECASES = {
@@ -124,5 +125,5 @@ export const TYPES_LOGGER_USECASES = {
 };
 
 export const TYPES_CLOUDINARY_USECASES = {
-  CloudinaryUseCase:Symbol.for("CloudinaryUseCase")
-}
+  CloudinarySigUseCase: Symbol.for("CloudinarySigUseCase"),
+};

@@ -7,13 +7,13 @@ import {
 } from "@shared/constants/index.constants";
 import { TYPES_CLOUDINARY_USECASES } from "@di/types-usecases";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { ICloudinaryUC } from "@application/interfaces/usecases/ICloudinaryUC";
+import { ICloudinarySigUC } from "@application/interfaces/usecases/ICloudinaryUC";
 
 @injectable()
 export class CloudinaryController {
   constructor(
-    @inject(TYPES_CLOUDINARY_USECASES.CloudinaryUseCase)
-    private CloudinaryUseCase: ICloudinaryUC
+    @inject(TYPES_CLOUDINARY_USECASES.CloudinarySigUseCase)
+    private CloudinaryUseCase: ICloudinarySigUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {

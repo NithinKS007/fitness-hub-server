@@ -29,18 +29,18 @@ import {
   updateVideoCallStatusUseCase,
   updateVideoCallDurationUseCase,
 } from "@di/container-resolver";
-import { EventTypes } from "@application/dtos/service/socket.service";
+import { OnEvents } from "@application/dtos/service/socket.service";
 
 export const socketService = async (io: SocketIOServer) => {
-  io.on(EventTypes.Connection, (socket: Socket) => {
+  io.on(OnEvents.Connection, (socket: Socket) => {
     handleConnect(socket, io);
 
-    socket.on(EventTypes.CheckOnline, (targetId: string) => {
+    socket.on(OnEvents.CheckOnline, (targetId: string) => {
       handleCheckOnline(socket, targetId);
     });
 
     socket.on(
-      EventTypes.OpenChat,
+      OnEvents.OpenChat,
       async ({ userId, partnerId }: SetActiveChatData) => {
         await handleSetActiveChat(
           io,
@@ -52,12 +52,12 @@ export const socketService = async (io: SocketIOServer) => {
       }
     );
 
-    socket.on(EventTypes.CloseChat, (userId: string) => {
+    socket.on(OnEvents.CloseChat, (userId: string) => {
       handleCloseChat(userId, socket);
     });
 
     socket.on(
-      EventTypes.SendMessage,
+      OnEvents.SendMessage,
       async ({ senderId, receiverId, message }: SendMessageData) => {
         await handleSendMessage(
           io,
@@ -72,14 +72,14 @@ export const socketService = async (io: SocketIOServer) => {
     );
 
     socket.on(
-      EventTypes.StartTyping,
+      OnEvents.StartTyping,
       ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
         handleTyping({ io, senderId, receiverId });
       }
     );
 
     socket.on(
-      EventTypes.StopTyping,
+      OnEvents.StopTyping,
       ({ senderId, receiverId }: { senderId: string; receiverId: string }) => {
         handleStopTyping({ io, senderId, receiverId });
       }
@@ -87,8 +87,8 @@ export const socketService = async (io: SocketIOServer) => {
 
     //VIDEO CALL BASED SOCKETS
     socket.on(
-      EventTypes.StartVC,
-      async ({ callerId, receiverId, roomId, appointmentId }) => {
+      OnEvents.StartVC,
+      async ({ callerId, receiverId, roomId, token, appId, appointmentId }) => {
         handleInitiateCall({
           io,
           getTrainerDetailsUseCase,
@@ -97,16 +97,18 @@ export const socketService = async (io: SocketIOServer) => {
           callerId,
           receiverId,
           roomId,
+          token,
+          appId,
           appointmentId,
         });
       }
     );
 
-    socket.on(EventTypes.AcceptVC, async ({ roomId, userId }) => {
+    socket.on(OnEvents.AcceptVC, async ({ roomId, userId }) => {
       handleAcceptCall({ socket, io, roomId });
     });
 
-    socket.on(EventTypes.RejectVC, async ({ roomId }) => {
+    socket.on(OnEvents.RejectVC, async ({ roomId }) => {
       handleCallRejected({
         roomId,
         io,
@@ -115,7 +117,7 @@ export const socketService = async (io: SocketIOServer) => {
       });
     });
 
-    socket.on(EventTypes.EndVC, async ({ roomId }) => {
+    socket.on(OnEvents.EndVC, async ({ roomId }) => {
       handleCallEnded({
         io,
         updateVideoCallStatusUseCase,
@@ -125,11 +127,11 @@ export const socketService = async (io: SocketIOServer) => {
     });
 
     //DISCONNECTION BASED SOCKET
-    socket.on(EventTypes.Disconnect, () => {
+    socket.on(OnEvents.Disconnect, () => {
       handleDisconnect(socket);
     });
 
-    socket.on(EventTypes.Connect_error, (err) => {
+    socket.on(OnEvents.Connect_error, (err) => {
       console.log("Connection error:", err);
     });
   });

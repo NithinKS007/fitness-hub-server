@@ -89,6 +89,7 @@ import {
   VerifySubscriptionController,
   VerifyTrainerController,
   WebhookController,
+  ZegoCloudTokenController,
 } from "@di/file-imports-index";
 
 import {
@@ -105,7 +106,7 @@ import {
   TYPES_TRAINER_CONTROLLER,
   TYPES_USER_CONTROLLER,
   TYPES_VIDEO_CONTROLLER,
-  TYPES_VIDEOCALLLOG_CONTROLLER,
+  TYPES_VIDEOCALL_CONTROLLER,
   TYPES_WORKOUT_CONTROLLER,
 } from "@di/types-controllers";
 import { TYPES_SERVICES } from '@di/types-services';
@@ -116,7 +117,7 @@ import {
   TYPES_CHAT_USECASES,
   TYPES_LOGGER_USECASES,
   TYPES_TRAINER_USECASES,
-  TYPES_VIDEO_CALL_LOG_USECASES,
+  TYPES_VIDEO_CALL_USECASES,
 } from "@di/types-usecases";
 import { IConnectDB } from '@domain/interfaces/IConnectdb';
 import { CloudinaryController } from '@presentation/controllers/cloudinary/cloudinary.controller';
@@ -211,8 +212,9 @@ export const getVideoDetailsController = container.get<GetVideoDetailsController
 export const updateVideoStatusController = container.get<UpdateVideoStatusController>(TYPES_VIDEO_CONTROLLER.UpdateVideoStatusController);
 
 // Video Call Log Controllers
-export const getTrainerVideoCallLogController = container.get<GetTrainerVideoCallLogController>(TYPES_VIDEOCALLLOG_CONTROLLER.GetTrainerVideoCallLogController);
-export const getUserVideoCallLogController = container.get<GetUserVideoCallLogController>(TYPES_VIDEOCALLLOG_CONTROLLER.GetUserVideoCallLogController);
+export const getTrainerVideoCallLogController = container.get<GetTrainerVideoCallLogController>(TYPES_VIDEOCALL_CONTROLLER.GetTrainerVideoCallLogController);
+export const getUserVideoCallLogController = container.get<GetUserVideoCallLogController>(TYPES_VIDEOCALL_CONTROLLER.GetUserVideoCallLogController);
+export const zegoCloudTokenController = container.get<ZegoCloudTokenController>(TYPES_VIDEOCALL_CONTROLLER.ZegoCloudTokenController);
 
 // Workout Controllers
 export const addWorkoutController = container.get<AddWorkoutController>(TYPES_WORKOUT_CONTROLLER.AddWorkoutController);
@@ -230,9 +232,9 @@ export const markMessageAsReadUseCase = container.get<IMarkMessageRead>(TYPES_CH
 export const updateUnReadMessageCount = container.get<IUpdateUnReadMessageCountUC>(TYPES_CHAT_USECASES.UpdateUnReadMessageCountUseCase);
 export const incUnReadCountUseCase = container.get<IincrementUnReadMessageCountUC>(TYPES_CHAT_USECASES.IncrementUnReadMessageCountUseCase);
 export const updateLastMessageUseCase = container.get<IUpdateLastMessageUC>(TYPES_CHAT_USECASES.UpdateLastMessageUseCase);
-export const createVideoCallLogUseCase = container.get<ICreateVideoCallLogUC>(TYPES_VIDEO_CALL_LOG_USECASES.CreateVideoCallLogUseCase);
-export const updateVideoCallDurationUseCase = container.get<IUpdateVideoCallDurationUC>(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallDurationUseCase);
-export const updateVideoCallStatusUseCase = container.get<IUpdateVideoCallStatusUC>(TYPES_VIDEO_CALL_LOG_USECASES.UpdateVideoCallStatusUseCase);
+export const createVideoCallLogUseCase = container.get<ICreateVideoCallLogUC>(TYPES_VIDEO_CALL_USECASES.CreateVideoCallLogUseCase);
+export const updateVideoCallDurationUseCase = container.get<IUpdateVideoCallDurationUC>(TYPES_VIDEO_CALL_USECASES.UpdateVideoCallDurationUseCase);
+export const updateVideoCallStatusUseCase = container.get<IUpdateVideoCallStatusUC>(TYPES_VIDEO_CALL_USECASES.UpdateVideoCallStatusUseCase);
 export const getAppointmentByIdUseCase = container.get<IGetAppointmentByIdUC>(TYPES_APPOINTMENT_USECASES.GetAppointmentByIdUseCase);
 export const tokenUseCase = container.get<ITokenUC>(TYPES_AUTH_USECASES.TokenUseCase)
 export const checkUserBlockStatusUseCase = container.get<ICheckUserBlockStatusUC>(TYPES_AUTH_USECASES.CheckUserBlockStatusUseCase)

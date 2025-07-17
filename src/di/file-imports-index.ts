@@ -81,11 +81,11 @@ export { GetVideosUseCase } from "@application/usecases/video/get-video.usecase"
 export { GetVideoDetailsUseCase } from "@application/usecases/video/get-video-details";
 
 // Video Call Log Use Cases
-export { CreateVideoCallLogUseCase } from "@application/usecases/videoCallLog/create-videocalllog.usecase";
-export { UpdateVideoCallDurationUseCase } from "@application/usecases/videoCallLog/update-call-data.usecase";
-export { UpdateVideoCallStatusUseCase } from "@application/usecases/videoCallLog/update-call-duration.usecase";
-export { GetTrainerVideoCallLogUseCase } from "@application/usecases/videoCallLog/get-trainer-video-calllog.usecase";
-export { GetUserVideoCallLogUseCase } from "@application/usecases/videoCallLog/get-user-video-calllog.usecase";
+export { CreateVideoCallLogUseCase } from "@application/usecases/videoCall/create-videocalllog.usecase";
+export { UpdateVideoCallDurationUseCase } from "@application/usecases/videoCall/update-call-data.usecase";
+export { UpdateVideoCallStatusUseCase } from "@application/usecases/videoCall/update-call-duration.usecase";
+export { GetTrainerVideoCallLogUseCase } from "@application/usecases/videoCall/get-trainer-video-calllog.usecase";
+export { GetUserVideoCallLogUseCase } from "@application/usecases/videoCall/get-user-video-calllog.usecase";
 
 // Workout Use Cases
 export { CreateWorkoutUseCase } from "@application/usecases/workout/create-workout.usecase";
@@ -134,7 +134,7 @@ export { TrainerDashBoardUseCase } from "@application/usecases/dashboard/trainer
 export { LoggerUseCase } from "@application/usecases/handle-log.usecase";
 
 // Cloudinary Use Cases
-export { CloudinaryUseCase} from "@application/usecases/cloudinary/cloudinary-signature.usecase";
+export { CloudinarySigUseCase} from "@application/usecases/cloudinary/cloudinary.usecase";
 
 // Appointment Controllers
 export { BookAppointmentController } from "@presentation/controllers/appointment/book-appointment.controller";
@@ -225,8 +225,8 @@ export { GetPublicVideoDetailsController } from "@presentation/controllers/video
 export { UpdateVideoStatusController } from "@presentation/controllers/video/update-video-status.controller";
 
 // VideoCallLog Controllers
-export { GetTrainerVideoCallLogController } from "@presentation/controllers/videoCallLog/trainer-calllogs.controller";
-export { GetUserVideoCallLogController } from "@presentation/controllers/videoCallLog/user-calllogs.controller";
+export { GetTrainerVideoCallLogController } from "@presentation/controllers/videoCall/trainer-calllogs.controller";
+export { GetUserVideoCallLogController } from "@presentation/controllers/videoCall/user-calllogs.controller";
 
 // Workout Controllers
 export { AddWorkoutController } from "@presentation/controllers/workout/add-workout.controller";
@@ -236,6 +236,9 @@ export { UpdateWorkoutController } from "@presentation/controllers/workout/updat
 
 // Cloudinary Controllers
 export {CloudinaryController} from "@presentation/controllers/cloudinary/cloudinary.controller";
+
+// ZegoCloud Controllers
+export { ZegoCloudTokenController } from "@presentation/controllers/videoCall/create-zc-token.controller"
 
 // Repository Interfaces
 export { IUserRepository } from "@domain/interfaces/IUserRepository";
