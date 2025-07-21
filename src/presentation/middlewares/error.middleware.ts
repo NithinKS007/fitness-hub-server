@@ -4,7 +4,7 @@ import {
   ApplicationStatus,
 } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
-import { loggerUseCase } from "@di/container-resolver";
+import { ReqLogService } from "@di/container-resolver";
 
 export class AppError extends Error {
   statusCode: number;
@@ -44,13 +44,25 @@ export class ForbiddenError extends AppError {
   }
 }
 
+export class ConflictError extends AppError {
+  constructor(message: string) {
+    super(message, StatusCodes.Conflict);
+  }
+}
+
+export class InternalServerError extends AppError {
+  constructor(message: string) {
+    super(message, StatusCodes.InternalServerError);
+  }
+}
+
 export const errorMiddleware = (
   err: AppError,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  loggerUseCase.LogError(err, req.originalUrl, err.message);
+  ReqLogService.error(err.message, err);
   const statusCode = err.statusCode || StatusCodes.InternalServerError;
   const message = err.message || ApplicationStatus.InternalServerError;
   sendResponse(res, statusCode, null, message);

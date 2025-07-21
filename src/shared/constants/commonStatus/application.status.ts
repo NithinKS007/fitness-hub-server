@@ -11,3 +11,4 @@ export enum ApplicationStatus {
   FailedToGenSignature = "Failed to generate Cloudinary signature. Please check your API key, API secret, and parameters.",
   SignatureSuccess = "Cloudinary signature fetched successfully",
 }
+  

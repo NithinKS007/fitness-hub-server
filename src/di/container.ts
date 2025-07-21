@@ -31,7 +31,6 @@ import {
   TYPES_VIDEO_USECASES,
   TYPES_VIDEO_CALL_USECASES,
   TYPES_WORKOUT_USECASES,
-  TYPES_LOGGER_USECASES,
   TYPES_CLOUDINARY_USECASES,
 } from "@di/types-usecases";
 import { TYPES_SERVICES } from "@di/types-services";
@@ -111,7 +110,6 @@ import {
   IDateService,
   ILoggerService,
   LoggerService,
-  LoggerUseCase,
   GetChatsController,
   GetTrainerContactsController,
   GetUserContactsController,
@@ -257,7 +255,7 @@ import { IBookAppointmentUC, ICancelAppointmentUC, IGetAppointmentByIdUC, IGetAp
 import { IChangePasswordUC, ICheckUserBlockStatusUC, ICreateTrainerUC, ICreateUserUC, IForgotPasswordUC, IGoogleAuthUC, IOtpUC, ISendPasswordRestLinkUC, ISigninUserUC, ITokenUC, IUpdateTRProfileUC, IUpdateUserProfileUC } from "@application/interfaces/usecases/IAuthUC";
 import { ICreateBookingSlotUC, IDeleteBookingSlotUC, IGetPendingSlotsUC, IGetUpComingSlotsUC } from "@application/interfaces/usecases/ISlotUC";
 import { IGetApprovedTrainers, IGetTrainerAndSubInfoUC, IGetTrainerDetailsUC, IGetTrainersUC, IGetVeryfyTrainerlist, ITrainerApprovalUC } from "@application/interfaces/usecases/ITrainerUC";
-import { ICreateMessageUC, IGetChatHistoryUC, IGetTrainerChatListUC, IGetUserChatListUC, IincrementUnReadMessageCountUC, IMarkMessageRead, IUpdateLastMessageUC, IUpdateUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
+import { ICreateMessageUC, IGetChatHistoryUC, IGetTrainerChatListUC, IGetUserChatListUC, IIncrementUnReadMessageCountUC, IMarkMessageRead, IUpdateLastMessageUC, IUpdateUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
 import { IAdminDashBoardUC, ITrainerDashBoardUC, IUserDashBoardUC } from "@application/interfaces/usecases/IDashBoardUC";
 import { IGetPlatformEarningsUC } from "@application/interfaces/usecases/IPlatformRevenueUC";
 import { ICreatePlayListUC, IEditPlayListUC, IGetallPlaylistUC, IGetPlayListUC, IUpdatePlayListPrivacyUC } from "@application/interfaces/usecases/IPlaylistUC";
@@ -268,7 +266,6 @@ import { IGetUserDetailsUC, IGetUsersUC, IUpdateUserBlockStatusUC } from "@appli
 import { ICreateVideoUC, IEditVideoUC, IGetVideoDetailsUC, IGetVideosUC, IUpdateVideoPrivacyUC } from "@application/interfaces/usecases/IVideoUC";
 import { ICreateVideoCallLogUC, IGetTrainerVideoCallLogUC, IGetUserVideoCallLogUC, IUpdateVideoCallDurationUC, IUpdateVideoCallStatusUC } from "@application/interfaces/usecases/IVideoCallLogUC";
 import { ICompleteWorkoutUC, ICreateWorkoutUC, IDeleteWorkoutUC, IGetWorkoutUC } from "@application/interfaces/usecases/IWorkoutUC";
-import { ILoggerUC } from "@application/interfaces/usecases/ILoggerUC";
 import { TYPES_CONFIG } from "./types-config";
 import { IConnectDB } from "@domain/interfaces/IConnectdb";
 import { ConnectDB } from "@infrastructure/config/db.config";
@@ -349,7 +346,7 @@ container.bind<ICreateMessageUC>(TYPES_CHAT_USECASES.CreateMessageUseCase).to(Cr
 container.bind<IGetChatHistoryUC>(TYPES_CHAT_USECASES.GetChatHistoryUseCase).to(GetChatHistoryUseCase);
 container.bind<IGetTrainerChatListUC>(TYPES_CHAT_USECASES.GetTrainerChatListUseCase).to(GetTrainerChatListUseCase);
 container.bind<IGetUserChatListUC>(TYPES_CHAT_USECASES.GetUserChatListUseCase).to(GetUserChatListUseCase);
-container.bind<IincrementUnReadMessageCountUC>(TYPES_CHAT_USECASES.IncrementUnReadMessageCountUseCase).to(IncrementUnReadMessageCountUseCase);
+container.bind<IIncrementUnReadMessageCountUC>(TYPES_CHAT_USECASES.IncrementUnReadMessageCountUseCase).to(IncrementUnReadMessageCountUseCase);
 container.bind<IMarkMessageRead>(TYPES_CHAT_USECASES.MarkMessageReadUseCase).to(MarkMessageReadUseCase);
 container.bind<IUpdateLastMessageUC>(TYPES_CHAT_USECASES.UpdateLastMessageUseCase).to(UpdateLastMessageUseCase);
 container.bind<IUpdateUnReadMessageCountUC>(TYPES_CHAT_USECASES.UpdateUnReadMessageCountUseCase).to(UpdateUnReadMessageCountUseCase);
@@ -417,9 +414,6 @@ container.bind<ICompleteWorkoutUC>(TYPES_WORKOUT_USECASES.CompleteWorkoutUseCase
 container.bind<ICreateWorkoutUC>(TYPES_WORKOUT_USECASES.CreateWorkoutUseCase).to(CreateWorkoutUseCase);
 container.bind<IDeleteWorkoutUC>(TYPES_WORKOUT_USECASES.DeleteWorkoutUseCase).to(DeleteWorkoutUseCase);
 container.bind<IGetWorkoutUC>(TYPES_WORKOUT_USECASES.GetWorkoutUseCase).to(GetWorkoutUseCase);
-
-//Logger Use Cases
-container.bind<ILoggerUC>(TYPES_LOGGER_USECASES.LoggerUseCase).to(LoggerUseCase)
 
 //Cloudinary Use Cases
 container.bind<ICloudinarySigUC>(TYPES_CLOUDINARY_USECASES.CloudinarySigUseCase).to(CloudinarySigUseCase)

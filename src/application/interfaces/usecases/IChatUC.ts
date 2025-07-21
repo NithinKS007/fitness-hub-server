@@ -31,7 +31,7 @@ export interface IMarkMessageRead
     },
     Chat[] | null
   > {}
-export interface IincrementUnReadMessageCountUC
+export interface IIncrementUnReadMessageCountUC
   extends IBaseUseCase<IncrementUnReadMessageCount, Conversation> {}
 export interface IUpdateLastMessageUC
   extends IBaseUseCase<UpdateLastMessage, Conversation> {}

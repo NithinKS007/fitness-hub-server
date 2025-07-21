@@ -1,4 +1,4 @@
-import { validationError } from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus } from "@shared/constants/index.constants";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
@@ -34,7 +34,7 @@ export class CheckUserBlockStatusUseCase implements ICheckUserBlockStatusUC {
     ]);
 
     if (!userData && !trainerData) {
-      throw new validationError(AuthStatus.InvalidId);
+      throw new NotFoundError(AuthStatus.InvalidId);
     }
 
     if (userData) return userData.isBlocked;

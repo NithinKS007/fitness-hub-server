@@ -1,5 +1,8 @@
 import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  InternalServerError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   ChatStatus,
@@ -11,7 +14,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IGetUserChatListUC } from "@application/interfaces/usecases/IChatUC";
 
 @injectable()
-export class GetUserChatListUseCase implements IGetUserChatListUC{
+export class GetUserChatListUseCase implements IGetUserChatListUC {
   constructor(
     @inject(TYPES_REPOSITORIES.ConversationRepository)
     private conversationRepository: IConversationRepository
@@ -29,7 +32,7 @@ export class GetUserChatListUseCase implements IGetUserChatListUC{
       search,
     });
     if (!usersChatList) {
-      throw new validationError(ChatStatus.FailedToRetrieveChatList);
+      throw new InternalServerError(ChatStatus.FailedToRetrieveChatList);
     }
     return usersChatList;
   }

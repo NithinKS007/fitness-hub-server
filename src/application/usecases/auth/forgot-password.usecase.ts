@@ -2,7 +2,7 @@ import { PasswordResetDTO } from "@application/dtos/auth-dtos";
 import { AuthStatus, PasswordStatus } from "@shared/constants/index.constants";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { IPasswordResetRepository } from "@domain/interfaces/IPasswordResetTokenRepository";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import { IEncryptionService } from "@application/interfaces/services/security/IEncryption.service";
 import { IHashService } from "@application/interfaces/services/security/IHash.service";
 import { injectable, inject } from "inversify";
@@ -34,7 +34,7 @@ export class ForgotPasswordUseCase implements IForgotPasswordUC {
     const { email } = tokenData;
     const userData = await this.userRepository.findOne({ email });
     if (!userData) {
-      throw new validationError(AuthStatus.EmailNotFound);
+      throw new NotFoundError(AuthStatus.EmailNotFound);
     }
     if (password) {
       const hashedPassword = await this.encryptionService.hash(password);

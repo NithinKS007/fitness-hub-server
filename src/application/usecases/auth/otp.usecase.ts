@@ -69,7 +69,7 @@ export class OtpUseCase implements IOtpUC {
     await this.userRepository.updateUserVerificationStatus({
       email: userEmail,
     });
-    await this.otpRepository.delete(String(otpData?._id));
+    await this.otpRepository.delete(otpData?._id);
   }
   async resendOtp({ email, otp }: OtpDTO): Promise<void> {
     const userData = await this.userRepository.findOne({ email });

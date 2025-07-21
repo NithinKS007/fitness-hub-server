@@ -5,7 +5,11 @@ import {
   ApplicationStatus,
   AuthStatus,
 } from "@shared/constants/index.constants";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  ConflictError,
+  InternalServerError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
 import { IOTPService } from "@application/interfaces/services/security/IOtp.service";
 import { IEncryptionService } from "@application/interfaces/services/security/IEncryption.service";
@@ -40,13 +44,19 @@ export class CreateUserUseCase implements ICreateUserUC {
   ) {}
 
   private async sendOtpEmail(email: string): Promise<void> {
-    const otp = this.otpService.generateOtp(6);
-    await this.otpRepository.create({ email, otp });
-    await this.emailService.sendEmail({
-      to: email,
-      subject: "OTP for Registration",
-      text: `Your OTP is ${otp}. Please do not share this OTP with anyone.`,
-    });
+    try {
+      const otp = this.otpService.generateOtp(6);
+      await this.otpRepository.create({ email, otp });
+      await this.emailService.sendEmail({
+        to: email,
+        subject: "OTP for Registration",
+        text: `Your OTP is ${otp}. Please do not share this OTP with anyone.`,
+      });
+    } catch (error) {
+      throw new InternalServerError(
+        "Failed to send OTP. Please try again later."
+      );
+    }
   }
 
   async execute({
@@ -63,14 +73,14 @@ export class CreateUserUseCase implements ICreateUserUC {
       email: email,
     });
     if (existinguser && existinguser.otpVerified) {
-      throw new validationError(AuthStatus.EmailConflict);
+      throw new ConflictError(AuthStatus.EmailConflict);
     }
     if (
       existinguser &&
       !existinguser.otpVerified &&
       existinguser.googleVerified
     ) {
-      throw new validationError(AuthStatus.DifferentLoginMethod);
+      throw new ConflictError(AuthStatus.DifferentLoginMethod);
     }
     if (existinguser && !existinguser.otpVerified) {
       await this.sendOtpEmail(email);

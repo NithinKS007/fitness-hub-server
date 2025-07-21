@@ -7,6 +7,7 @@ import {
 import { SignInDTO } from "@application/dtos/auth-dtos";
 import {
   ForbiddenError,
+  NotFoundError,
   validationError,
 } from "@presentation/middlewares/error.middleware";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
@@ -58,7 +59,7 @@ export class SigninUserUseCase implements ISigninUserUC {
   ): Promise<User | TrainerDTO> {
     const userData = await this.userRepository.findOne({ email: email });
     if (!userData) {
-      throw new validationError(AuthStatus.EmailNotFound);
+      throw new NotFoundError(AuthStatus.EmailNotFound);
     }
     if (userData && userData?.googleVerified) {
       throw new validationError(AuthStatus.DifferentLoginMethod);
@@ -92,7 +93,7 @@ export class SigninUserUseCase implements ISigninUserUC {
           userData?._id.toString()
         );
       if (!trainerData) {
-        throw new validationError(TrainerStatus.FailedToRetrieveTrainerDetails);
+        throw new NotFoundError(TrainerStatus.FailedToRetrieveTrainerDetails);
       }
       const accessToken = this.generateAccessToken(trainerData);
       const refreshToken = this.generateRefreshToken(trainerData);

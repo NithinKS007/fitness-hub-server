@@ -8,6 +8,7 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
 import { SendEmail } from "@application/dtos/service/email.service";
 import { injectable } from "inversify";
+import { ReqLogService } from "@di/container-resolver";
 dotenv.config();
 
 @injectable()
@@ -42,7 +43,6 @@ export class EmailService implements IEmailService {
     }
   }
   async sendEmail({ to, subject, text }: SendEmail) {
-    console.log("data for sending email", to, subject, text);
     try {
       await this.transporter.sendMail({
         to: to,
@@ -50,7 +50,7 @@ export class EmailService implements IEmailService {
         subject: subject,
         text: text,
       });
-      console.log("Email sent successfully to", to, subject, text);
+      ReqLogService.log(`${to} ${subject} ${text}`);
     } catch (error) {
       console.log(`Error sending the email:${error}`);
       throw new validationError(AuthStatus.EmailSendFailed);

@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 import { socketStore } from "@infrastructure/services/socket/store/socket.store";
 import {
   ICreateMessageUC,
-  IincrementUnReadMessageCountUC,
+  IIncrementUnReadMessageCountUC,
   IUpdateLastMessageUC,
 } from "@application/interfaces/usecases/IChatUC";
 
@@ -15,7 +15,7 @@ export interface SendMessageData {
 export const handleSendMessage = async (
   io: Server,
   createMessageUseCase: ICreateMessageUC,
-  incUnReadCountUseCase: IincrementUnReadMessageCountUC,
+  incUnReadCountUseCase: IIncrementUnReadMessageCountUC,
   updateLastMessageUseCase: IUpdateLastMessageUC,
   senderId: string,
   receiverId: string,

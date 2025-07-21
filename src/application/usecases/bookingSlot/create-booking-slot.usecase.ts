@@ -1,5 +1,8 @@
 import { CreateBookingSlotDTO } from "@application/dtos/booking-dtos";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  InternalServerError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   SlotStatus,
@@ -34,7 +37,7 @@ export class CreateBookingSlotUseCase implements ICreateBookingSlotUC {
       ...otherSlotData,
     });
     if (!createdSlotData) {
-      throw new validationError(SlotStatus.CreateFailed);
+      throw new InternalServerError(SlotStatus.CreateFailed);
     }
     return createdSlotData;
   }

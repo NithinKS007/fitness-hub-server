@@ -130,9 +130,6 @@ export { AdminDashBoardUseCase } from "@application/usecases/dashboard/admin-das
 export { UserDashBoardUseCase } from "@application/usecases/dashboard/user-dashboard.usecase";
 export { TrainerDashBoardUseCase } from "@application/usecases/dashboard/trainer-dashboard.usecase";
 
-// Logger Use Cases
-export { LoggerUseCase } from "@application/usecases/handle-log.usecase";
-
 // Cloudinary Use Cases
 export { CloudinarySigUseCase} from "@application/usecases/cloudinary/cloudinary.usecase";
 
@@ -272,3 +269,11 @@ export { ILoggerService } from "@application/interfaces/services/logging/ILogger
 
 // Usecase Interfaces 
 export { IBaseUseCase } from "@application/interfaces/usecases/IBase.UC";
+export { IGetAppointmentByIdUC } from '@application/interfaces/usecases/IAppointmentUC';
+export { ICheckUserBlockStatusUC, ITokenUC } from '@application/interfaces/usecases/IAuthUC';
+export { ICreateMessageUC, IIncrementUnReadMessageCountUC, IMarkMessageRead, IUpdateLastMessageUC, IUpdateUnReadMessageCountUC } from '@application/interfaces/usecases/IChatUC';
+export { IGetTrainerDetailsUC } from '@application/interfaces/usecases/ITrainerUC';
+export { ICreateVideoCallLogUC, IUpdateVideoCallDurationUC, IUpdateVideoCallStatusUC } from '@application/interfaces/usecases/IVideoCallLogUC';
+
+// Connect DB
+export { IConnectDB } from '@domain/interfaces/IConnectdb';

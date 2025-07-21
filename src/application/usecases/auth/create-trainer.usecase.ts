@@ -5,7 +5,11 @@ import {
   ApplicationStatus,
   AuthStatus,
 } from "@shared/constants/index.constants";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  ConflictError,
+  InternalServerError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
 import { IOTPService } from "@application/interfaces/services/security/IOtp.service";
@@ -28,7 +32,7 @@ import { ICreateTrainerUC } from "@application/interfaces/usecases/IAuthUC";
 */
 
 @injectable()
-export class CreateTrainerUseCase implements ICreateTrainerUC{
+export class CreateTrainerUseCase implements ICreateTrainerUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
@@ -43,16 +47,31 @@ export class CreateTrainerUseCase implements ICreateTrainerUC{
   ) {}
 
   private async sendOtpEmail(email: string): Promise<void> {
-    const otp = this.otpService.generateOtp(6);
-    await this.otpRepository.create({ email, otp });
-    await this.emailService.sendEmail({
-      to: email,
-      subject: "OTP for Registration",
-      text: `Your OTP is ${otp}. Please do not share this OTP with anyone.`,
-    });
+    try {
+      const otp = this.otpService.generateOtp(6);
+      await this.otpRepository.create({ email, otp });
+      await this.emailService.sendEmail({
+        to: email,
+        subject: "OTP for Registration",
+        text: `Your OTP is ${otp}. Please do not share this OTP with anyone.`,
+      });
+    } catch (error) {
+      throw new InternalServerError(
+        "Failed to send OTP. Please try again later."
+      );
+    }
   }
 
-  async execute({ fname, lname, email, password, dateOfBirth, phone, yearsOfExperience, specializations, certificate,
+  async execute({
+    fname,
+    lname,
+    email,
+    password,
+    dateOfBirth,
+    phone,
+    yearsOfExperience,
+    specializations,
+    certificate,
   }: CreateTrainerDTO): Promise<TrainerDTO | User> {
     if (
       !fname ||
@@ -70,14 +89,14 @@ export class CreateTrainerUseCase implements ICreateTrainerUC{
       email: email,
     });
     if (existinguser && existinguser.otpVerified) {
-      throw new validationError(AuthStatus.EmailConflict);
+      throw new ConflictError(AuthStatus.EmailConflict);
     }
     if (
       existinguser &&
       !existinguser.otpVerified &&
       existinguser.googleVerified
     ) {
-      throw new validationError(AuthStatus.DifferentLoginMethod);
+      throw new ConflictError(AuthStatus.DifferentLoginMethod);
     }
     if (existinguser && !existinguser.otpVerified) {
       await this.sendOtpEmail(email);

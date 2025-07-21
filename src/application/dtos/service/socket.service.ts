@@ -16,5 +16,9 @@ export enum OnEvents {
 
 export enum EmitEvents {
   onlineUpdate = "onlineStatusUpdate",
-  
+  callStarted = "callStarted",
+  error = "error",
+  callEnded = "callEnded",
+  incomingCall = "incomingCall",
+  onlineStatusResponse = "onlineStatusResponse"
 }

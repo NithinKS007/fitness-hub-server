@@ -1,5 +1,5 @@
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import {
   AppointmentStatus,
   AuthStatus,
@@ -39,7 +39,7 @@ export class GetTrainerSchedulesUseCase implements IGetTrainerSchedulesUC {
     const { trainerBookingSchedulesList, paginationData } =
       await this.appointmentRepository.getTrainerSchedules(query);
     if (!trainerBookingSchedulesList) {
-      throw new validationError(AppointmentStatus.BookingRequestsFetchFailed);
+      throw new NotFoundError(AppointmentStatus.BookingRequestsFetchFailed);
     }
     return { trainerBookingSchedulesList, paginationData };
   }

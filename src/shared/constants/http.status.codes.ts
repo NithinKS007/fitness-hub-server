@@ -7,4 +7,5 @@ export enum StatusCodes {
   NotFound = 404,
   InternalServerError = 500,
   RateLimit = 429,
+  Conflict = 409,
 }

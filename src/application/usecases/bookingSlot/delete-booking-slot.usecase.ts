@@ -1,4 +1,8 @@
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  InternalServerError,
+  NotFoundError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import {
   SlotStatus,
   AppointmentStatus,
@@ -30,6 +34,11 @@ export class DeleteBookingSlotUseCase implements IDeleteBookingSlotUC {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
     const slotData = await this.bookingSlotRepository.findById(bookingSlotId);
+
+    if (!slotData) {
+      throw new NotFoundError(SlotStatus.NotFound);
+    }
+
     if (
       slotData?.status === BookingSlotStatus.BOOKED ||
       slotData?.status === BookingSlotStatus.COMPLETED
@@ -40,7 +49,7 @@ export class DeleteBookingSlotUseCase implements IDeleteBookingSlotUC {
       bookingSlotId
     );
     if (!deletedSlotData) {
-      throw new validationError(SlotStatus.DeleteFailed);
+      throw new InternalServerError(SlotStatus.DeleteFailed);
     }
     return deletedSlotData;
   }

@@ -7,7 +7,7 @@ dotenv.config();
 
 @injectable()
 export class ConnectDB implements IConnectDB {
-  constructor(private uri = process.env.ATLAS_DATABASE_CONFIG) {
+  constructor(private uri = process.env.COMPASS_DATABASE_CONFIG) {
     this.uri = uri;
   }
 

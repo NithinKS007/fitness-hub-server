@@ -1,5 +1,8 @@
 import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  InternalServerError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   ChatStatus,
@@ -30,7 +33,7 @@ export class GetTrainerChatListUseCase implements IGetTrainerChatListUC {
         search,
       });
     if (!trainerChatList) {
-      throw new validationError(ChatStatus.FailedToRetrieveChatList);
+      throw new InternalServerError(ChatStatus.FailedToRetrieveChatList);
     }
     return trainerChatList;
   }

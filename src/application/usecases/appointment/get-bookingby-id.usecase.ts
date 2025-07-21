@@ -1,4 +1,4 @@
-import { validationError } from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AppointmentStatus,
@@ -31,7 +31,7 @@ export class GetAppointmentByIdUseCase implements IGetAppointmentByIdUC {
       appointmentId
     );
     if (!appointmentData) {
-      throw new validationError(AppointmentStatus.FailedToFindAppointment);
+      throw new NotFoundError(AppointmentStatus.FailedToFindAppointment);
     }
     return appointmentData;
   }

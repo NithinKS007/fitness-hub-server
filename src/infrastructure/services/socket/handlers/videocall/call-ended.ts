@@ -5,6 +5,7 @@ import {
   IUpdateVideoCallDurationUC,
   IUpdateVideoCallStatusUC,
 } from "@application/interfaces/usecases/IVideoCallLogUC";
+import { EmitEvents } from "@application/dtos/service/socket.service";
 
 interface EndVideoCall {
   io: Server;
@@ -40,9 +41,9 @@ export const handleCallEnded = async ({
       callDuration: duration,
     });
 
-    io.to(roomId).emit("callEnded");
+    io.to(roomId).emit(EmitEvents.callEnded);
   } catch (error: any) {
-    io.to(roomId).emit("error", {
+    io.to(roomId).emit(EmitEvents.error, {
       message:
         error.message || "An unexpected error occurred while ending the call.",
       status: "error",

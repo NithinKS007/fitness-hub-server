@@ -46,7 +46,7 @@ export interface FindExistingSubscriptionDTO {
 
 export interface UpdateSubscriptionBlockStatusDTO {
   subscriptionId: string;
-  isBlocked: string;
+  isBlocked: boolean;
 }
 
 export interface UpdateSubscriptionDetailsDTO extends SubscriptionDetails {

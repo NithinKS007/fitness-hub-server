@@ -1,5 +1,9 @@
 import { UpdateSubscriptionBlockStatusDTO } from "@application/dtos/subscription-dtos";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  InternalServerError,
+  NotFoundError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AuthStatus,
@@ -29,16 +33,16 @@ export class SubscriptionBlockUseCase implements ISubscriptionBlockUC {
       subscriptionId
     );
     if (!subscriptionData) {
-      throw new validationError(AuthStatus.InvalidId);
+      throw new NotFoundError(AuthStatus.InvalidId);
     }
     const updatedSubscriptionData = await this.subscriptionRepository.update(
       subscriptionId,
       {
-        isBlocked: isBlocked,
+        isBlocked,
       }
     );
     if (!updatedSubscriptionData) {
-      throw new validationError(BlockStatus.StatusUpdateFailed);
+      throw new InternalServerError(BlockStatus.StatusUpdateFailed);
     }
     return updatedSubscriptionData;
   }

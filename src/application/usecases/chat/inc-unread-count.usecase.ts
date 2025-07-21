@@ -5,11 +5,11 @@ import { IncrementUnReadMessageCount } from "@application/dtos/conversation-dtos
 import { Conversation } from "@application/dtos/chat-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
-import { IincrementUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
+import { IIncrementUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
 
 @injectable()
 export class IncrementUnReadMessageCountUseCase
-  implements IincrementUnReadMessageCountUC
+  implements IIncrementUnReadMessageCountUC
 {
   constructor(
     @inject(TYPES_REPOSITORIES.ConversationRepository)
@@ -31,7 +31,7 @@ export class IncrementUnReadMessageCountUseCase
     }
     const updatedMessage =
       await this.conversationRepository.findChatWithLastMessage(
-        String(incUnReadMessage._id)
+        incUnReadMessage._id
       );
     return updatedMessage;
   }

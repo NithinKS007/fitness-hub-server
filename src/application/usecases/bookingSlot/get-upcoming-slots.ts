@@ -1,5 +1,5 @@
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import { InternalServerError, validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus, SlotStatus } from "@shared/constants/index.constants";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { AvailableSlotsQueryDTO } from "@application/dtos/query-dtos";
@@ -37,7 +37,7 @@ export class GetUpComingSlotsUseCase implements IGetUpComingSlotsUC {
       await this.bookingSlotRepository.getUpcomingSlots(query);
 
     if (!availableSlotsList) {
-      throw new validationError(SlotStatus.FailedToGetAvailableSlotData);
+      throw new InternalServerError(SlotStatus.FailedToGetAvailableSlotData);
     }
     return { availableSlotsList, paginationData };
   }

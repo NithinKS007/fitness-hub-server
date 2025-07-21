@@ -1,6 +1,10 @@
 import { Workout } from "@domain/entities/workout.entity";
 import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  InternalServerError,
+  NotFoundError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import { WorkoutStatus } from "@shared/constants/index.constants";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { injectable, inject } from "inversify";
@@ -19,11 +23,16 @@ export class DeleteWorkoutUseCase implements IDeleteWorkoutUC {
     @inject(TYPES_REPOSITORIES.WorkoutRepository)
     private workoutRepository: IWorkoutRepository
   ) {}
-  
+
   async execute(setId: string): Promise<Workout> {
+    const workoutSet = await this.workoutRepository.findById(setId);
+
+    if (!workoutSet) {
+      throw new NotFoundError("workout not found");
+    }
     const deletedWorkoutSet = await this.workoutRepository.delete(setId);
     if (!deletedWorkoutSet) {
-      throw new validationError(WorkoutStatus.FailedToDelete);
+      throw new InternalServerError(WorkoutStatus.FailedToDelete);
     }
     return deletedWorkoutSet;
   }

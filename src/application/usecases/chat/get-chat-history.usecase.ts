@@ -1,5 +1,5 @@
 import { IChatRepository } from "@domain/interfaces/IChatRepository";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import { InternalServerError } from "@presentation/middlewares/error.middleware";
 import { ChatStatus } from "@shared/constants/index.constants";
 import { FindChatDTO } from "@application/dtos/chat-dtos";
 import { Chat } from "@domain/entities/chat.entity";
@@ -17,7 +17,7 @@ export class GetChatHistoryUseCase implements IGetChatHistoryUC {
   async execute(dtos: FindChatDTO): Promise<Chat[]> {
     const chatData = await this.chatRepository.getChatHistory(dtos);
     if (!chatData) {
-      throw new validationError(ChatStatus.FailedToGetChatMessages);
+      throw new InternalServerError(ChatStatus.FailedToGetChatMessages);
     }
     return chatData;
   }

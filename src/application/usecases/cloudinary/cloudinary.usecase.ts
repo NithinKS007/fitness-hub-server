@@ -2,7 +2,10 @@ import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
 import { UploadSignature } from "@application/dtos/service/cloud.storage.service";
 import { ICloudStorageService } from "@di/file-imports-index";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  InternalServerError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "@shared/constants/index.constants";
 import { ICloudinarySigUC } from "@application/interfaces/usecases/ICloudinaryUC";
 
@@ -33,7 +36,7 @@ export class CloudinarySigUseCase implements ICloudinarySigUC {
     });
 
     if (!signature) {
-      throw new validationError(ApplicationStatus.FailedToGenSignature);
+      throw new InternalServerError(ApplicationStatus.FailedToGenSignature);
     }
 
     return signature;

@@ -2,7 +2,7 @@ import {
   BookingStatus,
   HandleBookingDTO,
 } from "@application/dtos/booking-dtos";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AppointmentStatus,
@@ -39,11 +39,18 @@ export class HandleBookingApprovalUseCase implements IHandleBookingApprovalUC {
     if (!appointmentId || !bookingSlotId || !action) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
+
+    if (![Action.Approved, Action.Rejected].includes(action)) {
+      throw new validationError(
+        "Invalid action. Only 'Approved' or 'Rejected' are allowed."
+      );
+    }
+
     const bookingSlotData = await this.bookingSlotRepository.findById(
       bookingSlotId
     );
     if (!bookingSlotData) {
-      throw new validationError(AppointmentStatus.BookingSlotNotFound);
+      throw new NotFoundError(AppointmentStatus.BookingSlotNotFound);
     }
     const status =
       action === Action.Approved

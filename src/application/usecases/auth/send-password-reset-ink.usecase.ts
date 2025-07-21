@@ -2,7 +2,7 @@ import { CreatePassResetTokenDTO } from "@application/dtos/auth-dtos";
 import { AuthStatus } from "@shared/constants/index.constants";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { IPasswordResetRepository } from "@domain/interfaces/IPasswordResetTokenRepository";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import { ForbiddenError, NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
 import { IHashService } from "@application/interfaces/services/security/IHash.service";
 import { PasswordResetToken } from "@domain/entities/pass-reset-token.entity";
@@ -27,13 +27,13 @@ export class SendPasswordRestLinkUseCase implements ISendPasswordRestLinkUC {
   }: CreatePassResetTokenDTO): Promise<PasswordResetToken> {
     const userData = await this.userRepository.findOne({ email: email });
     if (!userData) {
-      throw new validationError(AuthStatus.EmailNotFound);
+      throw new NotFoundError(AuthStatus.EmailNotFound);
     }
     if (userData.googleVerified) {
       throw new validationError(AuthStatus.DifferentLoginMethod);
     }
     if (userData && !userData.otpVerified) {
-      throw new validationError(AuthStatus.AccountNotVerified);
+      throw new ForbiddenError(AuthStatus.AccountNotVerified);
     }
     const token = await this.hashService.generate();
     const hashedToken = await this.hashService.hash(token);

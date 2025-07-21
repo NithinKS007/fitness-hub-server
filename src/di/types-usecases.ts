@@ -120,10 +120,6 @@ export const TYPES_WORKOUT_USECASES = {
   GetWorkoutUseCase: Symbol.for("GetWorkoutUseCase"),
 };
 
-export const TYPES_LOGGER_USECASES = {
-  LoggerUseCase: Symbol.for("LoggerUseCase"),
-};
-
 export const TYPES_CLOUDINARY_USECASES = {
   CloudinarySigUseCase: Symbol.for("CloudinarySigUseCase"),
 };

@@ -1,7 +1,11 @@
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { UpdateUserDetailsDTO } from "@application/dtos/user-dtos";
 import { AuthStatus, ProfileStatus } from "@shared/constants/index.constants";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  InternalServerError,
+  NotFoundError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import dotenv from "dotenv";
 import { ICloudStorageService } from "@application/interfaces/services/storage/ICloud.storage.service";
 import { User } from "@domain/entities/user.entity";
@@ -46,12 +50,19 @@ export class UpdateUserProfileUseCase implements IUpdateUserProfileUC {
     if (!userId) {
       throw new validationError(AuthStatus.IdRequired);
     }
+
+    const userData = await this.userRepository.findById(userId);
+
+    if (!userData) {
+      throw new NotFoundError(AuthStatus.IdRequired);
+    }
+
     const { profilePic } = profileUpdationData;
     const url = await this.uploadtoCloud(profilePic, this.profileFolder);
     profileData.profilePic = url;
     const updatedUserData = await this.updateUserData(userId, profileData);
     if (!updatedUserData) {
-      throw new validationError(ProfileStatus.UpdateFailed);
+      throw new InternalServerError(ProfileStatus.UpdateFailed);
     }
     return updatedUserData;
   }

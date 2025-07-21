@@ -37,18 +37,14 @@ export class CancelAppointmentUseCase implements ICancelAppointmentUC {
     );
 
     if (!cancelledAppointment) {
-      throw new validationError(
-        AppointmentStatus.FailedToCancelAppointmentStatus
-      );
+      throw new validationError(AppointmentStatus.FailedToCancel);
     }
     const changeStatusPending = await this.bookingSlotRepository.update(
       cancelledAppointment.bookingSlotId,
       { status: BookingSlotStatus.PENDING }
     );
     if (!changeStatusPending) {
-      throw new validationError(
-        AppointmentStatus.FailedToCancelAppointmentStatus
-      );
+      throw new validationError(AppointmentStatus.FailedToCancel);
     }
     return cancelledAppointment;
   }

@@ -2,7 +2,7 @@ import {
   BookAppointmentDTO,
   BookingSlotStatus,
 } from "@application/dtos/booking-dtos";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import {
   AppointmentStatus,
   AuthStatus,
@@ -39,7 +39,7 @@ export class BookAppointmentUseCase implements IBookAppointmentUC {
     }
     const bookingSlot = await this.bookingSlotRepository.findById(slotId);
     if (!bookingSlot) {
-      throw new validationError(AppointmentStatus.FailedToBookSlot);
+      throw new NotFoundError(AppointmentStatus.FailedToBookSlot);
     }
 
     const {

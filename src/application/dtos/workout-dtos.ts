@@ -1,15 +1,15 @@
-interface RepSet {
+export interface RepSet {
   kg: number;
   reps: number;
   time: number;
 }
 
-interface Exercise {
+export interface Exercise {
   name: string;
   sets: RepSet[];
 }
 
-interface Workout {
+export interface Workout {
   bodyPart: string;
   exercises: Exercise[];
 }

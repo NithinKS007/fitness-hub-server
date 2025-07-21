@@ -9,7 +9,7 @@ import { connectDB } from "@di/container-resolver";
 
 dotenv.config();
 
-const startServer = async () => {
+const startServer = async () => { 
   try {
 
     await connectDB.connectMongo();

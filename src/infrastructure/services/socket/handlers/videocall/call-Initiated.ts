@@ -5,6 +5,7 @@ import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.sta
 import { IGetTrainerDetailsUC } from "@application/interfaces/usecases/ITrainerUC";
 import { IGetAppointmentByIdUC } from "@application/interfaces/usecases/IAppointmentUC";
 import { ICreateVideoCallLogUC } from "@application/interfaces/usecases/IVideoCallLogUC";
+import { EmitEvents } from "@application/dtos/service/socket.service";
 
 interface InitiateVideoCall {
   io: Server;
@@ -12,7 +13,7 @@ interface InitiateVideoCall {
   receiverId: string;
   roomId: string;
   token: string;
-  appId:number
+  appId: number;
   appointmentId: string;
   getTrainerDetailsUseCase: IGetTrainerDetailsUC;
   getAppointmentByIdUseCase: IGetAppointmentByIdUC;
@@ -55,19 +56,19 @@ export const handleInitiateCall = async ({
 
     const receiverSocketId = socketStore.userSocketMap.get(receiverId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("incomingCall", {
+      io.to(receiverSocketId).emit(EmitEvents.incomingCall, {
         trainerName: trainerName,
         appointmentTime: appointmentTime,
         appointmentDate: appointmentDate,
         callerId: callerId,
         roomId: roomId,
         token: token,
-        appId:appId,
+        appId: appId,
         appointmentId: appointmentId,
       });
     }
   } catch (error: any) {
-    io.to(receiverId).emit("error", {
+    io.to(receiverId).emit(EmitEvents.error, {
       message:
         error.message ||
         "An unexpected error occurred while attempting to call.",

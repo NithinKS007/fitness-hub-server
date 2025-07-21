@@ -9,11 +9,10 @@ import userRoutes from "@presentation/routes/user.routes";
 import chatRoutes from "@presentation/routes/chat.routes";
 import dotenv from "dotenv";
 import { Request, Response } from "express";
-import morganMiddleware from "@infrastructure/services/logging/morgan";
 import rateLimiter from "@presentation/middlewares/ratelimit.middleware";
 import { notFoundMiddleware } from "@presentation/middlewares/notfound.middleware";
 import { asyncHandler } from "@shared/utils/async-handler";
-import { webhookController } from "@di/container-resolver";
+import { ReqLogService, webhookController } from "@di/container-resolver";
 import publicRoutes from "@presentation/routes/public.routes";
 import cloudinaryRoutes from "@presentation/routes/cloudinary.routes";
 import helmet from "helmet";
@@ -26,7 +25,7 @@ const allowedOrigins = process.env.CLIENT_ORIGINS;
 
 app.use(helmet());
 app.use("/api", rateLimiter);
-app.use(morganMiddleware);
+app.use(ReqLogService.streamLog());
 app.use(
   cors({
     origin: allowedOrigins,

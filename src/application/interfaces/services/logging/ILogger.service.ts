@@ -1,9 +1,10 @@
+import { Handler } from "express";
+
 export interface ILoggerService {
-  info(message: string): void;
-  error(message: string | Error): void;
-  debug(message: string): void;
+  log(message: string): void;
+  error(message: string, error?: Error): void;
   warn(message: string): void;
-  stream: {
-    write: (message: string) => void;
-  };
+  debug(message: string): void;
+  verbose(message: string): void;
+  streamLog(): Handler;
 }

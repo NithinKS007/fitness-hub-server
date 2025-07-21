@@ -11,6 +11,6 @@ export enum AppointmentStatus {
   AppointmentsFetched  = "Appointments list retrieved successfully",
   AppointmentsFetchFailed  = "Failed to retrieve appointments list",
   AppointmentCancelledSuccessfully = "Appointment cancelled successfully",
-  FailedToCancelAppointmentStatus = "Failed to cancel appointment schedule",
+  FailedToCancel = "Failed to cancel appointment schedule",
   FailedToFindAppointment = "Failed to find appointment data",
 }

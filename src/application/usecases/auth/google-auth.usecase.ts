@@ -1,5 +1,6 @@
 import { GoogleTokenDTO } from "@application/dtos/auth-dtos";
 import {
+  ConflictError,
   ForbiddenError,
   validationError,
 } from "@presentation/middlewares/error.middleware";
@@ -65,7 +66,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUC {
       throw new ForbiddenError(AuthStatus.AccountBlocked);
     }
     if (userData && userData.otpVerified) {
-      throw new validationError(AuthStatus.DifferentLoginMethod);
+      throw new ConflictError(AuthStatus.DifferentLoginMethod);
     }
     if (!userData) {
       const { email, given_name, family_name, picture } = googleUserInfo;

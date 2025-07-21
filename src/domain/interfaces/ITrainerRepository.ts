@@ -4,7 +4,7 @@ import {
   GetTrainersQueryDTO,
 } from "@application/dtos/query-dtos";
 import {
-  Trainer,
+  TrainerDTO,
   TrainerWithSubscription,
 } from "@application/dtos/trainer-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
@@ -14,17 +14,17 @@ import { ITrainer } from "@infrastructure/databases/models/trainer.model";
 
 export interface ITrainerRepository
   extends IBaseRepository<ITrainer, TrainerDomain> {
-  getTrainerDetailsById(trainerId: string): Promise<Trainer>;
+  getTrainerDetailsById(trainerId: string): Promise<TrainerDTO>;
   getTrainers(
     searchFilterQuery: GetTrainersQueryDTO
-  ): Promise<{ trainersList: Trainer[]; paginationData: PaginationDTO }>;
-  getTrainerDetailsByUserIdRef(userId: string): Promise<Trainer>;
+  ): Promise<{ trainersList: TrainerDTO[]; paginationData: PaginationDTO }>;
+  getTrainerDetailsByUserIdRef(userId: string): Promise<TrainerDTO>;
   getApprovedTrainers(
     searchFilterQuery: GetApprovedTrainerQueryDTO
-  ): Promise<{ trainersList: Trainer[]; paginationData: PaginationDTO }>;
+  ): Promise<{ trainersList: TrainerDTO[]; paginationData: PaginationDTO }>;
   getTrainerWithSub(trainerId: string): Promise<TrainerWithSubscription>;
   getVerifyPendingList(
     searchFilterQuery: GetTrainersApprovalQueryDTO
-  ): Promise<{ trainersList: Trainer[]; paginationData: PaginationDTO }>;
+  ): Promise<{ trainersList: TrainerDTO[]; paginationData: PaginationDTO }>;
   countPendingTrainerApprovals(): Promise<number>;
 }

@@ -1,7 +1,7 @@
 import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { WorkoutStatus } from "@shared/constants/index.constants";
-import { WorkoutdbDTO, WorkoutDTO } from "@application/dtos/workout-dtos";
+import { Exercise, RepSet, WorkoutdbDTO, WorkoutDTO } from "@application/dtos/workout-dtos";
 import { Workout } from "@domain/entities/workout.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
@@ -28,8 +28,8 @@ export class CreateWorkoutUseCase implements ICreateWorkoutUC{
     const workoutDate = new Date(date);
     const workoutItems: WorkoutdbDTO[] = Object.entries(workouts).flatMap(
       ([bodyPart, workout]: [string, any]) =>
-        workout.exercises.flatMap((exercise: any) =>
-          exercise.sets.map((set: any) => ({
+        workout.exercises.flatMap((exercise: Exercise) =>
+          exercise.sets.map((set: RepSet) => ({
             userId: userId,
             date: workoutDate,
             bodyPart,
