@@ -1,5 +1,5 @@
 import { IBaseUseCase } from "./IBase.UC";
-import { UserDashBoardDTO } from "@application/dtos/query-dtos";
+import { UserDashBoardQueryDTO } from "@application/dtos/query-dtos";
 import {
   AdminDashBoardStats,
   TrainerDashboardStats,
@@ -17,4 +17,4 @@ export interface ITrainerDashBoardUC
     TrainerDashboardStats
   > {}
 export interface IUserDashBoardUC
-  extends IBaseUseCase<UserDashBoardDTO, UserDashBoard> {}
+  extends IBaseUseCase<UserDashBoardQueryDTO, UserDashBoard> {}

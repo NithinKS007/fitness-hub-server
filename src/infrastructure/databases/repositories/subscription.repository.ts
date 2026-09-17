@@ -13,10 +13,10 @@ export class SubscriptionRepository
   constructor(model: Model<ISubscription> = SubscriptionModel) {
     super(model);
   }
-  async findAll(query: Partial<Subscription>): Promise<Subscription[]> {
+  async findAllSubscription(trainerId: string): Promise<Subscription[]> {
     const result = await this.model
-      .find({ trainerId: query.trainerId })
-      .sort({ createdAt: -1 });
+      .find({ trainerId: trainerId })
+      .sort({ createdAt: -1 })
 
     return result.map((s) => this.toDomain(s));
   }

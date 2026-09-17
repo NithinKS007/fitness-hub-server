@@ -16,7 +16,7 @@ export class CheckSubscriptionStatusController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { id: userId } = req?.user || {};
+    const { _id: userId } = req?.user || {};
     const { id: trainerId } = req.params;
 
     const isUserSubscribedToTheTrainer =

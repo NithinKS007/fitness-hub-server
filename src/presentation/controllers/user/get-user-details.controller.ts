@@ -16,6 +16,7 @@ export class GetUserDetailsController {
     const { id: userId } = req.params;
 
     const userData = await this.getUserDetailsUseCase.execute(userId);
+
     sendResponse(res, StatusCodes.OK, userData, ProfileStatus.UserRetrieved);
   }
 }

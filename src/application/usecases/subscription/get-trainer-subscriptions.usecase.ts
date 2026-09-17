@@ -7,7 +7,9 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IGetTrainerSubscriptionsUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
-export class GetTrainerSubscriptionsUseCase implements IGetTrainerSubscriptionsUC {
+export class GetTrainerSubscriptionsUseCase
+  implements IGetTrainerSubscriptionsUC
+{
   constructor(
     @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository
@@ -16,6 +18,6 @@ export class GetTrainerSubscriptionsUseCase implements IGetTrainerSubscriptionsU
     if (!trainerId) {
       throw new validationError(AuthStatus.IdRequired);
     }
-    return await this.subscriptionRepository.findAll({ trainerId });
+    return await this.subscriptionRepository.findAllSubscription(trainerId);
   }
 }

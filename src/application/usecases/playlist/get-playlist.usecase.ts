@@ -2,7 +2,7 @@ import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus } from "@shared/constants/index.constants";
 import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
-import { GetPlayListsDTO } from "@application/dtos/query-dtos";
+import { GetPlayListsQueryDTO } from "@application/dtos/query-dtos";
 import { PlayList } from "@domain/entities/playlist.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
@@ -14,26 +14,16 @@ export class GetPlayListUseCase implements IGetPlayListUC {
     @inject(TYPES_REPOSITORIES.PlayListRepository)
     private playListRepository: IPlayListRepository
   ) {}
-
-  async execute({
-    trainerId,
-    page,
-    limit,
-    fromDate,
-    toDate,
-    search,
-    filters,
-  }: GetPlayListsDTO): Promise<{
-    playList: PlayList[];
-    paginationData: PaginationDTO;
-  }> {
+  
+  async execute(
+    { trainerId, page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
+  ): Promise<{ playList: PlayList[]; paginationData: PaginationDTO }> {
     if (!trainerId) {
       throw new validationError(AuthStatus.IdRequired);
     }
-    const query = { page, limit, fromDate, toDate, search, filters, trainerId };
-    const { playList, paginationData } = await this.playListRepository.getPlaylists(
-      query
-    );
+    const query = { page, limit, fromDate, toDate, search, filters ,trainerId};
+    const { playList, paginationData } =
+      await this.playListRepository.getPlaylists(query);
 
     return { playList, paginationData };
   }

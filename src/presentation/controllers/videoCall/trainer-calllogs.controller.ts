@@ -15,10 +15,21 @@ export class GetTrainerVideoCallLogController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { id: trainerId } = req?.user || {};
+    const { _id: trainerId } = req?.user || {};
 
     const queryParams = parseQueryParams(req.query);
 
-   
+    const { trainerVideoCallLogList, paginationData } =
+      await this.getTrainerVideoCallLogUseCase.execute({
+        trainerId,
+        ...queryParams,
+      });
+
+    sendResponse(
+      res,
+      StatusCodes.OK,
+      { trainerVideoCallLogList, paginationData },
+      VideoCallStatus.RetrievedSuccess
+    );
   }
 }

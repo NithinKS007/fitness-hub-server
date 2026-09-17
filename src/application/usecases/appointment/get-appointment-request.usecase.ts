@@ -1,15 +1,12 @@
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import {
-  NotFoundError,
-  validationError,
-} from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AppointmentStatus,
 } from "@shared/constants/index.constants";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { GetBookingRequestsDTO } from "@application/dtos/query-dtos";
-import { AppointmentsTRUILayer } from "@infrastructure/mappers/appointment.mapper";
+import { AppointmentRequestsTrainer } from "@application/dtos/appointment-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IGetAppointmentRequestsUC } from "@application/interfaces/usecases/IAppointmentUC";
@@ -29,23 +26,17 @@ export class GetAppointmentRequestUseCase implements IGetAppointmentRequestsUC {
     private appointmentRepository: IAppointmentRepository
   ) {}
 
-  async execute({
-    trainerId,
-    page,
-    limit,
-    fromDate,
-    toDate,
-    search,
-    filters,
-  }: GetBookingRequestsDTO): Promise<{
-    bookingRequestsList: AppointmentsTRUILayer[];
+  async execute(
+    { trainerId ,page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO
+  ): Promise<{
+    bookingRequestsList: AppointmentRequestsTrainer[];
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const dtos = { trainerId, page, limit, fromDate, toDate, search, filters };
-    const { data: bookingRequestsList, pagination: paginationData } =
+    const dtos = { trainerId,page, limit, fromDate, toDate, search, filters };
+    const { bookingRequestsList, paginationData } =
       await this.appointmentRepository.getBookingRequests(dtos);
 
     if (!bookingRequestsList) {

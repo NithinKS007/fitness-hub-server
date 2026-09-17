@@ -1,42 +1,49 @@
-import { IChatRepository } from "@domain/interfaces/IChatRepository";
+import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
 import { UpdateUnReadMessageCount } from "@application/dtos/conversation-dtos";
-import { ChatLastMsg } from "@application/dtos/chat-dtos";
+import { Conversation } from "@application/dtos/chat-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IUpdateUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
 
 @injectable()
-export class UpdateUnReadMessageCountUseCase implements IUpdateUnReadMessageCountUC {
+export class UpdateUnReadMessageCountUseCase
+  implements IUpdateUnReadMessageCountUC
+{
   constructor(
-    @inject(TYPES_REPOSITORIES.ChatRepository)
-    private chatRepository: IChatRepository
+    @inject(TYPES_REPOSITORIES.ConversationRepository)
+    private conversationRepository: IConversationRepository
   ) {}
 
   async execute({
     userId,
     otherUserId,
     count,
-  }: UpdateUnReadMessageCount): Promise<ChatLastMsg | null> {
-    const conversationData = await this.chatRepository.findChatUpdateCount(
-      userId,
-      otherUserId
-    );
+  }: UpdateUnReadMessageCount): Promise<Conversation | null> {
+    const conversationData =
+      await this.conversationRepository.findChatUpdateCount(
+        userId,
+        otherUserId
+      );
 
     if (!conversationData) return null;
 
-    const { id: conversationId } = conversationData;
+    const { _id: conversationId } = conversationData;
 
-    const updatedMessage = await this.chatRepository.update(String(conversationId), {
-      unreadCount: count,
-    });
+    const updatedMessage = await this.conversationRepository.update(
+      String(conversationId),
+      {
+        unreadCount: count,
+      }
+    );
 
     if (!updatedMessage) return null;
 
-    const { id: updatedMessageId } = updatedMessage;
+    const { _id: updatedMessageId } = updatedMessage;
 
-    const finalMessageDocument = await this.chatRepository.findChatWithLastMessage(
-      String(updatedMessageId)
-    );
+    const finalMessageDocument =
+      await this.conversationRepository.findChatWithLastMessage(
+        String(updatedMessageId)
+      );
     return finalMessageDocument;
   }
 }

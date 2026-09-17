@@ -15,7 +15,7 @@ export class CreateSubPlanController {
     private createSubscriptionUseCase: ICreateSubscriptionUC
   ) {}
   async handle(req: Request, res: Response): Promise<void> {
-    const { id: trainerId } = req?.user || {};
+    const { _id: trainerId } = req?.user || {};
 
     const subscriptionData = await this.createSubscriptionUseCase.execute({
       trainerId,

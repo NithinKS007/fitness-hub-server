@@ -1,26 +1,26 @@
 import { IBaseUseCase } from "./IBase.UC";
 import {
-  GetTrainerSubsDTO,
-  GetUserSubDTO,
-  GetUserTrainersListDTO,
+  GetTrainerSubscribersQueryDTO,
+  GetUserSubscriptionsQueryDTO,
+  GetUserTrainersListQueryDTO,
 } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import {
   CancelSubscriptionDTO,
   CheckSubscriptionStatusDTO,
   PurchaseSubscriptionDTO,
-  TrainerSubList,
-  UserSubList,
+  TrainerSubscribersList,
+  UserMyTrainersList,
+  UserSubscriptionsList,
 } from "@application/dtos/subscription-dtos";
 import { Subscription } from "@domain/entities/subscription.entity";
 import { UserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
-import { UserMyTRListUILayer } from "@infrastructure/mappers/chat.mapper";
 
 export interface ICancelSubscriptionUC
   extends IBaseUseCase<
     CancelSubscriptionDTO,
     {
-      providerSubId: string;
+      stripeSubscriptionId: string;
       isActive: string;
       cancelAction: string;
     }
@@ -37,9 +37,9 @@ export interface ICheckSubscriptionStatusUC
 
 export interface IGetTrainerSubscribersUC
   extends IBaseUseCase<
-    GetTrainerSubsDTO,
+    GetTrainerSubscribersQueryDTO,
     {
-      trainerSubscribers: TrainerSubList[];
+      trainerSubscribers: TrainerSubscribersList[];
       paginationData: PaginationDTO;
     }
   > {}
@@ -49,17 +49,17 @@ export interface IGetTrainerSubscriptionsUC
 
 export interface IGetUserSubscriptionsUC
   extends IBaseUseCase<
-    GetUserSubDTO,
+    GetUserSubscriptionsQueryDTO,
     {
-      userSubscriptionsList: UserSubList[];
+      userSubscriptionsList: UserSubscriptionsList[];
       paginationData: PaginationDTO;
     }
   > {}
 export interface IGetUserTrainerslistUC
   extends IBaseUseCase<
-    GetUserTrainersListDTO,
+    GetUserTrainersListQueryDTO,
     {
-      userTrainersList: UserMyTRListUILayer[];
+      userTrainersList: UserMyTrainersList[];
       paginationData: PaginationDTO;
     }
   > {}
@@ -67,7 +67,10 @@ export interface IPurchaseSubscriptionUC
   extends IBaseUseCase<PurchaseSubscriptionDTO, string> {}
 
 export interface IVerifySubscriptionSessionUC
-  extends IBaseUseCase<string, UserSubscriptionPlan & { isSubscribed: boolean }> {}
+  extends IBaseUseCase<
+    string,
+    UserSubscriptionPlan & { isSubscribed: boolean }
+  > {}
 
 export interface IWebHookHandlerUC
   extends IBaseUseCase<

@@ -1,7 +1,4 @@
-import {
-  NotFoundError,
-  validationError,
-} from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AppointmentStatus,
@@ -30,7 +27,9 @@ export class GetAppointmentByIdUseCase implements IGetAppointmentByIdUC {
     if (!appointmentId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const appointmentData = await this.appointmentRepository.findById(appointmentId);
+    const appointmentData = await this.appointmentRepository.findById(
+      appointmentId
+    );
     if (!appointmentData) {
       throw new NotFoundError(AppointmentStatus.FailedToFindAppointment);
     }

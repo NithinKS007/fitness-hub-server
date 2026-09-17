@@ -1,6 +1,6 @@
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { IOtpRepository } from "@domain/interfaces/IOtpRepository";
-import { CreateTrainerDTO } from "@application/dtos/trainer-dtos";
+import { CreateTrainerDTO, TrainerDTO } from "@application/dtos/trainer-dtos";
 import {
   ApplicationStatus,
   AuthStatus,
@@ -20,7 +20,6 @@ import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
 import { ICreateTrainerUC } from "@application/interfaces/usecases/IAuthUC";
-import { Trainer } from "@domain/entities/trainer.entity";
 
 /*  
     Purpose: Creates a new trainer and handles OTP verification during registration.
@@ -73,7 +72,7 @@ export class CreateTrainerUseCase implements ICreateTrainerUC {
     yearsOfExperience,
     specializations,
     certificate,
-  }: CreateTrainerDTO): Promise<(User & Trainer) | User> {
+  }: CreateTrainerDTO): Promise<TrainerDTO | User> {
     if (
       !fname ||
       !lname ||
@@ -104,7 +103,7 @@ export class CreateTrainerUseCase implements ICreateTrainerUC {
       return existinguser;
     }
 
-    const createUserData = {
+    const createdTrainerData = {
       fname,
       lname,
       email,
@@ -114,13 +113,13 @@ export class CreateTrainerUseCase implements ICreateTrainerUC {
     };
     const hashedPassword = await this.encryptionService.hash(password);
     const createdTrainer = await this.userRepository.create({
-      ...createUserData,
+      ...createdTrainerData,
       password: hashedPassword,
     });
 
     const trainerSpecificData = {
       yearsOfExperience,
-      userId: createdTrainer.id,
+      userId: createdTrainer._id,
       specializations,
       certificate,
     };

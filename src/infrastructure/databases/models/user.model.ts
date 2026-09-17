@@ -21,8 +21,6 @@ export interface IUser extends Document {
   bloodGroup: string;
   medicalConditions: string;
   otherConcerns: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const userSchema: Schema = new Schema(

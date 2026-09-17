@@ -1,27 +1,23 @@
 import { Model } from "mongoose";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
-import { GetPlayListsDTO } from "@application/dtos/query-dtos";
+import { GetPlayListsQueryDTO } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import { PlayList } from "@domain/entities/playlist.entity";
 import PlayListModel, { IPlayList } from "../models/playlist.model";
 import { VideoPerPlayList } from "@application/dtos/playlist-dtos";
-import { MongoHelper } from "../utils/mongo-helper";
 
 export class PlayListRepository
   extends BaseRepository<IPlayList, PlayList>
   implements IPlayListRepository
 {
-  constructor(
-    model: Model<IPlayList> = PlayListModel,
-    private utility: MongoHelper = new MongoHelper()
-  ) {
+  constructor(model: Model<IPlayList> = PlayListModel) {
     super(model);
   }
 
   async findOne(query: Partial<PlayList>): Promise<PlayList | null> {
-    const { title, id } = query;
+    const { title, _id } = query;
 
     const queryObject: any = {};
 
@@ -29,44 +25,40 @@ export class PlayListRepository
       queryObject.title = title;
     }
 
-    if (id) {
-      queryObject._id = { $ne: this.parseId(id) };
+    if (_id) {
+      queryObject._id = { $ne: this.parseId(String(_id)) };
     }
 
     const result = await this.model.findOne(queryObject);
     return result ? this.toDomain(result) : null;
   }
 
-  async getPlaylists(dtos: GetPlayListsDTO): Promise<{
-    playList: PlayList[];
-    paginationData: PaginationDTO;
-  }> {
-    const { trainerId, page, limit, fromDate, toDate, search, filters } = dtos;
+  async getPlaylists(
+    { trainerId, page, limit, fromDate, toDate, search, filters }: GetPlayListsQueryDTO
+  ): Promise<{ playList: PlayList[]; paginationData: PaginationDTO }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
-    let matchQuery: any = {
-      ...this.utility.dateFilter({ fromDate, toDate }, "createdAt"),
-      ...this.utility.search({ search }, ["title"]),
-    };
+    let matchQuery: any = {};
+
+    if (search) {
+      matchQuery.$or = [{ title: { $regex: search, $options: "i" } }];
+    }
 
     if (filters && filters.length > 0 && !filters.includes("All")) {
-      const conditions: { privacy: boolean }[] = [];
-
-      for (const filter of filters) {
-        switch (filter) {
-          case "Active":
-            conditions.push({ privacy: false });
-            break;
-          case "Inactive":
-            conditions.push({ privacy: true });
-            break;
-          default:
-            break;
-        }
-      }
-
+      const conditions: any = [];
+      if (filters.includes("Active")) conditions.push({ privacy: false });
+      if (filters.includes("Inactive")) conditions.push({ privacy: true });
       if (conditions.length > 0) matchQuery.$and = conditions;
     }
 
+    if (fromDate || toDate) {
+      matchQuery.createdAt = {};
+      if (fromDate) {
+        matchQuery.createdAt.$gte = fromDate;
+      }
+      if (toDate) {
+        matchQuery.createdAt.$lte = toDate;
+      }
+    }
     const [totalCount, playlists] = await Promise.all([
       this.model.countDocuments({
         trainerId: this.parseId(trainerId),
@@ -79,7 +71,7 @@ export class PlayListRepository
         })
         .skip(skip)
         .limit(limitNumber)
-        .sort({ createdAt: -1 }),
+        .sort({ createdAt: -1 })
     ]);
 
     const paginationData = paginateRes({
@@ -133,12 +125,15 @@ export class PlayListRepository
     );
   }
 
-  async getallPlaylists(trainerId: string, privacy: boolean): Promise<PlayList[]> {
-    const query = {
-      trainerId,
-      ...(privacy !== undefined ? { privacy: privacy } : {}),
-    };
+  async getallPlaylists(
+    trainerId: string,
+    privacy: boolean
+  ): Promise<PlayList[]> {
+    const query: any = { trainerId };
+    if (privacy !== undefined) {
+      query.privacy = privacy;
+    }
     const result = await this.model.find(query);
-    return result.map((result) => this.toDomain(result));
+    return result.map((re) => this.toDomain(re));
   }
 }

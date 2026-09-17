@@ -16,7 +16,7 @@ export class EditSubPlanController {
   ) {}
   async handle(req: Request, res: Response): Promise<void> {
     const { id: subscriptionId } = req.params;
-    const { id: trainerId } = req?.user || {};
+    const { _id: trainerId } = req?.user || {};
 
     const editSubscriptionData = await this.editSubscriptionUseCase.execute({
       trainerId: trainerId,

@@ -1,8 +1,6 @@
-import {
-  NotFoundError,
-  validationError,
-} from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus } from "@shared/constants/index.constants";
+import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
@@ -21,20 +19,26 @@ import { ICheckUserBlockStatusUC } from "@application/interfaces/usecases/IAuthU
 export class CheckUserBlockStatusUseCase implements ICheckUserBlockStatusUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
-    private userRepository: IUserRepository
+    private userRepository: IUserRepository,
+    @inject(TYPES_REPOSITORIES.TrainerRepository)
+    private trainerRepository: ITrainerRepository
   ) {}
 
-  async execute(id: string): Promise<boolean> {
-    if (!id) {
+  async execute(_id: string): Promise<boolean> {
+    if (!_id) {
       throw new validationError(AuthStatus.IdRequired);
     }
-    const userData = await this.userRepository.findById(id);
+    const [userData, trainerData] = await Promise.all([
+      this.userRepository.findById(_id),
+      this.trainerRepository.getTrainerDetailsById(_id),
+    ]);
 
-    if (!userData) {
+    if (!userData && !trainerData) {
       throw new NotFoundError(AuthStatus.InvalidId);
     }
 
     if (userData) return userData.isBlocked;
+    if (trainerData) return trainerData.isBlocked;
     return false;
   }
 }

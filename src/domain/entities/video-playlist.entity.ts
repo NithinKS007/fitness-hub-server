@@ -1,7 +1,5 @@
 export interface VideoPlaylist {
-  id: string;
+  _id: string;
   videoId: string;
   playlistId: string;
-  createdAt: Date;
-  updatedAt: Date;
 }

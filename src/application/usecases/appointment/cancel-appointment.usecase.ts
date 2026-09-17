@@ -5,12 +5,11 @@ import {
 } from "@shared/constants/index.constants";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
-import { BookingSlotStatus, HandleBookingDTO } from "@application/dtos/booking-dtos";
+import { BookingSlotStatus } from "@application/dtos/booking-dtos";
 import { Appointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { ICancelAppointmentUC } from "@application/interfaces/usecases/IAppointmentUC";
-import { Action } from "@application/dtos/utility-dtos";
 
 /*  
     Purpose: Cancel an existing appointment and update the booking slot status to "pending"
@@ -28,29 +27,22 @@ export class CancelAppointmentUseCase implements ICancelAppointmentUC {
     private appointmentRepository: IAppointmentRepository
   ) {}
 
-  async execute({ appointmentId, action }: HandleBookingDTO): Promise<Appointment> {
+  async execute(appointmentId: string): Promise<Appointment> {
     if (!appointmentId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    
-    if (![Action.Cancelled].includes(action)) {
-      throw new validationError(AppointmentStatus.InvalidAction);
-    }
-
     const cancelledAppointment = await this.appointmentRepository.update(
       appointmentId,
-      { status: action }
+      { status: "cancelled" }
     );
 
     if (!cancelledAppointment) {
       throw new validationError(AppointmentStatus.FailedToCancel);
     }
-
     const changeStatusPending = await this.bookingSlotRepository.update(
       cancelledAppointment.bookingSlotId,
       { status: BookingSlotStatus.PENDING }
     );
-
     if (!changeStatusPending) {
       throw new validationError(AppointmentStatus.FailedToCancel);
     }

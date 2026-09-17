@@ -16,10 +16,10 @@ export class BookAppointmentController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { id:slotId } = req.params;
-    const { id: userId } = req?.user || {};
+    const { slotId, trainerId } = req.params;
+    const { _id: userId } = req?.user || {};
 
-    const bookingRequestData = { slotId, userId };
+    const bookingRequestData = { slotId, userId, trainerId };
     const bookedSlotData = await this.bookAppointmentUC.execute(
       bookingRequestData
     );

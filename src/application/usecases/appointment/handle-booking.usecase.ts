@@ -1,8 +1,8 @@
-import { BookingStatus, HandleBookingDTO } from "@application/dtos/booking-dtos";
 import {
-  NotFoundError,
-  validationError,
-} from "@presentation/middlewares/error.middleware";
+  BookingStatus,
+  HandleBookingDTO,
+} from "@application/dtos/booking-dtos";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AppointmentStatus,
@@ -31,35 +31,43 @@ export class HandleBookingApprovalUseCase implements IHandleBookingApprovalUC {
     private appointmentRepository: IAppointmentRepository
   ) {}
 
-  async execute({ appointmentId, action }: HandleBookingDTO): Promise<Appointment> {
-    if (!appointmentId || !action) {
+  async execute({
+    appointmentId,
+    bookingSlotId,
+    action,
+  }: HandleBookingDTO): Promise<Appointment> {
+    if (!appointmentId || !bookingSlotId || !action) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
 
     if (![Action.Approved, Action.Rejected].includes(action)) {
-      throw new validationError(AppointmentStatus.InvalidAction);
-    }
-
-    const appointmentData = await this.appointmentRepository.update(appointmentId, {
-      status: action,
-    });
-
-    if (!appointmentData) {
-      throw new validationError(AppointmentStatus.FailedToChangeBookingStatus);
+      throw new validationError(
+        "Invalid action. Only 'Approved' or 'Rejected' are allowed."
+      );
     }
 
     const bookingSlotData = await this.bookingSlotRepository.findById(
-      appointmentData.bookingSlotId
+      bookingSlotId
     );
     if (!bookingSlotData) {
       throw new NotFoundError(AppointmentStatus.BookingSlotNotFound);
     }
     const status =
-      action === Action.Approved ? BookingStatus.Completed : BookingStatus.Pending;
+      action === Action.Approved
+        ? BookingStatus.Completed
+        : BookingStatus.Pending;
 
-    await this.bookingSlotRepository.update(appointmentData.bookingSlotId, {
-      status,
-    });
+    await this.bookingSlotRepository.update(bookingSlotId, { status });
+    const appointmentData = await this.appointmentRepository.update(
+      appointmentId,
+      {
+        status: action,
+      }
+    );
+
+    if (!appointmentData) {
+      throw new validationError(AppointmentStatus.FailedToChangeBookingStatus);
+    }
     return appointmentData;
   }
 }

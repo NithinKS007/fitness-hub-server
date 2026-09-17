@@ -2,10 +2,7 @@ import { IOtpRepository } from "@domain/interfaces/IOtpRepository";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { OtpDTO } from "@application/dtos/auth-dtos";
 import { OTPStatus } from "@shared/constants/index.constants";
-import {
-  NotFoundError,
-  validationError,
-} from "@presentation/middlewares/error.middleware";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
 import { IOTPService } from "@application/interfaces/services/security/IOtp.service";
 import { Otp } from "@domain/entities/otp.entity";
@@ -69,17 +66,11 @@ export class OtpUseCase implements IOtpUC {
       throw new validationError(OTPStatus.Invalid);
     }
     const { email: userEmail } = otpData;
-    const userData = await this.userRepository.findOne({ email: userEmail });
-
-    if (!userData) {
-      throw new NotFoundError("Not found");
-    }
-
-    await this.userRepository.update(userData.id, { otpVerified: true });
-
-    await this.otpRepository.delete(otpData?.id);
+    await this.userRepository.updateUserVerificationStatus({
+      email: userEmail,
+    });
+    await this.otpRepository.delete(otpData?._id);
   }
-
   async resendOtp({ email, otp }: OtpDTO): Promise<void> {
     const userData = await this.userRepository.findOne({ email });
 

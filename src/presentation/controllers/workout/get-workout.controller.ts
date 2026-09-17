@@ -14,7 +14,7 @@ export class GetWorkoutController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { id: userId } = req?.user || {};
+    const { _id: userId } = req?.user || {};
 
     const queryParams = parseQueryParams(req.query);
 

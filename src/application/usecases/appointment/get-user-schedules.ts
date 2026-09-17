@@ -1,15 +1,12 @@
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import {
-  NotFoundError,
-  validationError,
-} from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import {
   AppointmentStatus,
   AuthStatus,
 } from "@shared/constants/index.constants";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { GetUserSchedulesDTO } from "@application/dtos/query-dtos";
-import { AppointmentsURUILayer } from "@infrastructure/mappers/appointment.mapper";
+import { AppointmentRequestsUser } from "@application/dtos/appointment-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IGetUserSchedulesUC } from "@application/interfaces/usecases/IAppointmentUC";
@@ -28,23 +25,18 @@ export class GetUserSchedulesUseCase implements IGetUserSchedulesUC {
     private appointmentRepository: IAppointmentRepository
   ) {}
 
-  async execute({
-    userId,
-    page,
-    limit,
-    fromDate,
-    toDate,
-    search,
-    filters,
-  }: GetUserSchedulesDTO): Promise<{
-    appointmentList: AppointmentsURUILayer[];
+  async execute(
+    { userId, page, limit, fromDate, toDate, search, filters }: GetUserSchedulesDTO
+  )
+  : Promise<{
+    appointmentList: AppointmentRequestsUser[];
     paginationData: PaginationDTO;
   }> {
     if (!userId) {
       throw new validationError(AuthStatus.IdRequired);
     }
     const query = { userId, page, limit, fromDate, toDate, search, filters };
-    const { data: appointmentList, pagination: paginationData } =
+    const { appointmentList, paginationData } =
       await this.appointmentRepository.getUserSchedules(query);
     if (!appointmentList) {
       throw new NotFoundError(AppointmentStatus.BookingRequestsFetchFailed);

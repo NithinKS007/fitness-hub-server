@@ -3,11 +3,11 @@ export { UserRepository } from "@infrastructure/databases/repositories/user.repo
 export { TrainerRepository } from "@infrastructure/databases/repositories/trainer.repository";
 export { SubscriptionRepository } from "@infrastructure/databases/repositories/subscription.repository";
 export { UserSubscriptionPlanRepository } from "@infrastructure/databases/repositories/user-subscription-plan.repository";
-export { FinancialLogRepository } from "@infrastructure/databases/repositories/financialLog.repository";
+export { RevenueRepository } from "@infrastructure/databases/repositories/revenue.repository";
 export { PasswordResetRepository } from "@infrastructure/databases/repositories/passwordreset.repository";
 export { OtpRepository } from "@infrastructure/databases/repositories/otp.repository";
-export { MessageRepository } from "@infrastructure/databases/repositories/message.repository";
-export { ChatRepository } from "@infrastructure/databases/repositories/chatRepository";
+export { ChatRepository } from "@infrastructure/databases/repositories/chat.repository";
+export { ConversationRepository } from "@infrastructure/databases/repositories/conversation.repository";
 export { PlayListRepository } from "@infrastructure/databases/repositories/playlist.repository";
 export { VideoRepository } from "@infrastructure/databases/repositories/video.repository";
 export { VideoPlayListRepository } from "@infrastructure/databases/repositories/video-playlist.repository";
@@ -34,7 +34,7 @@ export { GetUserDetailsUseCase } from "@application/usecases/user/get-user-detai
 export { UpdateUserBlockStatusUseCase } from "@application/usecases/user/update-user-block-status.usecase";
 
 // Platform Use Cases
-export { GetTransactionsUsecase } from "@application/usecases/financialLog/get-transactions.usecase";
+export { GetPlatformEarningsUsecase } from "@application/usecases/platform/get-platfrom-earnings.usecase";
 
 // Subscription Use Cases
 export { GetTrainerSubscriptionsUseCase } from "@application/usecases/subscription/get-trainer-subscriptions.usecase";
@@ -52,7 +52,11 @@ export { VerifySubcriptionSessionUseCase } from "@application/usecases/subscript
 export { GetUserTrainerslistUseCase } from "@application/usecases/subscription/get-user-trainers-list.usecase";
 
 // Trainer Use Cases
+export { GetTrainerDetailsUseCase } from "@application/usecases/trainer/get-trainer-details.usecase";
+export { GetTrainerAndSubInfoUseCase } from "@application/usecases/trainer/get-trainer-with-subscription";
 export { GetTrainersUseCase } from "@application/usecases/trainer/get-trainers-usecase";
+export { GetApprovedTrainersUseCase } from "@application/usecases/trainer/get-approved-trainers.usecase";
+export { GetVerifyTrainerlistUseCase } from "@application/usecases/trainer/get-verify-trainer-list.usecase";
 export { TrainerApprovalUseCase } from "@application/usecases/trainer/trainer-approval.usecase";
 
 // Authentication Use Cases
@@ -111,11 +115,13 @@ export { CreateMessageUseCase } from "@application/usecases/chat/create-message.
 // Booking Slot Use Cases
 export { CreateBookingSlotUseCase } from "@application/usecases/bookingSlot/create-booking-slot.usecase";
 export { DeleteBookingSlotUseCase } from "@application/usecases/bookingSlot/delete-booking-slot.usecase";
-export { GetSlotsUseCase } from "@application/usecases/bookingSlot/get-slots";
+export { GetPendingSlotsUseCase } from "@application/usecases/bookingSlot/get-pending-slots";
+export { GetUpComingSlotsUseCase } from "@application/usecases/bookingSlot/get-upcoming-slots";
 
 // Playlist Use Cases
 export { CreatePlayListUseCase } from "@application/usecases/playlist/create-playlist.usecase";
 export { EditPlayListUseCase } from "@application/usecases/playlist/edit-playlist.usecase";
+export { GetallPlaylistUseCase } from "@application/usecases/playlist/get-all-playlist.usecase";
 export { GetPlayListUseCase } from "@application/usecases/playlist/get-playlist.usecase";
 export { UpdatePlayListPrivacyUseCase } from "@application/usecases/playlist/update-playlist-privacy.usecase";
 
@@ -129,8 +135,11 @@ export { CloudinarySigUseCase} from "@application/usecases/cloudinary/cloudinary
 
 // Appointment Controllers
 export { BookAppointmentController } from "@presentation/controllers/appointment/book-appointment.controller";
-export { UpdateAppointmentController } from "@presentation/controllers/appointment/updateAppointment.controller";
-export { GetAppointmentsController } from "@presentation/controllers/appointment/get-appointments.controller";
+export { CancelAppointmentController } from "@presentation/controllers/appointment/cancel-appointment.controller";
+export { GetBookingRequestsController } from "@presentation/controllers/appointment/get-booking-requests.controller";
+export { GetTrainerSchedulesController } from "@presentation/controllers/appointment/get-trainer-schedules.controller";
+export { GetUserSchedulesController } from "@presentation/controllers/appointment/get-user-schedules.controller";
+export { UpdateAppointmentController } from "@presentation/controllers/appointment/update-appointment.controller";
 
 // Auth Controllers
 export { ChangePasswordController } from "@presentation/controllers/auth/change-password.controller";
@@ -143,7 +152,8 @@ export { SignInController } from "@presentation/controllers/auth/sign-in.control
 export { SignOutController } from "@presentation/controllers/auth/sign-out.controller";
 export { SignUpTrainerController } from "@presentation/controllers/auth/sign-up-trainer.controller";
 export { SignUpUserController } from "@presentation/controllers/auth/sign-up-user.controller";
-export { UpdateProfileController } from "@presentation/controllers/auth/update-user-Profile.controller";
+export { UpdateTrainerProfileController } from "@presentation/controllers/auth/update-trainer-profile.controller";
+export { UpdateUserProfileController } from "@presentation/controllers/auth/update-user-Profile.controller";
 
 // Booking Controllers
 export { CreateBookingSlotController } from "@presentation/controllers/booking/create-booking.controller";
@@ -162,11 +172,13 @@ export { TrainerDashboardController } from "@presentation/controllers/dashboard/
 export { UserDashboardController } from "@presentation/controllers/dashboard/user-dashboard.controller";
 
 // Platform Controllers
-export { GetTransactionsController } from "@presentation/controllers/transactions/get-transactions.controller";
+export { GetPlatformEarningsController } from "@presentation/controllers/platform/get-platform-earnings.controller";
 
 // Playlist Controllers
 export { CreatePlaylistController } from "@presentation/controllers/playlist/create-playlist.controller";
 export { EditPlaylistController } from "@presentation/controllers/playlist/edit-playlist.controller";
+export { GetAllPublicPlaylistController } from "@presentation/controllers/playlist/get-all-public-playlist.controller";
+export { GetAllPlaylistController } from "@presentation/controllers/playlist/get-all-playlists.controller";
 export { GetPlaylistController } from "@presentation/controllers/playlist/get-playlist.controller";
 export { UpdatePlaylistPrivacyController } from "@presentation/controllers/playlist/update-playlist-status.controller";
 
@@ -187,7 +199,12 @@ export { EditSubPlanController } from "@presentation/controllers/subscriptionPla
 export { BlockSubPlanController } from "@presentation/controllers/subscriptionPlan/block-subscription.controller";
 
 // Trainer Controllers
+export { GetallTrainersController } from "@presentation/controllers/trainer/get-all-trainers.controller";
+export { GetApprovedTrainersController } from "@presentation/controllers/trainer/get-approved-trainers.controller";
+export { GetTrainerDetailsController } from "@presentation/controllers/trainer/get-trainer-details.controller";
+export { GetTrainerWithSubController } from "@presentation/controllers/trainer/get-trainer-with-sub.controller";
 export { GetUserMyTrainersController } from "@presentation/controllers/trainer/get-user-my-trainerslist.controller";
+export { GetVerifyTrainerController } from "@presentation/controllers/trainer/get-verify-trainer.controller";
 export { VerifyTrainerController } from "@presentation/controllers/trainer/verify-trainer.controller";
 
 // User Controllers
@@ -205,7 +222,8 @@ export { GetPublicVideoDetailsController } from "@presentation/controllers/video
 export { UpdateVideoStatusController } from "@presentation/controllers/video/update-video-status.controller";
 
 // VideoCallLog Controllers
-export { GetVideoCallLogController } from "@presentation/controllers/videoCall/user-calllogs.controller";
+export { GetTrainerVideoCallLogController } from "@presentation/controllers/videoCall/trainer-calllogs.controller";
+export { GetUserVideoCallLogController } from "@presentation/controllers/videoCall/user-calllogs.controller";
 
 // Workout Controllers
 export { AddWorkoutController } from "@presentation/controllers/workout/add-workout.controller";
@@ -224,11 +242,11 @@ export { IUserRepository } from "@domain/interfaces/IUserRepository";
 export { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 export { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
 export { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
-export { IFinancialLogRepository } from "@domain/interfaces/IFinancialLogRepository";
+export { IPlatformEarningsRepository } from "@domain/interfaces/IPlatformEarningsRepository";
 export { IPasswordResetRepository } from "@domain/interfaces/IPasswordResetTokenRepository";
 export { IOtpRepository } from "@domain/interfaces/IOtpRepository";
-export { IMessageRepository } from "@domain/interfaces/IMessageRepository";
 export { IChatRepository } from "@domain/interfaces/IChatRepository";
+export { IConversationRepository } from "@domain/interfaces/IConversationRepository";
 export { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 export { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 export { IVideoPlayListRepository } from "@domain/interfaces/IVideoPlayListRepository";
@@ -254,6 +272,7 @@ export { IBaseUseCase } from "@application/interfaces/usecases/IBase.UC";
 export { IGetAppointmentByIdUC } from '@application/interfaces/usecases/IAppointmentUC';
 export { ICheckUserBlockStatusUC, ITokenUC } from '@application/interfaces/usecases/IAuthUC';
 export { ICreateMessageUC, IIncrementUnReadMessageCountUC, IMarkMessageRead, IUpdateLastMessageUC, IUpdateUnReadMessageCountUC } from '@application/interfaces/usecases/IChatUC';
+export { IGetTrainerDetailsUC } from '@application/interfaces/usecases/ITrainerUC';
 export { ICreateVideoCallLogUC, IUpdateVideoCallDurationUC, IUpdateVideoCallStatusUC } from '@application/interfaces/usecases/IVideoCallLogUC';
 
 // Connect DB

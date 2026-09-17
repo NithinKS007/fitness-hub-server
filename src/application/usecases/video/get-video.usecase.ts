@@ -2,11 +2,11 @@ import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "@shared/constants/index.constants";
 import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
-import { GetVideosDTO } from "@application/dtos/query-dtos";
+import { GetVideoQueryDTO } from "@application/dtos/query-dtos";
+import { VideoWithPlayLists } from "@application/dtos/video-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IGetVideosUC } from "@application/interfaces/usecases/IVideoUC";
-import { VideoUILayer } from "@infrastructure/mappers/video.mapper";
 
 /**
  * Purpose: Fetch videos for a specific trainer with pagination, search, filters, and optional privacy setting.
@@ -23,36 +23,23 @@ export class GetVideosUseCase implements IGetVideosUC {
     private videoRepository: IVideoRepository
   ) {}
 
-  async execute({
-    trainerId,
-    page,
-    limit,
-    fromDate,
-    toDate,
-    search,
-    filters,
-    videoPrivacy,
-    playlistPrivacy,
-  }: GetVideosDTO): Promise<{
-    videoList: VideoUILayer[];
+  async execute(
+    { trainerId, page, limit, fromDate, 
+      toDate, search, filters , videoPrivacy,
+      playlistPrivacy }
+    : GetVideoQueryDTO,
+  ): Promise<{
+    videoList: VideoWithPlayLists[];
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const query = {
-      page,
-      limit,
-      fromDate,
-      toDate,
-      search,
-      filters,
-      trainerId,
-      videoPrivacy,
-      playlistPrivacy,
-    };
-    const { data: videoList, pagination: paginationData } =
-      await this.videoRepository.getVideos(query);
+    const query = { page, limit, fromDate, toDate, search, 
+                  filters, trainerId, videoPrivacy, playlistPrivacy };
+    const { videoList, paginationData } = await this.videoRepository.getVideos(
+      query
+    );
     return { videoList, paginationData };
   }
 }

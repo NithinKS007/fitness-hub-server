@@ -5,27 +5,25 @@ import {
   CreateSubscriptionSession,
   DeactivatePrice,
   Session,
+  SubscriptionMetadata,
 } from "@application/dtos/service/payment.service";
 
 export interface IPaymentService {
   addProduct(createProduct: CreateProduct): Promise<string>;
   addPrice(createPrice: CreatePrice): Promise<string>;
   deactivatePrice(deactivatePrice: DeactivatePrice): Promise<void>;
-  createSession(
+  createSubscriptionSession(
     createSubscriptionSession: CreateSubscriptionSession
   ): Promise<Session>;
-  getSession(sessionId: string): Promise<Stripe.Checkout.Session>;
-  getSubscriptionById({
-    providerSubId,
-  }: {
-    providerSubId: string;
-  }): Promise<Stripe.Subscription>;
-  cancelSubscription({
-    providerSubId,
-  }: {
-    providerSubId: string;
-  }): Promise<Stripe.Subscription>;
-  constructWebHookEvent(
+  getCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session>;
+  getSubscription(stripeSubscriptionId: string): Promise<Stripe.Subscription>;
+  cancelSubscription(
+    stripeSubscriptionId: string
+  ): Promise<Stripe.Subscription>;
+  getSubscriptionsData(
+    stripeSubscriptionId: string
+  ): Promise<SubscriptionMetadata>;
+  constructStripeEvent(
     body: string | Buffer,
     sig: string,
     webhookSecret: string

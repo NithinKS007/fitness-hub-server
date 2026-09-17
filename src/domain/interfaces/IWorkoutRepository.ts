@@ -1,25 +1,27 @@
 import {
-  GetWeightLiftedByDateDTO,
-  GetWorkoutsDTO,
+  CustomUserDashBoardQueryDTO,
+  GetWorkoutQueryDTO,
 } from "@application/dtos/query-dtos";
-import { PagedResponse } from "@application/dtos/utility-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { WorkoutChartData } from "@application/dtos/workout-dtos";
 import { Workout } from "@domain/entities/workout.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
 import { IWorkout } from "@infrastructure/databases/models/workout.model";
-import { WeightLiftedByDateUILayer } from "@infrastructure/mappers/workout.mapper";
 
 export interface IWorkoutRepository extends IBaseRepository<IWorkout, Workout> {
-  getWorkouts(dtos: GetWorkoutsDTO): Promise<PagedResponse<Workout>>;
-  getWeightLiftedByDate(
-    dtos: GetWeightLiftedByDateDTO
-  ): Promise<WeightLiftedByDateUILayer[]>;
+  getWorkoutsByUserId(
+    dtos: GetWorkoutQueryDTO
+  ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }>;
+  getUserDashBoardChartData(
+    searchFilterQuery: CustomUserDashBoardQueryDTO
+  ): Promise<WorkoutChartData[]>;
   getTotalWorkoutTime(userId: string): Promise<number>;
-  getTotalPendingWorkouts(
+  getTodaysTotalPendingWorkouts(
     userId: string,
     startDate: Date,
     endDate: Date
   ): Promise<number>;
-  getTotalCompletedWorkouts(
+  getTodaysTotalCompletedWorkouts(
     userId: string,
     startDate: Date,
     endDate: Date

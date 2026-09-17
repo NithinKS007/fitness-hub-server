@@ -17,12 +17,12 @@ export class UserDashboardController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { id: userId } = req?.user || {};
+    const { _id: userId } = req?.user || {};
 
     const {
-      weightLiftedByDate,
-      totalCompletedWorkouts,
-      totalPendingWorkouts,
+      chartData,
+      todaysTotalCompletedWorkouts,
+      todaysTotalPendingWorkouts,
       totalWorkoutTime,
     } = await this.userDashBoardUseCase.execute({
       userId,
@@ -33,9 +33,9 @@ export class UserDashboardController {
       res,
       StatusCodes.OK,
       {
-        totalCompletedWorkouts: totalCompletedWorkouts,
-        totalPendingWorkouts: totalPendingWorkouts,
-        weightLiftedByDate: weightLiftedByDate,
+        todaysTotalCompletedWorkouts: todaysTotalCompletedWorkouts,
+        todaysTotalPendingWorkouts: todaysTotalPendingWorkouts,
+        chartData: chartData,
         totalWorkoutTime: totalWorkoutTime,
       },
       DashboardStatus.UserDashRetrieved

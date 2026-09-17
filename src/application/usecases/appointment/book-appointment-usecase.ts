@@ -2,11 +2,11 @@ import {
   BookAppointmentDTO,
   BookingSlotStatus,
 } from "@application/dtos/booking-dtos";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import {
-  NotFoundError,
-  validationError,
-} from "@presentation/middlewares/error.middleware";
-import { AppointmentStatus, AuthStatus } from "@shared/constants/index.constants";
+  AppointmentStatus,
+  AuthStatus,
+} from "@shared/constants/index.constants";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { injectable, inject } from "inversify";
@@ -43,7 +43,7 @@ export class BookAppointmentUseCase implements IBookAppointmentUC {
     }
 
     const {
-      id: bookingSlotId,
+      _id: bookingSlotId,
       trainerId: trainerId,
       date: appointmentDate,
       time: appointmentTime,

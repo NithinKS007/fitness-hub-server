@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
 export interface IWorkout extends Document {
-  _id: ObjectId;
   userId: ObjectId;
   date: Date;
   bodyPart: string;
@@ -10,8 +9,6 @@ export interface IWorkout extends Document {
   reps: number;
   time: number;
   isCompleted: boolean;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const WorkoutSchema: Schema = new Schema(

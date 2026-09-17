@@ -22,7 +22,9 @@ export const parseQueryParams = (query: ParsedQs) => {
   const search =
     query.search && typeof query.search === "string" ? query.search : "";
   const page =
-    query.page && typeof query.page === "string" ? Number(query.page) : Number(1);
+    query.page && typeof query.page === "string"
+      ? Number(query.page)
+      : Number(1);
   const limit =
     query.limit && typeof query.limit === "string"
       ? Number(query.limit)
@@ -61,15 +63,6 @@ export const parseQueryParams = (query: ParsedQs) => {
 
   const bodyPart: string =
     query.bodyPart && typeof query.bodyPart === "string" ? query.bodyPart : "";
-  const view: string =
-    query.view && typeof query.view === "string" ? query.view : "";
-    
-  const status =
-    query.status &&
-    typeof query.status === "object" &&
-    Object.keys(query.status).length > 0
-      ? query.status
-      : {};
 
   return {
     search,
@@ -85,7 +78,5 @@ export const parseQueryParams = (query: ParsedQs) => {
     period,
     bodyPart,
     folder,
-    view,
-    status,
   };
 };

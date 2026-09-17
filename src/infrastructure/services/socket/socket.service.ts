@@ -23,11 +23,11 @@ import {
   markMessageAsReadUseCase,
   updateLastMessageUseCase,
   updateUnReadMessageCount,
+  getTrainerDetailsUseCase,
   getAppointmentByIdUseCase,
   createVideoCallLogUseCase,
   updateVideoCallStatusUseCase,
   updateVideoCallDurationUseCase,
-  getUserDetailsUseCase,
 } from "@di/container-resolver";
 import { OnEvents } from "@application/dtos/service/socket.service";
 
@@ -91,7 +91,7 @@ export const socketService = async (io: SocketIOServer) => {
       async ({ callerId, receiverId, roomId, token, appId, appointmentId }) => {
         handleInitiateCall({
           io,
-          getUserDetailsUseCase,
+          getTrainerDetailsUseCase,
           getAppointmentByIdUseCase,
           createVideoCallLogUseCase,
           callerId,

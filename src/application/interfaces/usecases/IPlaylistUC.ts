@@ -1,5 +1,5 @@
 import { IBaseUseCase } from "./IBase.UC";
-import { GetPlayListsDTO } from "@application/dtos/query-dtos";
+import { GetPlayListsQueryDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import {
   CreatePlayListDTO,
@@ -25,7 +25,7 @@ export interface IGetallPlaylistUC
 
 export interface IGetPlayListUC
   extends IBaseUseCase<
-    GetPlayListsDTO,
+    GetPlayListsQueryDTO,
     { playList: PlayList[]; paginationData: PaginationDTO }
   > {}
 

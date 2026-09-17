@@ -6,10 +6,4 @@ export interface PaginationDTO {
 export enum Action {
   Approved = "approved",
   Rejected = "rejected",
-  Cancelled = "cancelled"
-}
-
-export interface PagedResponse<T> {
-  data: T[];
-  pagination: PaginationDTO;
 }

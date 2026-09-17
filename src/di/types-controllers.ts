@@ -1,7 +1,10 @@
 export const TYPES_APPOINTMENT_CONTROLLER = {
   BookAppointmentController: Symbol.for("BookAppointmentController"),
+  CancelAppointmentController: Symbol.for("CancelAppointmentController"),
+  GetBookingRequestsController: Symbol.for("GetBookingRequestsController"),
+  GetTrainerSchedulesController: Symbol.for("GetTrainerSchedulesController"),
+  GetUserSchedulesController: Symbol.for("GetUserSchedulesController"),
   UpdateAppointmentController: Symbol.for("UpdateAppointmentController"),
-  GetAppointmentsController: Symbol.for("GetAppointmentsController"),
 };
 
 export const TYPES_AUTH_CONTROLLER = {
@@ -15,7 +18,8 @@ export const TYPES_AUTH_CONTROLLER = {
   SignOutController: Symbol.for("SignOutController"),
   SignUpTrainerController: Symbol.for("SignUpTrainerController"),
   SignUpUserController: Symbol.for("SignUpUserController"),
-  UpdateProfileController: Symbol.for("UpdateProfileController"),
+  UpdateTrainerProfileController: Symbol.for("UpdateTrainerProfileController"),
+  UpdateUserProfileController: Symbol.for("UpdateUserProfileController"),
 };
 
 export const TYPES_BOOKING_CONTROLLER = {
@@ -37,8 +41,8 @@ export const TYPES_DASHBOARD_CONTROLLER = {
   UserDashboardController: Symbol.for("UserDashboardController"),
 };
 
-export const TYPES_COMMISSION_HISTORY_CONTROLLER = {
-  GetTransactionsController: Symbol.for("GetTransactionsController"),
+export const TYPES_PLATFORM_CONTROLLER = {
+  GetPlatformEarningsController: Symbol.for("GetPlatformEarningsController"),
 };
 
 export const TYPES_PLAYLIST_CONTROLLER = {
@@ -47,14 +51,22 @@ export const TYPES_PLAYLIST_CONTROLLER = {
   GetAllPublicPlaylistController: Symbol.for("GetAllPublicPlaylistController"),
   GetAllPlaylistController: Symbol.for("GetAllPlaylistController"),
   GetPlaylistController: Symbol.for("GetPlaylistController"),
-  UpdatePlaylistPrivacyController: Symbol.for("UpdatePlaylistPrivacyController"),
+  UpdatePlaylistPrivacyController: Symbol.for(
+    "UpdatePlaylistPrivacyController"
+  ),
 };
 
 export const TYPES_SUBSCRIPTION_CONTROLLER = {
   CancelSubscriptionController: Symbol.for("CancelSubscriptionController"),
-  CheckSubscriptionStatusController: Symbol.for("CheckSubscriptionStatusController"),
-  GetTrainerSubscribersController: Symbol.for("GetTrainerSubscribersController"),
-  GetTrainerSubscriptionController: Symbol.for("GetTrainerSubscriptionController"),
+  CheckSubscriptionStatusController: Symbol.for(
+    "CheckSubscriptionStatusController"
+  ),
+  GetTrainerSubscribersController: Symbol.for(
+    "GetTrainerSubscribersController"
+  ),
+  GetTrainerSubscriptionController: Symbol.for(
+    "GetTrainerSubscriptionController"
+  ),
   GetUserSubscriptionController: Symbol.for("GetUserSubscriptionController"),
   PurchaseSubscriptionController: Symbol.for("PurchaseSubscriptionController"),
   VerifySubscriptionController: Symbol.for("VerifySubscriptionController"),
@@ -81,7 +93,9 @@ export const TYPES_TRAINER_CONTROLLER = {
 export const TYPES_USER_CONTROLLER = {
   GetUserDetailsController: Symbol.for("GetUserDetailsController"),
   GetUsersController: Symbol.for("GetUsersController"),
-  UpdateUserBlockStatusController: Symbol.for("UpdateUserBlockStatusController"),
+  UpdateUserBlockStatusController: Symbol.for(
+    "UpdateUserBlockStatusController"
+  ),
 };
 
 export const TYPES_VIDEO_CONTROLLER = {
@@ -89,13 +103,18 @@ export const TYPES_VIDEO_CONTROLLER = {
   EditVideoController: Symbol.for("EditVideoController"),
   GetAllVideosController: Symbol.for("GetAllVideosController"),
   GetPublicVideosController: Symbol.for("GetPublicVideosController"),
-  GetPublicVideoDetailsController: Symbol.for("GetPublicVideoDetailsController"),
+  GetPublicVideoDetailsController: Symbol.for(
+    "GetPublicVideoDetailsController"
+  ),
   GetVideoDetailsController: Symbol.for("GetVideoDetailsController"),
   UpdateVideoStatusController: Symbol.for("UpdateVideoStatusController"),
 };
 
 export const TYPES_VIDEOCALL_CONTROLLER = {
-  GetVideoCallLogController: Symbol.for("GetVideoCallLogController"),
+  GetTrainerVideoCallLogController: Symbol.for(
+    "GetTrainerVideoCallLogController"
+  ),
+  GetUserVideoCallLogController: Symbol.for("GetUserVideoCallLogController"),
   ZegoCloudTokenController: Symbol.for("ZegoCloudTokenController"),
 };
 

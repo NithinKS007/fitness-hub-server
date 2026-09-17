@@ -1,67 +1,72 @@
-import { FilterQuery, Model } from "mongoose";
-import { CheckSubscriptionStatusDTO } from "@application/dtos/subscription-dtos";
-import { PagedResponse } from "@application/dtos/utility-dtos";
+import { Model } from "mongoose";
+import {
+  CheckSubscriptionStatusDTO,
+  TrainerSubscriberRecord,
+  UpdateSubscriptionStatusDTO,
+  UserSubscriptionRecord,
+} from "@application/dtos/subscription-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
 import {
-  DateRangeDTO,
-  GetTrainerSubsDTO,
-  GetUserSubDTO,
+  DateRangeQueryDTO,
+  GetTrainerSubscribersQueryDTO,
+  GetUserSubscriptionsQueryDTO,
 } from "@application/dtos/query-dtos";
 import UserSubscriptionPlanModel, {
   IUserSubscriptionPlan,
 } from "@infrastructure/databases/models/user-subscription-plan";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
+import {
+  TrainerChartData,
+  TrainerPieChartData,
+} from "@application/dtos/chart-dtos";
+import { Top5List } from "@application/dtos/trainer-dtos";
 import { UserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
-import {
-  TRSubPeriodWiseCountMapper,
-  TRSubPeriodWiseCountUI,
-  TRSubStatusWiseCountMapper,
-  TRSubStatusWiseCountUI,
-} from "@infrastructure/mappers/chart.mappers";
-import { MongoHelper } from "../utils/mongo-helper";
-import {
-  Top5TrainersMapper,
-  Top5TrainesUILayer,
-  TrainerSubMapper,
-  TrainerSubsDBLayer,
-  TrainerSubUILayer,
-  UserSubMapper,
-  UserSubsDBLayer,
-  UserSubUILayer,
-} from "@infrastructure/mappers/subscriptionPlan.mapper";
 
 export class UserSubscriptionPlanRepository
   extends BaseRepository<IUserSubscriptionPlan, UserSubscriptionPlan>
   implements IUserSubscriptionPlanRepository
 {
-  private trainerPeriodSubCountMapper = new TRSubPeriodWiseCountMapper();
-  private trainerSubStatusWiseCountMapper = new TRSubStatusWiseCountMapper();
-  private trainerSubMapper = new TrainerSubMapper();
-  private userSubMapper = new UserSubMapper();
-  private top5TrainersMapper = new Top5TrainersMapper();
-
-  constructor(
-    model: Model<IUserSubscriptionPlan> = UserSubscriptionPlanModel,
-    private utility: MongoHelper = new MongoHelper()
-  ) {
+  constructor(model: Model<IUserSubscriptionPlan> = UserSubscriptionPlanModel) {
     super(model);
   }
 
-  private projSubPlan() {
-    return {
-      _id: 1,
-      durationInWeeks: 1,
-      price: 1,
-      sessionsPerWeek: 1,
-      providerPriceId: 1,
-      providerSubId: 1,
-      providerSubStatus: 1,
-      subPeriod: 1,
-      totalSessions: 1,
-      trainerId: 1,
-      userId: 1,
+  private subStatusFilterCriteria(filters: string[]) {
+    const statusFilters: { [key: string]: string } = {
+      Active: "active",
+      Canceled: "canceled",
+      Incomplete: "incomplete",
+      "Incomplete expired": "incomplete_expired",
+      Trialing: "trialing",
+      "Past due": "past_due",
+      Unpaid: "unpaid",
+      Paused: "paused",
     };
+
+    const periodFilters: { [key: string]: string } = {
+      Monthly: "monthly",
+      Quarterly: "quarterly",
+      Yearly: "yearly",
+      HalfYearly: "halfYearly",
+    };
+
+    type Condition =
+      | { stripeSubscriptionStatus: string }
+      | { subPeriod: string };
+
+    const conditions = filters.reduce<Condition[]>((acc, filter) => {
+      if (statusFilters[filter]) {
+        acc.push({ stripeSubscriptionStatus: statusFilters[filter] });
+      }
+
+      if (periodFilters[filter]) {
+        acc.push({ subPeriod: periodFilters[filter] });
+      }
+      return acc;
+    }, []);
+
+    return conditions;
   }
 
   private async countSubscribersByStatus(
@@ -72,7 +77,7 @@ export class UserSubscriptionPlanRepository
       {
         $match: {
           trainerId: this.parseId(trainerId),
-          ...(status ? { providerSubStatus: status } : {}),
+          ...(status ? { stripeSubscriptionStatus: status } : {}),
         },
       },
       {
@@ -84,39 +89,49 @@ export class UserSubscriptionPlanRepository
   }
 
   async getUserSubscriptions(
-    dtos: GetUserSubDTO
-  ): Promise<PagedResponse<UserSubUILayer>> {
-    const { userId, page, limit, search, filters } = dtos;
+    { userId, page, limit, search, filters }: GetUserSubscriptionsQueryDTO
+  ): Promise<{
+    userSubscriptionRecord: UserSubscriptionRecord[];
+    paginationData: PaginationDTO;
+  }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
-    let matchQuery: FilterQuery<UserSubsDBLayer> = {
-      ...this.utility.search({ search }, [
-        "trainerData.fname",
-        "trainerData.lname",
-        "trainerData.email",
-      ]),
-    };
+    let matchQuery: any = {};
+    if (search) {
+      matchQuery.$or = [
+        { "subscribedTrainerData.fname": { $regex: search, $options: "i" } },
+        { "subscribedTrainerData.lname": { $regex: search, $options: "i" } },
+        { "subscribedTrainerData.email": { $regex: search, $options: "i" } },
+      ];
+    }
 
-    const conditions = this.utility.subFilter(filters);
-    if (conditions && conditions.length > 0) matchQuery.$or = conditions;
+    if (filters && filters.length > 0 && !filters.includes("All")) {
+      const conditions = this.subStatusFilterCriteria(filters);
 
-    const trainerLookup = this.utility.lookup({
-      from: "users",
-      localField: "trainerId",
-      foreignField: "_id",
-      as: "trainerData",
-    });
+      if (conditions.length > 0) matchQuery.$or = conditions;
+    }
 
     const commonPipeline = [
       { $match: { userId: this.parseId(userId) } },
-      ...trainerLookup,
+      {
+        $lookup: {
+          from: "trainers",
+          localField: "trainerId",
+          foreignField: "_id",
+          as: "subscribedTrainerData",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "subscribedTrainerData.userId",
+          foreignField: "_id",
+          as: "subscribedTrainerData",
+        },
+      },
       { $match: matchQuery },
+      { $unwind: "$subscribedTrainerData" },
     ];
-
-    const projFields = {
-      ...this.projSubPlan(),
-      ...this.utility.trainerProj(),
-    };
 
     const [totalCount, userSubscriptionsList] = await Promise.all([
       this.model
@@ -126,7 +141,27 @@ export class UserSubscriptionPlanRepository
         .aggregate([
           ...commonPipeline,
           {
-            $project: projFields,
+            $project: {
+              _id: 1,
+              durationInWeeks: 1,
+              price: 1,
+              sessionsPerWeek: 1,
+              stripePriceId: 1,
+              stripeSubscriptionId: 1,
+              stripeSubscriptionStatus: 1,
+              subPeriod: 1,
+              totalSessions: 1,
+              trainerId: 1,
+              userId: 1,
+              subscribedTrainerData: {
+                _id: 1,
+                fname: 1,
+                lname: 1,
+                email: 1,
+                profilePic: 1,
+                isBlocked: 1,
+              },
+            },
           },
         ])
         .sort({ createdAt: -1 })
@@ -140,51 +175,49 @@ export class UserSubscriptionPlanRepository
       pageNumber,
       limitNumber,
     });
-
-    const mappedData = userSubscriptionsList.map((data) =>
-      this.userSubMapper.map(data)
-    );
-
     return {
-      data: mappedData,
-      pagination: paginationData,
+      userSubscriptionRecord: userSubscriptionsList,
+      paginationData,
     };
   }
 
   async getTrainerSubscriptions(
-    dtos: GetTrainerSubsDTO
-  ): Promise<PagedResponse<TrainerSubUILayer>> {
-    const { trainerId, page, limit, search, filters } = dtos;
+    { trainerId, page, limit, search, filters }: GetTrainerSubscribersQueryDTO
+  ): Promise<{
+    trainerSubscriberRecord: TrainerSubscriberRecord[];
+    paginationData: PaginationDTO;
+  }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
-    let matchQuery: FilterQuery<TrainerSubsDBLayer> = {
-      ...this.utility.search({ search }, [
-        "userData.fname",
-        "userData.lname",
-        "userData.email",
-      ]),
-    };
+    let matchQuery: any = {};
+    if (search) {
+      matchQuery.$or = [
+        { "subscribedUserData.fname": { $regex: search, $options: "i" } },
+        { "subscribedUserData.lname": { $regex: search, $options: "i" } },
+        { "subscribedUserData.email": { $regex: search, $options: "i" } },
+      ];
+    }
 
-    const conditions = this.utility.subFilter(filters);
-    if (conditions && conditions.length > 0) matchQuery.$or = conditions;
+    if (filters && filters.length > 0 && !filters.includes("All")) {
+      const conditions = this.subStatusFilterCriteria(filters);
 
-    const userLookup = this.utility.lookup({
-      from: "users",
-      localField: "userId",
-      foreignField: "_id",
-      as: "userData",
-    });
+      if (conditions.length > 0) matchQuery.$or = conditions;
+    }
 
     const commonPipeline = [
       { $match: { trainerId: this.parseId(trainerId) } },
-      ...userLookup,
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "subscribedUserData",
+        },
+      },
       { $match: matchQuery },
+      { $unwind: "$subscribedUserData" },
     ];
 
-    const projFields = {
-      ...this.projSubPlan(),
-      ...this.utility.userProj(),
-    };
     const [totalCount, trainerSubscribers] = await Promise.all([
       this.model
         .aggregate([...commonPipeline, { $count: "totalCount" }])
@@ -194,7 +227,27 @@ export class UserSubscriptionPlanRepository
         .aggregate([
           ...commonPipeline,
           {
-            $project: projFields,
+            $project: {
+              _id: 1,
+              durationInWeeks: 1,
+              price: 1,
+              sessionsPerWeek: 1,
+              stripePriceId: 1,
+              stripeSubscriptionStatus: 1,
+              stripeSubscriptionId: 1,
+              subPeriod: 1,
+              totalSessions: 1,
+              trainerId: 1,
+              userId: 1,
+              subscribedUserData: {
+                _id: 1,
+                fname: 1,
+                lname: 1,
+                email: 1,
+                profilePic: 1,
+                isBlocked: 1,
+              },
+            },
           },
         ])
         .sort({ createdAt: -1 })
@@ -208,27 +261,85 @@ export class UserSubscriptionPlanRepository
       pageNumber,
       limitNumber,
     });
-
-    const mappedData = trainerSubscribers.map((data) =>
-      this.trainerSubMapper.map(data)
-    );
     return {
-      data: mappedData,
-      pagination: paginationData,
+      trainerSubscriberRecord: trainerSubscribers,
+      paginationData,
     };
   }
 
-  async getLatestPlan(
-    dtos: CheckSubscriptionStatusDTO
-  ): Promise<UserSubscriptionPlan | null> {
-    const { userId, trainerId } = dtos;
-    const result = await this.model
-      .findOne({
-        userId: this.parseId(userId),
-        trainerId: this.parseId(trainerId),
-      })
-      .sort({ updatedAt: -1 });
+  async getSubscriptionByStripeId(
+    stripeSubscriptionId: string
+  ): Promise<UserSubscriptionPlan> {
+    const result = await this.model.aggregate([
+      { $match: { stripeSubscriptionId: stripeSubscriptionId } },
+      {
+        $lookup: {
+          from: "trainers",
+          localField: "trainerId",
+          foreignField: "_id",
+          as: "trainerData",
+        },
+      },
+      { $unwind: "$trainerData" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "trainerData.userId",
+          foreignField: "_id",
+          as: "subscribedTrainerData",
+        },
+      },
+      { $unwind: "$subscribedTrainerData" },
+      {
+        $project: {
+          _id: 1,
+          durationInWeeks: 1,
+          price: 1,
+          sessionsPerWeek: 1,
+          stripePriceId: 1,
+          stripeSubscriptionId: 1,
+          subPeriod: 1,
+          totalSessions: 1,
+          trainerId: 1,
+          userId: 1,
+          subscribedTrainerData: {
+            _id: 1,
+            fname: 1,
+            lname: 1,
+            email: 1,
+            profilePic: 1,
+            isBlocked: 1,
+          },
+        },
+      },
+    ]);
+    return result[0];
+  }
+  async getSubscriptionsByUserAndTrainerId({
+    userId,
+    trainerId,
+  }: CheckSubscriptionStatusDTO): Promise<UserSubscriptionPlan[] | null> {
+    const result = await this.model.aggregate([
+      {
+        $match: {
+          userId: this.parseId(userId),
+          trainerId: this.parseId(trainerId),
+        },
+      },
+    ]);
 
+    return result.length > 0 ? result : null;
+  }
+
+  async updateSubscriptionStatusByStripeId({
+    status,
+    stripeSubscriptionId,
+  }: UpdateSubscriptionStatusDTO): Promise<UserSubscriptionPlan | null> {
+    const result = await this.model.findOneAndUpdate(
+      { stripeSubscriptionId: stripeSubscriptionId },
+      { stripeSubscriptionStatus: status },
+      { new: true }
+    );
     return result ? this.toDomain(result) : null;
   }
 
@@ -244,10 +355,10 @@ export class UserSubscriptionPlanRepository
     return this.countSubscribersByStatus(trainerId, "canceled");
   }
 
-  async getTrainerSubStatusWiseCount(
+  async getTrainerLineChartData(
     trainerId: string,
-    { startDate, endDate }: DateRangeDTO
-  ): Promise<TRSubStatusWiseCountUI[]> {
+    { startDate, endDate }: DateRangeQueryDTO
+  ): Promise<TrainerChartData[]> {
     const result = await this.model.aggregate([
       {
         $match: {
@@ -260,16 +371,16 @@ export class UserSubscriptionPlanRepository
       },
       {
         $group: {
-          _id: "$createdAt",
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
           total: { $sum: 1 },
           active: {
             $sum: {
-              $cond: [{ $eq: ["$providerSubStatus", "active"] }, 1, 0],
+              $cond: [{ $eq: ["$stripeSubscriptionStatus", "active"] }, 1, 0],
             },
           },
           canceled: {
             $sum: {
-              $cond: [{ $eq: ["$providerSubStatus", "canceled"] }, 1, 0],
+              $cond: [{ $eq: ["$stripeSubscriptionStatus", "canceled"] }, 1, 0],
             },
           },
         },
@@ -277,13 +388,13 @@ export class UserSubscriptionPlanRepository
       { $sort: { _id: 1 } },
     ]);
 
-    return result.map((data) => this.trainerSubStatusWiseCountMapper.map(data));
+    return result;
   }
 
-  async getTrainerSubPeriodWiseCount(
+  async getTrainerPieChartData(
     trainerId: string,
-    { startDate, endDate }: DateRangeDTO
-  ): Promise<TRSubPeriodWiseCountUI[]> {
+    { startDate, endDate }: DateRangeQueryDTO
+  ): Promise<TrainerPieChartData[]> {
     const result = await this.model.aggregate([
       {
         $match: {
@@ -302,41 +413,51 @@ export class UserSubscriptionPlanRepository
       },
     ]);
 
-    return result.map((data) => this.trainerPeriodSubCountMapper.map(data));
+    return result;
   }
 
-  async getTop5TrainersBySubscribers(): Promise<Top5TrainesUILayer[]> {
-    const trainerLookup = this.utility.lookup({
-      from: "users",
-      localField: "_id",
-      foreignField: "_id",
-      as: "trainerData",
-    });
-
+  async getTop5TrainersBySubscribers(): Promise<Top5List[]> {
     const result = await this.model.aggregate([
       {
         $group: {
           _id: "$trainerId",
           totalActiveSubscriptions: {
             $sum: {
-              $cond: [{ $eq: ["$providerSubStatus", "active"] }, 1, 0],
+              $cond: [{ $eq: ["$stripeSubscriptionStatus", "active"] }, 1, 0],
             },
           },
           totalCanceledSubscriptions: {
             $sum: {
-              $cond: [{ $eq: ["$providerSubStatus", "canceled"] }, 1, 0],
+              $cond: [{ $eq: ["$stripeSubscriptionStatus", "canceled"] }, 1, 0],
             },
           },
           totalSubscriptions: { $sum: 1 },
         },
       },
-      ...trainerLookup,
+      {
+        $lookup: {
+          from: "trainers",
+          localField: "_id",
+          foreignField: "_id",
+          as: "trainerCollectionData",
+        },
+      },
+      { $unwind: "$trainerCollectionData" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "trainerCollectionData.userId",
+          foreignField: "_id",
+          as: "trainerData",
+        },
+      },
+      { $unwind: "$trainerData" },
       {
         $project: {
-          _id: 1,
           fname: "$trainerData.fname",
           lname: "$trainerData.lname",
           email: "$trainerData.email",
+          _id: 1,
           totalActiveSubscriptions: 1,
           totalCanceledSubscriptions: 1,
           totalSubscriptions: 1,
@@ -345,7 +466,6 @@ export class UserSubscriptionPlanRepository
       { $sort: { totalSubscriptions: -1 } },
       { $limit: 5 },
     ]);
-    const mappedData = result.map((data) => this.top5TrainersMapper.map(data));
-    return mappedData;
+    return result;
   }
 }

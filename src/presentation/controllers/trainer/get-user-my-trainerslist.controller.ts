@@ -14,7 +14,7 @@ export class GetUserMyTrainersController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { id: userId } = req?.user || {};
+    const { _id: userId } = req?.user || {};
 
     const { userTrainersList, paginationData } =
       await this.getUserTrainerslistUseCase.execute({
@@ -26,7 +26,7 @@ export class GetUserMyTrainersController {
       res,
       StatusCodes.OK,
       { userTrainersList, paginationData },
-      TrainerStatus.FetchedList
+      TrainerStatus.ListRetrieved
     );
   }
 }

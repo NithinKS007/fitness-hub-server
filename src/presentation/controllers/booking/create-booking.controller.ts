@@ -13,7 +13,7 @@ export class CreateBookingSlotController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { id: trainerId } = req?.user || {};
+    const { _id: trainerId } = req?.user || {};
     const bookingSlotData = {
       trainerId,
       ...req.body,

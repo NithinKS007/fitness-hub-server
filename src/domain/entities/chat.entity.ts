@@ -1,10 +1,9 @@
 export interface Chat {
-  id: string;
-  userId: string;
-  trainerId: string;
-  lastMessage: string;
-  unreadCount: number;
-  providerSubStatus: string;
+  _id: string;
+  senderId: string;
+  receiverId: string;
+  message: string;
+  isRead: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

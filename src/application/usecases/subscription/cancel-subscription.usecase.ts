@@ -20,27 +20,30 @@ export class CancelSubscriptionUseCase implements ICancelSubscriptionUC {
     private paymentService: IPaymentService
   ) {}
 
-  async execute({ providerSubId, action }: CancelSubscriptionDTO): Promise<{
-    providerSubId: string;
+  async execute({
+    stripeSubscriptionId,
+    action,
+  }: CancelSubscriptionDTO): Promise<{
+    stripeSubscriptionId: string;
     isActive: string;
     cancelAction: string;
   }> {
-    if (!providerSubId || !action) {
+    if (!stripeSubscriptionId || !action) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const stripeSub = await this.paymentService.getSubscriptionById({
-      providerSubId: providerSubId,
-    });
+    const stripeSub = await this.paymentService.getSubscription(
+      stripeSubscriptionId
+    );
 
     if (!stripeSub) {
       throw new validationError(AuthStatus.InvalidId);
     }
     if (action === CancelSubAction.immediately) {
-      const stripeSub = await this.paymentService.cancelSubscription({
-        providerSubId: providerSubId,
-      });
+      const stripeSub = await this.paymentService.cancelSubscription(
+        stripeSubscriptionId
+      );
       return {
-        providerSubId: stripeSub.id,
+        stripeSubscriptionId: stripeSub.id,
         isActive: stripeSub.status,
         cancelAction: action,
       };

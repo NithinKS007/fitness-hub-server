@@ -3,6 +3,6 @@ import { socketStore } from "@infrastructure/services/socket/store/socket.store"
 import { EmitEvents } from "@application/dtos/service/socket.service";
 
 export const handleCheckOnline = (socket: Socket, targetId: string) => {
-  const isOnline = socketStore.userSocketMap.has(targetId);
-  socket.emit(EmitEvents.OnlineStatusResponse, { userId: targetId, isOnline });
+  const isOnline = socketStore.onlineUsers.has(targetId);
+  socket.emit(EmitEvents.onlineStatusResponse, { userId: targetId, isOnline });
 };

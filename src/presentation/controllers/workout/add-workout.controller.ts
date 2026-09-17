@@ -13,7 +13,7 @@ export class AddWorkoutController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { id: userId } = req?.user || {};
+    const { _id: userId } = req?.user || {};
 
     const addedWorkOut = await this.createWorkoutUseCase.execute({
       userId,

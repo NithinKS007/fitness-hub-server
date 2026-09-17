@@ -39,6 +39,11 @@ export class UpdateUserProfileUseCase implements IUpdateUserProfileUC {
     }
     return image;
   }
+  private async updateUserData(userId: string, profileData: any) {
+    return await this.userRepository.update(userId, {
+      ...profileData,
+    });
+  }
 
   async execute(profileUpdationData: UpdateUserDetailsDTO): Promise<User> {
     const { userId, ...profileData } = profileUpdationData;
@@ -52,16 +57,10 @@ export class UpdateUserProfileUseCase implements IUpdateUserProfileUC {
       throw new NotFoundError(AuthStatus.IdRequired);
     }
 
-    const { profilePic, dateOfBirth } = profileUpdationData;
-
+    const { profilePic } = profileUpdationData;
     const url = await this.uploadtoCloud(profilePic, this.profileFolder);
     profileData.profilePic = url;
-
-    const updatedUserData = await this.userRepository.update(userId, {
-      ...profileData,
-      dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
-    });
-
+    const updatedUserData = await this.updateUserData(userId, profileData);
     if (!updatedUserData) {
       throw new InternalServerError(ProfileStatus.UpdateFailed);
     }

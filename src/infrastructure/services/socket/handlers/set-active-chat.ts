@@ -14,7 +14,6 @@ export const handleSetActiveChat = async (
   userId: string,
   partnerId: string
 ) => {
-
   socketStore.openChats.set(userId, partnerId);
   const readmsgs = await markMessageAsReadUseCase.execute({
     userId,
@@ -32,7 +31,7 @@ export const handleSetActiveChat = async (
   const receiverSocketId = socketStore.userSocketMap.get(userId);
   const senderSocketId = socketStore.userSocketMap.get(partnerId);
 
-  const messageIds = readmsgs.map((msg) => msg.id.toString());
+  const messageIds = readmsgs.map((msg) => msg._id.toString());
 
   if (senderSocketId) {
     io.to(senderSocketId).emit("messageRead", { messageIds });

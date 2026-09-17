@@ -9,17 +9,18 @@ export interface CreateBookingSlotDTO {
 export interface BookAppointmentDTO {
   slotId: string;
   userId: string;
+  trainerId:string
 }
 
 export interface HandleBookingDTO {
   appointmentId: string;
+  bookingSlotId: string;
   action: Action;
 }
 
 export enum BookingStatus {
   Completed = "completed",
   Pending = "pending",
-  Cancelled = ""
 }
 
 export const enum BookingSlotStatus {

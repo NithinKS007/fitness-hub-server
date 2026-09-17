@@ -1,27 +1,26 @@
-import { GetTrainersDTO } from "@application/dtos/query-dtos";
+import { GetTrainersQueryDTO } from "@application/dtos/query-dtos";
+import { TrainerDTO } from "@application/dtos/trainer-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { injectable, inject } from "inversify";
 import { IGetTrainersUC } from "@application/interfaces/usecases/ITrainerUC";
-import { IUserRepository } from "@di/file-imports-index";
-import { User } from "@domain/entities/user.entity";
-import { Trainer } from "@domain/entities/trainer.entity";
 
 @injectable()
 export class GetTrainersUseCase implements IGetTrainersUC {
   constructor(
-    @inject(TYPES_REPOSITORIES.UserRepository)
-    private userRepository: IUserRepository
+    @inject(TYPES_REPOSITORIES.TrainerRepository)
+    private trainerRepository: ITrainerRepository
   ) {}
-
-  async execute(dtos: GetTrainersDTO): Promise<{
-    trainersList: (Omit<User, "password" | "createdAt" | "updatedAt"> & {
-      trainerDetails: Omit<Trainer, "createdAt" | "updatedAt">;
-    })[];
+  
+  async execute({ page, limit, search, filters,
+  }: GetTrainersQueryDTO): Promise<{
+    trainersList: TrainerDTO[];
     paginationData: PaginationDTO;
   }> {
-    const { data: trainersList, pagination: paginationData } =
-      await this.userRepository.getTrainers(dtos);
+    const query = { page, limit, search, filters };
+    const { trainersList, paginationData } =
+      await this.trainerRepository.getTrainers(query);
     return {
       trainersList,
       paginationData,

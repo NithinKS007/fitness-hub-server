@@ -1,55 +1,34 @@
 import { Request, Response } from "express";
 import { injectable, inject } from "inversify";
-import { StatusCodes } from "@shared/constants/index.constants";
+import {
+  StatusCodes,
+} from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { TYPES_VIDEO_CALL_USECASES } from "@di/types-usecases";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
-import {
-  IGetTrainerVideoCallLogUC,
-  IGetUserVideoCallLogUC,
-} from "@application/interfaces/usecases/IVideoCallLogUC";
+import { IGetUserVideoCallLogUC } from "@application/interfaces/usecases/IVideoCallLogUC";
 
 @injectable()
-export class GetVideoCallLogController {
+export class GetUserVideoCallLogController {
   constructor(
     @inject(TYPES_VIDEO_CALL_USECASES.GetUserVideoCallLogUseCase)
-    private getuserVideoCallLogUseCase: IGetUserVideoCallLogUC,
-    @inject(TYPES_VIDEO_CALL_USECASES.GetTrainerVideoCallLogUseCase)
-    private getTrainerVideoCallLogUseCase: IGetTrainerVideoCallLogUC
+    private getuserVideoCallLogUseCase: IGetUserVideoCallLogUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { id, role } = req?.user || {};
+    const { _id: userId } = req?.user || {};
 
     const queryParams = parseQueryParams(req.query);
 
-    if (role === "user") {
-      const { userVideoCallLogList, paginationData } =
-        await this.getuserVideoCallLogUseCase.execute({
-          userId: id,
-          ...queryParams,
-        });
+    const { userVideoCallLogList, paginationData } =
+      await this.getuserVideoCallLogUseCase.execute({userId,...queryParams});
 
-      sendResponse(
-        res,
-        StatusCodes.OK,
-        { userVideoCallLogList, paginationData },
-        VideoCallStatus.RetrievedSuccess
-      );
-    } else if (role === "trainer") {
-      const { trainerVideoCallLogList, paginationData } =
-        await this.getTrainerVideoCallLogUseCase.execute({
-          trainerId: id,
-          ...queryParams,
-        });
-
-      sendResponse(
-        res,
-        StatusCodes.OK,
-        { trainerVideoCallLogList, paginationData },
-        VideoCallStatus.RetrievedSuccess
-      );
-    }
+    sendResponse(
+      res,
+      StatusCodes.OK,
+      { userVideoCallLogList, paginationData },
+      VideoCallStatus.RetrievedSuccess
+    );
   }
 }

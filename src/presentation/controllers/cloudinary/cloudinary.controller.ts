@@ -18,12 +18,11 @@ export class CloudinaryController {
 
   async handle(req: Request, res: Response): Promise<void> {
     const { folder } = parseQueryParams(req.query);
-    const { id } = req?.user || {};
-    const signatureData =
-      await this.CloudinaryUseCase.execute({
-        folder,
-        id: id,
-      });
+    const { _id } = req?.user || {};
+    const signatureData = await this.CloudinaryUseCase.execute({
+      folder,
+      id: _id,
+    });
     sendResponse(
       res,
       StatusCodes.OK,

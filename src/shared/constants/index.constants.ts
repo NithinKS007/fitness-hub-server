@@ -1,6 +1,6 @@
 export * from "@shared/constants/http.status.codes";
 export * from "@shared/constants/user/user.status";
-export * from "@shared/constants/financialLogStatus/transactionStatus";
+export * from "@shared/constants/revenueStatus/revenue.status";
 export * from "@shared/constants/chatStatus/chat.status";
 export * from "@shared/constants/user/workout.status";
 export * from "@shared/constants/trainerContentStatus/video.status";

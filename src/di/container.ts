@@ -5,8 +5,8 @@ import {
   TYPES_BOOKING_CONTROLLER,
   TYPES_CHAT_CONTROLLER,
   TYPES_CLOUDINARY_CONTROLLER,
-  TYPES_COMMISSION_HISTORY_CONTROLLER,
   TYPES_DASHBOARD_CONTROLLER,
+  TYPES_PLATFORM_CONTROLLER,
   TYPES_PLAYLIST_CONTROLLER,
   TYPES_SUBSCRIPTION_CONTROLLER,
   TYPES_SUBSCRIPTION_PLAN_CONTROLLER,
@@ -23,6 +23,7 @@ import {
   TYPES_BOOKINGSLOT_USECASAES,
   TYPES_CHAT_USECASES,
   TYPES_DASHBOARD_USECASES,
+  TYPES_PLATFORM_USECASES,
   TYPES_PLAYLIST_USECASES,
   TYPES_SUBSCRIPTION_USECASES,
   TYPES_TRAINER_USECASES,
@@ -31,7 +32,6 @@ import {
   TYPES_VIDEO_CALL_USECASES,
   TYPES_WORKOUT_USECASES,
   TYPES_CLOUDINARY_USECASES,
-  TYPES_COMMISSION_HISTORY_USECASES,
 } from "@di/types-usecases";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
@@ -41,11 +41,11 @@ import {
   TrainerRepository,
   SubscriptionRepository,
   UserSubscriptionPlanRepository,
-  FinancialLogRepository,
+  RevenueRepository,
   PasswordResetRepository,
   OtpRepository,
-  MessageRepository,
   ChatRepository,
+  ConversationRepository,
   PlayListRepository,
   VideoRepository,
   VideoPlayListRepository,
@@ -54,14 +54,22 @@ import {
   AppointmentRepository,
   VideoCallLogRepository,
   BookAppointmentController,
-  GetAppointmentsController,
+  GetBookingRequestsController,
+  GetUserSchedulesController,
+  UpdateAppointmentController,
   GoogleAuthController,
   OtpController,
   CreateBookingSlotController,
   DeleteBookingSlotController,
   TrainerDashboardController,
   UserDashboardController,
+  GetPlatformEarningsController,
+  GetAllPublicPlaylistController,
+  GetallTrainersController,
+  GetTrainerDetailsController,
+  GetTrainerWithSubController,
   GetUserMyTrainersController,
+  GetVerifyTrainerController,
   VerifyTrainerController,
   GetUserDetailsController,
   GetUsersController,
@@ -69,7 +77,8 @@ import {
   AddVideoController,
   EditVideoController,
   UpdateVideoStatusController,
-  GetVideoCallLogController,
+  GetTrainerVideoCallLogController,
+  GetUserVideoCallLogController,
   AddWorkoutController,
   DeleteWorkoutController,
   GetWorkoutController,
@@ -78,10 +87,11 @@ import {
   ITrainerRepository,
   ISubscriptionRepository,
   IUserSubscriptionPlanRepository,
+  IPlatformEarningsRepository,
   IPasswordResetRepository,
   IOtpRepository,
-  IMessageRepository,
   IChatRepository,
+  IConversationRepository,
   IPlayListRepository,
   IVideoRepository,
   IVideoPlayListRepository,
@@ -110,9 +120,6 @@ import {
   CloudinaryController,
   CloudinarySigUseCase,
   ZegoCloudTokenController,
-  GetTransactionsUsecase,
-  GetTransactionsController,
-  UpdateAppointmentController,
 } from "@di/file-imports-index";
 
 // Services
@@ -130,6 +137,7 @@ import {
 
 // Use Cases
 import {
+  GetPlatformEarningsUsecase,
   GetTrainerSubscriptionsUseCase,
   TrainerApprovalUseCase,
   AdminDashBoardUseCase,
@@ -164,13 +172,17 @@ import {
   GetUsersUseCase,
   GetUserDetailsUseCase,
   UpdateUserBlockStatusUseCase,
+  GetTrainerDetailsUseCase,
+  GetTrainerAndSubInfoUseCase,
   GetTrainersUseCase,
   GetUserTrainerslistUseCase,
   VerifySubcriptionSessionUseCase,
   ChangePasswordUseCase,
   ForgotPasswordUseCase,
+  GetPendingSlotsUseCase,
   GetVideoDetailsUseCase,
   GetUserSchedulesUseCase,
+  GetUpComingSlotsUseCase,
   GetUserSubscriptionUseCase,
   GetTrainerSchedulesUseCase,
   SendPasswordRestLinkUseCase,
@@ -179,6 +191,7 @@ import {
   EditPlayListUseCase,
   CreateMessageUseCase,
   CreatePlayListUseCase,
+  GetallPlaylistUseCase,
   TrainerDashBoardUseCase,
   UpdateUserProfileUseCase,
   UpdateLastMessageUseCase,
@@ -189,8 +202,10 @@ import {
   CancelSubscriptionUseCase,
   CreateVideoCallLogUseCase,
   GetAppointmentByIdUseCase,
+  GetApprovedTrainersUseCase,
   CheckUserBlockStatusUseCase,
   PurchaseSubscriptionUseCase,
+  GetVerifyTrainerlistUseCase,
   UpdateVideoCallStatusUseCase,
   UpdatePlayListPrivacyUseCase,
   GetAppointmentRequestUseCase,
@@ -203,6 +218,7 @@ import {
 // Controllers
 import {
   AdminDashboardController,
+  GetApprovedTrainersController,
   PurchaseSubscriptionController,
   GetUserSubscriptionController,
   WebhookController,
@@ -213,6 +229,7 @@ import {
   CheckSubscriptionStatusController,
   SignUpTrainerController,
   SignUpUserController,
+  UpdateTrainerProfileController,
   SignInController,
   RefreshAccessTokenController,
   SignOutController,
@@ -223,9 +240,12 @@ import {
   ChangePasswordController,
   ForgotPasswordController,
   PasswordResetLinkController,
-  UpdateProfileController,
+  UpdateUserProfileController,
+  GetTrainerSchedulesController,
+  CancelAppointmentController,
   GetPendingSlotsController,
   GetUpComingSlotsController,
+  GetAllPlaylistController,
   CreatePlaylistController,
   EditPlaylistController,
   GetPlaylistController,
@@ -233,11 +253,11 @@ import {
 } from "@di/file-imports-index";
 import { IBookAppointmentUC, ICancelAppointmentUC, IGetAppointmentByIdUC, IGetAppointmentRequestsUC, IGetTrainerSchedulesUC, IGetUserSchedulesUC, IHandleBookingApprovalUC } from "@application/interfaces/usecases/IAppointmentUC";
 import { IChangePasswordUC, ICheckUserBlockStatusUC, ICreateTrainerUC, ICreateUserUC, IForgotPasswordUC, IGoogleAuthUC, IOtpUC, ISendPasswordRestLinkUC, ISigninUserUC, ITokenUC, IUpdateTRProfileUC, IUpdateUserProfileUC } from "@application/interfaces/usecases/IAuthUC";
-import { ICreateBookingSlotUC, IDeleteBookingSlotUC, IGetSlotsUC } from "@application/interfaces/usecases/ISlotUC";
-import { IGetTrainersUC, ITrainerApprovalUC } from "@application/interfaces/usecases/ITrainerUC";
+import { ICreateBookingSlotUC, IDeleteBookingSlotUC, IGetPendingSlotsUC, IGetUpComingSlotsUC } from "@application/interfaces/usecases/ISlotUC";
+import { IGetApprovedTrainers, IGetTrainerAndSubInfoUC, IGetTrainerDetailsUC, IGetTrainersUC, IGetVeryfyTrainerlist, ITrainerApprovalUC } from "@application/interfaces/usecases/ITrainerUC";
 import { ICreateMessageUC, IGetChatHistoryUC, IGetTrainerChatListUC, IGetUserChatListUC, IIncrementUnReadMessageCountUC, IMarkMessageRead, IUpdateLastMessageUC, IUpdateUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
 import { IAdminDashBoardUC, ITrainerDashBoardUC, IUserDashBoardUC } from "@application/interfaces/usecases/IDashBoardUC";
-import { IGetTransactionsUC } from "@application/interfaces/usecases/ITransactionsUC";
+import { IGetPlatformEarningsUC } from "@application/interfaces/usecases/IPlatformRevenueUC";
 import { ICreatePlayListUC, IEditPlayListUC, IGetallPlaylistUC, IGetPlayListUC, IUpdatePlayListPrivacyUC } from "@application/interfaces/usecases/IPlaylistUC";
 import { ICreateSubscriptionUC, IDeleteSubscriptionUC, IEditSubscriptionUC, ISubscriptionBlockUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
 import { ICancelSubscriptionUC, ICheckSubscriptionStatusUC, IGetTrainerSubscribersUC, IGetTrainerSubscriptionsUC, IGetUserSubscriptionsUC, IGetUserTrainerslistUC, IPurchaseSubscriptionUC, IVerifySubscriptionSessionUC, IWebHookHandlerUC } from "@application/interfaces/usecases/ISubscriptionUC";
@@ -253,8 +273,6 @@ import { IZegoCloudCreateTokenUC } from "@application/interfaces/usecases/IZegoC
 import { ZegoCloudCreateTokenUseCase } from "@application/usecases/videoCall/zego-cloud-create-token.usecase";
 import { IVideoCallService } from "@application/interfaces/services/videocall/IVideocall.service";
 import { VideoCallService } from "@infrastructure/services/videocall/video-call.service";
-import { IFinancialLogRepository } from "@domain/interfaces/IFinancialLogRepository";
-import { GetSlotsUseCase } from "@application/usecases/bookingSlot/get-slots";
 
 
 
@@ -265,11 +283,11 @@ container.bind<IUserRepository>(TYPES_REPOSITORIES.UserRepository).to(UserReposi
 container.bind<ITrainerRepository>(TYPES_REPOSITORIES.TrainerRepository).to(TrainerRepository);
 container.bind<ISubscriptionRepository>(TYPES_REPOSITORIES.SubscriptionRepository).to(SubscriptionRepository);
 container.bind<IUserSubscriptionPlanRepository>(TYPES_REPOSITORIES.UserSubscriptionPlanRepository).to(UserSubscriptionPlanRepository);
-container.bind<IFinancialLogRepository>(TYPES_REPOSITORIES.FinancialLogRepository).to(FinancialLogRepository);
+container.bind<IPlatformEarningsRepository>(TYPES_REPOSITORIES.RevenueRepository).to(RevenueRepository);
 container.bind<IPasswordResetRepository>(TYPES_REPOSITORIES.PasswordResetRepository).to(PasswordResetRepository);
 container.bind<IOtpRepository>(TYPES_REPOSITORIES.OtpRepository).to(OtpRepository);
-container.bind<IMessageRepository>(TYPES_REPOSITORIES.MessageRepository).to(MessageRepository);
 container.bind<IChatRepository>(TYPES_REPOSITORIES.ChatRepository).to(ChatRepository);
+container.bind<IConversationRepository>(TYPES_REPOSITORIES.ConversationRepository).to(ConversationRepository);
 container.bind<IPlayListRepository>(TYPES_REPOSITORIES.PlayListRepository).to(PlayListRepository);
 container.bind<IVideoRepository>(TYPES_REPOSITORIES.VideoRepository).to(VideoRepository);
 container.bind<IVideoPlayListRepository>(TYPES_REPOSITORIES.VideoPlayListRepository).to(VideoPlayListRepository);
@@ -320,7 +338,8 @@ container.bind<IUpdateUserProfileUC>(TYPES_AUTH_USECASES.UpdateUserProfileUseCas
 //Bind Booking Slot Use Cases
 container.bind<ICreateBookingSlotUC>(TYPES_BOOKINGSLOT_USECASAES.CreateBookingSlotUseCase).to(CreateBookingSlotUseCase);
 container.bind<IDeleteBookingSlotUC>(TYPES_BOOKINGSLOT_USECASAES.DeleteBookingSlotUseCase).to(DeleteBookingSlotUseCase);
-container.bind<IGetSlotsUC>(TYPES_BOOKINGSLOT_USECASAES.GetSlotsUseCase).to(GetSlotsUseCase);
+container.bind<IGetPendingSlotsUC>(TYPES_BOOKINGSLOT_USECASAES.GetPendingSlotsUseCase).to(GetPendingSlotsUseCase);
+container.bind<IGetUpComingSlotsUC>(TYPES_BOOKINGSLOT_USECASAES.GetUpComingSlotsUseCase).to(GetUpComingSlotsUseCase);
 
 //Bind Chat Use Cases
 container.bind<ICreateMessageUC>(TYPES_CHAT_USECASES.CreateMessageUseCase).to(CreateMessageUseCase);
@@ -338,11 +357,12 @@ container.bind<ITrainerDashBoardUC>(TYPES_DASHBOARD_USECASES.TrainerDashBoardUse
 container.bind<IUserDashBoardUC>(TYPES_DASHBOARD_USECASES.UserDashBoardUseCase).to(UserDashBoardUseCase);
 
 //Bind Platform Use Cases
-container.bind<IGetTransactionsUC>(TYPES_COMMISSION_HISTORY_USECASES.GetTransactionsUsecase).to(GetTransactionsUsecase);
+container.bind<IGetPlatformEarningsUC>(TYPES_PLATFORM_USECASES.GetPlatformEarningsUsecase).to(GetPlatformEarningsUsecase);
 
 //Bind Playlist Use Cases
 container.bind<ICreatePlayListUC>(TYPES_PLAYLIST_USECASES.CreatePlayListUseCase).to(CreatePlayListUseCase);
 container.bind<IEditPlayListUC>(TYPES_PLAYLIST_USECASES.EditPlayListUseCase).to(EditPlayListUseCase);
+container.bind<IGetallPlaylistUC>(TYPES_PLAYLIST_USECASES.GetallPlaylistUseCase).to(GetallPlaylistUseCase);
 container.bind<IGetPlayListUC>(TYPES_PLAYLIST_USECASES.GetPlayListUseCase).to(GetPlayListUseCase);
 container.bind<IUpdatePlayListPrivacyUC>(TYPES_PLAYLIST_USECASES.UpdatePlayListPrivacyUseCase).to(UpdatePlayListPrivacyUseCase);
 
@@ -362,7 +382,11 @@ container.bind<IVerifySubscriptionSessionUC>(TYPES_SUBSCRIPTION_USECASES.VerifyS
 container.bind<IWebHookHandlerUC>(TYPES_SUBSCRIPTION_USECASES.WebHookHandlerUseCase).to(WebHookHandlerUseCase);
 
 //Bind Trainer Use Cases
+container.bind<IGetApprovedTrainers>(TYPES_TRAINER_USECASES.GetApprovedTrainersUseCase).to(GetApprovedTrainersUseCase);
+container.bind<IGetTrainerDetailsUC>(TYPES_TRAINER_USECASES.GetTrainerDetailsUseCase).to(GetTrainerDetailsUseCase);
+container.bind<IGetTrainerAndSubInfoUC>(TYPES_TRAINER_USECASES.GetTrainerAndSubInfoUseCase).to(GetTrainerAndSubInfoUseCase);
 container.bind<IGetTrainersUC>(TYPES_TRAINER_USECASES.GetTrainersUseCase).to(GetTrainersUseCase);
+container.bind<IGetVeryfyTrainerlist>(TYPES_TRAINER_USECASES.GetVerifyTrainerlistUseCase).to(GetVerifyTrainerlistUseCase);
 container.bind<ITrainerApprovalUC>(TYPES_TRAINER_USECASES.TrainerApprovalUseCase).to(TrainerApprovalUseCase);
 
 //Bind User Use Cases
@@ -396,8 +420,11 @@ container.bind<ICloudinarySigUC>(TYPES_CLOUDINARY_USECASES.CloudinarySigUseCase)
 
 // Appointment Controllers 
 container.bind(TYPES_APPOINTMENT_CONTROLLER.BookAppointmentController).to(BookAppointmentController);
+container.bind(TYPES_APPOINTMENT_CONTROLLER.CancelAppointmentController).to(CancelAppointmentController);
+container.bind(TYPES_APPOINTMENT_CONTROLLER.GetBookingRequestsController).to(GetBookingRequestsController);
+container.bind(TYPES_APPOINTMENT_CONTROLLER.GetTrainerSchedulesController).to(GetTrainerSchedulesController);
+container.bind(TYPES_APPOINTMENT_CONTROLLER.GetUserSchedulesController).to(GetUserSchedulesController);
 container.bind(TYPES_APPOINTMENT_CONTROLLER.UpdateAppointmentController).to(UpdateAppointmentController);
-container.bind(TYPES_APPOINTMENT_CONTROLLER.GetAppointmentsController).to(GetAppointmentsController);
 
 // Auth Controllers 
 container.bind(TYPES_AUTH_CONTROLLER.ChangePasswordController).to(ChangePasswordController);
@@ -410,7 +437,8 @@ container.bind(TYPES_AUTH_CONTROLLER.SignInController).to(SignInController);
 container.bind(TYPES_AUTH_CONTROLLER.SignOutController).to(SignOutController);
 container.bind(TYPES_AUTH_CONTROLLER.SignUpTrainerController).to(SignUpTrainerController);
 container.bind(TYPES_AUTH_CONTROLLER.SignUpUserController).to(SignUpUserController);
-container.bind(TYPES_AUTH_CONTROLLER.UpdateProfileController).to(UpdateProfileController);
+container.bind(TYPES_AUTH_CONTROLLER.UpdateTrainerProfileController).to(UpdateTrainerProfileController);
+container.bind(TYPES_AUTH_CONTROLLER.UpdateUserProfileController).to(UpdateUserProfileController);
 
 // Booking Controllers 
 container.bind(TYPES_BOOKING_CONTROLLER.CreateBookingSlotController).to(CreateBookingSlotController);
@@ -429,11 +457,13 @@ container.bind(TYPES_DASHBOARD_CONTROLLER.TrainerDashboardController).to(Trainer
 container.bind(TYPES_DASHBOARD_CONTROLLER.UserDashboardController).to(UserDashboardController);
 
 // Platform Controllers 
-container.bind(TYPES_COMMISSION_HISTORY_CONTROLLER.GetTransactionsController).to(GetTransactionsController);
+container.bind(TYPES_PLATFORM_CONTROLLER.GetPlatformEarningsController).to(GetPlatformEarningsController);
 
 // Playlist Controllers 
 container.bind(TYPES_PLAYLIST_CONTROLLER.CreatePlaylistController).to(CreatePlaylistController);
 container.bind(TYPES_PLAYLIST_CONTROLLER.EditPlaylistController).to(EditPlaylistController);
+container.bind(TYPES_PLAYLIST_CONTROLLER.GetAllPublicPlaylistController).to(GetAllPublicPlaylistController);
+container.bind(TYPES_PLAYLIST_CONTROLLER.GetAllPlaylistController).to(GetAllPlaylistController);
 container.bind(TYPES_PLAYLIST_CONTROLLER.GetPlaylistController).to(GetPlaylistController);
 container.bind(TYPES_PLAYLIST_CONTROLLER.UpdatePlaylistPrivacyController).to(UpdatePlaylistPrivacyController);
 
@@ -454,7 +484,12 @@ container.bind(TYPES_SUBSCRIPTION_PLAN_CONTROLLER.DeleteSubPlanController).to(De
 container.bind(TYPES_SUBSCRIPTION_PLAN_CONTROLLER.BlockSubPlanController).to(BlockSubPlanController),
 
 // Trainer Controllers 
+container.bind(TYPES_TRAINER_CONTROLLER.GetallTrainersController).to(GetallTrainersController);
+container.bind(TYPES_TRAINER_CONTROLLER.GetApprovedTrainersController).to(GetApprovedTrainersController);
+container.bind(TYPES_TRAINER_CONTROLLER.GetTrainerDetailsController).to(GetTrainerDetailsController);
+container.bind(TYPES_TRAINER_CONTROLLER.GetTrainerWithSubController).to(GetTrainerWithSubController);
 container.bind(TYPES_TRAINER_CONTROLLER.GetUserMyTrainersController).to(GetUserMyTrainersController);
+container.bind(TYPES_TRAINER_CONTROLLER.GetVerifyTrainerController).to(GetVerifyTrainerController);
 container.bind(TYPES_TRAINER_CONTROLLER.VerifyTrainerController).to(VerifyTrainerController);
 
 // User Controllers 
@@ -472,7 +507,8 @@ container.bind(TYPES_VIDEO_CONTROLLER.GetVideoDetailsController).to(GetVideoDeta
 container.bind(TYPES_VIDEO_CONTROLLER.UpdateVideoStatusController).to(UpdateVideoStatusController);
 
 // Video Call Controllers 
-container.bind(TYPES_VIDEOCALL_CONTROLLER.GetVideoCallLogController).to(GetVideoCallLogController);
+container.bind(TYPES_VIDEOCALL_CONTROLLER.GetTrainerVideoCallLogController).to(GetTrainerVideoCallLogController);
+container.bind(TYPES_VIDEOCALL_CONTROLLER.GetUserVideoCallLogController).to(GetUserVideoCallLogController);
 container.bind(TYPES_VIDEOCALL_CONTROLLER.ZegoCloudTokenController).to(ZegoCloudTokenController);
 
 // Workout Controllers 

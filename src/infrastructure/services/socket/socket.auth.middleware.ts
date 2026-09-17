@@ -40,16 +40,16 @@ export const socketAuth = async (
       return;
     }
     const decoded = await tokenUseCase.validateToken(accessToken);
-    const { id } = decoded;
+    const { _id } = decoded;
 
-    if (!id) {
+    if (!_id) {
       console.log("invalid access token in middleware");
       next(new UnauthorizedError(JwtStatus.InvalidAccessToken));
       return;
     }
 
     socket.user = decoded;
-    const isBlocked = await checkUserBlockStatusUseCase.execute(id);
+    const isBlocked = await checkUserBlockStatusUseCase.execute(_id);
     if (isBlocked) {
       console.log("User is blocked in socket middleware");
       next(new ForbiddenError(AuthStatus.AccountBlocked));

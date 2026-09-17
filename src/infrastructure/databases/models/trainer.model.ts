@@ -1,15 +1,13 @@
 import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
 export interface ITrainer extends Document {
-  _id: ObjectId;
+  _id: string;
   userId: ObjectId;
   yearsOfExperience: string;
   specializations: string[];
   certifications: { fileName: string; url: string }[];
   isApproved: boolean;
   aboutMe?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const trainerSchema: Schema = new Schema(

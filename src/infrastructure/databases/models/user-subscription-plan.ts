@@ -11,11 +11,9 @@ export interface IUserSubscriptionPlan extends Document {
   durationInWeeks: number;
   sessionsPerWeek: number;
   totalSessions: number;
-  providerPriceId: string;
-  providerSubId: string;
-  providerSubStatus: string;
-  createdAt: Date;
-  updatedAt: Date;
+  stripePriceId: string;
+  stripeSubscriptionId: string;
+  stripeSubscriptionStatus: string;
 }
 
 const userSubscriptionPlanSchema: Schema = new Schema(
@@ -73,24 +71,24 @@ const userSubscriptionPlanSchema: Schema = new Schema(
       required: true,
       min: [1, "Total sessions must be at least 1"],
     },
-    providerPriceId: { type: String, required: true },
-    providerSubId: { type: String, required: true },
-    providerSubStatus: { type: String, required: true },
+    stripePriceId: { type: String, required: true },
+    stripeSubscriptionId: { type: String, required: true },
+    stripeSubscriptionStatus: { type: String, required: true },
   },
   { timestamps: true }
 );
 
 userSubscriptionPlanSchema.index({
   userId: 1,
-  providerSubStatus: 1,
+  stripeSubscriptionStatus: 1,
   createdAt: -1,
 });
 userSubscriptionPlanSchema.index({
   trainerId: 1,
-  providerSubStatus: 1,
+  stripeSubscriptionStatus: 1,
   createdAt: -1,
 });
-userSubscriptionPlanSchema.index({ providerSubId: 1 }, { unique: true });
+userSubscriptionPlanSchema.index({ stripeSubscriptionId: 1 }, { unique: true });
 
 const UserSubscriptionPlanModel = mongoose.model<IUserSubscriptionPlan>(
   "UserSubscriptionPlan",

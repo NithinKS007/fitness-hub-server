@@ -1,83 +1,53 @@
-import { PagedResponse } from "@application/dtos/utility-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
-import { FilterQuery, Model } from "mongoose";
+import { Model } from "mongoose";
 import {
-  GetWeightLiftedByDateDTO,
-  GetWorkoutsDTO,
+  CustomUserDashBoardQueryDTO,
+  GetWorkoutQueryDTO,
 } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import WorkoutModel, {
   IWorkout,
 } from "@infrastructure/databases/models/workout.model";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
+import { WorkoutChartData } from "@application/dtos/workout-dtos";
 import { Workout } from "@domain/entities/workout.entity";
-import { MongoHelper } from "../utils/mongo-helper";
-import {
-  WeightLiftedByDateMapper,
-  WeightLiftedByDateUILayer,
-} from "@infrastructure/mappers/workout.mapper";
 
 export class WorkoutRepository
   extends BaseRepository<IWorkout, Workout>
   implements IWorkoutRepository
 {
-  constructor(
-    model: Model<IWorkout> = WorkoutModel,
-    private weightLiftedByDateMapper: WeightLiftedByDateMapper = new WeightLiftedByDateMapper(),
-    private utility: MongoHelper = new MongoHelper()
-  ) {
+  constructor(model: Model<IWorkout> = WorkoutModel) {
     super(model);
   }
 
-  private async aggregateWorkoutStats({
-    userId,
-    matchQuery,
-    field,
-  }: {
-    userId: string;
-    matchQuery: object;
-    field: string;
-  }): Promise<number> {
-    const result = await this.model.aggregate([
-      { $match: { userId: this.parseId(userId), ...matchQuery } },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: `$${field}` },
-        },
-      },
-    ]);
-    return result[0]?.total || 0;
-  }
-
-  async getWorkouts(dtos: GetWorkoutsDTO): Promise<PagedResponse<Workout>> {
-    const { userId, page, limit, fromDate, toDate, search, filters } = dtos;
+  async getWorkoutsByUserId(
+    { userId, page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
+  ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
-    let matchQuery: FilterQuery<IWorkout> = {
-      userId: this.parseId(userId),
-      ...this.utility.search({ search }, ["bodyPart", "exerciseName"]),
-      ...this.utility.dateFilter({ fromDate, toDate }, "date"),
-    };
+    const matchQuery: any = { userId: this.parseId(userId) };
+    if (search) {
+      matchQuery.$or = [
+        { bodyPart: { $regex: `^${search}`, $options: "i" } },
+        { exerciseName: { $regex: `^${search}`, $options: "i" } },
+      ];
+    }
 
     if (filters && filters.length > 0 && !filters.includes("All")) {
-      const conditions: { isCompleted: boolean }[] = [];
+      const conditions: any = [];
+      if (filters.includes("Completed")) conditions.push({ isCompleted: true });
+      if (filters.includes("Pending")) conditions.push({ isCompleted: false });
+      if (conditions.length > 0) matchQuery.$and = conditions;
+    }
 
-      for (const filter of filters) {
-        switch (filter) {
-          case "Completed":
-            conditions.push({ isCompleted: true });
-            break;
-          case "Pending":
-            conditions.push({ isCompleted: false });
-            break;
-          default:
-            break;
-        }
+    if (fromDate || toDate) {
+      matchQuery.date = {};
+      if (fromDate) {
+        matchQuery.date.$gte = fromDate;
       }
-
-      if (conditions.length > 0) {
-        matchQuery.$and = conditions;
+      if (toDate) {
+        matchQuery.date.$lte = toDate;
       }
     }
 
@@ -90,37 +60,42 @@ export class WorkoutRepository
         .exec(),
       this.model.countDocuments(matchQuery).exec(),
     ]);
-
     const paginationData = paginateRes({
       totalCount,
       pageNumber,
       limitNumber,
     });
-
-    const mappedData = workoutList.map((data) => this.toDomain(data));
-
+    const toDomainList = workoutList.map((w) => this.toDomain(w));
     return {
-      data: mappedData,
-      pagination: paginationData,
+      workoutList: toDomainList,
+      paginationData,
     };
   }
 
-  async getWeightLiftedByDate(
-    dtos: GetWeightLiftedByDateDTO
-  ): Promise<WeightLiftedByDateUILayer[]> {
-    const { userId, bodyPart, startDate, endDate } = dtos;
-    const matchQuery = {
+  async getUserDashBoardChartData({
+    userId,
+    bodyPart,
+    startDate,
+    endDate,
+  }: CustomUserDashBoardQueryDTO): Promise<WorkoutChartData[]> {
+    const matchQuery: any = {
       userId: this.parseId(userId),
-      ...this.utility.dateFilter({ fromDate: startDate, toDate: endDate }, "date"),
+      date: {
+        $gte: startDate,
+        $lte: endDate,
+      },
       isCompleted: true,
-      ...(bodyPart && bodyPart !== "All" ? { bodyPart } : {}),
     };
+
+    if (bodyPart && bodyPart !== "All") {
+      matchQuery.bodyPart = bodyPart;
+    }
 
     const result = await this.model.aggregate([
       { $match: matchQuery },
       {
         $group: {
-          _id: "$date",
+          _id: { $dateToString: { format: "%m/%d/%Y", date: "$date" } },
           totalWeight: { $sum: { $ifNull: ["$kg", 0] } },
         },
       },
@@ -130,37 +105,78 @@ export class WorkoutRepository
           totalWeight: 1,
         },
       },
-      { $sort: { date: 1 } },
+      { $sort: { _id: 1 } },
     ]);
-    return result.map((data) => this.weightLiftedByDateMapper.map(data));
+    return result;
   }
 
   async getTotalWorkoutTime(userId: string): Promise<number> {
-    const matchQuery = { isCompleted: true };
-    return this.aggregateWorkoutStats({ userId, matchQuery, field: "time" });
+    const result = await this.model
+      .aggregate([
+        {
+          $match: {
+            userId: this.parseId(userId),
+            isCompleted: true,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalWorkedoutTime: { $sum: "$time" },
+          },
+        },
+      ])
+      .exec();
+    return result[0]?.totalWorkedoutTime ? result[0]?.totalWorkedoutTime : 0;
   }
 
-  async getTotalPendingWorkouts(
+  async getTodaysTotalPendingWorkouts(
     userId: string,
     startDate: Date,
     endDate: Date
   ): Promise<number> {
-    const matchQuery = {
-      date: { $gte: startDate, $lte: endDate },
-      isCompleted: false,
-    };
-    return this.aggregateWorkoutStats({ userId, matchQuery, field: "1" });
+    const result = await this.model.aggregate([
+      {
+        $match: {
+          userId: this.parseId(userId),
+          date: { $gte: startDate, $lte: endDate },
+          isCompleted: false,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          todayPendingWorkouts: { $sum: 1 },
+        },
+      },
+    ]);
+    return result[0]?.todayPendingWorkouts
+      ? result[0]?.todayPendingWorkouts
+      : 0;
   }
 
-  async getTotalCompletedWorkouts(
+  async getTodaysTotalCompletedWorkouts(
     userId: string,
     startDate: Date,
     endDate: Date
   ): Promise<number> {
-    const matchQuery = {
-      date: { $gte: startDate, $lte: endDate },
-      isCompleted: true,
-    };
-    return this.aggregateWorkoutStats({ userId, matchQuery, field: "1" });
+    const result = await this.model.aggregate([
+      {
+        $match: {
+          userId: this.parseId(userId),
+          date: { $gte: startDate, $lte: endDate },
+          isCompleted: true,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          todayCompletedWorkouts: { $sum: 1 },
+        },
+      },
+    ]);
+    return result[0]?.todayCompletedWorkouts
+      ? result[0]?.todayCompletedWorkouts
+      : 0;
   }
 }

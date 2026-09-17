@@ -9,6 +9,7 @@ import {
 } from "@application/dtos/auth-dtos";
 import {
   CreateTrainerDTO,
+  TrainerDTO,
   UpdateTrainerDetailsDTO,
 } from "@application/dtos/trainer-dtos";
 import { User } from "@domain/entities/user.entity";
@@ -19,7 +20,6 @@ import {
 import { PasswordResetToken } from "@domain/entities/pass-reset-token.entity";
 import { Otp } from "@domain/entities/otp.entity";
 import { JwtPayload } from "jsonwebtoken";
-import { Trainer } from "@domain/entities/trainer.entity";
 
 export interface IChangePasswordUC
   extends IBaseUseCase<ChangePasswordDTO, void> {}
@@ -28,7 +28,7 @@ export interface ICheckUserBlockStatusUC
   extends IBaseUseCase<string, boolean> {}
 
 export interface ICreateTrainerUC
-  extends IBaseUseCase<CreateTrainerDTO,(User & Trainer) | User> {}
+  extends IBaseUseCase<CreateTrainerDTO, TrainerDTO | User> {}
 
 export interface ICreateUserUC extends IBaseUseCase<CreateUserDTO, User> {}
 export interface IForgotPasswordUC
@@ -56,7 +56,7 @@ export interface ISigninUserUC
     {
       accessToken: string;
       refreshToken: string;
-      userData: (User & Trainer) | User
+      userData: User | TrainerDTO;
     }
   > {}
 export interface ITokenUC {
@@ -65,6 +65,6 @@ export interface ITokenUC {
 }
 
 export interface IUpdateTRProfileUC
-  extends IBaseUseCase<UpdateTrainerDetailsDTO, (User & Trainer) | User> {}
+  extends IBaseUseCase<UpdateTrainerDetailsDTO, TrainerDTO> {}
 export interface IUpdateUserProfileUC
   extends IBaseUseCase<UpdateUserDetailsDTO, User> {}

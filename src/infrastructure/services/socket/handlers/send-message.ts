@@ -30,7 +30,7 @@ export const handleSendMessage = async (
     isRead: isChatOpen,
   });
 
-  const { id: svdmsgId, createdAt, updatedAt, isRead } = savedMessage;
+  const { _id: svdmsgId, createdAt, updatedAt, isRead } = savedMessage;
 
   await updateLastMessageUseCase.execute({
     userId: senderId,
@@ -41,7 +41,7 @@ export const handleSendMessage = async (
   const receiverSocketId = socketStore.userSocketMap.get(receiverId);
   const senderSocketId = socketStore.userSocketMap.get(senderId);
   const messageData = {
-    id: svdmsgId,
+    _id: svdmsgId,
     senderId,
     receiverId,
     message,

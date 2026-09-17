@@ -13,12 +13,12 @@ import {
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IAuthService } from "@application/interfaces/services/auth/IAuth.service";
 import { IEncryptionService } from "@application/interfaces/services/security/IEncryption.service";
+import { TrainerDTO } from "@application/dtos/trainer-dtos";
 import { User } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
 import { ISigninUserUC } from "@application/interfaces/usecases/IAuthUC";
-import { Trainer } from "@domain/entities/trainer.entity";
 
 /**
  * Purpose: Handle the sign-in process for a user or trainer.
@@ -40,15 +40,15 @@ export class SigninUserUseCase implements ISigninUserUC {
     private encryptionService: IEncryptionService
   ) {}
 
-  private async generateAccessToken(user: User): Promise<string> {
+  private generateAccessToken(user: User | TrainerDTO): string {
     return this.authService.createAccessToken({
-      id: user.id,
+      _id: user._id,
       role: user.role,
     });
   }
-  private async generateRefreshToken(user: User): Promise<string> {
+  private generateRefreshToken(user: User | TrainerDTO): string {
     return this.authService.createRefreshToken({
-      id: user.id,
+      _id: user._id,
       role: user.role,
     });
   }
@@ -56,7 +56,7 @@ export class SigninUserUseCase implements ISigninUserUC {
   private async validateUserLogin(
     email: string,
     password: string
-  ): Promise<User> {
+  ): Promise<User | TrainerDTO> {
     const userData = await this.userRepository.findOne({ email: email });
     if (!userData) {
       throw new NotFoundError(AuthStatus.EmailNotFound);
@@ -83,37 +83,25 @@ export class SigninUserUseCase implements ISigninUserUC {
   async execute({ email, password }: SignInDTO): Promise<{
     accessToken: string;
     refreshToken: string;
-    userData: User | (User & Trainer);
+    userData: User | TrainerDTO;
   }> {
     const userData = await this.validateUserLogin(email, password);
 
-    const [accessToken, refreshToken] = await Promise.all([
-      this.generateAccessToken(userData),
-      this.generateRefreshToken(userData),
-    ]);
-
-    switch (userData?.role) {
-      case "trainer":
-        const trainerData = await this.trainerRepository.findOne({
-          userId: userData.id,
-        });
-        if (!trainerData) {
-          throw new NotFoundError(TrainerStatus.FailedToFetchDetails);
-        }
-        return {
-          accessToken,
-          refreshToken,
-          userData: { ...userData, ...trainerData },
-        };
-
-      case "admin":
-        return { accessToken, refreshToken, userData };
-
-      case "user":
-        return { accessToken, refreshToken, userData };
-
-      default:
-        throw new NotFoundError(AuthStatus.InvalidRole);
+    if (userData?.role === "trainer") {
+      const trainerData =
+        await this.trainerRepository.getTrainerDetailsByUserIdRef(
+          userData?._id.toString()
+        );
+      if (!trainerData) {
+        throw new NotFoundError(TrainerStatus.FailedToRetrieveTrainerDetails);
+      }
+      const accessToken = this.generateAccessToken(trainerData);
+      const refreshToken = this.generateRefreshToken(trainerData);
+      return { accessToken, refreshToken, userData: trainerData };
+    } else {
+      const accessToken = this.generateAccessToken(userData);
+      const refreshToken = this.generateRefreshToken(userData);
+      return { accessToken, refreshToken, userData };
     }
   }
 }

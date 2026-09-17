@@ -30,7 +30,11 @@ export interface UpdateVideoPrivacyDTO {
 }
 
 export interface EditVideoDTO extends VideoMetadata {
-  id: string;
+  _id: string;
   trainerId: string;
   playLists: string[];
+}
+
+export interface VideoWithPlayLists extends Video {
+  playLists: PlayList[];
 }

@@ -6,15 +6,13 @@ export interface IBookingSlot extends Document {
   status: "pending" | "booked" | "completed";
   time: string;
   date: Date;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const bookingSlotSchema: Schema = new Schema(
   {
     trainerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Trainer",
       required: true,
       set: (value: string) => {
         if (mongoose.Types.ObjectId.isValid(value)) {
@@ -28,7 +26,8 @@ const bookingSlotSchema: Schema = new Schema(
       type: String,
       required: true,
       validate: {
-        validator: (v: string) => /^([0-9]{1,2}):([0-9]{2})\s?(AM|PM)$/.test(v),
+        validator: (v: string) =>
+          /^([0-9]{1,2}):([0-9]{2})\s?(AM|PM)$/.test(v),
         message: "Time must be in 'hh:mm AM/PM' format",
       },
     },

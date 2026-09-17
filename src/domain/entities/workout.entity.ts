@@ -1,5 +1,4 @@
 export interface Workout {
-  id: string;
   userId: string;
   date: Date;
   bodyPart: string;
@@ -8,6 +7,4 @@ export interface Workout {
   reps: number;
   time: number;
   isCompleted: boolean;
-  createdAt: Date;
-  updatedAt: Date;
 }

@@ -16,7 +16,7 @@ export class CheckSubscriptionStatusUseCase implements ICheckSubscriptionStatusU
     @inject(TYPES_SERVICES.PaymentService)
     private paymentService: IPaymentService
   ) {}
-
+  
   async execute({ userId, trainerId }: CheckSubscriptionStatusDTO): Promise<{
     trainerId: string;
     isSubscribed: boolean;
@@ -25,42 +25,26 @@ export class CheckSubscriptionStatusUseCase implements ICheckSubscriptionStatusU
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
 
-    const currentsubPlanData =
-      await this.userSubscriptionPlanRepository.getLatestPlan({
-        userId,
-        trainerId,
-      });
-
-    if (!currentsubPlanData) {
-      return {
-        trainerId,
-        isSubscribed: false,
-      };
+    const subscriptionData =
+      await this.userSubscriptionPlanRepository.getSubscriptionsByUserAndTrainerId(
+        { userId, trainerId }
+      );
+    if (subscriptionData && subscriptionData.length > 0) {
+      for (const sub of subscriptionData) {
+        const stripeSubscription = await this.paymentService.getSubscription(
+          sub.stripeSubscriptionId
+        );
+        if (
+          stripeSubscription.status === "active" &&
+          sub.stripeSubscriptionStatus === "active"
+        ) {
+          return {
+            trainerId: trainerId,
+            isSubscribed: true,
+          };
+        }
+      }
     }
-
-    const currentSubscription = await this.paymentService.getSubscriptionById({
-      providerSubId: currentsubPlanData.providerSubId,
-    });
-
-    if (!currentSubscription) {
-      return {
-        trainerId,
-        isSubscribed: false,
-      };
-    }
-
-    if (
-      currentSubscription &&
-      currentsubPlanData &&
-      currentsubPlanData.providerSubStatus === "active" &&
-      currentSubscription.status === "active"
-    ) {
-      return {
-        trainerId: trainerId,
-        isSubscribed: true,
-      };
-    }
-
     return {
       trainerId: trainerId,
       isSubscribed: false,

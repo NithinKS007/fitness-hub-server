@@ -1,85 +1,56 @@
 import { Model } from "mongoose";
-import { PagedResponse } from "@application/dtos/utility-dtos";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
-import AppointmentModel, {
-  IAppointment,
-} from "@infrastructure/databases/models/appointment.model";
+import AppointmentModel, { IAppointment } from "@infrastructure/databases/models/appointment.model";
 import {
   GetBookingRequestsDTO,
-  GetTrainerSchedulesDTO,
-  GetUserSchedulesDTO,
+  GetTrainerSchedulesDTO,GetUserSchedulesDTO,
 } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
-import { Appointment } from "@domain/entities/appointment.entity";
 import {
-  AppointmentsTRUILayer,
-  AppointmentsURUILayer,
-  AppointmentTRmapper,
-  AppointmentURmapper,
-} from "@infrastructure/mappers/appointment.mapper";
-import { MongoHelper } from "../utils/mongo-helper";
+  AppointmentRequestsTrainer,
+  AppointmentRequestsUser,
+} from "@application/dtos/appointment-dtos";
+import { Appointment } from "@domain/entities/appointment.entity";
 
 export class AppointmentRepository
-  extends BaseRepository<IAppointment, Appointment>
+  extends BaseRepository<IAppointment,Appointment>
   implements IAppointmentRepository
 {
-  constructor(
-    model: Model<IAppointment> = AppointmentModel,
-    private appointmentURMapper: AppointmentURmapper = new AppointmentURmapper(),
-    private appointmentTRMapper: AppointmentTRmapper = new AppointmentTRmapper(),
-    private utility: MongoHelper = new MongoHelper()
-  ) {
+  constructor(model: Model<IAppointment> = AppointmentModel) {
     super(model);
   }
 
-  private appointmentProj() {
-    return {
-      _id: 1,
-      appointmentDate: 1,
-      appointmentTime: 1,
-      trainerId: 1,
-      status: 1,
-      createdAt: 1,
-    };
-  }
-
-  private slotProj() {
-    return {
-      "bookingSlotData.createdAt": 1,
-      "bookingSlotData._id": 1,
-    };
-  }
-
   async getBookingRequests(
-    dtos: GetBookingRequestsDTO
-  ): Promise<PagedResponse<AppointmentsTRUILayer>> {
-    const { trainerId, page, limit, fromDate, toDate, search, filters } = dtos;
-
+    {trainerId,page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO
+  ): Promise<{
+    bookingRequestsList: AppointmentRequestsTrainer[];
+    paginationData: PaginationDTO;
+  }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
-    const matchQuery = {
-      ...this.utility.dateFilter({ fromDate, toDate }, "appointmentDate"),
-      ...this.utility.applyInFilter({ filters }, "appointmentTime"),
-      ...this.utility.search({ search }, [
-        "userData.fname",
-        "userData.lname",
-        "userData.email",
-      ]),
-    };
+    let matchQuery: any = {};
 
-    const userLookup = this.utility.lookup({
-      from: "users",
-      localField: "userId",
-      foreignField: "_id",
-      as: "userData",
-    });
+    if (trainerId) {
+      if (search) {
+        matchQuery.$or = [
+          { "userData.fname": { $regex: search, $options: "i" } },
+          { "userData.lname": { $regex: search, $options: "i" } },
+          { "userData.email": { $regex: search, $options: "i" } },
+        ];
+      }
+      if (filters && filters.length > 0) {
+        matchQuery.appointmentTime = { $in: filters };
+      }
 
-    const slotLookup = this.utility.lookup({
-      from: "bookingslots",
-      localField: "bookingSlotId",
-      foreignField: "_id",
-      as: "bookingSlotData",
-    });
+      if (fromDate && toDate) {
+        matchQuery.appointmentDate = { $gte: fromDate, $lte: toDate };
+      } else if (fromDate) {
+        matchQuery.appointmentDate = { $gte: fromDate };
+      } else if (toDate) {
+        matchQuery.appointmentDate = { $lte: toDate };
+      }
+    }
 
     const commonPipeline = [
       {
@@ -88,16 +59,31 @@ export class AppointmentRepository
           status: "pending",
         },
       },
-      ...userLookup,
-      ...slotLookup,
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData",
+        },
+      },
+      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "bookingslots",
+          localField: "bookingSlotId",
+          foreignField: "_id",
+          as: "bookingSlotData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$bookingSlotData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       { $match: matchQuery },
     ];
-
-    const projFields = {
-      ...this.appointmentProj(),
-      ...this.utility.userProj(),
-      ...this.slotProj(),
-    };
 
     const [totalCount, bookingRequestsList] = await Promise.all([
       this.model
@@ -107,7 +93,24 @@ export class AppointmentRepository
         .aggregate([
           ...commonPipeline,
           {
-            $project: projFields,
+            $project: {
+              _id: 1,
+              appointmentDate: 1,
+              appointmentTime: 1,
+              trainerId: 1,
+              status: 1,
+              createdAt: 1,
+
+              "userData._id": 1,
+              "userData.fname": 1,
+              "userData.lname": 1,
+              "userData.email": 1,
+              "userData.phone": 1,
+              "userData.profilePic": 1,
+
+              "bookingSlotData.createdAt": 1,
+              "bookingSlotData._id": 1,
+            },
           },
         ])
         .sort({ createdAt: -1 })
@@ -122,45 +125,39 @@ export class AppointmentRepository
       limitNumber,
     });
 
-    const mappedData = bookingRequestsList.map((data) =>
-      this.appointmentTRMapper.map(data)
-    );
-
     return {
-      data: mappedData,
-      pagination: paginationData,
+      bookingRequestsList,
+      paginationData,
     };
   }
 
   async getTrainerSchedules(
-    dtos: GetTrainerSchedulesDTO
-  ): Promise<PagedResponse<AppointmentsTRUILayer>> {
-    const { trainerId, page, limit, fromDate, toDate, search, filters } = dtos;
+    { trainerId, page, limit, fromDate, toDate, search, filters }: GetTrainerSchedulesDTO
+  ): Promise<{
+    trainerBookingSchedulesList: AppointmentRequestsTrainer[];
+    paginationData: PaginationDTO;
+  }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
-    const matchQuery = {
-      ...this.utility.dateFilter({ fromDate, toDate }, "appointmentDate"),
-      ...this.utility.applyInFilter({ filters }, "appointmentTime "),
-      ...this.utility.search({ search }, [
-        "userData.fname",
-        "userData.lname",
-        "userData.email",
-      ]),
-    };
+    let matchQuery: any = {};
+    if (search) {
+      matchQuery.$or = [
+        { "userData.fname": { $regex: search, $options: "i" } },
+        { "userData.lname": { $regex: search, $options: "i" } },
+        { "userData.email": { $regex: search, $options: "i" } },
+      ];
+    }
+    if (filters && filters.length > 0) {
+      matchQuery.appointmentTime = { $in: filters };
+    }
 
-    const userLookup = this.utility.lookup({
-      from: "users",
-      localField: "userId",
-      foreignField: "_id",
-      as: "userData",
-    });
-
-    const slotLookup = this.utility.lookup({
-      from: "bookingslots",
-      localField: "bookingSlotId",
-      foreignField: "_id",
-      as: "bookingSlotData",
-    });
+    if (fromDate && toDate) {
+      matchQuery.appointmentDate = { $gte: fromDate, $lte: toDate };
+    } else if (fromDate) {
+      matchQuery.appointmentDate = { $gte: fromDate };
+    } else if (toDate) {
+      matchQuery.appointmentDate = { $lte: toDate };
+    }
 
     const commonPipeline = [
       {
@@ -169,16 +166,31 @@ export class AppointmentRepository
           status: "approved",
         },
       },
-      ...userLookup,
-      ...slotLookup,
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userData",
+        },
+      },
+      { $unwind: { path: "$userData", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "bookingslots",
+          localField: "bookingSlotId",
+          foreignField: "_id",
+          as: "bookingSlotData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$bookingSlotData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       { $match: matchQuery },
     ];
-
-    const projFields = {
-      ...this.appointmentProj(),
-      ...this.utility.userProj(),
-      ...this.slotProj(),
-    };
 
     const [totalCount, trainerBookingSchedulesList] = await Promise.all([
       this.model
@@ -188,7 +200,24 @@ export class AppointmentRepository
         .aggregate([
           ...commonPipeline,
           {
-            $project: projFields,
+            $project: {
+              _id: 1,
+              appointmentDate: 1,
+              appointmentTime: 1,
+              trainerId: 1,
+              status: 1,
+              createdAt: 1,
+
+              "userData._id": 1,
+              "userData.fname": 1,
+              "userData.lname": 1,
+              "userData.email": 1,
+              "userData.phone": 1,
+              "userData.profilePic": 1,
+
+              "bookingSlotData.createdAt": 1,
+              "bookingSlotData._id": 1,
+            },
           },
         ])
         .sort({ createdAt: -1 })
@@ -197,10 +226,6 @@ export class AppointmentRepository
         .exec(),
     ]);
 
-    const mappedData = trainerBookingSchedulesList.map((data) =>
-      this.appointmentTRMapper.map(data)
-    );
-
     const paginationData = paginateRes({
       totalCount,
       pageNumber,
@@ -208,40 +233,36 @@ export class AppointmentRepository
     });
 
     return {
-      data: mappedData,
-      pagination: paginationData,
+      trainerBookingSchedulesList,
+      paginationData,
     };
   }
-
   async getUserSchedules(
-    dtos: GetUserSchedulesDTO
-  ): Promise<PagedResponse<AppointmentsURUILayer>> {
-    const { userId, page, limit, fromDate, toDate, search, filters } = dtos;
+    { userId,page, limit, fromDate, toDate, search, filters }: GetUserSchedulesDTO
+  ): Promise<{
+    appointmentList: AppointmentRequestsUser[];
+    paginationData: PaginationDTO;
+  }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
+    let matchQuery: any = {};
+    if (search) {
+      matchQuery.$or = [
+        { "trainerData.fname": { $regex: search, $options: "i" } },
+        { "trainerData.lname": { $regex: search, $options: "i" } },
+        { "trainerData.email": { $regex: search, $options: "i" } },
+      ];
+    }
+    if (filters && filters.length > 0) {
+      matchQuery.appointmentTime = { $in: filters };
+    }
 
-    const matchQuery = {
-      ...this.utility.dateFilter({ fromDate, toDate }, "appointmentDate"),
-      ...this.utility.applyInFilter({ filters }, "appointmentTime "),
-      ...this.utility.search({ search }, [
-        "trainerData.fname",
-        "trainerData.lname",
-        "trainerData.email",
-      ]),
-    };
-
-    const trainerLookup = this.utility.lookup({
-      from: "users",
-      localField: "trainerId",
-      foreignField: "_id",
-      as: "trainerData",
-    });
-
-    const slotLookup = this.utility.lookup({
-      from: "bookingslots",
-      localField: "bookingSlotId",
-      foreignField: "_id",
-      as: "bookingSlotData",
-    });
+    if (fromDate && toDate) {
+      matchQuery.appointmentDate = { $gte: fromDate, $lte: toDate };
+    } else if (fromDate) {
+      matchQuery.appointmentDate = { $gte: fromDate };
+    } else if (toDate) {
+      matchQuery.appointmentDate = { $lte: toDate };
+    }
 
     const commonPipeline = [
       {
@@ -249,16 +270,47 @@ export class AppointmentRepository
           userId: this.parseId(userId),
         },
       },
-      ...trainerLookup,
-      ...slotLookup,
+      {
+        $lookup: {
+          from: "trainers",
+          localField: "trainerId",
+          foreignField: "_id",
+          as: "trainerCollectionData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$trainerCollectionData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "trainerCollectionData.userId",
+          foreignField: "_id",
+          as: "trainerData",
+        },
+      },
+      {
+        $unwind: { path: "$trainerData", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: "bookingslots",
+          localField: "bookingSlotId",
+          foreignField: "_id",
+          as: "bookingSlotData",
+        },
+      },
+      {
+        $unwind: {
+          path: "$bookingSlotData",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       { $match: matchQuery },
     ];
-
-    const projFields = {
-      ...this.appointmentProj(),
-      ...this.utility.trainerProj(),
-      ...this.slotProj(),
-    };
 
     const [totalCount, appointmentList] = await Promise.all([
       this.model
@@ -268,7 +320,24 @@ export class AppointmentRepository
         .aggregate([
           ...commonPipeline,
           {
-            $project: projFields,
+            $project: {
+              _id: 1,
+              appointmentDate: 1,
+              appointmentTime: 1,
+              trainerId: 1,
+              status: 1,
+              createdAt: 1,
+
+              "trainerData._id": "$trainerCollectionData._id",
+              "trainerData.fname": 1,
+              "trainerData.lname": 1,
+              "trainerData.email": 1,
+              "trainerData.phone": 1,
+              "trainerData.profilePic": 1,
+
+              "bookingSlotData.createdAt": 1,
+              "bookingSlotData._id": 1,
+            },
           },
         ])
         .sort({ createdAt: -1 })
@@ -277,10 +346,6 @@ export class AppointmentRepository
         .exec(),
     ]);
 
-    const mappedList = appointmentList.map((data) =>
-      this.appointmentURMapper.map(data)
-    );
-
     const paginationData = paginateRes({
       totalCount,
       pageNumber,
@@ -288,8 +353,8 @@ export class AppointmentRepository
     });
 
     return {
-      data: mappedList,
-      pagination: paginationData,
+      appointmentList: appointmentList,
+      paginationData,
     };
   }
 }

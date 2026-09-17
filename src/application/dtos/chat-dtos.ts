@@ -1,4 +1,4 @@
-import { Message } from "@domain/entities/message.entity";
+import { Chat } from "@domain/entities/chat.entity";
 import { ObjectId } from "mongoose";
 
 export interface CreateChatDTO {
@@ -8,18 +8,43 @@ export interface CreateChatDTO {
   isRead: boolean;
 }
 
-export interface FindMessageDTO {
+export interface FindChatDTO {
   userId: string;
   otherUserId: string;
-  page?: number;
-  limit?: number;
 }
 
-export interface ChatLastMsg {
-  id: ObjectId;
+interface BaseChatList {
+  _id: string;
+  userId: string;
+  trainerId: string;
+  unreadCount: number;
+  stripeSubscriptionStatus: string;
+  lastMessage: Chat | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface UserTrainerData {
+  fname: string;
+  lname: string;
+  email: string;
+  profilePic: string;
+  isBlocked: boolean;
+}
+
+export interface UserChatList extends BaseChatList {
+  subscribedTrainerData: UserTrainerData;
+}
+
+export interface TrainerChatList extends BaseChatList {
+  subscribedUserData: UserTrainerData;
+}
+
+export interface Conversation {
+  _id: ObjectId;
   userId: ObjectId;
   trainerId: ObjectId;
-  lastMessage: Message | null;
+  lastMessage: Chat | null;
   unreadCount: number;
-  providerSubStatus: string;
+  stripeSubscriptionStatus: string;
 }

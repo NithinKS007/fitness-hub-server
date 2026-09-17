@@ -12,7 +12,7 @@ export class ChangePasswordController {
     private changePassword: IChangePasswordUC
   ) {}
   async handle(req: Request, res: Response): Promise<void> {
-    const { id: userId } = req?.user || {};
+    const { _id: userId } = req?.user || {};
 
     const passwordData = { userId, ...req.body };
 

@@ -41,9 +41,9 @@ export const handleCallEnded = async ({
       callDuration: duration,
     });
 
-    io.to(roomId).emit(EmitEvents.CallEnded);
+    io.to(roomId).emit(EmitEvents.callEnded);
   } catch (error: any) {
-    io.to(roomId).emit(EmitEvents.Error, {
+    io.to(roomId).emit(EmitEvents.error, {
       message:
         error.message || "An unexpected error occurred while ending the call.",
       status: "error",

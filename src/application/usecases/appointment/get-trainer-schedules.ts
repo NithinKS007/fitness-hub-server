@@ -1,15 +1,12 @@
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import {
-  NotFoundError,
-  validationError,
-} from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import {
   AppointmentStatus,
   AuthStatus,
 } from "@shared/constants/index.constants";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { GetTrainerSchedulesDTO } from "@application/dtos/query-dtos";
-import { AppointmentsTRUILayer } from "@infrastructure/mappers/appointment.mapper";
+import { AppointmentRequestsTrainer } from "@application/dtos/appointment-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IGetTrainerSchedulesUC } from "@application/interfaces/usecases/IAppointmentUC";
@@ -29,23 +26,17 @@ export class GetTrainerSchedulesUseCase implements IGetTrainerSchedulesUC {
     private appointmentRepository: IAppointmentRepository
   ) {}
 
-  async execute({
-    trainerId,
-    page,
-    limit,
-    fromDate,
-    toDate,
-    search,
-    filters,
-  }: GetTrainerSchedulesDTO): Promise<{
-    trainerBookingSchedulesList: AppointmentsTRUILayer[];
+  async execute(
+    { trainerId, page, limit, fromDate, toDate, search, filters }: GetTrainerSchedulesDTO
+  ): Promise<{
+    trainerBookingSchedulesList: AppointmentRequestsTrainer[];
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
       throw new validationError(AuthStatus.IdRequired);
     }
-    const query = { trainerId, page, limit, fromDate, toDate, search, filters };
-    const { data: trainerBookingSchedulesList, pagination: paginationData } =
+    const query = { trainerId,page, limit, fromDate, toDate, search, filters };
+    const { trainerBookingSchedulesList, paginationData } =
       await this.appointmentRepository.getTrainerSchedules(query);
     if (!trainerBookingSchedulesList) {
       throw new NotFoundError(AppointmentStatus.BookingRequestsFetchFailed);

@@ -1,5 +1,5 @@
 export interface User {
-  id: string;
+  _id: string;
   fname: string;
   lname: string;
   email: string;
@@ -19,6 +19,4 @@ export interface User {
   bloodGroup: string;
   medicalConditions: string;
   otherConcerns: string;
-  createdAt: Date;
-  updatedAt: Date;
 }

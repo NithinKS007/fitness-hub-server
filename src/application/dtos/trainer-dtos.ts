@@ -1,5 +1,6 @@
-import { EarningsOverViewUI } from "@infrastructure/mappers/chart.mappers";
-import { Top5TrainesUILayer } from "@infrastructure/mappers/subscriptionPlan.mapper";
+import { ObjectId } from "mongoose";
+import { AdminChartData } from "./chart-dtos";
+import { Subscription } from "@domain/entities/subscription.entity";
 
 export interface CreateTrainerDTO {
   fname: string;
@@ -14,6 +15,7 @@ export interface CreateTrainerDTO {
 }
 
 export interface UpdateTrainerDetailsDTO {
+  trainerId: string;
   fname: string;
   lname: string;
   phone: string;
@@ -25,7 +27,7 @@ export interface UpdateTrainerDetailsDTO {
   height: string;
   weight: string;
   userId: string;
-  id: string;
+  _id: string;
   yearsOfExperience: string;
   certifications: { url: string; fileName: string }[];
   specializations: string[];
@@ -36,15 +38,45 @@ export interface TrainerVerificationDTO {
   action: "approved" | "rejected";
 }
 
+export interface TrainerWithSubscription extends TrainerDTO {
+  subscriptionDetails: Subscription[];
+}
+
+export interface TrainerDTO {
+  fname: string;
+  lname: string;
+  email: string;
+  password: string;
+  role: "user" | "admin" | "trainer";
+  isBlocked: boolean;
+  otpVerified?: boolean;
+  googleVerified?: boolean;
+  phone?: string;
+  dateOfBirth?: Date;
+  profilePic?: string;
+  age?: string;
+  height?: string;
+  weight?: string;
+  gender?: string;
+
+  _id: string;
+  userId: string;
+  yearsOfExperience?: string;
+  specializations?: string[];
+  certifications?: { fileName: string; url: string }[];
+  isApproved?: boolean;
+  aboutMe?: string;
+}
+
 export interface TrainerDashboardStats {
   chartData: {
-    id: string;
+    _id: string;
     total: number;
     active: number;
     canceled: number;
   }[];
   pieChartData: {
-    id: string;
+    _id: string;
     name: string;
     value: number;
   }[];
@@ -57,9 +89,19 @@ export interface AdminDashBoardStats {
   pendingTrainerApprovalCount: number;
   totalUsersCount: number;
   totalTrainersCount: number;
-  totalServiceFee: number;
+  totalPlatFormFee: number;
   totalCommission: number;
   totalRevenue: number;
-  earningOverView: EarningsOverViewUI[];
-  Top5Trainers: Top5TrainesUILayer[];
+  chartData: AdminChartData[];
+  top5List: Top5List[];
+}
+
+export interface Top5List {
+  _id: ObjectId;
+  totalActiveSubscriptions: number;
+  totalCanceledSubscriptions: number;
+  totalSubscriptions: number;
+  fname: string;
+  lname: string;
+  email: string;
 }

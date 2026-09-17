@@ -1,5 +1,3 @@
-import { WeightLiftedByDateUILayer } from "@infrastructure/mappers/workout.mapper";
-
 export interface RepSet {
   kg: number;
   reps: number;
@@ -33,10 +31,14 @@ export interface WorkoutdbDTO {
   isCompleted: boolean;
 }
 
+export interface WorkoutChartData {
+  _id: string;
+  totalWeight: number;
+}
 
 export interface UserDashBoard {
-  weightLiftedByDate: WeightLiftedByDateUILayer[];
+  chartData: WorkoutChartData[];
   totalWorkoutTime: number;
-  totalPendingWorkouts: number;
-  totalCompletedWorkouts: number;
+  todaysTotalPendingWorkouts: number;
+  todaysTotalCompletedWorkouts: number;
 }

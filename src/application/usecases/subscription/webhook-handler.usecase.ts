@@ -1,12 +1,9 @@
-import {
-  NotFoundError,
-  validationError,
-} from "@presentation/middlewares/error.middleware";
+import { validationError } from "@presentation/middlewares/error.middleware";
 import { SubscriptionStatus } from "@shared/constants/index.constants";
 import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
 import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
-import { IFinancialLogRepository } from "@domain/interfaces/IFinancialLogRepository";
-import { IChatRepository } from "@domain/interfaces/IChatRepository";
+import { IPlatformEarningsRepository } from "@domain/interfaces/IPlatformEarningsRepository";
+import { IConversationRepository } from "@domain/interfaces/IConversationRepository";
 import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
@@ -15,8 +12,6 @@ import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
 import { IWebHookHandlerUC } from "@application/interfaces/usecases/ISubscriptionUC";
-import Stripe from "stripe";
-import { Subscription } from "@domain/entities/subscription.entity";
 
 @injectable()
 export class WebHookHandlerUseCase implements IWebHookHandlerUC {
@@ -25,10 +20,10 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
     private subscriptionRepository: ISubscriptionRepository,
     @inject(TYPES_REPOSITORIES.UserSubscriptionPlanRepository)
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
-    @inject(TYPES_REPOSITORIES.FinancialLogRepository)
-    private revenueRepository: IFinancialLogRepository,
-    @inject(TYPES_REPOSITORIES.ChatRepository)
-    private chatRepository: IChatRepository,
+    @inject(TYPES_REPOSITORIES.RevenueRepository)
+    private revenueRepository: IPlatformEarningsRepository,
+    @inject(TYPES_REPOSITORIES.ConversationRepository)
+    private conversationRepository: IConversationRepository,
     @inject(TYPES_SERVICES.PaymentService)
     private paymentService: IPaymentService,
     @inject(TYPES_SERVICES.EmailService)
@@ -51,14 +46,12 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
     trainerId: string
   ): Promise<void> {
     const userData = await this.userRepository.findById(userId);
-    if (userData) {
-      await this.emailService.sendEmail({
-        to: userData?.email,
-        subject: "Subscription Confirmation",
-        text: `Your subscription with Trainer ID: ${trainerId} has been successfully activated.
+    await this.emailService.sendEmail({
+      to: userData?.email as string,
+      subject: "Subscription Confirmation",
+      text: `Your subscription with Trainer ID: ${trainerId} has been successfully activated.
              Enjoy your training sessions!`,
-      });
-    }
+    });
   }
 
   private async sendSubscriptionFailedEmail(
@@ -66,16 +59,13 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
     trainerId: string
   ): Promise<void> {
     const userData = await this.userRepository.findById(userId);
-
-    if (userData) {
-      await this.emailService.sendEmail({
-        to: userData?.email,
-        subject: "Payment Failed - Subscription Canceled",
-        text: `Dear user, your payment for the subscription to Trainer ID:
+    await this.emailService.sendEmail({
+      to: userData?.email as string,
+      subject: "Payment Failed - Subscription Canceled",
+      text: `Dear user, your payment for the subscription to Trainer ID:
             ${trainerId} has failed, and your subscription has been canceled. 
             Please update your payment method to continue the service.`,
-      });
-    }
+    });
   }
 
   private async SendSubscriptionCancelledEmail(
@@ -83,209 +73,178 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
     trainerId: string
   ): Promise<void> {
     const userData = await this.userRepository.findById(userId);
-    if (userData) {
-      await this.emailService.sendEmail({
-        to: userData?.email,
-        subject: "Subscription Cancelled",
-        text: `Dear user, your subscription to Trainer ID: ${trainerId} has been canceled.
+    await this.emailService.sendEmail({
+      to: userData?.email as string,
+      subject: "Subscription Cancelled",
+      text: `Dear user, your subscription to Trainer ID: ${trainerId} has been canceled.
              We hope to have you back soon!`,
-      });
-    }
+    });
   }
 
-  private async handleCheckoutSessionCompleted(
-    event: Stripe.CheckoutSessionCompletedEvent
-  ): Promise<void> {
+  private async handleCheckoutSessionCompleted(event: any): Promise<void> {
     const session = event?.data?.object;
-
-    if (!session || !session.client_reference_id || !session.metadata) {
-      throw new validationError(SubscriptionStatus.NotFound);
-    }
-
     const userId = session?.client_reference_id;
-    const subscriptionId = session.metadata?.subscriptionId;
-    const trainerId = session?.metadata?.trainerId;
-    const providerSubId = session?.subscription;
+    if (session?.metadata) {
+      const subscriptionId = session.metadata?.subscriptionId;
+      const trainerId = session?.metadata?.trainerId;
+      const stripeSubscriptionId = session?.subscription as string;
+      const subscription = await this.paymentService.getSubscription(
+        stripeSubscriptionId
+      );
 
-    if (typeof providerSubId !== "string") {
-      throw new validationError(SubscriptionStatus.InvalidSubProviderId);
-    }
+      if (!subscription) {
+        throw new validationError(SubscriptionStatus.NotFound);
+      }
 
-    const subscription = await this.paymentService.getSubscriptionById({
-      providerSubId: providerSubId,
-    });
+      if (!subscriptionId || !trainerId) {
+        throw new validationError(
+          SubscriptionStatus.SubscriptionIdAndTraineIdMissing
+        );
+      }
+      const subscriptionData = await this.subscriptionRepository.findById(
+        subscriptionId
+      );
+      if (!subscriptionData) {
+        throw new validationError(SubscriptionStatus.NotFound);
+      }
+      const newSubscriptionAdding = {
+        userId: userId as string,
+        trainerId: trainerId,
+        subPeriod: subscriptionData?.subPeriod,
+        price: subscriptionData?.price,
+        durationInWeeks: subscriptionData?.durationInWeeks,
+        sessionsPerWeek: subscriptionData?.sessionsPerWeek,
+        totalSessions: subscriptionData?.totalSessions,
+        stripePriceId: subscriptionData?.stripePriceId,
+        stripeSubscriptionId: stripeSubscriptionId as string,
+        stripeSubscriptionStatus: subscription.status,
+      };
+      const createdSubscription =
+        await this.userSubscriptionPlanRepository.create(newSubscriptionAdding);
 
-    if (!subscription) {
-      throw new validationError(SubscriptionStatus.NotFound);
-    }
-
-    if (!subscriptionId || !trainerId) {
-      throw new validationError(
-        SubscriptionStatus.SubscriptionIdAndTrainerIdMissing
+      if (createdSubscription) {
+        await Promise.all([
+          this.sendSubscriptionConfirmationEmail(userId as string, trainerId),
+          this.handleRevenue(subscriptionData, trainerId, createdSubscription),
+          this.manageConversationStatus(
+            createdSubscription,
+            trainerId,
+            subscription.status
+          ),
+        ]);
+      }
+      console.log(
+        `Subscription ${subscriptionId} successful in webhook handler`
       );
     }
-    const subscriptionData = await this.subscriptionRepository.findById(
-      subscriptionId
-    );
-    if (!subscriptionData) {
-      throw new validationError(SubscriptionStatus.NotFound);
-    }
-    const newSubscriptionAdding = {
-      userId: userId,
-      trainerId: trainerId,
-      subPeriod: subscriptionData?.subPeriod,
-      price: subscriptionData?.price,
-      durationInWeeks: subscriptionData?.durationInWeeks,
-      sessionsPerWeek: subscriptionData?.sessionsPerWeek,
-      totalSessions: subscriptionData?.totalSessions,
-      providerPriceId: subscriptionData?.providerPriceId,
-      providerSubId: providerSubId,
-      providerSubStatus: subscription.status,
-    };
-    const createdSubscription = await this.userSubscriptionPlanRepository.create(
-      newSubscriptionAdding
-    );
-
-    if (createdSubscription) {
-      await Promise.all([
-        this.sendSubscriptionConfirmationEmail(userId, trainerId),
-        this.handleRevenue(subscriptionData, trainerId, createdSubscription),
-        this.manageConversationStatus(createdSubscription, subscription.status),
-      ]);
-    }
-    console.log(`Subscription ${subscriptionId} successful in webhook handler`);
   }
 
   private async handleRevenue(
-    subscriptionData: Subscription,
+    subscriptionData: any,
     trainerId: string,
-    createdSubscription: UserSubscriptionPlan
+    createdSubscription: any
   ): Promise<void> {
     const adminCommission = Math.round(subscriptionData?.price * 0.1);
-    const serviceFee = Math.round(subscriptionData?.price * 0.05);
-    const trainerAmount = subscriptionData?.price - adminCommission - serviceFee;
+    const platformFee = Math.round(subscriptionData?.price * 0.05);
+    const trainerAmount =
+      subscriptionData?.price - adminCommission - platformFee;
 
     await this.revenueRepository.create({
-      userId: createdSubscription.userId,
+      userId: createdSubscription.userId.toString(),
       trainerId: trainerId,
-      subscriptionId: subscriptionData.id,
-      userSubscriptionPlanId: createdSubscription.id,
+      subscriptionId: subscriptionData._id.toString(),
+      userSubscriptionPlanId: createdSubscription._id.toString(),
       amountPaid: subscriptionData.price,
-      serviceFee: serviceFee,
-      trainerProfit: trainerAmount,
+      platformRevenue: platformFee,
+      trainerRevenue: trainerAmount,
       commission: adminCommission,
     });
   }
 
   private async manageConversationStatus(
     createdSubscription: UserSubscriptionPlan,
+    trainerId: string,
     subscriptionStatus: string
   ): Promise<void> {
-    const existingConversation = await this.chatRepository.findOne({
-      userId: createdSubscription.userId,
-      trainerId: createdSubscription.trainerId,
-    });
+    const existingConversation =
+      await this.conversationRepository.findConversation({
+        userId: createdSubscription.userId.toString(),
+        trainerId: trainerId,
+      });
 
     if (!existingConversation) {
-      await this.chatRepository.create({
-        userId: createdSubscription.userId,
-        trainerId: createdSubscription.trainerId,
-        providerSubStatus: subscriptionStatus,
+      await this.conversationRepository.create({
+        userId: createdSubscription.userId.toString(),
+        trainerId: trainerId.toString(),
+        stripeSubscriptionStatus: subscriptionStatus,
       });
     } else {
-      await this.chatRepository.update(existingConversation.id, {
-        userId: createdSubscription.userId,
-        trainerId: createdSubscription.trainerId,
-        providerSubStatus: subscriptionStatus,
+      await this.conversationRepository.updateSubscriptionStatus({
+        userId: createdSubscription.userId.toString(),
+        trainerId: trainerId,
+        stripeSubscriptionStatus: subscriptionStatus,
       });
     }
   }
 
-  private async handleInvoicePaymentFailed(
-    event: Stripe.InvoicePaymentFailedEvent
-  ): Promise<void> {
+  private async handleInvoicePaymentFailed(event: any): Promise<void> {
     const invoice = event.data.object;
-    const providerSubId = invoice.subscription;
+    const stripeSubscriptionId = invoice.subscription as string;
 
-    if (!providerSubId || typeof providerSubId !== "string") {
-      throw new NotFoundError("Not found");
+    if (stripeSubscriptionId) {
+      const findExistingSubscription =
+        await this.userSubscriptionPlanRepository.getSubscriptionByStripeId(
+          stripeSubscriptionId
+        );
+      const { userId, trainerId } = findExistingSubscription;
+      if (findExistingSubscription) {
+        await this.conversationRepository.updateSubscriptionStatus({
+          userId: userId.toString(),
+          trainerId: trainerId.toString(),
+          stripeSubscriptionStatus: "canceled",
+        });
+      }
+      await this.userSubscriptionPlanRepository.updateSubscriptionStatusByStripeId(
+        { stripeSubscriptionId, status: "canceled" }
+      );
+
+      await this.sendSubscriptionFailedEmail(
+        userId as string,
+        trainerId.toString()
+      );
+      console.log(
+        `Subscription ${stripeSubscriptionId} cancelled due to payment failure`
+      );
     }
-
-    const userSubPlan = await this.userSubscriptionPlanRepository.findOne({
-      providerSubId: providerSubId,
-    });
-
-    if (!userSubPlan) {
-      throw new NotFoundError("sub not found");
-    }
-
-    const { userId, trainerId, id } = userSubPlan;
-
-    const conversation = await this.chatRepository.findOne({
-      userId,
-      trainerId,
-    });
-
-    if (!conversation) {
-      throw new NotFoundError("not found");
-    }
-
-    const { id: conversationId } = conversation;
-    await this.chatRepository.update(conversationId, {
-      providerSubStatus: "canceled",
-    });
-
-    await this.userSubscriptionPlanRepository.update(id, {
-      providerSubId: providerSubId,
-      providerSubStatus: "canceled",
-    });
-
-    await this.sendSubscriptionFailedEmail(userId, trainerId);
-    console.log(`Subscription ${providerSubId} cancelled due to payment failure`);
   }
 
-  private async handleSubscriptionDeleted(
-    event: Stripe.CustomerSubscriptionDeletedEvent
-  ): Promise<void> {
+  private async handleSubscriptionDeleted(event: any): Promise<void> {
     const subscription = event.data.object;
 
-    if (!subscription) {
-      throw new NotFoundError("Not found");
+    if (subscription) {
+      const findExistingSubscription =
+        await this.userSubscriptionPlanRepository.getSubscriptionByStripeId(
+          subscription.id
+        );
+      const { userId, trainerId } = findExistingSubscription;
+      if (findExistingSubscription) {
+        await this.conversationRepository.updateSubscriptionStatus({
+          userId: userId.toString(),
+          trainerId: trainerId.toString(),
+          stripeSubscriptionStatus: "canceled",
+        });
+      }
+      await this.userSubscriptionPlanRepository.updateSubscriptionStatusByStripeId(
+        { stripeSubscriptionId: subscription.id, status: "canceled" }
+      );
+      await this.SendSubscriptionCancelledEmail(
+        userId as string,
+        trainerId.toString()
+      );
+      console.log(
+        `Subscription ${subscription.id} cancelled due to customer cancellation`
+      );
     }
-
-    const userSubPlan = await this.userSubscriptionPlanRepository.findOne({
-      providerSubId: subscription.id,
-    });
-
-    if (!userSubPlan) {
-      throw new NotFoundError("sub not found");
-    }
-
-    const { userId, trainerId, id } = userSubPlan;
-
-    const conversation = await this.chatRepository.findOne({
-      userId,
-      trainerId,
-    });
-
-    if (!conversation) {
-      throw new NotFoundError("not found");
-    }
-
-    const { id: conversationId } = conversation;
-    await this.chatRepository.update(conversationId, {
-      providerSubStatus: "canceled",
-    });
-
-    await this.userSubscriptionPlanRepository.update(id, {
-      providerSubId: subscription.id,
-      providerSubStatus: "canceled",
-    });
-
-    await this.SendSubscriptionCancelledEmail(userId, trainerId);
-    console.log(
-      `Subscription ${subscription.id} cancelled due to customer cancellation`
-    );
   }
 
   async execute({
@@ -298,7 +257,7 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
     body: string | Buffer;
   }): Promise<void> {
     this.validateWebhookInput(sig, webhookSecret, body);
-    const event = await this.paymentService.constructWebHookEvent(
+    const event = await this.paymentService.constructStripeEvent(
       body,
       sig,
       webhookSecret

@@ -23,11 +23,11 @@ export class AdminDashboardController {
       totalUsersCount,
       totalTrainersCount,
       pendingTrainerApprovalCount,
-      totalServiceFee,
+      totalPlatFormFee,
       totalCommission,
       totalRevenue,
-      earningOverView,
-      Top5Trainers,
+      chartData,
+      top5List,
     } = await this.adminDashBoardUseCase.execute(period);
 
     sendResponse(
@@ -37,11 +37,11 @@ export class AdminDashboardController {
         totalUsersCount: totalUsersCount,
         totalTrainersCount: totalTrainersCount,
         pendingTrainerApprovalCount: pendingTrainerApprovalCount,
-        totalServiceFee: totalServiceFee,
+        totalPlatFormFee: totalPlatFormFee,
         totalCommission: totalCommission,
         totalRevenue: totalRevenue,
-        earningOverView: earningOverView,
-        Top5Trainers: Top5Trainers,
+        chartData: chartData,
+        topTrainersList: top5List,
       },
       DashboardStatus.AdminDashRetrieved
     );

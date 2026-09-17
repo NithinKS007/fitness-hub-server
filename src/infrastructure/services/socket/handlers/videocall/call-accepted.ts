@@ -14,9 +14,9 @@ export const handleAcceptCall = async ({
 }: AcceptVideoCall) => {
   try {
     socket.join(roomId);
-    io.to(roomId).emit(EmitEvents.CallStarted, { roomId });
+    io.to(roomId).emit(EmitEvents.callStarted, { roomId });
   } catch (error: any) {
-    io.to(roomId).emit(EmitEvents.Error, {
+    io.to(roomId).emit(EmitEvents.error, {
       message:
         error.message ||
         "An unexpected error occurred while attempting to accept the call.",

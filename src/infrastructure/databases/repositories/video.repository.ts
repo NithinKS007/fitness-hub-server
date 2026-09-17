@@ -1,75 +1,86 @@
-import mongoose, { Model, FilterQuery } from "mongoose";
-import { PagedResponse } from "@application/dtos/utility-dtos";
+import mongoose, { Model } from "mongoose";
+import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
-import { GetVideosDTO } from "@application/dtos/query-dtos";
+import { GetVideoQueryDTO } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import { Video } from "@domain/entities/video.entity";
 import VideoModel, { IVideo } from "../models/video.model";
-import { MongoHelper } from "../utils/mongo-helper";
-import { VideoMapper, VideoUILayer } from "@infrastructure/mappers/video.mapper";
+import { VideoWithPlayLists } from "@application/dtos/video-dtos";
 
 export class VideoRepository
   extends BaseRepository<IVideo, Video>
   implements IVideoRepository
 {
-  constructor(
-    model: Model<IVideo> = VideoModel,
-    private videoMapper: VideoMapper = new VideoMapper(),
-    private utility: MongoHelper = new MongoHelper()
-  ) {
+  constructor(model: Model<IVideo> = VideoModel) {
     super(model);
   }
 
   async findOne(query: Partial<Video>): Promise<Video | null> {
-    const { title, id } = query;
+    const { title, _id } = query;
 
-    const queryObject: FilterQuery<Video> = {};
+    const queryObject: any = {};
 
     if (title) {
       queryObject.title = title;
     }
 
-    if (id) {
-      queryObject._id = { $ne: this.parseId(id) };
+    if (_id) {
+      queryObject._id = { $ne: this.parseId(String(_id)) };
     }
 
     const result = await this.model.findOne(queryObject);
     return result ? this.toDomain(result) : null;
   }
 
-  async getVideos(dtos: GetVideosDTO): Promise<PagedResponse<VideoUILayer>> {
-    const { trainerId, page, limit, fromDate, toDate, search, filters } = dtos;
-    const { playlistPrivacy, videoPrivacy } = dtos;
+  async getVideos(
+    { trainerId, page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO,
+    videoPrivacy?: boolean,
+    playlistPrivacy?: boolean
+  ): Promise<{
+    videoList: VideoWithPlayLists[];
+    paginationData: PaginationDTO;
+  }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
     let matchQuery: any = {
       trainerId: this.parseId(trainerId),
-      ...this.utility.dateFilter({ fromDate, toDate }, "createdAt"),
-      ...this.utility.search({ search }, ["title", "description"]),
-      ...(videoPrivacy !== undefined ? { privacy: videoPrivacy } : {}),
     };
 
-    if (filters && filters.length > 0 && !filters.includes("All")) {
-      const conditions: { privacy: boolean }[] = [];
+    if (videoPrivacy !== undefined) {
+      matchQuery.privacy = videoPrivacy;
+    }
 
-      for (const filter of filters) {
-        switch (filter) {
-          case "Active":
-            conditions.push({ privacy: false });
-            break;
-          case "Inactive":
-            conditions.push({ privacy: true });
-            break;
-          default:
-            break;
-        }
+    if (search) {
+      matchQuery.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    if (fromDate || toDate) {
+      matchQuery.createdAt = {};
+      if (fromDate) {
+        matchQuery.createdAt.$gte = fromDate;
       }
+      if (toDate) {
+        matchQuery.createdAt.$lte = toDate;
+      }
+    }
 
+    if (filters && filters.length > 0 && !filters.includes("All")) {
+      const conditions = [];
+      if (filters.includes("Active")) conditions.push({ privacy: false });
+      if (filters.includes("Inactive")) conditions.push({ privacy: true });
       if (conditions.length > 0) matchQuery.$and = conditions;
     }
 
-    const basePipeline = [
+    const playlistIds =
+      filters
+        ?.filter((id) => mongoose.Types.ObjectId.isValid(id))
+        .map((id) => this.parseId(id)) || [];
+
+    const basePipeline: any[] = [
       { $match: matchQuery },
       {
         $lookup: {
@@ -79,6 +90,15 @@ export class VideoRepository
           as: "videoplaylists",
         },
       },
+      ...(playlistIds.length > 0
+        ? [
+            {
+              $match: {
+                "videoplaylists.playListId": { $in: playlistIds },
+              },
+            },
+          ]
+        : []),
       {
         $lookup: {
           from: "playlists",
@@ -129,11 +149,9 @@ export class VideoRepository
       pageNumber,
       limitNumber,
     });
-
-    const mappedData = videoList.map((data) => this.videoMapper.map(data));
     return {
-      data: mappedData,
-      pagination: paginationData,
+      videoList,
+      paginationData,
     };
   }
 }

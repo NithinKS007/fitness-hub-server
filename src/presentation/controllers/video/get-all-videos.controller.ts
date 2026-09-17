@@ -14,7 +14,7 @@ export class GetAllVideosController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { id: trainerId } = req?.user || {};
+    const { _id: trainerId } = req?.user || {};
 
     const queryParams = parseQueryParams(req.query);
 

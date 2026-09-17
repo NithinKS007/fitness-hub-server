@@ -29,11 +29,11 @@ export class PurchaseSubscriptionUseCase implements IPurchaseSubscriptionUC {
     if (subscriptionData.isBlocked) {
       throw new validationError(SubscriptionStatus.Blocked);
     }
-    const sessionId = await this.paymentService.createSession({
-      providerPriceId: subscriptionData.providerPriceId,
+    const sessionId = await this.paymentService.createSubscriptionSession({
+      stripePriceId: subscriptionData.stripePriceId,
       userId: userId,
       trainerId: subscriptionData.trainerId,
-      subscriptionId: subscriptionData.id,
+      subscriptionId: subscriptionData._id,
     });
     if (!sessionId) {
       throw new validationError(SubscriptionStatus.SessionCreateFailed);

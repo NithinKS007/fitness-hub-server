@@ -39,13 +39,13 @@ export class GoogleAuthUseCase implements IGoogleAuthUC {
 
   private generateAccessToken(user: User): string {
     return this.authService.createAccessToken({
-      id: user.id,
+      _id: user._id,
       role: user.role,
     });
   }
   private generateRefreshToken(user: User): string {
     return this.authService.createRefreshToken({
-      id: user.id,
+      _id: user._id,
       role: user.role,
     });
   }
