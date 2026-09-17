@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
 import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
-import {
-  StatusCodes,
-  SubscriptionStatus,
-} from "@shared/constants/index.constants";
+import { StatusCodes, SubscriptionStatus } from "@shared/constants/index.constants";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
 import { ICancelSubscriptionUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
@@ -16,12 +13,13 @@ export class CancelSubscriptionController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { stripeSubscriptionId, action } = req.body;
+    const { providerSubId, action } = req.body;
 
-    const cancelSubData = { stripeSubscriptionId, action };
+    const cancelSubData = { providerSubId, action };
 
-    const subscriptionCancelledData =
-      await this.cancelSubscriptionUseCase.execute(cancelSubData);
+    const subscriptionCancelledData = await this.cancelSubscriptionUseCase.execute(
+      cancelSubData
+    );
 
     sendResponse(
       res,

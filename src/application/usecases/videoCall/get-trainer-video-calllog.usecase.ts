@@ -1,13 +1,13 @@
 import { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogRepository";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { ApplicationStatus } from "@shared/constants/index.constants";
-import { GetTrainerVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
+import { GetTrainerVideoCallLogDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import { TrainerVideoCallLog } from "@application/dtos/video-call-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
 import { IGetTrainerVideoCallLogUC } from "@application/interfaces/usecases/IVideoCallLogUC";
+import { TRCallLogUILayer } from "@infrastructure/mappers/call-log.mapper";
 
 /**
  * Purpose: Fetch video call logs for a trainer with pagination, filters, and date range.
@@ -25,20 +25,24 @@ export class GetTrainerVideoCallLogUseCase
     private videoCallLogRepository: IVideoCallLogRepository
   ) {}
 
-  async execute(
-    { trainerId, page, limit, fromDate, toDate, search, filters }: GetTrainerVideoCallLogQueryDTO
-  ): Promise<{
-    trainerVideoCallLogList: TrainerVideoCallLog[];
+  async execute({
+    trainerId,
+    page,
+    limit,
+    fromDate,
+    toDate,
+    search,
+    filters,
+  }: GetTrainerVideoCallLogDTO): Promise<{
+    trainerVideoCallLogList: TRCallLogUILayer[];
     paginationData: PaginationDTO;
   }> {
     if (!trainerId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const query = { page, limit, fromDate, toDate, search, filters ,trainerId};
-    const { trainerVideoCallLogList, paginationData } =
-      await this.videoCallLogRepository.getTrainerVideoCallLogs(
-        query
-      );
+    const query = { page, limit, fromDate, toDate, search, filters, trainerId };
+    const { data: trainerVideoCallLogList, pagination: paginationData } =
+      await this.videoCallLogRepository.getTrainerVideoCallLogs(query);
 
     if (!trainerVideoCallLogList) {
       throw new validationError(VideoCallStatus.RetrieveFailed);

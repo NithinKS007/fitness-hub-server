@@ -1,9 +1,6 @@
 import { UpdatePlayListPrivacyDTO } from "@application/dtos/playlist-dtos";
 import { validationError } from "@presentation/middlewares/error.middleware";
-import {
-  ApplicationStatus,
-  BlockStatus,
-} from "@shared/constants/index.constants";
+import { ApplicationStatus, BlockStatus } from "@shared/constants/index.constants";
 import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 import { PlayList } from "@domain/entities/playlist.entity";
 import { injectable, inject } from "inversify";
@@ -24,12 +21,9 @@ export class UpdatePlayListPrivacyUseCase implements IUpdatePlayListPrivacyUC {
     if (playListId === null || privacy === null) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const updatedPlayListData = await this.playListRepository.update(
-      playListId,
-      {
-        privacy,
-      }
-    );
+    const updatedPlayListData = await this.playListRepository.update(playListId, {
+      privacy,
+    });
     if (!updatedPlayListData) {
       throw new validationError(BlockStatus.StatusUpdateFailed);
     }

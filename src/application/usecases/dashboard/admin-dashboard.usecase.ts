@@ -1,18 +1,19 @@
 import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
-import { IPlatformEarningsRepository } from "@domain/interfaces/IPlatformEarningsRepository";
+import { IFinancialLogRepository } from "@domain/interfaces/IFinancialLogRepository";
 import { IDateService } from "@application/interfaces/services/date/IDate.service";
 import { RoleType } from "@application/dtos/auth-dtos";
-import { AdminChartData } from "@application/dtos/chart-dtos";
-import { AdminDashBoardStats, Top5List } from "@application/dtos/trainer-dtos";
+import { EarningsOverViewUI } from "@infrastructure/mappers/chart.mappers";
+import { AdminDashBoardStats } from "@application/dtos/trainer-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
 import { IAdminDashBoardUC } from "@application/interfaces/usecases/IDashBoardUC";
+import { Top5TrainesUILayer } from "@infrastructure/mappers/subscriptionPlan.mapper";
 
 @injectable()
-export class AdminDashBoardUseCase implements IAdminDashBoardUC{
+export class AdminDashBoardUseCase implements IAdminDashBoardUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserSubscriptionPlanRepository)
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
@@ -20,8 +21,8 @@ export class AdminDashBoardUseCase implements IAdminDashBoardUC{
     private userRepository: IUserRepository,
     @inject(TYPES_REPOSITORIES.TrainerRepository)
     private trainerRepository: ITrainerRepository,
-    @inject(TYPES_REPOSITORIES.RevenueRepository)
-    private revenueRepository: IPlatformEarningsRepository,
+    @inject(TYPES_REPOSITORIES.FinancialLogRepository)
+    private financalRepository: IFinancialLogRepository,
     @inject(TYPES_SERVICES.DateService)
     private dateService: IDateService
   ) {}
@@ -31,19 +32,19 @@ export class AdminDashBoardUseCase implements IAdminDashBoardUC{
       totalUsersCount,
       totalTrainersCount,
       pendingTrainerApprovalCount,
-      totalPlatFormFee,
+      totalServiceFee,
       totalCommission,
       totalRevenue,
-      chartData,
-      top5List,
+      earningOverView,
+      Top5Trainers,
     ] = await Promise.all([
       this.getTotalUsersCount(),
       this.getTotalTrainersCount(),
       this.getPendingTrainerApprovalsCount(),
-      this.getTotalPlatFormFee(),
+      this.getTotalServiceFee(),
       this.getTotalCommission(),
-      this.getTotalRevenue(),
-      this.getRevenueChartData(period),
+      this.getTotalProfit(),
+      this.getEarningsOverView(period),
       this.getTop5TrainersWithHighestSubscribers(),
     ]);
 
@@ -51,11 +52,11 @@ export class AdminDashBoardUseCase implements IAdminDashBoardUC{
       pendingTrainerApprovalCount,
       totalTrainersCount,
       totalUsersCount,
-      totalPlatFormFee,
+      totalServiceFee,
       totalCommission,
       totalRevenue,
-      chartData,
-      top5List,
+      earningOverView,
+      Top5Trainers,
     };
   }
 
@@ -71,30 +72,29 @@ export class AdminDashBoardUseCase implements IAdminDashBoardUC{
     return await this.trainerRepository.countPendingTrainerApprovals();
   }
 
-  private async getTotalPlatFormFee(): Promise<number> {
-    return await this.revenueRepository.getTotalPlatFormFee();
+  private async getTotalServiceFee(): Promise<number> {
+    return await this.financalRepository.getTotalServiceFee();
   }
 
   private async getTotalCommission(): Promise<number> {
-    return await this.revenueRepository.getTotalCommission();
+    return await this.financalRepository.getTotalCommission();
   }
 
-  private async getTotalRevenue(): Promise<number> {
-    return await this.revenueRepository.getTotalRevenue();
+  private async getTotalProfit(): Promise<number> {
+    return await this.financalRepository.getTotalProfit();
   }
 
-  private async getRevenueChartData(period: string): Promise<AdminChartData[]> {
+  private async getEarningsOverView(period: string): Promise<EarningsOverViewUI[]> {
     const { startDate, endDate } = this.dateService.getDateRange(period);
-    const chartData = await this.revenueRepository.getRevenueChartData({
+    const chartData = await this.financalRepository.getEarningsOverView({
       startDate,
       endDate,
     });
     return chartData;
   }
 
-  private async getTop5TrainersWithHighestSubscribers(): Promise<Top5List[]> {
-    const top10List =
-      await this.userSubscriptionPlanRepository.getTop5TrainersBySubscribers();
-    return top10List;
+  private async getTop5TrainersWithHighestSubscribers(): Promise<Top5TrainesUILayer[]> {
+    const top5List = await this.userSubscriptionPlanRepository.getTop5TrainersBySubscribers();
+    return top5List;
   }
 }

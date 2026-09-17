@@ -4,6 +4,8 @@ export interface IVideoPlaylist extends Document {
   _id: ObjectId;
   videoId: ObjectId;
   playListId: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const videoPlaylistSchema: Schema = new Schema(

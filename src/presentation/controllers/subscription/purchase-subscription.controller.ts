@@ -16,7 +16,7 @@ export class PurchaseSubscriptionController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { _id: userId } = req?.user || {};
+    const { id: userId } = req?.user || {};
     const { subscriptionId } = req.body;
 
     const sessionId = await this.purchaseSubscriptionUseCase.execute({

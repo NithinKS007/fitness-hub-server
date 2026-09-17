@@ -6,10 +6,10 @@ export enum SubscriptionStatus {
   SessionCreateFailed = "Failed to create subscription session",
   WebHookCredentialsMissing = "Web hook credentials are missing",
   WebHookVerificationFailed = "Webhook signature verification failed",
-  SubscriptionIdAndTraineIdMissing = "Missing metadata: subscriptionId or trainerId.",
+  SubscriptionIdAndTrainerIdMissing = "Missing metadata: subscriptionId or trainerId.",
   UserSubscriptionsRetrieved = "User subscription list retrieved successfully",
   Cancelled = "Your subscription has been cancelled successfully",
-  InvalidSessionIdForStripe = "Invalid session id for stripe",
+  InvalidSessionId = "Invalid session id,Please try again later",
   Blocked = "Subscription Currently unavailable",
   UserIsSubscribed = "The current user is subscribed",
   StatusUpdated = "Subscription block status updated successfully",
@@ -18,4 +18,5 @@ export enum SubscriptionStatus {
   DeletedSuccess = "Subscription deleted successfully",
   EditFailed = "Failed to edit subscription",
   CancelFailed = "Failed to cancel subscription",
+  InvalidSubProviderId = "Subscription id must be a string, Please provide a valid subscription id "
 }

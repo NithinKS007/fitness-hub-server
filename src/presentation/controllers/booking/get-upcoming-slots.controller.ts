@@ -4,13 +4,13 @@ import { StatusCodes, SlotStatus } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
 import { TYPES_BOOKINGSLOT_USECASAES } from "@di/types-usecases";
-import { IGetUpComingSlotsUC } from "@application/interfaces/usecases/ISlotUC";
+import { IGetSlotsUC } from "@application/interfaces/usecases/ISlotUC";
 
 @injectable()
 export class GetUpComingSlotsController {
   constructor(
-    @inject(TYPES_BOOKINGSLOT_USECASAES.GetUpComingSlotsUseCase)
-    private getUpComingSlotsUseCase: IGetUpComingSlotsUC
+    @inject(TYPES_BOOKINGSLOT_USECASAES.GetSlotsUseCase)
+    private getUpComingSlotsUseCase: IGetSlotsUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
@@ -19,7 +19,11 @@ export class GetUpComingSlotsController {
     const queryParams = parseQueryParams(req.query);
 
     const { availableSlotsList, paginationData } =
-      await this.getUpComingSlotsUseCase.execute({ trainerId, ...queryParams });
+      await this.getUpComingSlotsUseCase.execute({
+        trainerId,
+        ...queryParams,
+        type: "upcoming",
+      });
 
     sendResponse(
       res,
@@ -27,6 +31,7 @@ export class GetUpComingSlotsController {
       {
         availableSlotsList: availableSlotsList,
         paginationData: paginationData,
+        view: queryParams.view,
       },
       SlotStatus.RetrievedSuccess
     );

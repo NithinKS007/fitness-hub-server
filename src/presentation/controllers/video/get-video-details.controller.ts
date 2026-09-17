@@ -14,7 +14,7 @@ export class GetVideoDetailsController {
 
   async handle(req: Request, res: Response): Promise<void> {
     const { videoId } = req.params;
-    const { _id: trainerId } = req?.user || {};
+    const { id: trainerId } = req?.user || {};
     const videoData = await this.getVideoDetailsUseCase.execute({
       trainerId,
       videoId,

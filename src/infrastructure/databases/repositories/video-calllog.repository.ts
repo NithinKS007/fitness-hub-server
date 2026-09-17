@@ -1,108 +1,78 @@
 import { Model } from "mongoose";
-import {
-  UpdateVideoCallLogDTO,
-  UpdateVideoCallDurationDTO,
-  TrainerVideoCallLog,
-  UserVideoCallLog,
-} from "@application/dtos/video-call-dtos";
-import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { PagedResponse } from "@application/dtos/utility-dtos";
 import { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogRepository";
-import { GetTrainerVideoCallLogQueryDTO, GetUserVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
+import {
+  GetTrainerVideoCallLogDTO,
+  GetUserVideoCallLogDTO,
+} from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import { VideoCallLog } from "@domain/entities/video-calllog.entity";
 import VideoCallLogModel, {
   IVideoCallLog,
 } from "../models/video-call-log.model";
+import {
+  TRCallLogMapper,
+  TRCallLogUILayer,
+  URCallLogMapper,
+  URCallLogUILayer,
+} from "@infrastructure/mappers/call-log.mapper";
+import { MongoHelper } from "../utils/mongo-helper";
 
 export class VideoCallLogRepository
   extends BaseRepository<IVideoCallLog, VideoCallLog>
   implements IVideoCallLogRepository
 {
-  constructor(model: Model<IVideoCallLog> = VideoCallLogModel) {
+  constructor(
+    model: Model<IVideoCallLog> = VideoCallLogModel,
+    private userCallLogMapper: URCallLogMapper = new URCallLogMapper(),
+    private trainerCallLogMapper: TRCallLogMapper = new TRCallLogMapper(),
+    private utility: MongoHelper = new MongoHelper()
+  ) {
     super(model);
   }
 
-  private async updateLogField(
-    callRoomId: string,
-    updates: Record<string, {}>
-  ): Promise<VideoCallLog | null> {
-    const result =  await this.model.findOneAndUpdate(
-      { callRoomId: callRoomId },
-      updates,
-      { new: true }
-    );
-
-    return result ? this.toDomain(result) : null
-  }
-
-  async updateStatus({
-    callRoomId,
-    callEndTime,
-    callStatus,
-  }: UpdateVideoCallLogDTO): Promise<VideoCallLog | null> {
-    return await this.updateLogField(callRoomId, { callEndTime, callStatus });
-  }
-
-  async updateDuration({
-    callRoomId,
-    callDuration,
-  }: UpdateVideoCallDurationDTO): Promise<VideoCallLog | null> {
-    return await this.updateLogField(callRoomId, { callDuration });
-  }
-
   async getTrainerVideoCallLogs(
-    { trainerId, page, limit, search, fromDate, toDate, filters }: GetTrainerVideoCallLogQueryDTO
-  ): Promise<{
-    trainerVideoCallLogList: TrainerVideoCallLog[];
-    paginationData: PaginationDTO;
-  }> {
+    dtos: GetTrainerVideoCallLogDTO
+  ): Promise<PagedResponse<TRCallLogUILayer>> {
+    const { trainerId, page, limit, search, fromDate, toDate, filters } = dtos;
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
-    let matchQuery: any = {};
 
-    if (search) {
-      matchQuery.$or = [
-        { "userData.fname": { $regex: search, $options: "i" } },
-        { "userData.lname": { $regex: search, $options: "i" } },
-        { "userData.email": { $regex: search, $options: "i" } },
-      ];
-    }
-    if (filters && filters.length > 0) {
-      matchQuery["appointmentData.appointmentTime"] = { $in: filters };
-    }
+    const matchQuery = {
+      ...this.utility.dateFilter(
+        { fromDate, toDate },
+        "appointmentData.appointmentDate"
+      ),
+      ...this.utility.applyInFilter(
+        { filters },
+        "appointmentData.appointmentTime"
+      ),
+      ...this.utility.search({ search }, [
+        "userData.fname",
+        "userData.lname",
+        "userData.email",
+      ]),
+    };
 
-    if (fromDate && toDate) {
-      matchQuery["appointmentData.appointmentDate"] = {
-        $gte: fromDate,
-        $lte: toDate,
-      };
-    } else if (fromDate) {
-      matchQuery["appointmentData.appointmentDate"] = { $gte: fromDate };
-    } else if (toDate) {
-      matchQuery["appointmentData.appointmentDate"] = { $lte: toDate };
-    }
+    const userLookup = this.utility.lookup({
+      from: "users",
+      localField: "receiverId",
+      foreignField: "_id",
+      as: "userData",
+    });
+
+    const appointmentLookup = this.utility.lookup({
+      from: "appointments",
+      localField: "appointmentId",
+      foreignField: "_id",
+      as: "appointmentData",
+    });
 
     const commonPipeline = [
       { $match: { callerId: this.parseId(trainerId) } },
-      {
-        $lookup: {
-          from: "users",
-          localField: "receiverId",
-          foreignField: "_id",
-          as: "userData",
-        },
-      },
-      { $unwind: "$userData" },
-      {
-        $lookup: {
-          from: "appointments",
-          localField: "appointmentId",
-          foreignField: "_id",
-          as: "appointmentData",
-        },
-      },
+      ...userLookup,
+      ...appointmentLookup,
       { $match: matchQuery },
-      { $unwind: "$appointmentData" },
     ];
 
     const [totalCount, trainerVideoCallLogList] = await Promise.all([
@@ -121,72 +91,57 @@ export class VideoCallLogRepository
       pageNumber,
       limitNumber,
     });
+
+    const mappedData = trainerVideoCallLogList.map((data) =>
+      this.trainerCallLogMapper.map(data)
+    );
     return {
-      trainerVideoCallLogList,
-      paginationData,
+      data: mappedData,
+      pagination: paginationData,
     };
   }
 
   async getUserVideoCallLogs(
-    { userId, page, limit, search, fromDate, toDate, filters }: GetUserVideoCallLogQueryDTO
-  ): Promise<{
-    userVideoCallLogList: UserVideoCallLog[];
-    paginationData: PaginationDTO;
-  }> {
+    dtos: GetUserVideoCallLogDTO
+  ): Promise<PagedResponse<URCallLogUILayer>> {
+    const { userId, page, limit, search, fromDate, toDate, filters } = dtos;
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
-    let matchQuery: any = {};
-    if (search) {
-      matchQuery.$or = [
-        { "trainerData.fname": { $regex: search, $options: "i" } },
-        { "trainerData.lname": { $regex: search, $options: "i" } },
-        { "trainerData.email": { $regex: search, $options: "i" } },
-      ];
-    }
-    if (filters && filters.length > 0) {
-      matchQuery["appointmentData.appointmentTime"] = { $in: filters };
-    }
 
-    if (fromDate && toDate) {
-      matchQuery["appointmentData.appointmentDate"] = {
-        $gte: fromDate,
-        $lte: toDate,
-      };
-    } else if (fromDate) {
-      matchQuery["appointmentData.appointmentDate"] = { $gte: fromDate };
-    } else if (toDate) {
-      matchQuery["appointmentData.appointmentDate"] = { $lte: toDate };
-    }
+    const matchQuery = {
+      ...this.utility.dateFilter(
+        { fromDate, toDate },
+        "appointmentData.appointmentDate"
+      ),
+      ...this.utility.applyInFilter(
+        { filters },
+        "appointmentData.appointmentTime"
+      ),
+      ...this.utility.search({ search }, [
+        "trainerData.fname",
+        "trainerData.lname",
+        "trainerData.email",
+      ]),
+    };
+
+    const userLookup = this.utility.lookup({
+      from: "users",
+      localField: "callerId",
+      foreignField: "_id",
+      as: "trainerData",
+    });
+
+    const appointmentLookup = this.utility.lookup({
+      from: "appointments",
+      localField: "appointmentId",
+      foreignField: "_id",
+      as: "appointmentData",
+    });
 
     const commonPipeline = [
       { $match: { receiverId: this.parseId(userId) } },
-      {
-        $lookup: {
-          from: "trainers",
-          localField: "callerId",
-          foreignField: "_id",
-          as: "trainerCollectionData",
-        },
-      },
-      { $unwind: "$trainerCollectionData" },
-      {
-        $lookup: {
-          from: "users",
-          localField: "trainerCollectionData.userId",
-          foreignField: "_id",
-          as: "trainerData",
-        },
-      },
-      { $unwind: "$trainerData" },
-      {
-        $lookup: {
-          from: "appointments",
-          localField: "appointmentId",
-          foreignField: "_id",
-          as: "appointmentData",
-        },
-      },
+      ...userLookup,
+      ...appointmentLookup,
       { $match: matchQuery },
-      { $unwind: "$appointmentData" },
     ];
 
     const [totalCount, userVideoCallLogList] = await Promise.all([
@@ -200,14 +155,19 @@ export class VideoCallLogRepository
         .limit(limitNumber)
         .exec(),
     ]);
+
     const paginationData = paginateRes({
       totalCount,
       pageNumber,
       limitNumber,
     });
+
+    const mappedData = userVideoCallLogList.map((data) =>
+      this.userCallLogMapper.map(data)
+    );
     return {
-      userVideoCallLogList,
-      paginationData,
+      data: mappedData,
+      pagination: paginationData,
     };
   }
 }

@@ -17,7 +17,7 @@ import { IUpdateVideoCallStatusUC } from "@application/interfaces/usecases/IVide
  */
 
 @injectable()
-export class UpdateVideoCallStatusUseCase implements IUpdateVideoCallStatusUC  {
+export class UpdateVideoCallStatusUseCase implements IUpdateVideoCallStatusUC {
   constructor(
     @inject(TYPES_REPOSITORIES.VideoCallLogRepository)
     private videoCallLogRepository: IVideoCallLogRepository
@@ -31,10 +31,18 @@ export class UpdateVideoCallStatusUseCase implements IUpdateVideoCallStatusUC  {
     if (!callEndTime || !callRoomId || !callStatus) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const updatedCallData = { callEndTime, callRoomId, callStatus };
 
-    const updatedCall = await this.videoCallLogRepository.updateStatus(
-      updatedCallData
+    const callDetails = await this.videoCallLogRepository.findOne({
+      callRoomId,
+    });
+
+    if (!callDetails) {
+      throw new validationError(VideoCallStatus.UnableToUpdateStatus);
+    }
+
+    const updatedCall = await this.videoCallLogRepository.update(
+      callDetails.id,
+      { callEndTime, callStatus }
     );
 
     if (!updatedCall) {

@@ -1,8 +1,5 @@
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
-import {
-  TrainerDTO,
-  UpdateTrainerDetailsDTO,
-} from "@application/dtos/trainer-dtos";
+import { UpdateTrainerDetailsDTO } from "@application/dtos/trainer-dtos";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import dotenv from "dotenv";
 import { ICloudStorageService } from "@application/interfaces/services/storage/ICloud.storage.service";
@@ -10,6 +7,13 @@ import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
 import { IUpdateTRProfileUC } from "@application/interfaces/usecases/IAuthUC";
+import { User } from "@domain/entities/user.entity";
+import {
+  InternalServerError,
+  NotFoundError,
+} from "@presentation/middlewares/error.middleware";
+import { TrainerStatus, UserStatus } from "@shared/constants/index.constants";
+import { Trainer } from "@domain/entities/trainer.entity";
 dotenv.config();
 
 /**
@@ -42,15 +46,14 @@ export class UpdateTrainerProfileUseCase implements IUpdateTRProfileUC {
     return image;
   }
 
-  private async handleCertifications(certifications: any[]): Promise<any[]> {
+  private async handleCertifications(
+    certifications: any[]
+  ): Promise<{ fileName: string; url: string }[]> {
     const updatedCertifications: { fileName: string; url: string }[] = [];
     if (certifications && certifications.length > 0) {
       const uploadPromises = certifications.map(async (certi) => {
         if (certi && !certi.url.includes("cloudinary.com")) {
-          const base64 = await this.uploadtoCloud(
-            certi.url,
-            this.certificateFolder
-          );
+          const base64 = await this.uploadtoCloud(certi.url, this.certificateFolder);
           updatedCertifications.push({
             fileName: certi.fileName,
             url: base64,
@@ -64,14 +67,11 @@ export class UpdateTrainerProfileUseCase implements IUpdateTRProfileUC {
     return updatedCertifications;
   }
 
-  private async handleSpecializations(
-    specializations: string[]
-  ): Promise<string[]> {
+  private async handleSpecializations(specializations: string[]): Promise<string[]> {
     return specializations.length > 0 ? [...specializations] : [];
   }
 
   async execute({
-    trainerId,
     yearsOfExperience,
     certifications,
     specializations,
@@ -79,9 +79,9 @@ export class UpdateTrainerProfileUseCase implements IUpdateTRProfileUC {
     aboutMe,
     profilePic,
     dateOfBirth,
-    _id,
+    id,
     ...profileData
-  }: UpdateTrainerDetailsDTO): Promise<TrainerDTO> {
+  }: UpdateTrainerDetailsDTO): Promise<User & { trainerDetails: Trainer }> {
     const [updatedCertifications, updatedSpecializations, profilePicData] =
       await Promise.all([
         this.handleCertifications(certifications),
@@ -89,24 +89,39 @@ export class UpdateTrainerProfileUseCase implements IUpdateTRProfileUC {
         this.uploadtoCloud(profilePic, this.profileFolder),
       ]);
 
-    const updatedTrainerData = await this.trainerRepository.update(trainerId, {
-      certifications: updatedCertifications,
-      specializations: updatedSpecializations,
-      yearsOfExperience,
-      aboutMe,
-    });
+    const trainerDetails = await this.trainerRepository.findOne({ userId });
+    if (!trainerDetails) {
+      throw new NotFoundError(TrainerStatus.FailedToFetchDetails);
+    }
 
-    const updatedTrainerUserData = await this.userRepository.update(userId, {
-      profilePic: profilePicData,
-      dateOfBirth: new Date(dateOfBirth),
-      ...profileData,
-    });
+    const userDetails = await this.userRepository.findById(userId);
+    if (!userDetails) {
+      throw new NotFoundError(UserStatus.NotFound);
+    }
 
-    const trainerData = Object.assign(
-      {},
-      updatedTrainerUserData,
-      updatedTrainerData
-    );
-    return trainerData;
+    const { id: trainerId } = trainerDetails;
+
+    const [updatedTrainerData, updatedTrainerUserData] = await Promise.all([
+      this.trainerRepository.update(trainerId, {
+        certifications: updatedCertifications,
+        specializations: updatedSpecializations,
+        yearsOfExperience,
+        aboutMe,
+      }),
+      this.userRepository.update(userId, {
+        profilePic: profilePicData,
+        dateOfBirth: new Date(dateOfBirth),
+        ...profileData,
+      }),
+    ]);
+
+    if (!updatedTrainerData || !updatedTrainerUserData) {
+      throw new InternalServerError(TrainerStatus.UpdateFailed);
+    }
+
+    return {
+      ...updatedTrainerUserData,
+      trainerDetails: { ...updatedTrainerData },
+    };
   }
 }

@@ -9,21 +9,21 @@ import {
   GetTrainerSchedulesDTO,
   GetUserSchedulesDTO,
 } from "@application/dtos/query-dtos";
-import {
-  AppointmentRequestsTrainer,
-  AppointmentRequestsUser,
-} from "@application/dtos/appointment-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
+import {
+  AppointmentsTRUILayer,
+  AppointmentsURUILayer,
+} from "@infrastructure/mappers/appointment.mapper";
 
 export interface IBookAppointmentUC
   extends IBaseUseCase<BookAppointmentDTO, Appointment> {}
 export interface ICancelAppointmentUC
-  extends IBaseUseCase<string, Appointment> {}
+  extends IBaseUseCase<HandleBookingDTO, Appointment> {}
 export interface IGetAppointmentRequestsUC
   extends IBaseUseCase<
     GetBookingRequestsDTO,
     {
-      bookingRequestsList: AppointmentRequestsTrainer[];
+      bookingRequestsList: AppointmentsTRUILayer[];
       paginationData: PaginationDTO;
     }
   > {}
@@ -33,7 +33,7 @@ export interface IGetTrainerSchedulesUC
   extends IBaseUseCase<
     GetTrainerSchedulesDTO,
     {
-      trainerBookingSchedulesList: AppointmentRequestsTrainer[];
+      trainerBookingSchedulesList: AppointmentsTRUILayer[];
       paginationData: PaginationDTO;
     }
   > {}
@@ -41,7 +41,7 @@ export interface IGetUserSchedulesUC
   extends IBaseUseCase<
     GetUserSchedulesDTO,
     {
-      appointmentList: AppointmentRequestsUser[];
+      appointmentList: AppointmentsURUILayer[];
       paginationData: PaginationDTO;
     }
   > {}

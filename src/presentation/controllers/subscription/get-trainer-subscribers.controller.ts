@@ -17,7 +17,7 @@ export class GetTrainerSubscribersController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { _id: trainerId } = req?.user || {};
+    const { id: trainerId } = req?.user || {};
 
     const queryParams = parseQueryParams(req.query);
 

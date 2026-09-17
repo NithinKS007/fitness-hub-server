@@ -32,9 +32,9 @@ export class DeleteSubscriptionUseCase implements IDeleteSubscriptionUC {
     if (!subscriptionData) {
       throw new validationError(AuthStatus.InvalidId);
     }
-    const stripePriceId = subscriptionData.stripePriceId;
-    if (stripePriceId) {
-      await this.paymentService.deactivatePrice({ priceId: stripePriceId });
+    const providerPriceId = subscriptionData.providerPriceId;
+    if (providerPriceId) {
+      await this.paymentService.deactivatePrice({ priceId: providerPriceId });
     }
     const deletedSubscription = await this.subscriptionRepository.delete(
       subscriptionId

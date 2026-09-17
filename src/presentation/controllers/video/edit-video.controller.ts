@@ -14,11 +14,11 @@ export class EditVideoController {
 
   async handle(req: Request, res: Response): Promise<void> {
     const { id: videoId } = req.params;
-    const { _id: trainerId } = req?.user || {};
+    const { id: trainerId } = req?.user || {};
 
     const updatedVideoData = {
       trainerId,
-      _id: videoId,
+      id: videoId,
       ...req.body,
     };
 

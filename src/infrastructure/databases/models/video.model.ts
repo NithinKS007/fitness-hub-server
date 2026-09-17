@@ -9,13 +9,15 @@ export interface IVideo extends Document {
   thumbnail: string;
   video: string;
   privacy: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const videoSchema: Schema = new Schema(
   {
     trainerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Trainer",
+      ref: "User",
       required: true,
       set: (value: string) => {
         if (mongoose.Types.ObjectId.isValid(value)) {

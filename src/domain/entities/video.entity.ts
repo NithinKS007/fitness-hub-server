@@ -1,5 +1,5 @@
 export interface Video {
-  _id: string;
+  id: string;
   trainerId: string;
   title: string;
   description: string;
@@ -7,4 +7,6 @@ export interface Video {
   thumbnail: string;
   video: string;
   privacy: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }

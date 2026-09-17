@@ -17,7 +17,7 @@ export class GetUserSubscriptionController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { _id: userId } = req?.user || {};
+    const { id: userId } = req?.user || {};
 
     const queryParams = parseQueryParams(req.query);
 

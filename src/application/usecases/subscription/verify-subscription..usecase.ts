@@ -28,32 +28,32 @@ export class VerifySubcriptionSessionUseCase
     if (!sessionId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const session = await this.paymentService.getCheckoutSession(sessionId);
+    const session = await this.paymentService.getSession(sessionId);
     if (!session) {
-      throw new validationError(SubscriptionStatus.InvalidSessionIdForStripe);
+      throw new validationError(SubscriptionStatus.InvalidSessionId);
     }
-    const stripeSubscriptionId =
+
+    const providerSubId =
       typeof session.subscription === "string"
         ? session.subscription
         : session.subscription?.id;
 
-    if (!stripeSubscriptionId) {
+    if (!providerSubId) {
       throw new validationError("Failed");
     }
-    const userTakenSubscription =
-      await this.userSubscriptionPlanRepository.getSubscriptionByStripeId(
-        stripeSubscriptionId
-      );
+    const userTakenSubscription = await this.userSubscriptionPlanRepository.findOne({
+      providerSubId: providerSubId,
+    });
 
     if (!userTakenSubscription) {
       throw new validationError(SubscriptionStatus.NotFound);
     }
-    const stripeSubscription = await this.paymentService.getSubscription(
-      stripeSubscriptionId
-    );
+    const providerSubscription = await this.paymentService.getSubscriptionById({
+      providerSubId: providerSubId,
+    });
     const subscriptionStatus =
-      stripeSubscription.status === "active" &&
-      userTakenSubscription.stripeSubscriptionStatus === "active";
+      providerSubscription.status === "active" &&
+      userTakenSubscription.providerSubStatus === "active";
 
     return {
       ...userTakenSubscription,

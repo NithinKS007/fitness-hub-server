@@ -14,7 +14,7 @@ export class ZegoCloudTokenController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { _id: currentuserId } = req?.user || {};
+    const { id: currentuserId } = req?.user || {};
     const { token, roomId, appId } = await this.createTokenUseCase.execute({
       userId: currentuserId,
     });

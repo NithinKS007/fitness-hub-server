@@ -1,5 +1,5 @@
 export interface VideoCallLog {
-  _id: string;
+  id: string;
   appointmentId: string;
   callerId: string;
   receiverId: string;
@@ -8,4 +8,6 @@ export interface VideoCallLog {
   callStatus: "pending" | "completed" | "missed";
   callStartTime: Date;
   callEndTime: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

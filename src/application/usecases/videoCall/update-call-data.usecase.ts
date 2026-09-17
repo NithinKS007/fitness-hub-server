@@ -16,7 +16,9 @@ import { IUpdateVideoCallDurationUC } from "@application/interfaces/usecases/IVi
  */
 
 @injectable()
-export class UpdateVideoCallDurationUseCase implements IUpdateVideoCallDurationUC {
+export class UpdateVideoCallDurationUseCase
+  implements IUpdateVideoCallDurationUC
+{
   constructor(
     @inject(TYPES_REPOSITORIES.VideoCallLogRepository)
     private videoCallLogRepository: IVideoCallLogRepository
@@ -29,10 +31,18 @@ export class UpdateVideoCallDurationUseCase implements IUpdateVideoCallDurationU
     if (typeof callDuration !== "number" || !callRoomId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const callData = { callDuration, callRoomId };
 
-    const updatedCall = await this.videoCallLogRepository.updateDuration(
-      callData
+    const callDetails = await this.videoCallLogRepository.findOne({
+      callRoomId,
+    });
+
+    if (!callDetails) {
+      throw new validationError(VideoCallStatus.UnableToUpdateDuration);
+    }
+
+    const updatedCall = await this.videoCallLogRepository.update(
+      callDetails.id,
+      { callDuration }
     );
 
     if (!updatedCall) {

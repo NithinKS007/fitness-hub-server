@@ -1,53 +1,42 @@
 import {
-  TrainerChartData,
-  TrainerPieChartData,
-} from "@application/dtos/chart-dtos";
-import {
-  DateRangeQueryDTO,
-  GetTrainerSubscribersQueryDTO,
-  GetUserSubscriptionsQueryDTO,
+  DateRangeDTO,
+  GetTrainerSubsDTO,
+  GetUserSubDTO,
 } from "@application/dtos/query-dtos";
-import {
-  CheckSubscriptionStatusDTO,
-  TrainerSubscriberRecord,
-  UpdateSubscriptionStatusDTO,
-  UserSubscriptionRecord,
-} from "@application/dtos/subscription-dtos";
-import { Top5List } from "@application/dtos/trainer-dtos";
-import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { CheckSubscriptionStatusDTO } from "@application/dtos/subscription-dtos";
+import { PagedResponse } from "@application/dtos/utility-dtos";
 import { UserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
 import { IUserSubscriptionPlan } from "@infrastructure/databases/models/user-subscription-plan";
+import {
+  TRSubPeriodWiseCountUI,
+  TRSubStatusWiseCountUI,
+} from "@infrastructure/mappers/chart.mappers";
+import {
+  Top5TrainesUILayer,
+  TrainerSubUILayer,
+  UserSubUILayer,
+} from "@infrastructure/mappers/subscriptionPlan.mapper";
 
 export interface IUserSubscriptionPlanRepository
   extends IBaseRepository<IUserSubscriptionPlan, UserSubscriptionPlan> {
-  getUserSubscriptions(dtos: GetUserSubscriptionsQueryDTO): Promise<{
-    userSubscriptionRecord: UserSubscriptionRecord[];
-    paginationData: PaginationDTO;
-  }>;
-  getTrainerSubscriptions(dtos: GetTrainerSubscribersQueryDTO): Promise<{
-    trainerSubscriberRecord: TrainerSubscriberRecord[];
-    paginationData: PaginationDTO;
-  }>;
-  getSubscriptionByStripeId(
-    stripeSubscriptionId: string
-  ): Promise<UserSubscriptionPlan>;
-  getSubscriptionsByUserAndTrainerId(
-    data: CheckSubscriptionStatusDTO
-  ): Promise<UserSubscriptionPlan[] | null>;
-  updateSubscriptionStatusByStripeId(
-    updateSubscriptionStatus: UpdateSubscriptionStatusDTO
+  getUserSubscriptions(dtos: GetUserSubDTO): Promise<PagedResponse<UserSubUILayer>>;
+  getTrainerSubscriptions(
+    dtos: GetTrainerSubsDTO
+  ): Promise<PagedResponse<TrainerSubUILayer>>;
+  getLatestPlan(
+    dtos: CheckSubscriptionStatusDTO
   ): Promise<UserSubscriptionPlan | null>;
   countAllTrainerSubscribers(trainerId: string): Promise<number>;
   countAllActiveSubscribers(trainerId: string): Promise<number>;
   countCanceledSubscribers(trainerId: string): Promise<number>;
-  getTrainerLineChartData(
+  getTrainerSubStatusWiseCount(
     trainerId: string,
-    dateFilterQuery: DateRangeQueryDTO
-  ): Promise<TrainerChartData[]>;
-  getTrainerPieChartData(
+    dtos: DateRangeDTO
+  ): Promise<TRSubStatusWiseCountUI[]>;
+  getTrainerSubPeriodWiseCount(
     trainerId: string,
-    dateFilterQuery: DateRangeQueryDTO
-  ): Promise<TrainerPieChartData[]>;
-  getTop5TrainersBySubscribers(): Promise<Top5List[]>;
+    dtos: DateRangeDTO
+  ): Promise<TRSubPeriodWiseCountUI[]>;
+  getTop5TrainersBySubscribers(): Promise<Top5TrainesUILayer[]>;
 }

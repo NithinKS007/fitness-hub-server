@@ -26,8 +26,7 @@ export const TYPES_AUTH_USECASES = {
 export const TYPES_BOOKINGSLOT_USECASAES = {
   CreateBookingSlotUseCase: Symbol.for("CreateBookingSlotUseCase"),
   DeleteBookingSlotUseCase: Symbol.for("DeleteBookingSlotUseCase"),
-  GetPendingSlotsUseCase: Symbol.for("GetPendingSlotsUseCase"),
-  GetUpComingSlotsUseCase: Symbol.for("GetUpComingSlotsUseCase"),
+  GetSlotsUseCase: Symbol.for("GetSlotsUseCase"),
 };
 
 export const TYPES_CHAT_USECASES = {
@@ -51,14 +50,13 @@ export const TYPES_DASHBOARD_USECASES = {
   UserDashBoardUseCase: Symbol.for("UserDashBoardUseCase"),
 };
 
-export const TYPES_PLATFORM_USECASES = {
-  GetPlatformEarningsUsecase: Symbol.for("GetPlatformEarningsUsecase"),
+export const TYPES_COMMISSION_HISTORY_USECASES = {
+  GetTransactionsUsecase: Symbol.for("GetTransactionsUsecase"),
 };
 
 export const TYPES_PLAYLIST_USECASES = {
   CreatePlayListUseCase: Symbol.for("CreatePlayListUseCase"),
   EditPlayListUseCase: Symbol.for("EditPlayListUseCase"),
-  GetallPlaylistUseCase: Symbol.for("GetallPlaylistUseCase"),
   GetPlayListUseCase: Symbol.for("GetPlayListUseCase"),
   UpdatePlayListPrivacyUseCase: Symbol.for("UpdatePlayListPrivacyUseCase"),
 };
@@ -82,11 +80,7 @@ export const TYPES_SUBSCRIPTION_USECASES = {
 };
 
 export const TYPES_TRAINER_USECASES = {
-  GetApprovedTrainersUseCase: Symbol.for("GetApprovedTrainersUseCase"),
-  GetTrainerDetailsUseCase: Symbol.for("GetTrainerDetailsUseCase"),
-  GetTrainerAndSubInfoUseCase: Symbol.for("GetTrainerAndSubInfoUseCase"),
   GetTrainersUseCase: Symbol.for("GetTrainersUseCase"),
-  GetVerifyTrainerlistUseCase: Symbol.for("GetVerifyTrainerlistUseCase"),
   TrainerApprovalUseCase: Symbol.for("TrainerApprovalUseCase"),
 };
 

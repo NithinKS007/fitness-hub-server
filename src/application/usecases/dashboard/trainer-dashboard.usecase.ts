@@ -7,9 +7,9 @@ import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscri
 import { IDateService } from "@application/interfaces/services/date/IDate.service";
 import { TrainerDashboardStats } from "@application/dtos/trainer-dtos";
 import {
-  TrainerChartData,
-  TrainerPieChartData,
-} from "@application/dtos/chart-dtos";
+  TRSubPeriodWiseCountUI,
+  TRSubStatusWiseCountUI,
+} from "@infrastructure/mappers/chart.mappers";
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
@@ -45,8 +45,8 @@ export class TrainerDashBoardUseCase implements ITrainerDashBoardUC {
       this.getTotalSubscriptionsCount(trainerId),
       this.getActiveSubscriptionsCount(trainerId),
       this.getCanceledSubscriptionCount(trainerId),
-      this.getChartSubscriptionsData(trainerId, period),
-      this.getPieChartSubscriptionsData(trainerId, period),
+      this.getTrainerSubStatusWiseCount(trainerId, period),
+      this.getTrainerSubPeriodWiseCount(trainerId, period),
     ]);
     return {
       chartData,
@@ -95,14 +95,14 @@ export class TrainerDashBoardUseCase implements ITrainerDashBoardUC {
     return canceledCount;
   }
 
-  private async getChartSubscriptionsData(
+  private async getTrainerSubStatusWiseCount(
     trainerId: string,
     period: string
-  ): Promise<TrainerChartData[]> {
+  ): Promise<TRSubStatusWiseCountUI[]> {
     const { startDate, endDate } = this.dateService.getDateRange(period);
 
     const chartData =
-      await this.userSubscriptionPlanRepository.getTrainerLineChartData(
+      await this.userSubscriptionPlanRepository.getTrainerSubStatusWiseCount(
         trainerId,
         { startDate, endDate }
       );
@@ -114,14 +114,14 @@ export class TrainerDashBoardUseCase implements ITrainerDashBoardUC {
     return chartData;
   }
 
-  private async getPieChartSubscriptionsData(
+  private async getTrainerSubPeriodWiseCount(
     trainerId: string,
     period: string
-  ): Promise<TrainerPieChartData[]> {
+  ): Promise<TRSubPeriodWiseCountUI[]> {
     const { startDate, endDate } = this.dateService.getDateRange(period);
 
     const pieChartData =
-      await this.userSubscriptionPlanRepository.getTrainerPieChartData(
+      await this.userSubscriptionPlanRepository.getTrainerSubPeriodWiseCount(
         trainerId,
         { startDate, endDate }
       );
