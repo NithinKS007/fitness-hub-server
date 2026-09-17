@@ -1,22 +1,17 @@
 import { AvailableSlotsQueryDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import { IBookingSlot } from "@domain/entities/booking-slot.entity";
+import { BookingSlot } from "@domain/entities/booking-slot.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
+import { IBookingSlot } from "@infrastructure/databases/models/booking-slot.model";
 
-export interface IBookingSlotRepository extends IBaseRepository<IBookingSlot> {
-  getPendingSlots(
-    trainerId: string,
-    availableSlotQueryData: AvailableSlotsQueryDTO
-  ): Promise<{
-    availableSlotsList: IBookingSlot[];
+export interface IBookingSlotRepository
+  extends IBaseRepository<IBookingSlot, BookingSlot> {
+  getPendingSlots(dtos: AvailableSlotsQueryDTO): Promise<{
+    availableSlotsList: BookingSlot[];
     paginationData: PaginationDTO;
   }>;
-  getAllPendingSlots(trainerId: string): Promise<IBookingSlot[]>;
-  getUpcomingSlots(
-    trainerId: string,
-    availableSlotQueryData: AvailableSlotsQueryDTO
-  ): Promise<{
-    availableSlotsList: IBookingSlot[];
+  getUpcomingSlots(dtos: AvailableSlotsQueryDTO): Promise<{
+    availableSlotsList: BookingSlot[];
     paginationData: PaginationDTO;
   }>;
 }

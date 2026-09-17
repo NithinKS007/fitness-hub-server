@@ -25,7 +25,6 @@ export const TYPES_AUTH_CONTROLLER = {
 export const TYPES_BOOKING_CONTROLLER = {
   CreateBookingSlotController: Symbol.for("CreateBookingSlotController"),
   DeleteBookingSlotController: Symbol.for("DeleteBookingSlotController"),
-  GetAllPendingSlotsController: Symbol.for("GetAllPendingSlotsController"),
   GetPendingSlotsController: Symbol.for("GetPendingSlotsController"),
   GetUpComingSlotsController: Symbol.for("GetUpComingSlotsController"),
 };
@@ -111,11 +110,12 @@ export const TYPES_VIDEO_CONTROLLER = {
   UpdateVideoStatusController: Symbol.for("UpdateVideoStatusController"),
 };
 
-export const TYPES_VIDEOCALLLOG_CONTROLLER = {
+export const TYPES_VIDEOCALL_CONTROLLER = {
   GetTrainerVideoCallLogController: Symbol.for(
     "GetTrainerVideoCallLogController"
   ),
   GetUserVideoCallLogController: Symbol.for("GetUserVideoCallLogController"),
+  ZegoCloudTokenController: Symbol.for("ZegoCloudTokenController"),
 };
 
 export const TYPES_WORKOUT_CONTROLLER = {
@@ -123,4 +123,8 @@ export const TYPES_WORKOUT_CONTROLLER = {
   DeleteWorkoutController: Symbol.for("DeleteWorkoutController"),
   GetWorkoutController: Symbol.for("GetWorkoutController"),
   UpdateWorkoutController: Symbol.for("UpdateWorkoutController"),
+};
+
+export const TYPES_CLOUDINARY_CONTROLLER = {
+  CloudinaryController: Symbol.for("CloudinaryController"),
 };

@@ -15,34 +15,29 @@ import {
 } from "@application/dtos/subscription-dtos";
 import { Top5List } from "@application/dtos/trainer-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import { IUserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
+import { UserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
+import { IUserSubscriptionPlan } from "@infrastructure/databases/models/user-subscription-plan";
 
 export interface IUserSubscriptionPlanRepository
-  extends IBaseRepository<IUserSubscriptionPlan> {
-  getUserSubscriptions(
-    userId: string,
-    searchFilterQuery: GetUserSubscriptionsQueryDTO
-  ): Promise<{
+  extends IBaseRepository<IUserSubscriptionPlan, UserSubscriptionPlan> {
+  getUserSubscriptions(dtos: GetUserSubscriptionsQueryDTO): Promise<{
     userSubscriptionRecord: UserSubscriptionRecord[];
     paginationData: PaginationDTO;
   }>;
-  getTrainerSubscriptions(
-    trainerId: string,
-    searchFilterQuery: GetTrainerSubscribersQueryDTO
-  ): Promise<{
+  getTrainerSubscriptions(dtos: GetTrainerSubscribersQueryDTO): Promise<{
     trainerSubscriberRecord: TrainerSubscriberRecord[];
     paginationData: PaginationDTO;
   }>;
   getSubscriptionByStripeId(
     stripeSubscriptionId: string
-  ): Promise<IUserSubscriptionPlan>;
+  ): Promise<UserSubscriptionPlan>;
   getSubscriptionsByUserAndTrainerId(
     data: CheckSubscriptionStatusDTO
-  ): Promise<IUserSubscriptionPlan[] | null>;
+  ): Promise<UserSubscriptionPlan[] | null>;
   updateSubscriptionStatusByStripeId(
     updateSubscriptionStatus: UpdateSubscriptionStatusDTO
-  ): Promise<IUserSubscriptionPlan | null>;
+  ): Promise<UserSubscriptionPlan | null>;
   countAllTrainerSubscribers(trainerId: string): Promise<number>;
   countAllActiveSubscribers(trainerId: string): Promise<number>;
   countCanceledSubscribers(trainerId: string): Promise<number>;

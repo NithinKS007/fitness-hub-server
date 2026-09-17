@@ -1,7 +1,5 @@
-import mongoose, { Document } from "mongoose";
-
-export interface IPasswordResetToken extends Document {
-  _id: mongoose.Types.ObjectId;
+export interface PasswordResetToken{
+  _id: string;
   email: string;
   resetToken: string;
   resetTokenCreatedAt: Date;

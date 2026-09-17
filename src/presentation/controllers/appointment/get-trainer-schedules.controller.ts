@@ -6,14 +6,14 @@ import {
 } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 import { parseQueryParams } from "@shared/utils/parse-query-params";
-import { GetTrainerSchedulesUseCase } from "@application/usecases/appointment/get-trainer-schedules";
 import { TYPES_APPOINTMENT_USECASES } from "@di/types-usecases";
+import { IGetTrainerSchedulesUC } from "@application/interfaces/usecases/IAppointmentUC";
 
 @injectable()
 export class GetTrainerSchedulesController {
   constructor(
     @inject(TYPES_APPOINTMENT_USECASES.GetTrainerSchedulesUseCase)
-    private getTrainerSchedulesUseCase: GetTrainerSchedulesUseCase
+    private getTrainerSchedulesUC: IGetTrainerSchedulesUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
@@ -22,7 +22,10 @@ export class GetTrainerSchedulesController {
     const queryParams = parseQueryParams(req.query);
 
     const { trainerBookingSchedulesList, paginationData } =
-      await this.getTrainerSchedulesUseCase.execute(trainerId, queryParams);
+      await this.getTrainerSchedulesUC.execute({
+        trainerId,
+        ...queryParams,
+      });
 
     sendResponse(
       res,

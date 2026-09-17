@@ -7,52 +7,52 @@ import {
 } from "@application/dtos/video-call-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IVideoCallLogRepository } from "@domain/interfaces/IVideoCallLogRepository";
-import { GetVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
+import { GetTrainerVideoCallLogQueryDTO, GetUserVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
-import { IVideoCallLog } from "@domain/entities/video-calllog.entity";
-import VideoCallLogModel from "../models/video-call-log.model";
+import { VideoCallLog } from "@domain/entities/video-calllog.entity";
+import VideoCallLogModel, {
+  IVideoCallLog,
+} from "../models/video-call-log.model";
 
 export class VideoCallLogRepository
-  extends BaseRepository<IVideoCallLog>
+  extends BaseRepository<IVideoCallLog, VideoCallLog>
   implements IVideoCallLogRepository
 {
-  constructor(
-
-    model: Model<IVideoCallLog> = VideoCallLogModel
-  ) {
+  constructor(model: Model<IVideoCallLog> = VideoCallLogModel) {
     super(model);
   }
 
   private async updateLogField(
     callRoomId: string,
     updates: Record<string, {}>
-  ): Promise<IVideoCallLog | null> {
-    return await this.model.findOneAndUpdate(
+  ): Promise<VideoCallLog | null> {
+    const result =  await this.model.findOneAndUpdate(
       { callRoomId: callRoomId },
       updates,
       { new: true }
     );
+
+    return result ? this.toDomain(result) : null
   }
 
   async updateStatus({
     callRoomId,
     callEndTime,
     callStatus,
-  }: UpdateVideoCallLogDTO): Promise<IVideoCallLog | null> {
-    return this.updateLogField(callRoomId, { callEndTime, callStatus });
+  }: UpdateVideoCallLogDTO): Promise<VideoCallLog | null> {
+    return await this.updateLogField(callRoomId, { callEndTime, callStatus });
   }
 
   async updateDuration({
     callRoomId,
     callDuration,
-  }: UpdateVideoCallDurationDTO): Promise<void> {
-    await this.updateLogField(callRoomId, { callDuration });
+  }: UpdateVideoCallDurationDTO): Promise<VideoCallLog | null> {
+    return await this.updateLogField(callRoomId, { callDuration });
   }
 
   async getTrainerVideoCallLogs(
-    trainerId: string,
-    { page, limit, search, fromDate, toDate, filters }: GetVideoCallLogQueryDTO
+    { trainerId, page, limit, search, fromDate, toDate, filters }: GetTrainerVideoCallLogQueryDTO
   ): Promise<{
     trainerVideoCallLogList: TrainerVideoCallLog[];
     paginationData: PaginationDTO;
@@ -128,8 +128,7 @@ export class VideoCallLogRepository
   }
 
   async getUserVideoCallLogs(
-    userId: string,
-    { page, limit, search, fromDate, toDate, filters }: GetVideoCallLogQueryDTO
+    { userId, page, limit, search, fromDate, toDate, filters }: GetUserVideoCallLogQueryDTO
   ): Promise<{
     userVideoCallLogList: UserVideoCallLog[];
     paginationData: PaginationDTO;

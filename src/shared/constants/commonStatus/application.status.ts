@@ -7,4 +7,8 @@ export enum ApplicationStatus {
   MissingCloudinaryCredentials = "Missing required cloudinary environment variables",
   MissingJwtEnvironmentVariables = "Missing required jwt environment variables",
   AllFieldsAreRequired = "Please ensure that all required are available.",
+  AccessDenied = "Access denied, insufficient permissions.",
+  FailedToGenSignature = "Failed to generate Cloudinary signature. Please check your API key, API secret, and parameters.",
+  SignatureSuccess = "Cloudinary signature fetched successfully",
 }
+  

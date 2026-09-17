@@ -1,10 +1,8 @@
-import mongoose, { Document } from "mongoose";
-
-export interface IVideoCallLog extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  appointmentId: string | mongoose.Schema.Types.ObjectId;
-  callerId: string | mongoose.Schema.Types.ObjectId;
-  receiverId: string | mongoose.Schema.Types.ObjectId;
+export interface VideoCallLog {
+  _id: string;
+  appointmentId: string;
+  callerId: string;
+  receiverId: string;
   callDuration: number;
   callRoomId: string;
   callStatus: "pending" | "completed" | "missed";

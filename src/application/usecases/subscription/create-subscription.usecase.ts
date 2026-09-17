@@ -2,19 +2,20 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { SubscriptionStatus } from "@shared/constants/index.constants";
 import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
-import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import {
   PeriodType,
   SubPeriod,
   SubscriptionInterval,
 } from "@application/dtos/subscription-dtos";
-import { ISubscription } from "@domain/entities/subscription.entity";
+import { Subscription } from "@domain/entities/subscription.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { ICreateSubscriptionUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
 
 @injectable()
-export class CreateSubscriptionUseCase {
+export class CreateSubscriptionUseCase implements ICreateSubscriptionUC {
   constructor(
     @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository,
@@ -50,7 +51,7 @@ export class CreateSubscriptionUseCase {
     durationInWeeks: number;
     sessionsPerWeek: number;
     totalSessions: number;
-  }): Promise<ISubscription> {
+  }): Promise<Subscription> {
     const { trainerId, subPeriod, totalSessions, price } =
       createSubscriptionData;
 

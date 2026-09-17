@@ -5,31 +5,34 @@ import { IncrementUnReadMessageCount } from "@application/dtos/conversation-dtos
 import { Conversation } from "@application/dtos/chat-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IIncrementUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
 
 @injectable()
-export class IncrementUnReadMessageCountUseCase {
+export class IncrementUnReadMessageCountUseCase
+  implements IIncrementUnReadMessageCountUC
+{
   constructor(
     @inject(TYPES_REPOSITORIES.ConversationRepository)
     private conversationRepository: IConversationRepository
   ) {}
-  
+
   async execute({
     userId,
     otherUserId,
   }: IncrementUnReadMessageCount): Promise<Conversation> {
-    const incrementUnReadMessageDoc =
+    const incUnReadMessage =
       await this.conversationRepository.incrementUnReadMessageCount({
         userId,
         otherUserId,
       });
 
-    if (!incrementUnReadMessageDoc) {
+    if (!incUnReadMessage) {
       throw new validationError(ChatStatus.FailedtoUpdateUnReadCount);
     }
-    const updatedMessageDoc =
+    const updatedMessage =
       await this.conversationRepository.findChatWithLastMessage(
-        String(incrementUnReadMessageDoc._id)
+        incUnReadMessage._id
       );
-    return updatedMessageDoc;
+    return updatedMessage;
   }
 }

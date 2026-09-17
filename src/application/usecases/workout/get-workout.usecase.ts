@@ -3,9 +3,10 @@ import { validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus } from "@shared/constants/index.constants";
 import { GetWorkoutQueryDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import { IWorkout } from "@domain/entities/workout.entity";
+import { Workout } from "@domain/entities/workout.entity";
 import { inject, injectable } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IGetWorkoutUC } from "@application/interfaces/usecases/IWorkoutUC";
 
 /**
  * Purpose: Handles the retrieval of workout data for a given user with support for pagination, search, and filtering.
@@ -15,22 +16,21 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class GetWorkoutUseCase {
+export class GetWorkoutUseCase implements IGetWorkoutUC {
   constructor(
     @inject(TYPES_REPOSITORIES.WorkoutRepository)
     private workoutRepository: IWorkoutRepository
   ) {}
 
   async execute(
-    userId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
-  ): Promise<{ workoutList: IWorkout[]; paginationData: PaginationDTO }> {
+    { userId, page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
+  ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }> {
     if (!userId) {
       throw new validationError(AuthStatus.IdRequired);
     }
-    const query = { page, limit, fromDate, toDate, search, filters };
+    const query = { page, limit, fromDate, toDate, search, filters, userId };
     const { workoutList, paginationData } =
-      await this.workoutRepository.getWorkoutsByUserId(userId, query);
+      await this.workoutRepository.getWorkoutsByUserId(query);
 
     return { workoutList, paginationData };
   }

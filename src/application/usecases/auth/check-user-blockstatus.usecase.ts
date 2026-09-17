@@ -1,9 +1,10 @@
-import { validationError } from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus } from "@shared/constants/index.constants";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICheckUserBlockStatusUC } from "@application/interfaces/usecases/IAuthUC";
 
 /*  
     Purpose: Check if a user or trainer is blocked based on their ID
@@ -15,7 +16,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 */
 
 @injectable()
-export class CheckUserBlockStatusUseCase {
+export class CheckUserBlockStatusUseCase implements ICheckUserBlockStatusUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
@@ -29,11 +30,11 @@ export class CheckUserBlockStatusUseCase {
     }
     const [userData, trainerData] = await Promise.all([
       this.userRepository.findById(_id),
-      this.trainerRepository.getTrainerDetailsById(_id.toString()),
+      this.trainerRepository.getTrainerDetailsById(_id),
     ]);
 
     if (!userData && !trainerData) {
-      throw new validationError(AuthStatus.InvalidId);
+      throw new NotFoundError(AuthStatus.InvalidId);
     }
 
     if (userData) return userData.isBlocked;

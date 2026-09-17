@@ -1,4 +1,8 @@
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  InternalServerError,
+  NotFoundError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import {
   SlotStatus,
   AppointmentStatus,
@@ -6,9 +10,10 @@ import {
 } from "@shared/constants/index.constants";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { BookingSlotStatus } from "@application/dtos/booking-dtos";
-import { IBookingSlot } from "@domain/entities/booking-slot.entity";
+import { BookingSlot } from "@domain/entities/booking-slot.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IDeleteBookingSlotUC } from "@application/interfaces/usecases/ISlotUC";
 
 /**
  * Purpose: Handles the deletion of a booking slot based on its slot id.
@@ -18,17 +23,22 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class DeleteBookingSlotUseCase {
+export class DeleteBookingSlotUseCase implements IDeleteBookingSlotUC {
   constructor(
     @inject(TYPES_REPOSITORIES.BookingSlotRepository)
     private bookingSlotRepository: IBookingSlotRepository
   ) {}
 
-  async execute(bookingSlotId: string): Promise<IBookingSlot> {
+  async execute(bookingSlotId: string): Promise<BookingSlot> {
     if (!bookingSlotId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
     const slotData = await this.bookingSlotRepository.findById(bookingSlotId);
+
+    if (!slotData) {
+      throw new NotFoundError(SlotStatus.NotFound);
+    }
+
     if (
       slotData?.status === BookingSlotStatus.BOOKED ||
       slotData?.status === BookingSlotStatus.COMPLETED
@@ -39,7 +49,7 @@ export class DeleteBookingSlotUseCase {
       bookingSlotId
     );
     if (!deletedSlotData) {
-      throw new validationError(SlotStatus.DeleteFailed);
+      throw new InternalServerError(SlotStatus.DeleteFailed);
     }
     return deletedSlotData;
   }

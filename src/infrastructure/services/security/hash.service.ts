@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { IHashService } from "@application/interfaces/security/IHash.service";
+import { IHashService } from "@application/interfaces/services/security/IHash.service";
 import { injectable } from "inversify";
 
 @injectable()

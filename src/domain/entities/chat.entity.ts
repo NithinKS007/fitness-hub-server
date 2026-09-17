@@ -1,9 +1,7 @@
-import mongoose, { Document } from "mongoose";
-
-export interface IChat extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  senderId: string | mongoose.Schema.Types.ObjectId;
-  receiverId: string | mongoose.Schema.Types.ObjectId;
+export interface Chat {
+  _id: string;
+  senderId: string;
+  receiverId: string;
   message: string;
   isRead: boolean;
   createdAt: Date;

@@ -3,14 +3,14 @@ import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { StatusCodes, ProfileStatus } from "@shared/constants/index.constants";
 import { UpdateUserDetailsDTO } from "@application/dtos/user-dtos";
-import { UpdateUserProfileUseCase } from "@application/usecases/auth/update-user-profile.usecase";
 import { TYPES_AUTH_USECASES } from "@di/types-usecases";
+import { IUpdateUserProfileUC } from "@application/interfaces/usecases/IAuthUC";
 
 @injectable()
 export class UpdateUserProfileController {
   constructor(
     @inject(TYPES_AUTH_USECASES.UpdateUserProfileUseCase)
-    private updateUserProfileUseCase: UpdateUserProfileUseCase
+    private updateUserProfileUseCase: IUpdateUserProfileUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {

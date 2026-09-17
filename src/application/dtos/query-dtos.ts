@@ -4,8 +4,8 @@ export interface BaseQueryDTO {
   page: number;
   limit: number;
   filters: string[];
-  fromDate: Date | undefined;
-  toDate: Date | undefined;
+  fromDate?: Date;
+  toDate?: Date;
 }
 // Trainer-related DTOs
 export type GetTrainersQueryDTO = Omit<BaseQueryDTO, "fromDate" | "toDate">;
@@ -13,7 +13,7 @@ export type GetTrainersApprovalQueryDTO = Omit<BaseQueryDTO, "filters">;
 export type GetTrainerSubscribersQueryDTO = Omit<
   BaseQueryDTO,
   "fromDate" | "toDate"
->;
+> & { trainerId: string };
 export type GetApprovedTrainerQueryDTO = Omit<
   BaseQueryDTO,
   "fromDate" | "toDate" | "filters"
@@ -27,20 +27,29 @@ export type GetApprovedTrainerQueryDTO = Omit<
 export type GetUserTrainersListQueryDTO = Omit<
   BaseQueryDTO,
   "filters" | "fromDate" | "toDate"
->;
+> & { userId: string };
 
 //User-related DTOs
 export type GetUsersQueryDTO = Omit<BaseQueryDTO, "fromDate" | "toDate">;
 export type GetUserSubscriptionsQueryDTO = Omit<
   BaseQueryDTO,
   "fromDate" | "toDate"
->;
+> & { userId: string };
 
 // Booking/Schedule-related DTOs
-export type AvailableSlotsQueryDTO = Omit<BaseQueryDTO, "filters" | "search">;
-export type GetBookingRequestsDTO = BaseQueryDTO;
-export type GetBookingSchedulesDTO = BaseQueryDTO;
-export type GetVideoCallLogQueryDTO = BaseQueryDTO;
+export type AvailableSlotsQueryDTO = Omit<
+  BaseQueryDTO,
+  "filters" | "search"
+> & { trainerId: string };
+export type GetBookingRequestsDTO = BaseQueryDTO & { trainerId: string };
+export type GetTrainerSchedulesDTO = BaseQueryDTO & {
+  trainerId: string;
+};
+export type GetUserSchedulesDTO = BaseQueryDTO & { userId: string };
+export type GetTrainerVideoCallLogQueryDTO = BaseQueryDTO & {
+  trainerId: string;
+};
+export type GetUserVideoCallLogQueryDTO = BaseQueryDTO & { userId: string };
 
 //Dashboard-related DTOs
 export interface BaseDashBoardQueryDTO {
@@ -58,16 +67,26 @@ export interface CustomUserDashBoardQueryDTO
 }
 
 //Content-related DTOs
-export type GetVideoQueryDTO = BaseQueryDTO
-export type GetPlayListsQueryDTO = BaseQueryDTO;
+export type GetVideoQueryDTO = BaseQueryDTO & {
+  trainerId: string;
+  videoPrivacy?: boolean;
+  playlistPrivacy?: boolean;
+};
+
+export type GetPlayListsQueryDTO = BaseQueryDTO & { trainerId: string };
 
 //Workout-related DTOs
-export type GetWorkoutQueryDTO = BaseQueryDTO;
+export type GetWorkoutQueryDTO = BaseQueryDTO & { userId: string };
 
 //Revenue-related DTOs
 export type GetRevenueQueryDTO = BaseQueryDTO;
 
-export type GetChatListQueryDTO = Omit<
+export type GetTrainerChatListDTO = Omit<
   BaseQueryDTO,
   "filters" | "fromDate" | "toDate" | "page" | "limit"
->;
+> & { trainerId: string };
+
+export type GetUserChatListDTO = Omit<
+  BaseQueryDTO,
+  "filters" | "fromDate" | "toDate" | "page" | "limit"
+> & { userId: string };

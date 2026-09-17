@@ -5,20 +5,22 @@ import {
 } from "@application/dtos/auth-dtos";
 import { IPasswordResetRepository } from "@domain/interfaces/IPasswordResetTokenRepository";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
-import { IPasswordResetToken } from "@domain/entities/pass-reset-token.entity";
-import PasswordResetTokenModel from "../models/password.token.model";
+import { PasswordResetToken } from "@domain/entities/pass-reset-token.entity";
+import PasswordResetTokenModel, {
+  IPasswordResetToken,
+} from "../models/password.token.model";
 
 export class PasswordResetRepository
-  extends BaseRepository<IPasswordResetToken>
+  extends BaseRepository<IPasswordResetToken, PasswordResetToken>
   implements IPasswordResetRepository
 {
   constructor(model: Model<IPasswordResetToken> = PasswordResetTokenModel) {
     super(model);
   }
-  async createToken({
+  async create({
     email,
     resetToken,
-  }: CreatePassResetTokenDTO): Promise<IPasswordResetToken> {
+  }: CreatePassResetTokenDTO): Promise<PasswordResetToken> {
     const PasswordResetTokenData =
       await PasswordResetTokenModel.findOneAndUpdate(
         { email },
@@ -31,14 +33,16 @@ export class PasswordResetRepository
           upsert: true,
         }
       );
-    return PasswordResetTokenData.toObject();
+    return this.toDomain(PasswordResetTokenData);
   }
 
   async deleteToken({
     resetToken,
-  }: DeletePasswordResetTokenDTO): Promise<IPasswordResetToken | null> {
-    return await PasswordResetTokenModel.findOneAndDelete({
+  }: DeletePasswordResetTokenDTO): Promise<PasswordResetToken | null> {
+    const result = await PasswordResetTokenModel.findOneAndDelete({
       resetToken,
-    }).lean();
+    }).exec()
+
+    return result ? this.toDomain(result) : null;
   }
 }

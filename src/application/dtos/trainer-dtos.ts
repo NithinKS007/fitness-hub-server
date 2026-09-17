@@ -1,6 +1,6 @@
 import { ObjectId } from "mongoose";
 import { AdminChartData } from "./chart-dtos";
-import { ISubscription } from "@domain/entities/subscription.entity";
+import { Subscription } from "@domain/entities/subscription.entity";
 
 export interface CreateTrainerDTO {
   fname: string;
@@ -38,11 +38,11 @@ export interface TrainerVerificationDTO {
   action: "approved" | "rejected";
 }
 
-export interface TrainerWithSubscription extends Trainer {
-  subscriptionDetails: ISubscription[];
+export interface TrainerWithSubscription extends TrainerDTO {
+  subscriptionDetails: Subscription[];
 }
 
-export interface Trainer {
+export interface TrainerDTO {
   fname: string;
   lname: string;
   email: string;
@@ -59,8 +59,8 @@ export interface Trainer {
   weight?: string;
   gender?: string;
 
-  _id: string | ObjectId;
-  userId: string | ObjectId;
+  _id: string;
+  userId: string;
   yearsOfExperience?: string;
   specializations?: string[];
   certifications?: { fileName: string; url: string }[];

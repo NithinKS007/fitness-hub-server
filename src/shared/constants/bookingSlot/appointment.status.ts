@@ -7,10 +7,10 @@ export enum AppointmentStatus {
   BookingRejected = "Booking rejected successfully",
   BookingApproved = "Booking approved successfully",
   BookingSlotNotFound = "Booking slot not found",
-  FailedToApproveRejectBookingStatus = "Failed to change appointment booking status",
+  FailedToChangeBookingStatus = "Failed to change appointment booking status",
   AppointmentsFetched  = "Appointments list retrieved successfully",
   AppointmentsFetchFailed  = "Failed to retrieve appointments list",
   AppointmentCancelledSuccessfully = "Appointment cancelled successfully",
-  FailedToCancelAppointmentStatus = "Failed to cancel appointment schedule",
+  FailedToCancel = "Failed to cancel appointment schedule",
   FailedToFindAppointment = "Failed to find appointment data",
 }

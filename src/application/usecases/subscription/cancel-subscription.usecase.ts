@@ -8,12 +8,13 @@ import {
   AuthStatus,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
-import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
+import { ICancelSubscriptionUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
-export class CancelSubscriptionUseCase {
+export class CancelSubscriptionUseCase implements ICancelSubscriptionUC {
   constructor(
     @inject(TYPES_SERVICES.PaymentService)
     private paymentService: IPaymentService

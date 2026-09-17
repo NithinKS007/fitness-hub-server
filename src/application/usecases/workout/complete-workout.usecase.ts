@@ -1,9 +1,14 @@
-import { IWorkout } from "@domain/entities/workout.entity";
+import { Workout } from "@domain/entities/workout.entity";
 import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  InternalServerError,
+  NotFoundError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import { WorkoutStatus } from "@shared/constants/index.constants";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { injectable, inject } from "inversify";
+import { ICompleteWorkoutUC } from "@application/interfaces/usecases/IWorkoutUC";
 
 /**
  * Purpose: Complete a workout session by marking it as completed in the database.
@@ -13,16 +18,16 @@ import { injectable, inject } from "inversify";
  */
 
 @injectable()
-export class CompleteWorkoutUseCase {
+export class CompleteWorkoutUseCase implements ICompleteWorkoutUC {
   constructor(
     @inject(TYPES_REPOSITORIES.WorkoutRepository)
     private workoutRepository: IWorkoutRepository
   ) {}
-  
-  async execute(setId: string): Promise<IWorkout> {
+
+  async execute(setId: string): Promise<Workout> {
     const workout = await this.workoutRepository.findById(setId);
     if (!workout) {
-      throw new validationError(WorkoutStatus.FailedToGet);
+      throw new NotFoundError(WorkoutStatus.FailedToGet);
     }
     if (workout.date > new Date()) {
       throw new validationError(WorkoutStatus.cannotCompleteFutureWorkouts);
@@ -31,7 +36,7 @@ export class CompleteWorkoutUseCase {
       isCompleted: true,
     });
     if (!completeWorkoutSet) {
-      throw new validationError(WorkoutStatus.FailedToMarkCompletion);
+      throw new InternalServerError(WorkoutStatus.FailedToMarkCompletion);
     }
     return completeWorkoutSet;
   }

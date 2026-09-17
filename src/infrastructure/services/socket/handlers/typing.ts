@@ -9,6 +9,6 @@ export interface TypingData {
 export const handleTyping = ({ io, senderId, receiverId }: TypingData) => {
   const receiverSocketId = socketStore.userSocketMap.get(receiverId);
   if (receiverSocketId) {
-    io.to(receiverSocketId).emit("typing", { senderId });
+    io.to(receiverSocketId).emit("startTyping", { senderId });
   }
 };

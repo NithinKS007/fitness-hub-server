@@ -9,11 +9,11 @@ import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import { AdminChartData } from "@application/dtos/chart-dtos";
-import { IRevenue } from "@domain/entities/revenue.entity";
-import RevenueModel from "../models/revenue.model";
+import { Revenue } from "@domain/entities/revenue.entity";
+import RevenueModel, { IRevenue } from "../models/revenue.model";
 
 export class RevenueRepository
-  extends BaseRepository<IRevenue>
+  extends BaseRepository<IRevenue,Revenue>
   implements IPlatformEarningsRepository
 {
   constructor(model: Model<IRevenue> = RevenueModel) {

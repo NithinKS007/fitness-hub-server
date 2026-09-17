@@ -1,22 +1,22 @@
-interface RepSet {
+export interface RepSet {
   kg: number;
   reps: number;
   time: number;
 }
 
-interface Exercise {
+export interface Exercise {
   name: string;
   sets: RepSet[];
 }
 
-interface Workout {
+export interface Workout {
   bodyPart: string;
   exercises: Exercise[];
 }
 
 export interface WorkoutDTO {
   userId: string;
-  date: Date | string;
+  date: string;
   workouts: Workout[];
 }
 

@@ -1,5 +1,16 @@
-import { IVideoCallLog } from "@domain/entities/video-calllog.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
+
+export interface IVideoCallLog extends Document {
+  _id: ObjectId;
+  appointmentId: ObjectId;
+  callerId: ObjectId;
+  receiverId: ObjectId;
+  callDuration: number;
+  callRoomId: string;
+  callStatus: "pending" | "completed" | "missed";
+  callStartTime: Date;
+  callEndTime: Date;
+}
 
 const videoCallLogSchema: Schema = new Schema(
   {
@@ -8,10 +19,11 @@ const videoCallLogSchema: Schema = new Schema(
       required: true,
       ref: "Appointment",
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : value;
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid appointment id");
+        }
       },
     },
     callerId: {
@@ -19,10 +31,11 @@ const videoCallLogSchema: Schema = new Schema(
       required: true,
       ref: "User",
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : value;
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid caller id");
+        }
       },
     },
     receiverId: {
@@ -30,13 +43,21 @@ const videoCallLogSchema: Schema = new Schema(
       required: true,
       ref: "Trainer",
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : value;
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid receiver id");
+        }
       },
     },
-    callDuration: { type: Number, default: 0 },
+    callDuration: {
+      type: Number,
+      default: 0,
+      validate: {
+        validator: (value: number) => value >= 0,
+        message: "Call duration must be a positive number",
+      },
+    },
     callRoomId: { type: String },
     callStatus: {
       type: String,

@@ -1,22 +1,23 @@
 import { Model } from "mongoose";
 import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
-import SubscriptionModel from "@infrastructure/databases/models/subscription.model";
+import SubscriptionModel, {
+  ISubscription,
+} from "@infrastructure/databases/models/subscription.model";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
-import { ISubscription } from "@domain/entities/subscription.entity";
+import { Subscription } from "@domain/entities/subscription.entity";
 
 export class SubscriptionRepository
-  extends BaseRepository<ISubscription>
+  extends BaseRepository<ISubscription, Subscription>
   implements ISubscriptionRepository
 {
-  constructor(
-    model: Model<ISubscription> = SubscriptionModel
-  ) {
+  constructor(model: Model<ISubscription> = SubscriptionModel) {
     super(model);
   }
-  async findAllSubscription(trainerId: string): Promise<ISubscription[]> {
-    return await this.model
+  async findAllSubscription(trainerId: string): Promise<Subscription[]> {
+    const result = await this.model
       .find({ trainerId: trainerId })
       .sort({ createdAt: -1 })
-      .lean();
+
+    return result.map((s) => this.toDomain(s));
   }
 }

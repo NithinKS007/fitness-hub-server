@@ -2,7 +2,7 @@ import {
   BookingStatus,
   HandleBookingDTO,
 } from "@application/dtos/booking-dtos";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AppointmentStatus,
@@ -10,9 +10,10 @@ import {
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { Action } from "@application/dtos/utility-dtos";
-import { IAppointment } from "@domain/entities/appointment.entity";
+import { Appointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IHandleBookingApprovalUC } from "@application/interfaces/usecases/IAppointmentUC";
 
 /*  
     Purpose: Approve or reject a booking request, and update the booking slot and appointment status accordingly
@@ -22,7 +23,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 */
 
 @injectable()
-export class HandleBookingApprovalUseCase {
+export class HandleBookingApprovalUseCase implements IHandleBookingApprovalUC {
   constructor(
     @inject(TYPES_REPOSITORIES.BookingSlotRepository)
     private bookingSlotRepository: IBookingSlotRepository,
@@ -34,15 +35,22 @@ export class HandleBookingApprovalUseCase {
     appointmentId,
     bookingSlotId,
     action,
-  }: HandleBookingDTO): Promise<IAppointment> {
+  }: HandleBookingDTO): Promise<Appointment> {
     if (!appointmentId || !bookingSlotId || !action) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
+
+    if (![Action.Approved, Action.Rejected].includes(action)) {
+      throw new validationError(
+        "Invalid action. Only 'Approved' or 'Rejected' are allowed."
+      );
+    }
+
     const bookingSlotData = await this.bookingSlotRepository.findById(
       bookingSlotId
     );
     if (!bookingSlotData) {
-      throw new validationError(AppointmentStatus.BookingSlotNotFound);
+      throw new NotFoundError(AppointmentStatus.BookingSlotNotFound);
     }
     const status =
       action === Action.Approved
@@ -58,9 +66,7 @@ export class HandleBookingApprovalUseCase {
     );
 
     if (!appointmentData) {
-      throw new validationError(
-        AppointmentStatus.FailedToApproveRejectBookingStatus
-      );
+      throw new validationError(AppointmentStatus.FailedToChangeBookingStatus);
     }
     return appointmentData;
   }

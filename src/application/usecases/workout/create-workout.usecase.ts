@@ -1,10 +1,11 @@
 import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { WorkoutStatus } from "@shared/constants/index.constants";
-import { WorkoutdbDTO, WorkoutDTO } from "@application/dtos/workout-dtos";
-import { IWorkout } from "@domain/entities/workout.entity";
+import { Exercise, RepSet, WorkoutdbDTO, WorkoutDTO } from "@application/dtos/workout-dtos";
+import { Workout } from "@domain/entities/workout.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICreateWorkoutUC } from "@application/interfaces/usecases/IWorkoutUC";
 
 /**
  * Purpose: Create a new workout by adding multiple workout sets for the user on a specific date.
@@ -17,21 +18,18 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class CreateWorkoutUseCase {
+export class CreateWorkoutUseCase implements ICreateWorkoutUC{
   constructor(
     @inject(TYPES_REPOSITORIES.WorkoutRepository)
     private workoutRepository: IWorkoutRepository
   ) {}
-  
-  async execute(
-    userId: string,
-    { date, workouts }: WorkoutDTO
-  ): Promise<IWorkout[]> {
+
+  async execute({ date, workouts, userId }: WorkoutDTO): Promise<Workout[]> {
     const workoutDate = new Date(date);
     const workoutItems: WorkoutdbDTO[] = Object.entries(workouts).flatMap(
       ([bodyPart, workout]: [string, any]) =>
-        workout.exercises.flatMap((exercise: any) =>
-          exercise.sets.map((set: any) => ({
+        workout.exercises.flatMap((exercise: Exercise) =>
+          exercise.sets.map((set: RepSet) => ({
             userId: userId,
             date: workoutDate,
             bodyPart,

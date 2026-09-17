@@ -5,21 +5,19 @@ import {
 } from "@shared/constants/index.constants";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { UpdateBlockStatusDTO } from "@application/dtos/auth-dtos";
-import { IUser } from "@domain/entities/user.entity";
+import { User } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IUpdateUserBlockStatusUC } from "@application/interfaces/usecases/IUserUC";
 
 @injectable()
-export class UpdateUserBlockStatusUseCase {
+export class UpdateUserBlockStatusUseCase implements IUpdateUserBlockStatusUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository
   ) {}
-  
-  async execute({
-    userId,
-    isBlocked,
-  }: UpdateBlockStatusDTO): Promise<IUser | null> {
+
+  async execute({ userId, isBlocked }: UpdateBlockStatusDTO): Promise<User> {
     if (!userId || typeof isBlocked !== "boolean") {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }

@@ -3,7 +3,7 @@ import ms from "ms";
 import { ApplicationStatus } from "@shared/constants/index.constants";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import dotenv from "dotenv";
-import { IAuthService } from "@application/interfaces/auth/IAuth.service";
+import { IAuthService } from "@application/interfaces/services/auth/IAuth.service";
 import { TokenPayload } from "@application/dtos/service/auth.service";
 import { injectable } from "inversify";
 dotenv.config();
@@ -32,23 +32,23 @@ export class JwtService implements IAuthService {
     }
   }
 
-  generateAccessToken(payload: TokenPayload): string {
+  createAccessToken(payload: TokenPayload): string {
     return jwt.sign(payload, this.jwtSecret, {
       expiresIn: this.jwtExpiration as ms.StringValue,
     });
   }
 
-  generateRefreshToken(payload: TokenPayload): string {
+  createRefreshToken(payload: TokenPayload): string {
     return jwt.sign(payload, this.jwtRefreshSecret, {
       expiresIn: this.jwtRefreshExpiration as ms.StringValue,
     });
   }
 
-  authenticateAccessToken(token: string): TokenPayload {
+  authAccessToken(token: string): TokenPayload {
     return jwt.verify(token, this.jwtSecret) as TokenPayload;
   }
 
-  authenticateRefreshToken(token: string): TokenPayload {
+  authRefreshToken(token: string): TokenPayload {
     return jwt.verify(token, this.jwtRefreshSecret) as TokenPayload;
   }
 }

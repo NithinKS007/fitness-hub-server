@@ -6,6 +6,7 @@ import { GetVideoQueryDTO } from "@application/dtos/query-dtos";
 import { VideoWithPlayLists } from "@application/dtos/video-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IGetVideosUC } from "@application/interfaces/usecases/IVideoUC";
 
 /**
  * Purpose: Fetch videos for a specific trainer with pagination, search, filters, and optional privacy setting.
@@ -16,17 +17,17 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class GetVideosUseCase {
+export class GetVideosUseCase implements IGetVideosUC {
   constructor(
     @inject(TYPES_REPOSITORIES.VideoRepository)
     private videoRepository: IVideoRepository
   ) {}
 
   async execute(
-    trainerId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetVideoQueryDTO,
-    videoPrivacy?: boolean,
-    playlistPrivacy?: boolean
+    { trainerId, page, limit, fromDate, 
+      toDate, search, filters , videoPrivacy,
+      playlistPrivacy }
+    : GetVideoQueryDTO,
   ): Promise<{
     videoList: VideoWithPlayLists[];
     paginationData: PaginationDTO;
@@ -34,12 +35,10 @@ export class GetVideosUseCase {
     if (!trainerId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const query = { page, limit, fromDate, toDate, search, filters };
+    const query = { page, limit, fromDate, toDate, search, 
+                  filters, trainerId, videoPrivacy, playlistPrivacy };
     const { videoList, paginationData } = await this.videoRepository.getVideos(
-      trainerId,
-      query,
-      videoPrivacy,
-      playlistPrivacy
+      query
     );
     return { videoList, paginationData };
   }

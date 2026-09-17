@@ -5,14 +5,15 @@ import {
   PasswordStatus,
 } from "@shared/constants/index.constants";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
-import { validationError } from "@presentation/middlewares/error.middleware";
-import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
+import { NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
+import { IEncryptionService } from "@application/interfaces/services/security/IEncryption.service";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { IChangePasswordUC } from "@application/interfaces/usecases/IAuthUC";
 
 @injectable()
-export class ChangePasswordUseCase {
+export class ChangePasswordUseCase implements IChangePasswordUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
@@ -30,7 +31,7 @@ export class ChangePasswordUseCase {
     }
     const userData = await this.userRepository.findById(userId);
     if (!userData) {
-      throw new validationError(AuthStatus.InvalidId);
+      throw new NotFoundError(AuthStatus.InvalidId);
     }
     const isValidPassword = await this.encryptionService.compare(
       password,

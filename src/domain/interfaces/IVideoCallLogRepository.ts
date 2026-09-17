@@ -4,26 +4,26 @@ import {
   TrainerVideoCallLog,
   UserVideoCallLog,
 } from "@application/dtos/video-call-dtos";
-import { GetVideoCallLogQueryDTO } from "@application/dtos/query-dtos";
+import {
+  GetTrainerVideoCallLogQueryDTO,
+  GetUserVideoCallLogQueryDTO,
+} from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
-import { IVideoCallLog } from "@domain/entities/video-calllog.entity";
+import { VideoCallLog } from "@domain/entities/video-calllog.entity";
+import { IVideoCallLog } from "@infrastructure/databases/models/video-call-log.model";
 
 export interface IVideoCallLogRepository
-  extends IBaseRepository<IVideoCallLog> {
-  updateStatus(data: UpdateVideoCallLogDTO): Promise<IVideoCallLog | null>;
-  updateDuration(data: UpdateVideoCallDurationDTO): Promise<void>;
-  getTrainerVideoCallLogs(
-    trainerId: string,
-    videoCallLogQuery: GetVideoCallLogQueryDTO
-  ): Promise<{
+  extends IBaseRepository<IVideoCallLog, VideoCallLog> {
+  updateStatus(data: UpdateVideoCallLogDTO): Promise<VideoCallLog | null>;
+  updateDuration(
+    data: UpdateVideoCallDurationDTO
+  ): Promise<VideoCallLog | null>;
+  getTrainerVideoCallLogs(dtos: GetTrainerVideoCallLogQueryDTO): Promise<{
     trainerVideoCallLogList: TrainerVideoCallLog[];
     paginationData: PaginationDTO;
   }>;
-  getUserVideoCallLogs(
-    userId: string,
-    videoCallLogQuery: GetVideoCallLogQueryDTO
-  ): Promise<{
+  getUserVideoCallLogs(dtos: GetUserVideoCallLogQueryDTO): Promise<{
     userVideoCallLogList: UserVideoCallLog[];
     paginationData: PaginationDTO;
   }>;

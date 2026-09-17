@@ -1,8 +1,6 @@
-import mongoose, { Document } from "mongoose";
-
-export interface ITrainer extends Document {
+export interface Trainer {
   _id: string;
-  userId: string | mongoose.Schema.Types.ObjectId;
+  userId: string;
   yearsOfExperience: string;
   specializations: string[];
   certifications: { fileName: string; url: string }[];

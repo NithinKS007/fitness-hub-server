@@ -3,14 +3,17 @@ import { UpdateUnReadMessageCount } from "@application/dtos/conversation-dtos";
 import { Conversation } from "@application/dtos/chat-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IUpdateUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
 
 @injectable()
-export class UpdateUnReadMessageCountUseCase {
+export class UpdateUnReadMessageCountUseCase
+  implements IUpdateUnReadMessageCountUC
+{
   constructor(
     @inject(TYPES_REPOSITORIES.ConversationRepository)
     private conversationRepository: IConversationRepository
   ) {}
-  
+
   async execute({
     userId,
     otherUserId,
@@ -22,26 +25,25 @@ export class UpdateUnReadMessageCountUseCase {
         otherUserId
       );
 
-    if (conversationData) {
-      const { _id: conversationId } = conversationData;
+    if (!conversationData) return null;
 
-      const updatedMessageDoc = await this.conversationRepository.update(
-        String(conversationId),
-        {
-          unreadCount: count,
-        }
-      );
+    const { _id: conversationId } = conversationData;
 
-      if (updatedMessageDoc) {
-        const { _id: updatedMessageDocId } = updatedMessageDoc;
-
-        const finalMessageDocument =
-          await this.conversationRepository.findChatWithLastMessage(
-            String(updatedMessageDocId)
-          );
-        return finalMessageDocument;
+    const updatedMessage = await this.conversationRepository.update(
+      String(conversationId),
+      {
+        unreadCount: count,
       }
-    }
-    return null;
+    );
+
+    if (!updatedMessage) return null;
+
+    const { _id: updatedMessageId } = updatedMessage;
+
+    const finalMessageDocument =
+      await this.conversationRepository.findChatWithLastMessage(
+        String(updatedMessageId)
+      );
+    return finalMessageDocument;
   }
 }

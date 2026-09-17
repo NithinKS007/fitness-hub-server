@@ -3,12 +3,13 @@ import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { OtpDTO } from "@application/dtos/auth-dtos";
 import { OTPStatus } from "@shared/constants/index.constants";
 import { validationError } from "@presentation/middlewares/error.middleware";
-import { IEmailService } from "@application/interfaces/communication/IEmail.service";
-import { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
-import { IOtp } from "@domain/entities/otp.entity";
+import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
+import { IOTPService } from "@application/interfaces/services/security/IOtp.service";
+import { Otp } from "@domain/entities/otp.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { IOtpUC } from "@application/interfaces/usecases/IAuthUC";
 
 /*  
     Method  : createOtp
@@ -43,7 +44,7 @@ import { TYPES_SERVICES } from "@di/types-services";
 */
 
 @injectable()
-export class OtpUseCase {
+export class OtpUseCase implements IOtpUC {
   constructor(
     @inject(TYPES_REPOSITORIES.OtpRepository)
     private otpRepository: IOtpRepository,
@@ -55,7 +56,7 @@ export class OtpUseCase {
     private otpService: IOTPService
   ) {}
 
-  async createOtp({ email, otp }: OtpDTO): Promise<IOtp> {
+  async createOtp({ email, otp }: OtpDTO): Promise<Otp> {
     return await this.otpRepository.create({ email, otp });
   }
   async verifyOtp({ email, otp }: OtpDTO): Promise<void> {
@@ -68,7 +69,7 @@ export class OtpUseCase {
     await this.userRepository.updateUserVerificationStatus({
       email: userEmail,
     });
-    await this.otpRepository.delete(String(otpData?._id));
+    await this.otpRepository.delete(otpData?._id);
   }
   async resendOtp({ email, otp }: OtpDTO): Promise<void> {
     const userData = await this.userRepository.findOne({ email });

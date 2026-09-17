@@ -5,11 +5,12 @@ import {
   ApplicationStatus,
   VideoStatus,
 } from "@shared/constants/index.constants";
-import { ReqCreateVideo } from "@application/dtos/video-dtos";
+import { CreateVideo } from "@application/dtos/video-dtos";
 import { validationError } from "@presentation/middlewares/error.middleware";
-import { IVideo } from "@domain/entities/video.entity";
+import { Video } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICreateVideoUC } from "@application/interfaces/usecases/IVideoUC";
 
 /**
  * Purpose: Handles the logic for creating a new video, including saving video details and managing
@@ -21,7 +22,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class CreateVideoUseCase {
+export class CreateVideoUseCase implements ICreateVideoUC {
   constructor(
     @inject(TYPES_REPOSITORIES.PlayListRepository)
     private playListRepository: IPlayListRepository,
@@ -39,7 +40,7 @@ export class CreateVideoUseCase {
     thumbnail,
     title,
     trainerId,
-  }: ReqCreateVideo): Promise<IVideo> {
+  }: CreateVideo): Promise<Video> {
     if (
       !video ||
       !description ||
@@ -73,12 +74,10 @@ export class CreateVideoUseCase {
         playListId: list,
       }));
 
-      const [_, playlistVideoCounts] = await Promise.all([
-        this.videoPlayListRepository.insertMany(
-          playlistEntries as unknown as any
-        ),
-        this.playListRepository.getPlaylistCounts(playLists),
-      ]);
+      await this.videoPlayListRepository.insertMany(playlistEntries as any);
+
+      const playlistVideoCounts =
+        await this.playListRepository.getPlaylistCounts(playLists);
 
       if (playlistVideoCounts.length > 0) {
         await this.playListRepository.updateVideosCount(playlistVideoCounts);

@@ -5,15 +5,16 @@ import {
 } from "@shared/constants/index.constants";
 import { IUserSubscriptionPlanRepository } from "@domain/interfaces/IUserSubscriptionPlanRepository";
 import { GetUserSubscriptionsQueryDTO } from "@application/dtos/query-dtos";
-import { IPaymentService } from "@application/interfaces/payments/IPayment.service";
+import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { UserSubscriptionsList } from "@application/dtos/subscription-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { IGetUserSubscriptionsUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
-export class GetUserSubscriptionUseCase {
+export class GetUserSubscriptionUseCase implements IGetUserSubscriptionsUC{
   constructor(
     @inject(TYPES_REPOSITORIES.UserSubscriptionPlanRepository)
     private userSubscriptionPlanRepository: IUserSubscriptionPlanRepository,
@@ -22,8 +23,7 @@ export class GetUserSubscriptionUseCase {
   ) {}
 
   async execute(
-    userId: string,
-    { page, limit, search, filters }: GetUserSubscriptionsQueryDTO
+    { userId, page, limit, search, filters }: GetUserSubscriptionsQueryDTO
   ): Promise<{
     userSubscriptionsList: UserSubscriptionsList[];
     paginationData: PaginationDTO;
@@ -31,10 +31,9 @@ export class GetUserSubscriptionUseCase {
     if (!userId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
-    const query = { page, limit, search, filters };
+    const query = { userId, page, limit, search, filters };
     const { userSubscriptionRecord, paginationData } =
       await this.userSubscriptionPlanRepository.getUserSubscriptions(
-        userId,
         query
       );
     if (!userSubscriptionRecord) {

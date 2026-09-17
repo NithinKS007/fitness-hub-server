@@ -6,13 +6,15 @@ import {
   GetWorkoutQueryDTO,
 } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
-import WorkoutModel from "@infrastructure/databases/models/workout.model";
+import WorkoutModel, {
+  IWorkout,
+} from "@infrastructure/databases/models/workout.model";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import { WorkoutChartData } from "@application/dtos/workout-dtos";
-import { IWorkout } from "@domain/entities/workout.entity";
+import { Workout } from "@domain/entities/workout.entity";
 
 export class WorkoutRepository
-  extends BaseRepository<IWorkout>
+  extends BaseRepository<IWorkout, Workout>
   implements IWorkoutRepository
 {
   constructor(model: Model<IWorkout> = WorkoutModel) {
@@ -20,9 +22,8 @@ export class WorkoutRepository
   }
 
   async getWorkoutsByUserId(
-    userId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
-  ): Promise<{ workoutList: IWorkout[]; paginationData: PaginationDTO }> {
+    { userId, page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
+  ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }> {
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
 
     const matchQuery: any = { userId: this.parseId(userId) };
@@ -56,7 +57,6 @@ export class WorkoutRepository
         .sort({ date: 1 })
         .skip(skip)
         .limit(limitNumber)
-        .lean()
         .exec(),
       this.model.countDocuments(matchQuery).exec(),
     ]);
@@ -65,9 +65,9 @@ export class WorkoutRepository
       pageNumber,
       limitNumber,
     });
-
+    const toDomainList = workoutList.map((w) => this.toDomain(w));
     return {
-      workoutList,
+      workoutList: toDomainList,
       paginationData,
     };
   }

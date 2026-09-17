@@ -1,11 +1,55 @@
-import { IUser } from "@domain/entities/user.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
-const userSchema = new Schema<IUser>(
+export interface IUser extends Document {
+  _id: ObjectId;
+  fname: string;
+  lname: string;
+  email: string;
+  isBlocked: boolean;
+  role: "user" | "trainer" | "admin";
+  password: string;
+  otpVerified: boolean;
+  googleVerified: boolean;
+  phone: string;
+  dateOfBirth: Date;
+  profilePic: string;
+  age: string;
+  height: string;
+  weight: string;
+  gender: "male" | "female";
+
+  bloodGroup: string;
+  medicalConditions: string;
+  otherConcerns: string;
+}
+
+const userSchema: Schema = new Schema(
   {
-    fname: { type: String, required: true },
-    lname: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    fname: {
+      type: String,
+      required: true,
+      validate: {
+        validator: (value: string) => /^[A-Za-z\s]+$/.test(value),
+        message: "First name can only contain letters and spaces",
+      },
+    },
+    lname: {
+      type: String,
+      required: true,
+      validate: {
+        validator: (value: string) => /^[A-Za-z\s]+$/.test(value),
+        message: "Last name can only contain letters and spaces",
+      },
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      validate: {
+        validator: (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+        message: "Please provide a valid email address",
+      },
+    },
     isBlocked: { type: Boolean, default: false },
     role: {
       type: String,

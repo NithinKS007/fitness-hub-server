@@ -2,20 +2,20 @@ import { Request, Response } from "express";
 import { injectable, inject } from "inversify";
 import { sendResponse } from "@shared/utils/http.response";
 import { AuthStatus, StatusCodes } from "@shared/constants/index.constants";
-import { GoogleAuthUseCase } from "@application/usecases/auth/google-auth.usecase";
 import { setRefreshTokenCookie } from "@shared/utils/cookie";
 import { TYPES_AUTH_USECASES } from "@di/types-usecases";
+import { IGoogleAuthUC } from "@application/interfaces/usecases/IAuthUC";
 
 @injectable()
 export class GoogleAuthController {
   constructor(
     @inject(TYPES_AUTH_USECASES.GoogleAuthUseCase)
-    private googleAuthUseCase: GoogleAuthUseCase
+    private googleAuth: IGoogleAuthUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
     const { userData, accessToken, refreshToken } =
-      await this.googleAuthUseCase.execute(req.body);
+      await this.googleAuth.execute(req.body);
 
     setRefreshTokenCookie(res, refreshToken);
 

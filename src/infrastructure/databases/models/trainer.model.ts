@@ -1,20 +1,37 @@
-import { ITrainer } from "@domain/entities/trainer.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
-const trainerSchema = new Schema(
+export interface ITrainer extends Document {
+  _id: string;
+  userId: ObjectId;
+  yearsOfExperience: string;
+  specializations: string[];
+  certifications: { fileName: string; url: string }[];
+  isApproved: boolean;
+  aboutMe?: string;
+}
+
+const trainerSchema: Schema = new Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : value;
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid user id.");
+        }
       },
     },
-    yearsOfExperience: { type: String, required: true },
+    yearsOfExperience: {
+      type: String,
+      required: true,
+      validate: {
+        validator: (value: string) => /^[0-9]+$/.test(value),
+        message: "Years of experience must be a positive integer",
+      },
+    },
     specializations: [{ type: String, required: true }],
     certifications: [
       {
@@ -23,7 +40,13 @@ const trainerSchema = new Schema(
       },
     ],
     isApproved: { type: Boolean, default: false },
-    aboutMe: { type: String },
+    aboutMe: {
+      type: String,
+      validate: {
+        validator: (value: string) => value.length >= 500,
+        message: "About Me text should not exceed 500 characters",
+      },
+    },
   },
   { timestamps: true }
 );

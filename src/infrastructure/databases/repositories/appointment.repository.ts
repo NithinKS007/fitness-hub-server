@@ -1,10 +1,10 @@
 import { Model } from "mongoose";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
-import AppointmentModel from "@infrastructure/databases/models/appointment.model";
+import AppointmentModel, { IAppointment } from "@infrastructure/databases/models/appointment.model";
 import {
   GetBookingRequestsDTO,
-  GetBookingSchedulesDTO,
+  GetTrainerSchedulesDTO,GetUserSchedulesDTO,
 } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
@@ -12,10 +12,10 @@ import {
   AppointmentRequestsTrainer,
   AppointmentRequestsUser,
 } from "@application/dtos/appointment-dtos";
-import { IAppointment } from "@domain/entities/appointment.entity";
+import { Appointment } from "@domain/entities/appointment.entity";
 
 export class AppointmentRepository
-  extends BaseRepository<IAppointment>
+  extends BaseRepository<IAppointment,Appointment>
   implements IAppointmentRepository
 {
   constructor(model: Model<IAppointment> = AppointmentModel) {
@@ -23,8 +23,7 @@ export class AppointmentRepository
   }
 
   async getBookingRequests(
-    trainerId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO
+    {trainerId,page, limit, fromDate, toDate, search, filters }: GetBookingRequestsDTO
   ): Promise<{
     bookingRequestsList: AppointmentRequestsTrainer[];
     paginationData: PaginationDTO;
@@ -133,8 +132,7 @@ export class AppointmentRepository
   }
 
   async getTrainerSchedules(
-    trainerId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetBookingSchedulesDTO
+    { trainerId, page, limit, fromDate, toDate, search, filters }: GetTrainerSchedulesDTO
   ): Promise<{
     trainerBookingSchedulesList: AppointmentRequestsTrainer[];
     paginationData: PaginationDTO;
@@ -240,8 +238,7 @@ export class AppointmentRepository
     };
   }
   async getUserSchedules(
-    userId: string,
-    { page, limit, fromDate, toDate, search, filters }: GetBookingSchedulesDTO
+    { userId,page, limit, fromDate, toDate, search, filters }: GetUserSchedulesDTO
   ): Promise<{
     appointmentList: AppointmentRequestsUser[];
     paginationData: PaginationDTO;

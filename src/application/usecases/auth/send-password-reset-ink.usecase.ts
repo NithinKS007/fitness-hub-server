@@ -2,16 +2,17 @@ import { CreatePassResetTokenDTO } from "@application/dtos/auth-dtos";
 import { AuthStatus } from "@shared/constants/index.constants";
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { IPasswordResetRepository } from "@domain/interfaces/IPasswordResetTokenRepository";
-import { validationError } from "@presentation/middlewares/error.middleware";
-import { IEmailService } from "@application/interfaces/communication/IEmail.service";
-import { IHashService } from "@application/interfaces/security/IHash.service";
-import { IPasswordResetToken } from "@domain/entities/pass-reset-token.entity";
+import { ForbiddenError, NotFoundError, validationError } from "@presentation/middlewares/error.middleware";
+import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
+import { IHashService } from "@application/interfaces/services/security/IHash.service";
+import { PasswordResetToken } from "@domain/entities/pass-reset-token.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { ISendPasswordRestLinkUC } from "@application/interfaces/usecases/IAuthUC";
 
 @injectable()
-export class SendPasswordRestLinkUseCase {
+export class SendPasswordRestLinkUseCase implements ISendPasswordRestLinkUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
@@ -23,16 +24,16 @@ export class SendPasswordRestLinkUseCase {
 
   async execute({
     email,
-  }: CreatePassResetTokenDTO): Promise<IPasswordResetToken> {
+  }: CreatePassResetTokenDTO): Promise<PasswordResetToken> {
     const userData = await this.userRepository.findOne({ email: email });
     if (!userData) {
-      throw new validationError(AuthStatus.EmailNotFound);
+      throw new NotFoundError(AuthStatus.EmailNotFound);
     }
     if (userData.googleVerified) {
       throw new validationError(AuthStatus.DifferentLoginMethod);
     }
     if (userData && !userData.otpVerified) {
-      throw new validationError(AuthStatus.AccountNotVerified);
+      throw new ForbiddenError(AuthStatus.AccountNotVerified);
     }
     const token = await this.hashService.generate();
     const hashedToken = await this.hashService.hash(token);
@@ -48,7 +49,7 @@ export class SendPasswordRestLinkUseCase {
       `If you did not request this, please ignore this email and your password will remain unchanged.`;
 
     const [tokenData, _] = await Promise.all([
-      this.passwordResetRepository.createToken({
+      this.passwordResetRepository.create({
         email,
         resetToken: hashedToken,
       }),

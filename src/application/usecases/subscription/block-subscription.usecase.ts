@@ -1,26 +1,31 @@
 import { UpdateSubscriptionBlockStatusDTO } from "@application/dtos/subscription-dtos";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  InternalServerError,
+  NotFoundError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AuthStatus,
   BlockStatus,
 } from "@shared/constants/index.constants";
 import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
-import { ISubscription } from "@domain/entities/subscription.entity";
+import { Subscription } from "@domain/entities/subscription.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ISubscriptionBlockUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
 
 @injectable()
-export class SubscriptionBlockUseCase {
+export class SubscriptionBlockUseCase implements ISubscriptionBlockUC {
   constructor(
     @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository
   ) {}
-  
+
   async execute({
     subscriptionId,
     isBlocked,
-  }: UpdateSubscriptionBlockStatusDTO): Promise<ISubscription> {
+  }: UpdateSubscriptionBlockStatusDTO): Promise<Subscription> {
     if (!subscriptionId || typeof isBlocked !== "boolean") {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
@@ -28,16 +33,16 @@ export class SubscriptionBlockUseCase {
       subscriptionId
     );
     if (!subscriptionData) {
-      throw new validationError(AuthStatus.InvalidId);
+      throw new NotFoundError(AuthStatus.InvalidId);
     }
     const updatedSubscriptionData = await this.subscriptionRepository.update(
       subscriptionId,
       {
-        isBlocked: isBlocked,
+        isBlocked,
       }
     );
     if (!updatedSubscriptionData) {
-      throw new validationError(BlockStatus.StatusUpdateFailed);
+      throw new InternalServerError(BlockStatus.StatusUpdateFailed);
     }
     return updatedSubscriptionData;
   }

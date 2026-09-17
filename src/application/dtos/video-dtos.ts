@@ -1,5 +1,5 @@
-import { IPlayList } from "@domain/entities/playlist.entity";
-import { IVideo } from "@domain/entities/video.entity";
+import { PlayList } from "@domain/entities/playlist.entity";
+import { Video } from "@domain/entities/video.entity";
 
 interface VideoMetadata {
   title: string;
@@ -9,7 +9,13 @@ interface VideoMetadata {
   video: string;
 }
 
-export interface ReqCreateVideo extends VideoMetadata {
+export interface GetVideoDetails {
+  videoId: string;
+  trainerId: string;
+  privacy?: boolean;
+}
+
+export interface CreateVideo extends VideoMetadata {
   trainerId: string;
   playLists: string[];
 }
@@ -23,12 +29,12 @@ export interface UpdateVideoPrivacyDTO {
   privacy: boolean;
 }
 
-export interface ReqEditVideoDTO extends VideoMetadata {
+export interface EditVideoDTO extends VideoMetadata {
   _id: string;
   trainerId: string;
   playLists: string[];
 }
 
-export interface VideoWithPlayLists extends IVideo {
-  playLists: IPlayList[];
+export interface VideoWithPlayLists extends Video {
+  playLists: PlayList[];
 }

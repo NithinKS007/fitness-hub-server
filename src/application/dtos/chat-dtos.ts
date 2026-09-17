@@ -1,4 +1,4 @@
-import { IChat } from "@domain/entities/chat.entity";
+import { Chat } from "@domain/entities/chat.entity";
 import { ObjectId } from "mongoose";
 
 export interface CreateChatDTO {
@@ -14,12 +14,12 @@ export interface FindChatDTO {
 }
 
 interface BaseChatList {
-  _id: string | ObjectId;
-  userId: string | ObjectId;
-  trainerId: string | ObjectId;
+  _id: string;
+  userId: string;
+  trainerId: string;
   unreadCount: number;
   stripeSubscriptionStatus: string;
-  lastMessage: IChat | null;
+  lastMessage: Chat | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -44,7 +44,7 @@ export interface Conversation {
   _id: ObjectId;
   userId: ObjectId;
   trainerId: ObjectId;
-  lastMessage: IChat | null;
+  lastMessage: Chat | null;
   unreadCount: number;
   stripeSubscriptionStatus: string;
 }

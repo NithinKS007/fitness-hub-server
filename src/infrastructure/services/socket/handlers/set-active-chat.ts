@@ -1,7 +1,6 @@
 import { Server } from "socket.io";
 import { socketStore } from "@infrastructure/services/socket/store/socket.store";
-import { MarkMessageAsReadUseCase } from "@application/usecases/chat/mark-as-read.usecase";
-import { UpdateUnReadMessageCountUseCase } from "@application/usecases/chat/update-unread-count.usecase";
+import { IMarkMessageRead, IUpdateUnReadMessageCountUC } from "@application/interfaces/usecases/IChatUC";
 
 export interface SetActiveChatData {
   userId: string;
@@ -10,35 +9,42 @@ export interface SetActiveChatData {
 
 export const handleSetActiveChat = async (
   io: Server,
-  markMessageAsReadUseCase: MarkMessageAsReadUseCase,
-  UpdateUnReadMessageCountUseCase: UpdateUnReadMessageCountUseCase,
+  markMessageAsReadUseCase: IMarkMessageRead,
+  UpdateUnReadMessageCountUseCase: IUpdateUnReadMessageCountUC,
   userId: string,
   partnerId: string
 ) => {
   socketStore.openChats.set(userId, partnerId);
-  const readMessagesToUpdateUI = await markMessageAsReadUseCase.execute({
+  const readmsgs = await markMessageAsReadUseCase.execute({
     userId,
     otherUserId: partnerId,
   });
 
-  const updatedCountDoc = await UpdateUnReadMessageCountUseCase.execute({
+  if (!readmsgs || readmsgs.length === 0) return;
+
+  const updatedCount = await UpdateUnReadMessageCountUseCase.execute({
     userId,
     otherUserId: partnerId,
     count: 0,
   });
 
-  if (readMessagesToUpdateUI && readMessagesToUpdateUI.length > 0) {
-    const messageIds = readMessagesToUpdateUI.map((msg) => msg._id.toString());
-    const receiverSocketId = socketStore.userSocketMap.get(userId);
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("unreadCountUpdated", updatedCountDoc);
-    }
-    const senderSocketId = socketStore.userSocketMap.get(partnerId);
-    if (senderSocketId) {
-      io.to(senderSocketId).emit("messageRead", { messageIds });
-      if (updatedCountDoc) {
-        io.to(senderSocketId).emit("unreadCountUpdated", updatedCountDoc);
-      }
-    }
+  const receiverSocketId = socketStore.userSocketMap.get(userId);
+  const senderSocketId = socketStore.userSocketMap.get(partnerId);
+
+  const messageIds = readmsgs.map((msg) => msg._id.toString());
+
+  if (senderSocketId) {
+    io.to(senderSocketId).emit("messageRead", { messageIds });
   }
+
+  if (!updatedCount) return;
+
+  if (receiverSocketId) {
+    io.to(receiverSocketId).emit("unreadCountUpdated", updatedCount);
+  }
+
+  if (senderSocketId) {
+    io.to(senderSocketId).emit("unreadCountUpdated", updatedCount);
+  }
+
 };

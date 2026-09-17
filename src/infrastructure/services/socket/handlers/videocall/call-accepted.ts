@@ -1,3 +1,4 @@
+import { EmitEvents } from "@application/dtos/service/socket.service";
 import { Socket, Server } from "socket.io";
 
 interface AcceptVideoCall {
@@ -11,6 +12,16 @@ export const handleAcceptCall = async ({
   io,
   roomId,
 }: AcceptVideoCall) => {
-  socket.join(roomId);
-  io.to(roomId).emit("callStarted", { roomId });
+  try {
+    socket.join(roomId);
+    io.to(roomId).emit(EmitEvents.callStarted, { roomId });
+  } catch (error: any) {
+    io.to(roomId).emit(EmitEvents.error, {
+      message:
+        error.message ||
+        "An unexpected error occurred while attempting to accept the call.",
+      status: "error",
+      code: error.code || 500,
+    });
+  }
 };

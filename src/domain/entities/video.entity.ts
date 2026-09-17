@@ -1,8 +1,6 @@
-import mongoose, { Document } from "mongoose";
-
-export interface IVideo extends Document {
-  _id: mongoose.Schema.Types.ObjectId;
-  trainerId: string | mongoose.Schema.Types.ObjectId;
+export interface Video {
+  _id: string;
+  trainerId: string;
   title: string;
   description: string;
   duration: Number;

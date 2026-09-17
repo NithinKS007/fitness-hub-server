@@ -1,17 +1,26 @@
-import { IConversation } from "@domain/entities/conversation.entity";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
-const conversationSchema = new Schema(
+export interface IConversation extends Document {
+  _id: ObjectId;
+  userId: ObjectId;
+  trainerId: ObjectId;
+  lastMessage: ObjectId;
+  unreadCount: number;
+  stripeSubscriptionStatus: string;
+}
+
+const conversationSchema: Schema = new Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : value;
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid user id");
+        }
       },
     },
     trainerId: {
@@ -19,10 +28,11 @@ const conversationSchema = new Schema(
       ref: "Trainer",
       required: true,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : value;
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid trainer id");
+        }
       },
     },
     lastMessage: {
@@ -30,13 +40,23 @@ const conversationSchema = new Schema(
       ref: "Chat",
       default: null,
       set: (value: string) => {
-        return typeof value === "string" &&
-          mongoose.Types.ObjectId.isValid(value)
-          ? new mongoose.Types.ObjectId(value)
-          : value;
+        if (mongoose.Types.ObjectId.isValid(value)) {
+          return new mongoose.Types.ObjectId(value);
+        } else {
+          throw new Error("Please provide a valid lastmessage id");
+        }
       },
     },
-    unreadCount: { type: Number, default: 0 },
+    unreadCount: {
+      type: Number,
+      default: 0,
+      validate: {
+        validator: (value: number) => {
+          return value >= 0;
+        },
+        message: "Unread count cannot be negative",
+      },
+    },
     stripeSubscriptionStatus: { type: String, required: true },
   },
   {

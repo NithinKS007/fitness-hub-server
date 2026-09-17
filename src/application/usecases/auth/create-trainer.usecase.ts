@@ -1,20 +1,25 @@
 import { IUserRepository } from "@domain/interfaces/IUserRepository";
 import { IOtpRepository } from "@domain/interfaces/IOtpRepository";
-import { CreateTrainerDTO, Trainer } from "@application/dtos/trainer-dtos";
+import { CreateTrainerDTO, TrainerDTO } from "@application/dtos/trainer-dtos";
 import {
   ApplicationStatus,
   AuthStatus,
 } from "@shared/constants/index.constants";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  ConflictError,
+  InternalServerError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
-import { IEmailService } from "@application/interfaces/communication/IEmail.service";
-import { IOTPService } from "@application/interfaces/security/IGenerate-otp.service";
-import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
+import { IEmailService } from "@application/interfaces/services/communication/IEmail.service";
+import { IOTPService } from "@application/interfaces/services/security/IOtp.service";
+import { IEncryptionService } from "@application/interfaces/services/security/IEncryption.service";
 import { RoleType } from "@application/dtos/auth-dtos";
-import { IUser } from "@domain/entities/user.entity";
+import { User } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { ICreateTrainerUC } from "@application/interfaces/usecases/IAuthUC";
 
 /*  
     Purpose: Creates a new trainer and handles OTP verification during registration.
@@ -27,7 +32,7 @@ import { TYPES_SERVICES } from "@di/types-services";
 */
 
 @injectable()
-export class CreateTrainerUseCase {
+export class CreateTrainerUseCase implements ICreateTrainerUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
@@ -42,13 +47,19 @@ export class CreateTrainerUseCase {
   ) {}
 
   private async sendOtpEmail(email: string): Promise<void> {
-    const otp = this.otpService.generateOtp(6);
-    await this.otpRepository.create({ email, otp });
-    await this.emailService.sendEmail({
-      to: email,
-      subject: "OTP for Registration",
-      text: `Your OTP is ${otp}. Please do not share this OTP with anyone.`,
-    });
+    try {
+      const otp = this.otpService.generateOtp(6);
+      await this.otpRepository.create({ email, otp });
+      await this.emailService.sendEmail({
+        to: email,
+        subject: "OTP for Registration",
+        text: `Your OTP is ${otp}. Please do not share this OTP with anyone.`,
+      });
+    } catch (error) {
+      throw new InternalServerError(
+        "Failed to send OTP. Please try again later."
+      );
+    }
   }
 
   async execute({
@@ -61,7 +72,7 @@ export class CreateTrainerUseCase {
     yearsOfExperience,
     specializations,
     certificate,
-  }: CreateTrainerDTO): Promise<Trainer | IUser> {
+  }: CreateTrainerDTO): Promise<TrainerDTO | User> {
     if (
       !fname ||
       !lname ||
@@ -78,14 +89,14 @@ export class CreateTrainerUseCase {
       email: email,
     });
     if (existinguser && existinguser.otpVerified) {
-      throw new validationError(AuthStatus.EmailConflict);
+      throw new ConflictError(AuthStatus.EmailConflict);
     }
     if (
       existinguser &&
       !existinguser.otpVerified &&
       existinguser.googleVerified
     ) {
-      throw new validationError(AuthStatus.DifferentLoginMethod);
+      throw new ConflictError(AuthStatus.DifferentLoginMethod);
     }
     if (existinguser && !existinguser.otpVerified) {
       await this.sendOtpEmail(email);

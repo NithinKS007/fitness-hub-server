@@ -1,4 +1,4 @@
-import { ReqEditVideoDTO } from "@application/dtos/video-dtos";
+import { EditVideoDTO } from "@application/dtos/video-dtos";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
@@ -7,9 +7,10 @@ import {
 import { IPlayListRepository } from "@domain/interfaces/IPlayListRepository";
 import { IVideoRepository } from "@domain/interfaces/IVideoRepository";
 import { IVideoPlayListRepository } from "@domain/interfaces/IVideoPlayListRepository";
-import { IVideo } from "@domain/entities/video.entity";
+import { Video } from "@domain/entities/video.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { IEditVideoUC } from "@application/interfaces/usecases/IVideoUC";
 
 /**
  * Purpose: Edit a video by updating its details, such as description, duration, playlists, thumbnail, and title.
@@ -20,7 +21,7 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
  */
 
 @injectable()
-export class EditVideoUseCase {
+export class EditVideoUseCase implements IEditVideoUC {
   constructor(
     @inject(TYPES_REPOSITORIES.PlayListRepository)
     private playListRepository: IPlayListRepository,
@@ -39,7 +40,7 @@ export class EditVideoUseCase {
     title,
     trainerId,
     video,
-  }: ReqEditVideoDTO): Promise<IVideo> {
+  }: EditVideoDTO): Promise<Video> {
     if (
       !_id ||
       !description ||
@@ -66,6 +67,7 @@ export class EditVideoUseCase {
     if (existingNameExcludingId) {
       throw new validationError(VideoStatus.NameExists);
     }
+
     const editedVideo = await this.videoRepository.update(_id, {
       description,
       duration,
@@ -81,20 +83,17 @@ export class EditVideoUseCase {
 
     if (editedVideo && playLists && playLists.length > 0) {
       const videoPlayListDocs = playLists.map((list) => ({
-        videoId: editedVideo._id.toString(),
+        videoId: editedVideo._id,
         playListId: list,
       }));
 
       const videoIdsToDelete = videoPlayListDocs.map((list) => list.videoId);
+
+      this.videoPlayListRepository.insertMany(videoPlayListDocs as any),
+        await this.videoPlayListRepository.deleteMany(videoIdsToDelete);
+
       const videoCountWithPlayList =
         await this.playListRepository.getPlaylistCounts(playLists);
-
-      await Promise.all([
-        this.videoPlayListRepository.insertMany(
-          videoPlayListDocs as unknown as any
-        ),
-        this.videoPlayListRepository.deleteMany(videoIdsToDelete),
-      ]);
 
       if (videoCountWithPlayList.length > 0) {
         await this.playListRepository.updateVideosCount(videoCountWithPlayList);

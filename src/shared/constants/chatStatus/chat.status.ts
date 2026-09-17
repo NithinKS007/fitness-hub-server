@@ -5,4 +5,6 @@ export enum ChatStatus {
   FailedToGetChatMessages = "Failed to retrieve the chat messages. Please check your network or try again later.",
   ChatSend = "chat history send successfully",
   FailedToRetrieveChatList = "Unable to retrieve the chat list. Please try again later.",
+  UserContacts = "Users Contact list retrieved successfully",
+  TrainerContacts = "Trainer Contact list retrieved successfully"
 }

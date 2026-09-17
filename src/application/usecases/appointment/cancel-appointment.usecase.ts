@@ -6,9 +6,10 @@ import {
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
 import { BookingSlotStatus } from "@application/dtos/booking-dtos";
-import { IAppointment } from "@domain/entities/appointment.entity";
+import { Appointment } from "@domain/entities/appointment.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
+import { ICancelAppointmentUC } from "@application/interfaces/usecases/IAppointmentUC";
 
 /*  
     Purpose: Cancel an existing appointment and update the booking slot status to "pending"
@@ -18,15 +19,15 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 */
 
 @injectable()
-export class CancelAppointmentUseCase {
+export class CancelAppointmentUseCase implements ICancelAppointmentUC {
   constructor(
     @inject(TYPES_REPOSITORIES.BookingSlotRepository)
     private bookingSlotRepository: IBookingSlotRepository,
     @inject(TYPES_REPOSITORIES.AppointmentRepository)
     private appointmentRepository: IAppointmentRepository
   ) {}
-  
-  async execute(appointmentId: string): Promise<IAppointment> {
+
+  async execute(appointmentId: string): Promise<Appointment> {
     if (!appointmentId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
@@ -36,18 +37,14 @@ export class CancelAppointmentUseCase {
     );
 
     if (!cancelledAppointment) {
-      throw new validationError(
-        AppointmentStatus.FailedToCancelAppointmentStatus
-      );
+      throw new validationError(AppointmentStatus.FailedToCancel);
     }
     const changeStatusPending = await this.bookingSlotRepository.update(
-      cancelledAppointment.bookingSlotId.toString(),
+      cancelledAppointment.bookingSlotId,
       { status: BookingSlotStatus.PENDING }
     );
     if (!changeStatusPending) {
-      throw new validationError(
-        AppointmentStatus.FailedToCancelAppointmentStatus
-      );
+      throw new validationError(AppointmentStatus.FailedToCancel);
     }
     return cancelledAppointment;
   }

@@ -5,4 +5,5 @@ export enum SlotStatus {
   FailedToGetAvailableSlotData = "Unable to retrieve available slot data. Please check your connection or try again later.",
   Deleted = "The booking slot has been successfully deleted.",
   DeleteFailed = "Failed to delete the slot. Please try again later.",
+  NotFound = "Slot not found"
 }

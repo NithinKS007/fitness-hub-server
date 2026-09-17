@@ -1,4 +1,5 @@
 import { ObjectId } from "mongoose";
+import { BaseMapper } from "./BaseMapper";
 
 interface UserDataForAppointRequests {
   _id: ObjectId;
@@ -31,3 +32,16 @@ export interface AppointmentRequestsTrainer extends AppointmentRequestsBase {
 export interface AppointmentRequestsUser extends AppointmentRequestsBase {
   trainerData: UserDataForAppointRequests;
 }
+
+// class AppointmentMapper extends BaseMapper <User, UserDataForAppointRequests> {
+//   map(user: User): UserDataForAppointRequests {
+//     return {
+//       id: user._id,
+//       fname: user.fname,
+//       lname: user.lname,
+//       email: user.email,
+//       phone: user.phone,
+//       profilePic: user.profilePic,
+//     };
+//   }
+// }

@@ -5,18 +5,18 @@ import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
-import { GetTrainerSubscriptionsUseCase } from "@application/usecases/subscription/get-trainer-subscriptions.usecase";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
+import { IGetTrainerSubscriptionsUC } from "@application/interfaces/usecases/ISubscriptionUC";
 
 @injectable()
 export class GetTrainerSubscriptionController {
   constructor(
     @inject(TYPES_SUBSCRIPTION_USECASES.GetTrainerSubscriptionsUseCase)
-    private getTrainerSubscriptionUseCase: GetTrainerSubscriptionsUseCase
+    private getTrainerSubscriptionUseCase: IGetTrainerSubscriptionsUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const trainerId = req?.user?._id || req.params.trainerId;
+    const trainerId = req?.user?._id || req.params.id;
 
     const subscriptionsData = await this.getTrainerSubscriptionUseCase.execute(
       trainerId

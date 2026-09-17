@@ -7,16 +7,18 @@ import {
 import { SignInDTO } from "@application/dtos/auth-dtos";
 import {
   ForbiddenError,
+  NotFoundError,
   validationError,
 } from "@presentation/middlewares/error.middleware";
 import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
-import { IAuthService } from "@application/interfaces/auth/IAuth.service";
-import { IEncryptionService } from "@application/interfaces/security/IEncryption.service";
-import { Trainer } from "@application/dtos/trainer-dtos";
-import { IUser } from "@domain/entities/user.entity";
+import { IAuthService } from "@application/interfaces/services/auth/IAuth.service";
+import { IEncryptionService } from "@application/interfaces/services/security/IEncryption.service";
+import { TrainerDTO } from "@application/dtos/trainer-dtos";
+import { User } from "@domain/entities/user.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
+import { ISigninUserUC } from "@application/interfaces/usecases/IAuthUC";
 
 /**
  * Purpose: Handle the sign-in process for a user or trainer.
@@ -26,7 +28,7 @@ import { TYPES_SERVICES } from "@di/types-services";
  */
 
 @injectable()
-export class SigninUserUseCase {
+export class SigninUserUseCase implements ISigninUserUC {
   constructor(
     @inject(TYPES_REPOSITORIES.UserRepository)
     private userRepository: IUserRepository,
@@ -38,15 +40,15 @@ export class SigninUserUseCase {
     private encryptionService: IEncryptionService
   ) {}
 
-  private generateAccessToken(user: IUser | Trainer): string {
-    return this.authService.generateAccessToken({
-      _id: user._id.toString(),
+  private generateAccessToken(user: User | TrainerDTO): string {
+    return this.authService.createAccessToken({
+      _id: user._id,
       role: user.role,
     });
   }
-  private generateRefreshToken(user: IUser | Trainer): string {
-    return this.authService.generateRefreshToken({
-      _id: user._id.toString(),
+  private generateRefreshToken(user: User | TrainerDTO): string {
+    return this.authService.createRefreshToken({
+      _id: user._id,
       role: user.role,
     });
   }
@@ -54,10 +56,10 @@ export class SigninUserUseCase {
   private async validateUserLogin(
     email: string,
     password: string
-  ): Promise<IUser | Trainer> {
+  ): Promise<User | TrainerDTO> {
     const userData = await this.userRepository.findOne({ email: email });
     if (!userData) {
-      throw new validationError(AuthStatus.EmailNotFound);
+      throw new NotFoundError(AuthStatus.EmailNotFound);
     }
     if (userData && userData?.googleVerified) {
       throw new validationError(AuthStatus.DifferentLoginMethod);
@@ -81,7 +83,7 @@ export class SigninUserUseCase {
   async execute({ email, password }: SignInDTO): Promise<{
     accessToken: string;
     refreshToken: string;
-    userData: IUser | Trainer;
+    userData: User | TrainerDTO;
   }> {
     const userData = await this.validateUserLogin(email, password);
 
@@ -91,7 +93,7 @@ export class SigninUserUseCase {
           userData?._id.toString()
         );
       if (!trainerData) {
-        throw new validationError(TrainerStatus.FailedToRetrieveTrainerDetails);
+        throw new NotFoundError(TrainerStatus.FailedToRetrieveTrainerDetails);
       }
       const accessToken = this.generateAccessToken(trainerData);
       const refreshToken = this.generateRefreshToken(trainerData);

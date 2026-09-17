@@ -26,7 +26,6 @@ export const TYPES_AUTH_USECASES = {
 export const TYPES_BOOKINGSLOT_USECASAES = {
   CreateBookingSlotUseCase: Symbol.for("CreateBookingSlotUseCase"),
   DeleteBookingSlotUseCase: Symbol.for("DeleteBookingSlotUseCase"),
-  GetAllPendingSlotsUseCase: Symbol.for("GetAllPendingSlotsUseCase"),
   GetPendingSlotsUseCase: Symbol.for("GetPendingSlotsUseCase"),
   GetUpComingSlotsUseCase: Symbol.for("GetUpComingSlotsUseCase"),
 };
@@ -39,9 +38,9 @@ export const TYPES_CHAT_USECASES = {
   IncrementUnReadMessageCountUseCase: Symbol.for(
     "IncrementUnReadMessageCountUseCase"
   ),
-  MarkMessageAsReadUseCase: Symbol.for("MarkMessageAsReadUseCase"),
+  MarkMessageReadUseCase: Symbol.for("MarkMessageReadUseCase"),
   UpdateLastMessageUseCase: Symbol.for("UpdateLastMessageUseCase"),
-  UpdateUnReadMessageCountUseCase1: Symbol.for(
+  UpdateUnReadMessageCountUseCase: Symbol.for(
     "UpdateUnReadMessageCountUseCase"
   ),
 };
@@ -105,12 +104,13 @@ export const TYPES_VIDEO_USECASES = {
   UpdateVideoPrivacyUseCase: Symbol.for("UpdateVideoPrivacyUseCase"),
 };
 
-export const TYPES_VIDEO_CALL_LOG_USECASES = {
+export const TYPES_VIDEO_CALL_USECASES = {
   CreateVideoCallLogUseCase: Symbol.for("CreateVideoCallLogUseCase"),
   UpdateVideoCallDurationUseCase: Symbol.for("UpdateVideoCallDurationUseCase"),
   UpdateVideoCallStatusUseCase: Symbol.for("UpdateVideoCallStatusUseCase"),
   GetTrainerVideoCallLogUseCase: Symbol.for("GetTrainerVideoCallLogUseCase"),
   GetUserVideoCallLogUseCase: Symbol.for("GetUserVideoCallLogUseCase"),
+  ZegoCloudCreateTokenUC: Symbol.for("ZegoCloudCreateTokenUC"),
 };
 
 export const TYPES_WORKOUT_USECASES = {
@@ -120,6 +120,6 @@ export const TYPES_WORKOUT_USECASES = {
   GetWorkoutUseCase: Symbol.for("GetWorkoutUseCase"),
 };
 
-export const TYPES_LOGGER_USECASES = {
-  LoggerUseCase: Symbol.for("LoggerUseCase"),
+export const TYPES_CLOUDINARY_USECASES = {
+  CloudinarySigUseCase: Symbol.for("CloudinarySigUseCase"),
 };

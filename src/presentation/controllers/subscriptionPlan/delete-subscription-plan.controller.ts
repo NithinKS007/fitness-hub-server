@@ -5,18 +5,18 @@ import {
   StatusCodes,
   SubscriptionStatus,
 } from "@shared/constants/index.constants";
-import { DeleteSubscriptionUseCase } from "@application/usecases/subscription/delete-subscription.usecase";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
+import { IDeleteSubscriptionUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
 
 @injectable()
 export class DeleteSubPlanController {
   constructor(
     @inject(TYPES_SUBSCRIPTION_USECASES.DeleteSubscriptionUseCase)
-    private deleteSubscriptionUseCase: DeleteSubscriptionUseCase
+    private deleteSubscriptionUseCase: IDeleteSubscriptionUC
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { subscriptionId } = req.params;
+    const { id: subscriptionId } = req.params;
 
     const deletedSubscriptionData =
       await this.deleteSubscriptionUseCase.execute(subscriptionId);
