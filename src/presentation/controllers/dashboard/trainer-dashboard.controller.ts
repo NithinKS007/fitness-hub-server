@@ -17,7 +17,7 @@ export class TrainerDashboardController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { _id: trainerId } = req?.user || {};
+    const { id: trainerId } = req?.user || {};
 
     const period = parseQueryParams(req.query).period;
 

@@ -34,7 +34,7 @@ export class TokenUseCase implements ITokenUC {
     }
     const decoded = this.authService.authRefreshToken(refreshToken);
     return this.authService.createAccessToken({
-      _id: decoded._id,
+      id: decoded.id,
       role: decoded.role,
     });
   }

@@ -11,7 +11,9 @@ export interface ISubscription extends Document {
   sessionsPerWeek: number;
   totalSessions: number;
   isBlocked: boolean;
-  stripePriceId: string;
+  providerPriceId: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const subscriptionSchema: Schema = new Schema(
@@ -59,7 +61,7 @@ const subscriptionSchema: Schema = new Schema(
       min: [1, "Total sessions must be at least 1"],
     },
     isBlocked: { type: Boolean, default: false },
-    stripePriceId: { type: String, required: true },
+    providerPriceId: { type: String, required: true },
   },
   { timestamps: true }
 );

@@ -27,9 +27,7 @@ export abstract class BaseRepository<T extends Document, D>
   }
 
   async delete(id: string): Promise<D | null> {
-    const deletedEntity = await this.model
-      .findByIdAndDelete({ _id: id })
-      .exec();
+    const deletedEntity = await this.model.findByIdAndDelete({ _id: id }).exec();
     return deletedEntity ? this.toDomain(deletedEntity) : null;
   }
 
@@ -42,6 +40,11 @@ export abstract class BaseRepository<T extends Document, D>
     await this.model.insertMany(entities);
   }
 
+  async findAll(conditions: object): Promise<D[]> {
+    const results = await this.model.find(conditions);
+    return results.map((res) => this.toDomain(res));
+  }
+
   parseId(id: string): mongoose.Types.ObjectId {
     return new mongoose.Types.ObjectId(id);
   }
@@ -52,7 +55,7 @@ export abstract class BaseRepository<T extends Document, D>
 
     return {
       ...domainEntity,
-      _id: _id.toString(),
+      id: _id.toString(),
     };
   }
 }

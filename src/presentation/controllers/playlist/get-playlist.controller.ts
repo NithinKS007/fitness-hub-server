@@ -14,7 +14,7 @@ export class GetPlaylistController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { _id: trainerId } = req?.user || {};
+    const { id: trainerId } = req?.user || {};
 
     const queryParams = parseQueryParams(req.query);
 
@@ -26,7 +26,7 @@ export class GetPlaylistController {
     sendResponse(
       res,
       StatusCodes.OK,
-      { playList: playList, paginationData: paginationData },
+      { playList, paginationData },
       PlayListStatus.RetrievedSuccess
     );
   }

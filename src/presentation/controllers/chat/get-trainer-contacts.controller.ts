@@ -14,7 +14,7 @@ export class GetTrainerContactsController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { _id: trainerId } = req?.user || {};
+    const { id: trainerId } = req?.user || {};
 
     const { search } = parseQueryParams(req.query);
 

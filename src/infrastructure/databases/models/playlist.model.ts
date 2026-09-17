@@ -6,13 +6,15 @@ export interface IPlayList extends Document {
   title: string;
   videoCount: number;
   privacy: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const playListSchema: Schema = new Schema(
   {
     trainerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Trainer",
+      ref: "User",
       required: true,
       set: (value: string) => {
         if (mongoose.Types.ObjectId.isValid(value)) {
@@ -37,7 +39,7 @@ const playListSchema: Schema = new Schema(
       type: Number,
       default: 0,
       required: true,
-       validate: {
+      validate: {
         validator: function (value: number) {
           return Number.isInteger(value) && value >= 0;
         },

@@ -1,7 +1,12 @@
-import { validationError } from "@presentation/middlewares/error.middleware";
-import { SubscriptionStatus } from "@shared/constants/index.constants";
+import {
+  NotFoundError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
+import {
+  SubscriptionStatus,
+  TrainerStatus,
+} from "@shared/constants/index.constants";
 import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
-import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import {
   PeriodType,
@@ -13,14 +18,15 @@ import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
 import { ICreateSubscriptionUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
+import { IUserRepository } from "@di/file-imports-index";
 
 @injectable()
 export class CreateSubscriptionUseCase implements ICreateSubscriptionUC {
   constructor(
     @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository,
-    @inject(TYPES_REPOSITORIES.TrainerRepository)
-    private trainerRepository: ITrainerRepository,
+    @inject(TYPES_REPOSITORIES.UserRepository)
+    private userRepository: IUserRepository,
     @inject(TYPES_SERVICES.PaymentService)
     private paymentService: IPaymentService
   ) {}
@@ -31,7 +37,7 @@ export class CreateSubscriptionUseCase implements ICreateSubscriptionUC {
       : SubscriptionInterval.Month;
   }
 
-  private getIntervalCount = (subPeriod: SubPeriod): number => {
+  private getIntervalCount(subPeriod: SubPeriod): number {
     switch (subPeriod) {
       case PeriodType.Quarterly:
         return 3;
@@ -42,7 +48,7 @@ export class CreateSubscriptionUseCase implements ICreateSubscriptionUC {
       default:
         return 1;
     }
-  };
+  }
 
   async execute(createSubscriptionData: {
     trainerId: string;
@@ -52,29 +58,32 @@ export class CreateSubscriptionUseCase implements ICreateSubscriptionUC {
     sessionsPerWeek: number;
     totalSessions: number;
   }): Promise<Subscription> {
-    const { trainerId, subPeriod, totalSessions, price } =
-      createSubscriptionData;
+    const { trainerId, subPeriod, totalSessions, price } = createSubscriptionData;
 
     const [existingSubscription, trainerData] = await Promise.all([
       await this.subscriptionRepository.findOne({
         trainerId,
         subPeriod,
       }),
-      await this.trainerRepository.getTrainerDetailsById(trainerId),
+      await this.userRepository.findById(trainerId),
     ]);
 
     if (existingSubscription) {
       throw new validationError(SubscriptionStatus.AlreadyExists);
     }
 
+    if (!trainerData) {
+      throw new NotFoundError(TrainerStatus.FailedToFetchDetails);
+    }
+
     const interval = this.getInterval(subPeriod);
     const intervalCount = this.getIntervalCount(subPeriod);
     const productId = await this.paymentService.addProduct({
       name: `${subPeriod.toUpperCase()} FITNESS PLAN`,
-      description: `TRAINER: ${trainerData.fname} ${trainerData.lname}, 
-      ${totalSessions} SESSIONS, EMAIL: ${trainerData.email}`,
+      description: `TRAINER: ${trainerData?.fname} ${trainerData?.lname}, 
+      ${totalSessions} SESSIONS, EMAIL: ${trainerData?.email}`,
     });
-    const stripePriceId = await this.paymentService.addPrice({
+    const providerPriceId = await this.paymentService.addPrice({
       productId,
       amount: price * 100,
       currency: "usd",
@@ -83,7 +92,7 @@ export class CreateSubscriptionUseCase implements ICreateSubscriptionUC {
     });
     return await this.subscriptionRepository.create({
       ...createSubscriptionData,
-      stripePriceId: stripePriceId,
+      providerPriceId: providerPriceId,
     });
   }
 }

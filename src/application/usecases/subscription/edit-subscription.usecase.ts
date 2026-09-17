@@ -4,28 +4,32 @@ import {
   SubscriptionInterval,
   UpdateSubscriptionDetailsDTO,
 } from "@application/dtos/subscription-dtos";
-import { validationError } from "@presentation/middlewares/error.middleware";
+import {
+  NotFoundError,
+  validationError,
+} from "@presentation/middlewares/error.middleware";
 import {
   ApplicationStatus,
   AuthStatus,
   SubscriptionStatus,
+  TrainerStatus,
 } from "@shared/constants/index.constants";
 import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
-import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { Subscription } from "@domain/entities/subscription.entity";
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IEditSubscriptionUC } from "@application/interfaces/usecases/ISubscriptionPlanUC";
+import { IUserRepository } from "@di/file-imports-index";
 
 @injectable()
-export class EditSubscriptionUseCase implements IEditSubscriptionUC{
+export class EditSubscriptionUseCase implements IEditSubscriptionUC {
   constructor(
     @inject(TYPES_REPOSITORIES.SubscriptionRepository)
     private subscriptionRepository: ISubscriptionRepository,
-    @inject(TYPES_REPOSITORIES.TrainerRepository)
-    private trainerRepository: ITrainerRepository,
+    @inject(TYPES_REPOSITORIES.UserRepository)
+    private userRepository: IUserRepository,
     @inject(TYPES_SERVICES.PaymentService)
     private paymentService: IPaymentService
   ) {}
@@ -76,9 +80,11 @@ export class EditSubscriptionUseCase implements IEditSubscriptionUC{
       throw new validationError(AuthStatus.InvalidId);
     }
 
-    const trainerData = await this.trainerRepository.getTrainerDetailsById(
-      trainerId
-    );
+    const trainerData = await this.userRepository.findById(trainerId);
+
+    if (!trainerData) {
+      throw new NotFoundError(TrainerStatus.FailedToFetchDetails);
+    }
 
     let updatedSubscriptionData;
     if (
@@ -94,7 +100,7 @@ export class EditSubscriptionUseCase implements IEditSubscriptionUC{
 
       const interval = this.getInterval(subPeriod);
       const intervalCount = this.getIntervalCount(subPeriod);
-      const stripePriceId = await this.paymentService.addPrice({
+      const providerPriceId = await this.paymentService.addPrice({
         productId,
         amount: price * 100,
         currency: "usd",
@@ -107,7 +113,7 @@ export class EditSubscriptionUseCase implements IEditSubscriptionUC{
           durationInWeeks,
           price,
           sessionsPerWeek,
-          stripePriceId,
+          providerPriceId: providerPriceId,
           subPeriod,
           totalSessions,
           trainerId,
@@ -121,7 +127,7 @@ export class EditSubscriptionUseCase implements IEditSubscriptionUC{
         durationInWeeks,
         price,
         sessionsPerWeek,
-        stripePriceId: existingSubData?.stripePriceId,
+        providerPriceId: existingSubData?.providerPriceId,
         subPeriod,
         totalSessions,
         trainerId,

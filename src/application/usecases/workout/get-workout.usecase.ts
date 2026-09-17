@@ -1,7 +1,7 @@
 import { IWorkoutRepository } from "@domain/interfaces/IWorkoutRepository";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { AuthStatus } from "@shared/constants/index.constants";
-import { GetWorkoutQueryDTO } from "@application/dtos/query-dtos";
+import { GetWorkoutsDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { Workout } from "@domain/entities/workout.entity";
 import { inject, injectable } from "inversify";
@@ -22,15 +22,24 @@ export class GetWorkoutUseCase implements IGetWorkoutUC {
     private workoutRepository: IWorkoutRepository
   ) {}
 
-  async execute(
-    { userId, page, limit, fromDate, toDate, search, filters }: GetWorkoutQueryDTO
-  ): Promise<{ workoutList: Workout[]; paginationData: PaginationDTO }> {
+  async execute({
+    userId,
+    page,
+    limit,
+    fromDate,
+    toDate,
+    search,
+    filters,
+  }: GetWorkoutsDTO): Promise<{
+    workoutList: Workout[];
+    paginationData: PaginationDTO;
+  }> {
     if (!userId) {
       throw new validationError(AuthStatus.IdRequired);
     }
     const query = { page, limit, fromDate, toDate, search, filters, userId };
-    const { workoutList, paginationData } =
-      await this.workoutRepository.getWorkoutsByUserId(query);
+    const { data: workoutList, pagination: paginationData } =
+      await this.workoutRepository.getWorkouts(query);
 
     return { workoutList, paginationData };
   }

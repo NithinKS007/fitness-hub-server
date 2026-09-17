@@ -32,7 +32,7 @@ export class EditVideoUseCase implements IEditVideoUC {
   ) {}
 
   async execute({
-    _id,
+    id,
     description,
     duration,
     playLists,
@@ -42,7 +42,7 @@ export class EditVideoUseCase implements IEditVideoUC {
     video,
   }: EditVideoDTO): Promise<Video> {
     if (
-      !_id ||
+      !id ||
       !description ||
       !duration ||
       !playLists ||
@@ -54,21 +54,21 @@ export class EditVideoUseCase implements IEditVideoUC {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
 
-    const videoData = await this.videoRepository.findById(_id);
+    const videoData = await this.videoRepository.findById(id);
 
     if (!videoData) {
       throw new validationError(VideoStatus.NotFound);
     }
     const existingNameExcludingId = await this.videoRepository.findOne({
       title,
-      _id: videoData?._id,
+      id: videoData?.id,
     });
 
     if (existingNameExcludingId) {
       throw new validationError(VideoStatus.NameExists);
     }
 
-    const editedVideo = await this.videoRepository.update(_id, {
+    const editedVideo = await this.videoRepository.update(id, {
       description,
       duration,
       thumbnail,
@@ -83,7 +83,7 @@ export class EditVideoUseCase implements IEditVideoUC {
 
     if (editedVideo && playLists && playLists.length > 0) {
       const videoPlayListDocs = playLists.map((list) => ({
-        videoId: editedVideo._id,
+        videoId: editedVideo.id,
         playListId: list,
       }));
 

@@ -15,7 +15,7 @@ import { IGetVideoDetailsUC } from "@application/interfaces/usecases/IVideoUC";
  */
 
 @injectable()
-export class GetVideoDetailsUseCase implements IGetVideoDetailsUC{
+export class GetVideoDetailsUseCase implements IGetVideoDetailsUC {
   constructor(
     @inject(TYPES_REPOSITORIES.VideoRepository)
     private videoRepository: IVideoRepository
@@ -27,7 +27,7 @@ export class GetVideoDetailsUseCase implements IGetVideoDetailsUC{
     privacy,
   }: GetVideoDetails): Promise<Video> {
     const videoData = await this.videoRepository.findOne({
-      _id: videoId,
+      id: videoId,
       trainerId,
     });
     if (!videoData) {

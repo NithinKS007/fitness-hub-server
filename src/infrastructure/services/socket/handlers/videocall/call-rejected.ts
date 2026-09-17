@@ -43,9 +43,9 @@ export const handleCallRejected = async ({
       callDuration: duration,
     });
 
-    io.to(roomId).emit(EmitEvents.callEnded);
+    io.to(roomId).emit(EmitEvents.CallEnded);
   } catch (error: any) {
-    io.to(roomId).emit(EmitEvents.error, {
+    io.to(roomId).emit(EmitEvents.Error, {
       message:
         error.message ||
         "An unexpected error occurred while attempting to reject call.",

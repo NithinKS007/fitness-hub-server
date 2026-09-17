@@ -1,44 +1,27 @@
 import { IBaseUseCase } from "./IBase.UC";
-import {
-  GetApprovedTrainerQueryDTO,
-  GetTrainersApprovalQueryDTO,
-  GetTrainersQueryDTO,
-} from "@application/dtos/query-dtos";
+import { GetTrainersDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import {
   TrainerVerificationDTO,
-  TrainerWithSubscription,
 } from "@application/dtos/trainer-dtos";
-import { TrainerDTO } from "@application/dtos/trainer-dtos";
 import { Trainer } from "@domain/entities/trainer.entity";
+import { User } from "@domain/entities/user.entity";
+
 export interface IGetTrainersUC
   extends IBaseUseCase<
-    GetTrainersQueryDTO,
+    GetTrainersDTO,
     {
-      trainersList: TrainerDTO[];
-      paginationData: PaginationDTO;
-    }
-  > {}
-export interface IGetApprovedTrainers
-  extends IBaseUseCase<
-    GetApprovedTrainerQueryDTO,
-    {
-      trainersList: TrainerDTO[];
-      paginationData: PaginationDTO;
-    }
-  > {}
-
-export interface IGetTrainerDetailsUC extends IBaseUseCase<string, TrainerDTO> {}
-export interface IGetTrainerAndSubInfoUC
-  extends IBaseUseCase<string, TrainerWithSubscription> {}
-export interface IGetVeryfyTrainerlist
-  extends IBaseUseCase<
-    GetTrainersApprovalQueryDTO,
-    {
-      trainersList: TrainerDTO[];
+      trainersList: (Omit<User, "password" | "createdAt" | "updatedAt"> & {
+        trainerDetails: Omit<Trainer, "createdAt" | "updatedAt">;
+      })[];
       paginationData: PaginationDTO;
     }
   > {}
 
 export interface ITrainerApprovalUC
-  extends IBaseUseCase<TrainerVerificationDTO, Trainer | null> {}
+  extends IBaseUseCase<
+    TrainerVerificationDTO,
+    Omit<User, "password" | "createdAt" | "updatedAt"> & {
+      trainerDetails: Omit<Trainer, "createdAt" | "updatedAt">;
+    }
+  > {}

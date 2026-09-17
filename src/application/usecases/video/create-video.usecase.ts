@@ -70,7 +70,7 @@ export class CreateVideoUseCase implements ICreateVideoUC {
 
     if (createdVideo && playLists && playLists.length > 0) {
       const playlistEntries = playLists.map((list) => ({
-        videoId: String(createdVideo._id),
+        videoId: String(createdVideo.id),
         playListId: list,
       }));
 

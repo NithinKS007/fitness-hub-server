@@ -1,7 +1,9 @@
 export interface PlayList {
-  _id: string;
+  id: string;
   trainerId: string;
   title: string;
   videoCount: number;
   privacy: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }

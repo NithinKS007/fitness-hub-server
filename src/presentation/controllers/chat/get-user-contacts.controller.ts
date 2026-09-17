@@ -14,7 +14,7 @@ export class GetUserContactsController {
   ) {}
 
   async handle(req: Request, res: Response): Promise<void> {
-    const { _id: userId } = req?.user || {};
+    const { id: userId } = req?.user || {};
 
     const { search } = parseQueryParams(req.query);
 

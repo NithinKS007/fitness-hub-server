@@ -2,10 +2,10 @@ import { Server } from "socket.io";
 import { socketStore } from "@infrastructure/services/socket/store/socket.store";
 import { validationError } from "@presentation/middlewares/error.middleware";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
-import { IGetTrainerDetailsUC } from "@application/interfaces/usecases/ITrainerUC";
 import { IGetAppointmentByIdUC } from "@application/interfaces/usecases/IAppointmentUC";
 import { ICreateVideoCallLogUC } from "@application/interfaces/usecases/IVideoCallLogUC";
 import { EmitEvents } from "@application/dtos/service/socket.service";
+import { IGetUserDetailsUC } from "@application/interfaces/usecases/IUserUC";
 
 interface InitiateVideoCall {
   io: Server;
@@ -15,14 +15,14 @@ interface InitiateVideoCall {
   token: string;
   appId: number;
   appointmentId: string;
-  getTrainerDetailsUseCase: IGetTrainerDetailsUC;
+  getUserDetailsUseCase: IGetUserDetailsUC;
   getAppointmentByIdUseCase: IGetAppointmentByIdUC;
   createVideoCallLogUseCase: ICreateVideoCallLogUC;
 }
 
 export const handleInitiateCall = async ({
   io,
-  getTrainerDetailsUseCase,
+  getUserDetailsUseCase,
   getAppointmentByIdUseCase,
   createVideoCallLogUseCase,
   callerId,
@@ -34,7 +34,7 @@ export const handleInitiateCall = async ({
 }: InitiateVideoCall) => {
   try {
     const [trainerData, appointmentData] = await Promise.all([
-      getTrainerDetailsUseCase.execute(callerId),
+      getUserDetailsUseCase.execute(callerId),
       getAppointmentByIdUseCase.execute(appointmentId),
     ]);
 
@@ -56,7 +56,7 @@ export const handleInitiateCall = async ({
 
     const receiverSocketId = socketStore.userSocketMap.get(receiverId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit(EmitEvents.incomingCall, {
+      io.to(receiverSocketId).emit(EmitEvents.IncomingCall, {
         trainerName: trainerName,
         appointmentTime: appointmentTime,
         appointmentDate: appointmentDate,
@@ -68,7 +68,7 @@ export const handleInitiateCall = async ({
       });
     }
   } catch (error: any) {
-    io.to(receiverId).emit(EmitEvents.error, {
+    io.to(receiverId).emit(EmitEvents.Error, {
       message:
         error.message ||
         "An unexpected error occurred while attempting to call.",

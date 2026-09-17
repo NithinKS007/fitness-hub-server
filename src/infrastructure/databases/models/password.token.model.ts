@@ -5,6 +5,8 @@ export interface IPasswordResetToken extends Document {
   email: string;
   resetToken: string;
   resetTokenCreatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const passwordResetTokenSchema: Schema = new Schema(

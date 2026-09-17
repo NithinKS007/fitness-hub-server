@@ -23,7 +23,7 @@ export class EditPlayListUseCase  implements IEditPlayListUC {
 
     const existingName = await this.playListRepository.findOne({
       title: title,
-      _id: playlistData?._id,
+      id: playlistData?.id,
     });
 
     if (existingName) {

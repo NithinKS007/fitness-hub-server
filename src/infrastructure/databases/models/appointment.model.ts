@@ -8,6 +8,8 @@ export interface IAppointment extends Document {
   appointmentDate: Date;
   appointmentTime: string;
   status: "pending" | "approved" | "rejected" | "cancelled";
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const appointmentSchema: Schema = new Schema(
@@ -39,7 +41,7 @@ const appointmentSchema: Schema = new Schema(
     trainerId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "Trainer",
+      ref: "User",
       set: (value: string) => {
         if (mongoose.Types.ObjectId.isValid(value)) {
           return new mongoose.Types.ObjectId(value);

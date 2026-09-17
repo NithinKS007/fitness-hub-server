@@ -10,6 +10,8 @@ export interface IVideoCallLog extends Document {
   callStatus: "pending" | "completed" | "missed";
   callStartTime: Date;
   callEndTime: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const videoCallLogSchema: Schema = new Schema(
@@ -41,7 +43,7 @@ const videoCallLogSchema: Schema = new Schema(
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "Trainer",
+      ref: "User",
       set: (value: string) => {
         if (mongoose.Types.ObjectId.isValid(value)) {
           return new mongoose.Types.ObjectId(value);

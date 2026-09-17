@@ -1,7 +1,7 @@
 export type SubPeriod = "monthly" | "yearly" | "quarterly" | "halfYearly";
 
 export interface UserSubscriptionPlan {
-  _id: string;
+  id: string;
   userId: string;
   trainerId: string;
   subPeriod: SubPeriod;
@@ -9,7 +9,9 @@ export interface UserSubscriptionPlan {
   durationInWeeks: number;
   sessionsPerWeek: number;
   totalSessions: number;
-  stripePriceId: string;
-  stripeSubscriptionId: string;
-  stripeSubscriptionStatus: string;
+  providerPriceId: string;
+  providerSubId: string;
+  providerSubStatus: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

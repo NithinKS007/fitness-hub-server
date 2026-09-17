@@ -3,83 +3,80 @@ export interface BaseQueryDTO {
   search: string;
   page: number;
   limit: number;
-  filters: string[];
+  filters?: string[];
   fromDate?: Date;
   toDate?: Date;
 }
 // Trainer-related DTOs
-export type GetTrainersQueryDTO = Omit<BaseQueryDTO, "fromDate" | "toDate">;
-export type GetTrainersApprovalQueryDTO = Omit<BaseQueryDTO, "filters">;
-export type GetTrainerSubscribersQueryDTO = Omit<
+export type GetTrainersDTO = BaseQueryDTO & {
+  isApproved?: boolean;
+  isBlocked?: boolean;
+  specialization?: string[];
+  experience?: string[];
+  gender?: string[];
+  sort?: string;
+};
+
+export type GetTrainerSubsDTO = Omit<
   BaseQueryDTO,
   "fromDate" | "toDate"
 > & { trainerId: string };
-export type GetApprovedTrainerQueryDTO = Omit<
-  BaseQueryDTO,
-  "fromDate" | "toDate" | "filters"
-> & {
-  specialization: string[];
-  experience: string[];
-  gender: string[];
-  sort: string;
-};
 
-export type GetUserTrainersListQueryDTO = Omit<
+export type GetUserTrainersListDTO = Omit<
   BaseQueryDTO,
   "filters" | "fromDate" | "toDate"
 > & { userId: string };
 
 //User-related DTOs
-export type GetUsersQueryDTO = Omit<BaseQueryDTO, "fromDate" | "toDate">;
-export type GetUserSubscriptionsQueryDTO = Omit<
-  BaseQueryDTO,
-  "fromDate" | "toDate"
-> & { userId: string };
+export type GetUsersDTO = Omit<BaseQueryDTO, "fromDate" | "toDate">;
+export type GetUserSubDTO = Omit<BaseQueryDTO, "fromDate" | "toDate"> & {
+  userId: string;
+};
 
 // Booking/Schedule-related DTOs
-export type AvailableSlotsQueryDTO = Omit<
-  BaseQueryDTO,
-  "filters" | "search"
-> & { trainerId: string };
+export type GetSlotsDTO = Omit<BaseQueryDTO, "filters" | "search"> & {
+  trainerId: string;
+  type: string
+};
 export type GetBookingRequestsDTO = BaseQueryDTO & { trainerId: string };
 export type GetTrainerSchedulesDTO = BaseQueryDTO & {
   trainerId: string;
 };
 export type GetUserSchedulesDTO = BaseQueryDTO & { userId: string };
-export type GetTrainerVideoCallLogQueryDTO = BaseQueryDTO & {
+export type GetTrainerVideoCallLogDTO = BaseQueryDTO & {
   trainerId: string;
 };
-export type GetUserVideoCallLogQueryDTO = BaseQueryDTO & { userId: string };
+export type GetUserVideoCallLogDTO = BaseQueryDTO & { userId: string };
 
 //Dashboard-related DTOs
-export interface BaseDashBoardQueryDTO {
+export interface BaseDashBoardDTO {
   period: string;
 }
-export type DateRangeQueryDTO = { startDate: Date; endDate: Date };
-export interface UserDashBoardQueryDTO extends BaseDashBoardQueryDTO {
+export type DateRangeDTO = { startDate: Date; endDate: Date };
+export interface UserDashBoardDTO extends BaseDashBoardDTO {
   userId: string;
   bodyPart: string;
 }
-export interface CustomUserDashBoardQueryDTO
-  extends Omit<UserDashBoardQueryDTO, "period"> {
+export interface GetWeightLiftedByDateDTO
+  extends Omit<UserDashBoardDTO, "period"> {
   startDate: Date;
   endDate: Date;
 }
 
 //Content-related DTOs
-export type GetVideoQueryDTO = BaseQueryDTO & {
+export type GetVideosDTO = BaseQueryDTO & {
   trainerId: string;
   videoPrivacy?: boolean;
   playlistPrivacy?: boolean;
 };
 
-export type GetPlayListsQueryDTO = BaseQueryDTO & { trainerId: string };
+export type GetPlayListsDTO = BaseQueryDTO & { trainerId: string };
 
 //Workout-related DTOs
-export type GetWorkoutQueryDTO = BaseQueryDTO & { userId: string };
+export type GetWorkoutsDTO = BaseQueryDTO & { userId: string };
 
-//Revenue-related DTOs
-export type GetRevenueQueryDTO = BaseQueryDTO;
+//FinancialLog-related DTOs
+export type GetTransactions = BaseQueryDTO;
 
 export type GetTrainerChatListDTO = Omit<
   BaseQueryDTO,

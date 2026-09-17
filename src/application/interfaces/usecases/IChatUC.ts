@@ -4,36 +4,38 @@ import {
   GetUserChatListDTO,
 } from "@application/dtos/query-dtos";
 import {
-  Conversation,
+  ChatLastMsg,
   CreateChatDTO,
-  FindChatDTO,
-  TrainerChatList,
-  UserChatList,
+  FindMessageDTO,
 } from "@application/dtos/chat-dtos";
-import { Chat } from "@domain/entities/chat.entity";
+import { Message } from "@domain/entities/message.entity";
 import {
   IncrementUnReadMessageCount,
   UpdateLastMessage,
   UpdateUnReadMessageCount,
 } from "@application/dtos/conversation-dtos";
+import {
+  TRChatListUILayer,
+  URChatListUILayer,
+} from "@infrastructure/mappers/chat.mapper";
 
-export interface ICreateMessageUC extends IBaseUseCase<CreateChatDTO, Chat> {}
-export interface IGetChatHistoryUC extends IBaseUseCase<FindChatDTO, Chat[]> {}
+export interface ICreateMessageUC extends IBaseUseCase<CreateChatDTO, Message> {}
+export interface IGetChatHistoryUC extends IBaseUseCase<FindMessageDTO, Message[]> {}
 export interface IGetTrainerChatListUC
-  extends IBaseUseCase<GetTrainerChatListDTO, TrainerChatList[]> {}
+  extends IBaseUseCase<GetTrainerChatListDTO, TRChatListUILayer[]> {}
 export interface IGetUserChatListUC
-  extends IBaseUseCase<GetUserChatListDTO, UserChatList[]> {}
+  extends IBaseUseCase<GetUserChatListDTO, URChatListUILayer[]> {}
 export interface IMarkMessageRead
   extends IBaseUseCase<
     {
       userId: string;
       otherUserId: string;
     },
-    Chat[] | null
+    Message[] | null
   > {}
 export interface IIncrementUnReadMessageCountUC
-  extends IBaseUseCase<IncrementUnReadMessageCount, Conversation> {}
+  extends IBaseUseCase<IncrementUnReadMessageCount, ChatLastMsg> {}
 export interface IUpdateLastMessageUC
-  extends IBaseUseCase<UpdateLastMessage, Conversation> {}
+  extends IBaseUseCase<UpdateLastMessage, ChatLastMsg> {}
 export interface IUpdateUnReadMessageCountUC
-  extends IBaseUseCase<UpdateUnReadMessageCount, Conversation | null> {}
+  extends IBaseUseCase<UpdateUnReadMessageCount, ChatLastMsg | null> {}

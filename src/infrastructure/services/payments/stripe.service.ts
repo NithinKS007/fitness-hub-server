@@ -12,7 +12,6 @@ import {
   CreateSubscriptionSession,
   DeactivatePrice,
   Session,
-  SubscriptionMetadata,
 } from "@application/dtos/service/payment.service";
 import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { injectable } from "inversify";
@@ -53,8 +52,8 @@ export class StripePaymentService implements IPaymentService {
     await stripe.prices.update(priceId, { active: false });
   }
 
-  async createSubscriptionSession({
-    stripePriceId,
+  async createSession({
+    providerPriceId,
     userId,
     trainerId,
     subscriptionId,
@@ -67,17 +66,17 @@ export class StripePaymentService implements IPaymentService {
         payment_method_types: ["card"],
         line_items: [
           {
-            price: stripePriceId,
+            price: providerPriceId,
             quantity: 1,
           },
         ],
         mode: "subscription",
         success_url: `${productionUrl}${successUrl}`,
         cancel_url: `${productionUrl}${failureUrl}`,
-        client_reference_id: userId.toString(),
+        client_reference_id: userId,
         metadata: {
-          subscriptionId: subscriptionId.toString(),
-          trainerId: trainerId.toString(),
+          subscriptionId: subscriptionId,
+          trainerId: trainerId,
         },
       });
       return { sessionId: session.id };
@@ -87,61 +86,45 @@ export class StripePaymentService implements IPaymentService {
     }
   }
 
-  async getCheckoutSession(
-    sessionId: string
-  ): Promise<Stripe.Checkout.Session> {
+  async getSession(sessionId: string): Promise<Stripe.Checkout.Session> {
     if (!sessionId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (!session) {
-      throw new validationError(SubscriptionStatus.InvalidSessionIdForStripe);
+      throw new validationError(SubscriptionStatus.InvalidSessionId);
     }
     return session;
   }
 
-  async getSubscription(
-    stripeSubscriptionId: string
-  ): Promise<Stripe.Subscription> {
-    if (!stripeSubscriptionId) {
+  async getSubscriptionById({
+    providerSubId,
+  }: {
+    providerSubId: string;
+  }): Promise<Stripe.Subscription> {
+    if (!providerSubId) {
       throw new validationError(AuthStatus.InvalidId);
     }
-    const subscription = await stripe.subscriptions.retrieve(
-      stripeSubscriptionId
-    );
+    const subscription = await stripe.subscriptions.retrieve(providerSubId);
     if (!subscription) {
       throw new validationError(AuthStatus.InvalidId);
     }
     return subscription;
   }
 
-  async cancelSubscription(
-    stripeSubscriptionId: string
-  ): Promise<Stripe.Subscription> {
-    if (!stripeSubscriptionId) {
+  async cancelSubscription({
+    providerSubId,
+  }: {
+    providerSubId: string;
+  }): Promise<Stripe.Subscription> {
+    if (!providerSubId) {
       throw new validationError(AuthStatus.InvalidId);
     }
-    const canceledSub = await stripe.subscriptions.cancel(stripeSubscriptionId);
+    const canceledSub = await stripe.subscriptions.cancel(providerSubId);
     return canceledSub;
   }
 
-  async getSubscriptionsData(
-    stripeSubscriptionId: string
-  ): Promise<SubscriptionMetadata> {
-    const stripeSub = await this.getSubscription(stripeSubscriptionId);
-    return {
-      startDate: new Date(stripeSub.current_period_start * 1000)
-        .toISOString()
-        .split("T")[0],
-      endDate: new Date(stripeSub.current_period_end * 1000)
-        .toISOString()
-        .split("T")[0],
-      isActive: stripeSub.status,
-      stripeSubscriptionStatus: stripeSub.status,
-    };
-  }
-
-  async constructStripeEvent(
+  async constructWebHookEvent(
     body: string | Buffer,
     sig: string,
     webhookSecret: string

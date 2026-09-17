@@ -7,8 +7,15 @@ export const handleConnect = (socket: Socket, io: Server) => {
     socketId: socket.id,
     user: socket.user,
   });
-  socketStore.userSocketMap.set(socket?.user?._id, socket.id);
-  socketStore.onlineUsers.add(socket?.user?._id);
+  socketStore.userSocketMap.set(socket?.user?.id, socket.id);
   const isOnline = true;
-  io.emit(EmitEvents.onlineUpdate, { userId: socket?.user?._id, isOnline });
+  const partnerIds = socketStore.openChats.get(socket?.user?.id);
+  if (partnerIds && partnerIds?.length > 0) {
+    for (const partnerId of partnerIds) {
+      io.to(partnerId).emit(EmitEvents.OnlineStatusResponse, {
+        userId: socket?.user?.id,
+        isOnline,
+      });
+    }
+  }
 };

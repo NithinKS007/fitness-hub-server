@@ -1,13 +1,7 @@
-import { ObjectId } from "mongoose";
-
-interface UserTrainerData {
-  _id: string | ObjectId;
-  fname: string;
-  lname: string;
-  email: string;
-  profilePic: string;
-  isBlocked: boolean;
-}
+import {
+  TrainerSubUILayer,
+  UserSubUILayer,
+} from "@infrastructure/mappers/subscriptionPlan.mapper";
 
 interface SubscriptionDetails {
   subPeriod: SubPeriod;
@@ -15,9 +9,9 @@ interface SubscriptionDetails {
   durationInWeeks: number;
   sessionsPerWeek: number;
   totalSessions: number;
-  stripePriceId: string;
-  stripeSubscriptionId: string;
-  stripeSubscriptionStatus: string;
+  providerPriceId: string;
+  providerSubId: string;
+  providerSubStatus: string;
 }
 
 export enum CancelSubAction {
@@ -60,7 +54,7 @@ export interface PurchaseSubscriptionDTO {
 }
 
 export interface CancelSubscriptionDTO {
-  stripeSubscriptionId: string;
+  providerSubId: string;
   action: string;
 }
 
@@ -69,50 +63,14 @@ export interface CheckSubscriptionStatusDTO {
   trainerId: string;
 }
 
-export interface UpdateSubscriptionStatusDTO {
-  stripeSubscriptionId: string;
-  status: string;
-}
-
-export interface SubscriptionRecord extends SubscriptionDetails {
-  userId: string | ObjectId;
-  trainerId: string | ObjectId;
-}
-
-export interface TrainerSubscriberRecord extends SubscriptionRecord {
-  subscribedUserData: UserTrainerData;
-}
-
-export interface UserSubscriptionRecord extends SubscriptionRecord {
-  subscribedTrainerData: UserTrainerData;
-}
-
-export interface UserMyTrainersList {
-  _id: string | ObjectId;
-  stripeSubscriptionStatus: string;
-  trainerId: string | ObjectId;
-  userId: string | ObjectId;
-  subscribedTrainerData: UserTrainerData;
-}
-
-export interface TrainerSubscribersList extends SubscriptionRecord {
-  subscribedUserData: UserTrainerData;
+export interface TrainerSubList extends TrainerSubUILayer {
   startDate: string;
   endDate: string;
-  isActive: string;
+  serviceSubStatus: string;
 }
 
-export interface UserSubscriptionsList extends SubscriptionRecord {
-  subscribedTrainerData: UserTrainerData;
+export interface UserSubList extends UserSubUILayer {
   startDate: string;
   endDate: string;
-  isActive: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-export interface Top10Trainers {
-  fname: string;
-  lname: string;
-  email: string;
+  serviceSubStatus: string;
 }

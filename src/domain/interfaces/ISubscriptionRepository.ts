@@ -4,5 +4,5 @@ import { ISubscription } from "@infrastructure/databases/models/subscription.mod
 
 export interface ISubscriptionRepository
   extends IBaseRepository<ISubscription, Subscription> {
-  findAllSubscription(trainerId: string): Promise<Subscription[]>;
+  findAll(query: Partial<Subscription>): Promise<Subscription[]>;
 }

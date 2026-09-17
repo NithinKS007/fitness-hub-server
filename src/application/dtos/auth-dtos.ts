@@ -50,3 +50,7 @@ export enum RoleType {
   User = "user",
   Admin = "admin",
 }
+
+
+const OTP_EXPIRATION_MS = 60 * 1000;
+const OTP_MAX_RESEND = 5;

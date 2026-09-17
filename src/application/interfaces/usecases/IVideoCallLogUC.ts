@@ -1,31 +1,33 @@
 import {
-  GetTrainerVideoCallLogQueryDTO,
-  GetUserVideoCallLogQueryDTO,
+  GetTrainerVideoCallLogDTO,
+  GetUserVideoCallLogDTO,
 } from "@application/dtos/query-dtos";
 import { IBaseUseCase } from "./IBase.UC";
 import {
   CreateVideoCallLogDTO,
-  TrainerVideoCallLog,
   UpdateVideoCallDurationDTO,
   UpdateVideoCallLogDTO,
-  UserVideoCallLog,
 } from "@application/dtos/video-call-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { VideoCallLog } from "@domain/entities/video-calllog.entity";
+import {
+  TRCallLogUILayer,
+  URCallLogUILayer,
+} from "@infrastructure/mappers/call-log.mapper";
 
 export interface IGetTrainerVideoCallLogUC
   extends IBaseUseCase<
-    GetTrainerVideoCallLogQueryDTO,
+    GetTrainerVideoCallLogDTO,
     {
-      trainerVideoCallLogList: TrainerVideoCallLog[];
+      trainerVideoCallLogList: TRCallLogUILayer[];
       paginationData: PaginationDTO;
     }
   > {}
 export interface IGetUserVideoCallLogUC
   extends IBaseUseCase<
-    GetUserVideoCallLogQueryDTO,
+    GetUserVideoCallLogDTO,
     {
-      userVideoCallLogList: UserVideoCallLog[];
+      userVideoCallLogList: URCallLogUILayer[];
       paginationData: PaginationDTO;
     }
   > {}

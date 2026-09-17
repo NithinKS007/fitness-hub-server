@@ -22,8 +22,8 @@ export const authenticate = async (
   try {
     const decoded = await tokenUseCase.validateToken(accessToken);
     req.user = decoded as JwtPayload;
-    const { _id } = req?.user;
-    const isBlocked = await checkUserBlockStatusUseCase.execute(_id);
+    const { id } = req?.user;
+    const isBlocked = await checkUserBlockStatusUseCase.execute(id);
     if (isBlocked) {
       next(new ForbiddenError(AuthStatus.AccountBlocked));
       return;

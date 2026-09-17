@@ -4,6 +4,8 @@ export interface IOtp extends Document {
   _id: ObjectId;
   email: string;
   otp: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const otpSchema: Schema = new Schema(

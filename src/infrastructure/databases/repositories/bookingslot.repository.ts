@@ -1,100 +1,54 @@
-import { Model } from "mongoose";
-import { PaginationDTO } from "@application/dtos/utility-dtos";
+import { FilterQuery, Model } from "mongoose";
+import { PagedResponse } from "@application/dtos/utility-dtos";
 import { IBookingSlotRepository } from "@domain/interfaces/IBookingSlotRepository";
-import { AvailableSlotsQueryDTO } from "@application/dtos/query-dtos";
+import { GetSlotsDTO } from "@application/dtos/query-dtos";
 import { BaseRepository } from "@infrastructure/databases/repositories/base.repository";
 import { paginateReq, paginateRes } from "@shared/utils/handle-pagination";
 import BookingSlotModel, { IBookingSlot } from "../models/booking-slot.model";
 import { BookingSlot } from "@domain/entities/booking-slot.entity";
+import { MongoHelper } from "../utils/mongo-helper";
 
 export class BookingSlotRepository
   extends BaseRepository<IBookingSlot, BookingSlot>
   implements IBookingSlotRepository
 {
-  constructor(model: Model<IBookingSlot> = BookingSlotModel) {
+  constructor(
+    model: Model<IBookingSlot> = BookingSlotModel,
+    private utility: MongoHelper = new MongoHelper()
+  ) {
     super(model);
   }
 
-  async getPendingSlots(
-    { trainerId, page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
-  ): Promise<{
-    availableSlotsList: BookingSlot[];
-    paginationData: PaginationDTO;
-  }> {
-    const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
-    let matchQuery: any = {};
-
-    if (fromDate) matchQuery.date = { $gte: fromDate };
-    if (toDate) matchQuery.date = { ...matchQuery.date, $lte: toDate };
-
-    const [totalCount, availableSlotsList] = await Promise.all([
-      this.model.countDocuments({
-        trainerId: trainerId,
-        ...matchQuery,
-        status: "pending",
-      }),
-      this.model
-        .find({ trainerId: trainerId, ...matchQuery, status: "pending" })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limitNumber)
-        .exec(),
-    ]);
-
-    const paginationData = paginateRes({
-      totalCount,
-      pageNumber,
-      limitNumber,
-    });
-
-    const toDomainList = availableSlotsList.map((slot) => this.toDomain(slot));
-    return {
-      availableSlotsList: toDomainList,
-      paginationData,
-    };
-  }
-
-  async getUpcomingSlots(
-    { trainerId, page, limit, fromDate, toDate }: AvailableSlotsQueryDTO
-  ): Promise<{
-    availableSlotsList: BookingSlot[];
-    paginationData: PaginationDTO;
-  }> {
+  async getSlots(dtos: GetSlotsDTO): Promise<PagedResponse<BookingSlot>> {
+    const { trainerId, page, limit, fromDate, toDate, type } = dtos;
     const { pageNumber, limitNumber, skip } = paginateReq(page, limit);
     const currentDate = new Date(new Date().setUTCHours(0, 0, 0, 0));
-    let matchQuery: any = {
-      $gte: currentDate,
+    let matchQuery:FilterQuery<IBookingSlot> = {
+      trainerId: trainerId,
+      status: "pending",
+      ...this.utility.dateFilter({ fromDate, toDate }, "date"),
     };
 
-    if (fromDate) {
-      if (fromDate < currentDate) {
-        matchQuery = {
-          ...matchQuery,
-          $gte: currentDate,
-        };
-      } else {
-        matchQuery = { ...matchQuery, $gte: fromDate };
-      }
-    }
-    if (toDate) {
-      if (toDate < currentDate) {
-        matchQuery = {
-          ...matchQuery,
-          $lte: currentDate,
-        };
-      } else {
-        matchQuery = { ...matchQuery, $lte: toDate };
-      }
+    switch (type) {
+      case "upcoming":
+        matchQuery.date =
+          fromDate && fromDate < currentDate
+            ? { ...matchQuery, $gte: currentDate }
+            : { ...matchQuery, $gte: fromDate };
+        matchQuery.date =
+          toDate && toDate < currentDate
+            ? { ...matchQuery, $lte: currentDate }
+            : { ...matchQuery, $lte: toDate };
+        break;
+
+      default:
+        break;
     }
 
     const [totalCount, availableSlotsList] = await Promise.all([
-      this.model.countDocuments({
-        trainerId: trainerId,
-        date: matchQuery,
-        status: "pending",
-      }),
+      this.model.countDocuments(matchQuery),
       this.model
-        .find({ trainerId: trainerId, date: matchQuery, status: "pending" })
+        .find(matchQuery)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNumber)
@@ -107,10 +61,10 @@ export class BookingSlotRepository
       limitNumber,
     });
 
-    const toDomainList = availableSlotsList.map((slot) => this.toDomain(slot));
+    const mappedData = availableSlotsList.map((slot) => this.toDomain(slot));
     return {
-      availableSlotsList: toDomainList,
-      paginationData,
+      data: mappedData,
+      pagination: paginationData,
     };
   }
 }
