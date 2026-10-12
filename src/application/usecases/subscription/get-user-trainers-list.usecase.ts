@@ -6,7 +6,7 @@ import { UserStatus } from "@shared/constants/index.constants";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IGetUserTrainerslistUC } from "@application/interfaces/usecases/ISubscriptionUC";
-import { UserMyTRListUILayer } from "@infrastructure/mappers/chat.mapper";
+import { UserMyTRListUILayer } from "@application/dtos/read-models";
 
 @injectable()
 export class GetUserTrainerslistUseCase implements IGetUserTrainerslistUC {

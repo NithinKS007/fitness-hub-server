@@ -3,10 +3,9 @@ import { GetPlayListsDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
 import { PlayList } from "@domain/entities/playlist.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
-import { IPlayList } from "@infrastructure/databases/models/playlist.model";
 
 export interface IPlayListRepository
-  extends IBaseRepository<IPlayList, PlayList> {
+  extends IBaseRepository<PlayList> {
   getPlaylists(
     dtos: GetPlayListsDTO
   ): Promise<{ playList: PlayList[]; paginationData: PaginationDTO }>;

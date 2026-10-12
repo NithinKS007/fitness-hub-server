@@ -33,10 +33,7 @@ export class VerifySubcriptionSessionUseCase
       throw new validationError(SubscriptionStatus.InvalidSessionId);
     }
 
-    const providerSubId =
-      typeof session.subscription === "string"
-        ? session.subscription
-        : session.subscription?.id;
+    const providerSubId = session.subscriptionId;
 
     if (!providerSubId) {
       throw new validationError("Failed");

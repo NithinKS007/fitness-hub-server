@@ -1,7 +1,7 @@
 import {
   TrainerSubUILayer,
   UserSubUILayer,
-} from "@infrastructure/mappers/subscriptionPlan.mapper";
+} from "@application/dtos/read-models";
 
 interface SubscriptionDetails {
   subPeriod: SubPeriod;

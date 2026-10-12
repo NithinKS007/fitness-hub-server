@@ -12,6 +12,9 @@ import {
   CreateSubscriptionSession,
   DeactivatePrice,
   Session,
+  PaymentSession,
+  PaymentSubscription,
+  PaymentWebhookEvent,
 } from "@application/dtos/service/payment.service";
 import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { injectable } from "inversify";
@@ -86,7 +89,7 @@ export class StripePaymentService implements IPaymentService {
     }
   }
 
-  async getSession(sessionId: string): Promise<Stripe.Checkout.Session> {
+  async getSession(sessionId: string): Promise<PaymentSession> {
     if (!sessionId) {
       throw new validationError(ApplicationStatus.AllFieldsAreRequired);
     }
@@ -94,14 +97,20 @@ export class StripePaymentService implements IPaymentService {
     if (!session) {
       throw new validationError(SubscriptionStatus.InvalidSessionId);
     }
-    return session;
+    return {
+      id: session.id,
+      subscriptionId:
+        typeof session.subscription === "string"
+          ? session.subscription
+          : session.subscription?.id,
+    };
   }
 
   async getSubscriptionById({
     providerSubId,
   }: {
     providerSubId: string;
-  }): Promise<Stripe.Subscription> {
+  }): Promise<PaymentSubscription> {
     if (!providerSubId) {
       throw new validationError(AuthStatus.InvalidId);
     }
@@ -109,30 +118,72 @@ export class StripePaymentService implements IPaymentService {
     if (!subscription) {
       throw new validationError(AuthStatus.InvalidId);
     }
-    return subscription;
+    return {
+      id: subscription.id,
+      status: subscription.status,
+      currentPeriodStart: subscription.current_period_start,
+      currentPeriodEnd: subscription.current_period_end,
+    };
   }
 
   async cancelSubscription({
     providerSubId,
   }: {
     providerSubId: string;
-  }): Promise<Stripe.Subscription> {
+  }): Promise<PaymentSubscription> {
     if (!providerSubId) {
       throw new validationError(AuthStatus.InvalidId);
     }
     const canceledSub = await stripe.subscriptions.cancel(providerSubId);
-    return canceledSub;
+    return {
+      id: canceledSub.id,
+      status: canceledSub.status,
+      currentPeriodStart: canceledSub.current_period_start,
+      currentPeriodEnd: canceledSub.current_period_end,
+    };
   }
 
   async constructWebHookEvent(
     body: string | Buffer,
     sig: string,
     webhookSecret: string
-  ): Promise<Stripe.Event> {
+  ): Promise<PaymentWebhookEvent> {
     const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     if (!event) {
       throw new validationError(SubscriptionStatus.WebHookVerificationFailed);
     }
-    return event;
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object;
+        return {
+          type: event.type,
+          data: {
+            clientReferenceId: session.client_reference_id ?? undefined,
+            subscriptionId:
+              typeof session.subscription === "string"
+                ? session.subscription
+                : session.subscription?.id,
+            metadata: session.metadata ?? undefined,
+          },
+        };
+      }
+      case "invoice.payment_failed":
+        return {
+          type: event.type,
+          data: {
+            subscriptionId:
+              typeof event.data.object.subscription === "string"
+                ? event.data.object.subscription
+                : undefined,
+          },
+        };
+      case "customer.subscription.deleted":
+        return {
+          type: event.type,
+          data: { subscriptionId: event.data.object.id },
+        };
+      default:
+        return { type: "unhandled", data: {} };
+    }
   }
 }

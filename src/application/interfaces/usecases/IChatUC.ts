@@ -17,7 +17,7 @@ import {
 import {
   TRChatListUILayer,
   URChatListUILayer,
-} from "@infrastructure/mappers/chat.mapper";
+} from "@application/dtos/read-models";
 
 export interface ICreateMessageUC extends IBaseUseCase<CreateChatDTO, Message> {}
 export interface IGetChatHistoryUC extends IBaseUseCase<FindMessageDTO, Message[]> {}

@@ -49,11 +49,11 @@ export class GetTrainerSubscribersUseCase implements IGetTrainerSubscribersUC {
         return {
           ...sub,
           ...{
-            startDate: new Date(currentSub.current_period_start * 1000)
+            startDate: new Date((currentSub.currentPeriodStart ?? 0) * 1000)
               .toISOString()
               .split("T")[0],
           },
-          endDate: new Date(currentSub.current_period_end * 1000)
+          endDate: new Date((currentSub.currentPeriodEnd ?? 0) * 1000)
             .toISOString()
             .split("T")[0],
           serviceSubStatus: currentSub.status,

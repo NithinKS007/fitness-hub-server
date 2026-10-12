@@ -3,11 +3,10 @@ import { Transactions } from "@application/dtos/financialLog-dtos";
 import { PagedResponse, PaginationDTO } from "@application/dtos/utility-dtos";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
 import { financialLog } from "@domain/entities/financialLog.entity";
-import { IFinancialLog } from "@infrastructure/databases/models/financialLog.model";
-import { EarningsOverViewUI } from "@infrastructure/mappers/chart.mappers";
+import { EarningsOverViewUI } from "@application/dtos/read-models";
 
 export interface IFinancialLogRepository
-  extends IBaseRepository<IFinancialLog, financialLog> {
+  extends IBaseRepository<financialLog> {
   getTotalServiceFee(): Promise<number>;
   getTotalCommission(): Promise<number>;
   getTotalProfit(): Promise<number>;

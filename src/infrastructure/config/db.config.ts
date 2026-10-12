@@ -18,11 +18,19 @@ export class ConnectDB implements IConnectDB {
       );
     }
     try {
-      await mongoose.connect(this.uri);
-      console.log("Database connected successfully");
+      await mongoose.connect(this.uri, {
+        maxPoolSize: Number(process.env.MONGO_MAX_POOL_SIZE ?? 20),
+        minPoolSize: Number(process.env.MONGO_MIN_POOL_SIZE ?? 5),
+        serverSelectionTimeoutMS: 10_000,
+        socketTimeoutMS: 45_000,
+      });
     } catch (error) {
       console.error("Error connecting to MongoDB:", error);
-      process.exit(1);
+      throw new DatabaseError("Unable to connect to MongoDB");
     }
+  }
+
+  async disconnectMongo(): Promise<void> {
+    await mongoose.disconnect();
   }
 }

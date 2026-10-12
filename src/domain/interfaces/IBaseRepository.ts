@@ -1,4 +1,5 @@
-export interface IBaseRepository<T, D> {
+/** Application-facing contract; persistence document types stay in adapters. */
+export interface IBaseRepository<D> {
   create(entity: Partial<D>): Promise<D>;
   findById(id: string): Promise<D | null>;
   update(id: string, entity: Partial<D>): Promise<D | null>;
@@ -6,5 +7,4 @@ export interface IBaseRepository<T, D> {
   findAll(conditions: object): Promise<D[]>;
   findOne(query: Partial<D>): Promise<D | null>;
   insertMany(entities: D[]): Promise<void>;
-  toDomain(entity: T): D;
 }

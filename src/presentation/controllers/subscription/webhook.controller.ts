@@ -7,6 +7,7 @@ import {
 } from "@shared/constants/index.constants";
 import { TYPES_SUBSCRIPTION_USECASES } from "@di/types-usecases";
 import { IWebHookHandlerUC } from "@application/interfaces/usecases/ISubscriptionUC";
+import { UnauthorizedError } from "@presentation/middlewares/error.middleware";
 
 @injectable()
 export class WebhookController {
@@ -20,13 +21,15 @@ export class WebhookController {
 
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRETKEY;
 
-    typeof sig === "string" &&
-      typeof webhookSecret === "string" &&
-      (await this.webHookHandlerUseCase.execute({
-        sig,
-        webhookSecret,
-        body: req.body,
-      }));
+    if (typeof sig !== "string" || !webhookSecret || !req.body) {
+      throw new UnauthorizedError("Invalid webhook signature");
+    }
+
+    await this.webHookHandlerUseCase.execute({
+      sig,
+      webhookSecret,
+      body: req.body,
+    });
 
     sendResponse(res, StatusCodes.OK, null, SubscriptionStatus.Created);
   }

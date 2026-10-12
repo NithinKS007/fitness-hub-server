@@ -6,10 +6,12 @@ import "reflect-metadata";
 import { socketConfig } from "@infrastructure/config/socket.config";
 import types from "../types/express";
 import { connectDB } from "@di/container-resolver";
+import { ReqLogService } from "@di/container-resolver";
 
 dotenv.config();
 
-const startServer = async () => { 
+export const startServer = async () => {
+  let shuttingDown = false;
   try {
 
     await connectDB.connectMongo();
@@ -18,11 +20,32 @@ const startServer = async () => {
     await socketService(io);
 
     const PORT = process.env.PORT;
+    const shutdown = async (signal: string) => {
+      if (shuttingDown) return;
+      shuttingDown = true;
+      ReqLogService.log(`shutdown requested: ${signal}`);
+      io.close();
+      await new Promise<void>((resolve) => httpServer.close(() => resolve()));
+      await connectDB.disconnectMongo();
+      process.exit(0);
+    };
+
+    process.once("SIGTERM", () => void shutdown("SIGTERM"));
+    process.once("SIGINT", () => void shutdown("SIGINT"));
+    process.on("unhandledRejection", (reason) => {
+      ReqLogService.error("unhandled promise rejection", reason instanceof Error ? reason : undefined);
+      void shutdown("unhandledRejection");
+    });
+    process.on("uncaughtException", (error) => {
+      ReqLogService.error("uncaught exception", error);
+      void shutdown("uncaughtException");
+    });
+
     httpServer.listen(PORT, () => {
-      console.log(`Server running on port ${process.env.PORT}`);
+      ReqLogService.log(`server listening on port ${PORT}`);
     });
   } catch (error) {
-    console.log("Error starting the server:", error);
+    ReqLogService.error("Error starting the server", error instanceof Error ? error : undefined);
     process.exit(1);
   }
 };

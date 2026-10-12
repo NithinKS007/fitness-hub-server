@@ -6,7 +6,7 @@ import {
 } from "@shared/constants/index.constants";
 import { sendResponse } from "@shared/utils/http.response";
 
-const createRateLimiter = (windowMs: number, maxRequests: number) =>
+export const createRateLimiter = (windowMs: number, maxRequests: number) =>
   rateLimit({
     windowMs,
     max: maxRequests,
@@ -23,5 +23,11 @@ const createRateLimiter = (windowMs: number, maxRequests: number) =>
   });
 
 const rateLimiter = createRateLimiter(1 * 60 * 1000, 150);
+
+// These endpoints are cheap to call but expensive to abuse. The default
+// memory store is safe for a single process; use a shared store when scaling
+// horizontally (see README deployment notes).
+export const authRateLimiter = createRateLimiter(15 * 60 * 1000, 30);
+export const paymentRateLimiter = createRateLimiter(60 * 1000, 20);
 
 export default rateLimiter;

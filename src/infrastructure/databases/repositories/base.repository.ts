@@ -2,7 +2,7 @@ import mongoose, { Model, Document } from "mongoose";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
 
 export abstract class BaseRepository<T extends Document, D>
-  implements IBaseRepository<T, D>
+  implements IBaseRepository<D>
 {
   protected readonly model: Model<T>;
   constructor(model: Model<T>) {

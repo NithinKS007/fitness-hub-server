@@ -5,10 +5,9 @@ import {
 import { PagedResponse } from "@application/dtos/utility-dtos";
 import { Workout } from "@domain/entities/workout.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
-import { IWorkout } from "@infrastructure/databases/models/workout.model";
-import { WeightLiftedByDateUILayer } from "@infrastructure/mappers/workout.mapper";
+import { WeightLiftedByDateUILayer } from "@application/dtos/read-models";
 
-export interface IWorkoutRepository extends IBaseRepository<IWorkout, Workout> {
+export interface IWorkoutRepository extends IBaseRepository<Workout> {
   getWorkouts(dtos: GetWorkoutsDTO): Promise<PagedResponse<Workout>>;
   getWeightLiftedByDate(
     dtos: GetWeightLiftedByDateDTO

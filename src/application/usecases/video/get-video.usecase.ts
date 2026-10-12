@@ -6,7 +6,7 @@ import { GetVideosDTO } from "@application/dtos/query-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IGetVideosUC } from "@application/interfaces/usecases/IVideoUC";
-import { VideoUILayer } from "@infrastructure/mappers/video.mapper";
+import { VideoUILayer } from "@application/dtos/read-models";
 
 /**
  * Purpose: Fetch videos for a specific trainer with pagination, search, filters, and optional privacy setting.

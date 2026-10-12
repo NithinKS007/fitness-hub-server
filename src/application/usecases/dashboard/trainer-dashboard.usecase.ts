@@ -9,7 +9,7 @@ import { TrainerDashboardStats } from "@application/dtos/trainer-dtos";
 import {
   TRSubPeriodWiseCountUI,
   TRSubStatusWiseCountUI,
-} from "@infrastructure/mappers/chart.mappers";
+} from "@application/dtos/read-models";
 import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";

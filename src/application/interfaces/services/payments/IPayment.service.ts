@@ -1,10 +1,12 @@
-import Stripe from "stripe";
 import {
   CreatePrice,
   CreateProduct,
   CreateSubscriptionSession,
   DeactivatePrice,
   Session,
+  PaymentSession,
+  PaymentSubscription,
+  PaymentWebhookEvent,
 } from "@application/dtos/service/payment.service";
 
 export interface IPaymentService {
@@ -14,20 +16,20 @@ export interface IPaymentService {
   createSession(
     createSubscriptionSession: CreateSubscriptionSession
   ): Promise<Session>;
-  getSession(sessionId: string): Promise<Stripe.Checkout.Session>;
+  getSession(sessionId: string): Promise<PaymentSession>;
   getSubscriptionById({
     providerSubId,
   }: {
     providerSubId: string;
-  }): Promise<Stripe.Subscription>;
+  }): Promise<PaymentSubscription>;
   cancelSubscription({
     providerSubId,
   }: {
     providerSubId: string;
-  }): Promise<Stripe.Subscription>;
+  }): Promise<PaymentSubscription>;
   constructWebHookEvent(
     body: string | Buffer,
     sig: string,
     webhookSecret: string
-  ): Promise<Stripe.Event>;
+  ): Promise<PaymentWebhookEvent>;
 }

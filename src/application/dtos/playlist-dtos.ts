@@ -1,4 +1,3 @@
-import { ObjectId } from "mongoose";
 
 export interface CreatePlayListDTO {
   trainerId: string;
@@ -21,6 +20,6 @@ export interface EditPlayListDTO {
 }
 
 export interface VideoPerPlayList {
-  playListId: ObjectId;
+  playListId: string;
   videoCount: number;
 }

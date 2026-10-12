@@ -6,14 +6,13 @@ import {
 import { PagedResponse } from "@application/dtos/utility-dtos";
 import { Appointment } from "@domain/entities/appointment.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
-import { IAppointment } from "@infrastructure/databases/models/appointment.model";
 import {
   AppointmentsTRUILayer,
   AppointmentsURUILayer,
-} from "@infrastructure/mappers/appointment.mapper";
+} from "@application/dtos/read-models";
 
 export interface IAppointmentRepository
-  extends IBaseRepository<IAppointment, Appointment> {
+  extends IBaseRepository<Appointment> {
   getBookingRequests(
     dtos: GetBookingRequestsDTO
   ): Promise<PagedResponse<AppointmentsTRUILayer>>;

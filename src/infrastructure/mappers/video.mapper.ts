@@ -4,7 +4,7 @@ import { BaseMapper } from "./BaseMapper";
 interface BaseVideo {
   title: string;
   description: string;
-  duration: Number;
+  duration: number;
   thumbnail: string;
   video: string;
   privacy: boolean;

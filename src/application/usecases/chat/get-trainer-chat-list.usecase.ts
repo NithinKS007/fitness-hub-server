@@ -8,7 +8,7 @@ import { GetTrainerChatListDTO } from "@application/dtos/query-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IGetTrainerChatListUC } from "@application/interfaces/usecases/IChatUC";
-import { TRChatListUILayer } from "@infrastructure/mappers/chat.mapper";
+import { TRChatListUILayer } from "@application/dtos/read-models";
 
 @injectable()
 export class GetTrainerChatListUseCase implements IGetTrainerChatListUC {

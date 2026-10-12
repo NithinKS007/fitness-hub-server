@@ -10,18 +10,33 @@ import { ReqLogService, webhookController } from "@di/container-resolver";
 import { errorMiddleware } from "@presentation/middlewares/error.middleware";
 import apiRoutes from "@presentation/routes/test/api.routes";
 import { asyncHandler } from "@shared/utils/async-handler";
+import { requestIdMiddleware } from "@presentation/middlewares/request-id.middleware";
 
 dotenv.config();
 
 const app = express();
-const allowedOrigins = process.env.CLIENT_ORIGINS;
+const allowedOrigins = new Set(
+  (process.env.CLIENT_ORIGINS ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+);
 
+app.disable("x-powered-by");
+app.set("trust proxy", process.env.TRUST_PROXY === "true" ? 1 : false);
 app.use(helmet());
+app.use(requestIdMiddleware);
 app.use("/api", rateLimiter);
 app.use(ReqLogService.streamLog());
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.has(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error("Origin not allowed by CORS"));
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
@@ -34,7 +49,7 @@ app.post(
   express.raw({ type: "application/json" }),
   asyncHandler(webhookController.handle.bind(webhookController))
 );
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: "10mb", strict: true }));
 app.use(cookieParser());
 app.use("/api", apiRoutes);
 app.use(notFoundMiddleware);

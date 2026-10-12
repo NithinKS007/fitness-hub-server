@@ -12,15 +12,14 @@ import {
 import { PagedResponse } from "@application/dtos/utility-dtos";
 import { Chat } from "@domain/entities/chat.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
-import { IChat } from "@infrastructure/databases/models/chat.model";
 import {
   TRChatListUILayer,
   URChatListUILayer,
   UserMyTRListUILayer,
-} from "@infrastructure/mappers/chat.mapper";
+} from "@application/dtos/read-models";
 
 export interface IChatRepository
-  extends IBaseRepository<IChat, Chat> {
+  extends IBaseRepository<Chat> {
   findChat({
     userId,
     trainerId,

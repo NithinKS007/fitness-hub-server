@@ -1,4 +1,4 @@
-import { WeightLiftedByDateUILayer } from "@infrastructure/mappers/workout.mapper";
+import { WeightLiftedByDateUILayer } from "@application/dtos/read-models";
 
 export interface RepSet {
   kg: number;

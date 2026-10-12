@@ -15,8 +15,8 @@ import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
 import { IWebHookHandlerUC } from "@application/interfaces/usecases/ISubscriptionUC";
-import Stripe from "stripe";
 import { Subscription } from "@domain/entities/subscription.entity";
+import { PaymentWebhookEvent } from "@application/dtos/service/payment.service";
 
 @injectable()
 export class WebHookHandlerUseCase implements IWebHookHandlerUC {
@@ -94,20 +94,20 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
   }
 
   private async handleCheckoutSessionCompleted(
-    event: Stripe.CheckoutSessionCompletedEvent
+    event: Extract<PaymentWebhookEvent, { type: "checkout.session.completed" }>
   ): Promise<void> {
-    const session = event?.data?.object;
+    const session = event.data;
 
-    if (!session || !session.client_reference_id || !session.metadata) {
+    if (!session.clientReferenceId || !session.metadata) {
       throw new validationError(SubscriptionStatus.NotFound);
     }
 
-    const userId = session?.client_reference_id;
+    const userId = session.clientReferenceId;
     const subscriptionId = session.metadata?.subscriptionId;
     const trainerId = session?.metadata?.trainerId;
-    const providerSubId = session?.subscription;
+    const providerSubId = session.subscriptionId;
 
-    if (typeof providerSubId !== "string") {
+    if (!providerSubId) {
       throw new validationError(SubscriptionStatus.InvalidSubProviderId);
     }
 
@@ -202,10 +202,9 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
   }
 
   private async handleInvoicePaymentFailed(
-    event: Stripe.InvoicePaymentFailedEvent
+    event: Extract<PaymentWebhookEvent, { type: "invoice.payment_failed" }>
   ): Promise<void> {
-    const invoice = event.data.object;
-    const providerSubId = invoice.subscription;
+    const providerSubId = event.data.subscriptionId;
 
     if (!providerSubId || typeof providerSubId !== "string") {
       throw new NotFoundError("Not found");
@@ -245,16 +244,10 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
   }
 
   private async handleSubscriptionDeleted(
-    event: Stripe.CustomerSubscriptionDeletedEvent
+    event: Extract<PaymentWebhookEvent, { type: "customer.subscription.deleted" }>
   ): Promise<void> {
-    const subscription = event.data.object;
-
-    if (!subscription) {
-      throw new NotFoundError("Not found");
-    }
-
     const userSubPlan = await this.userSubscriptionPlanRepository.findOne({
-      providerSubId: subscription.id,
+      providerSubId: event.data.subscriptionId,
     });
 
     if (!userSubPlan) {
@@ -278,13 +271,13 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
     });
 
     await this.userSubscriptionPlanRepository.update(id, {
-      providerSubId: subscription.id,
+      providerSubId: event.data.subscriptionId,
       providerSubStatus: "canceled",
     });
 
     await this.SendSubscriptionCancelledEmail(userId, trainerId);
     console.log(
-      `Subscription ${subscription.id} cancelled due to customer cancellation`
+      `Subscription ${event.data.subscriptionId} cancelled due to customer cancellation`
     );
   }
 

@@ -58,8 +58,9 @@ export class LoggerService implements ILoggerService {
   }
 
   streamLog(): Handler {
+    morgan.token("request-id", (req: any) => req.requestId ?? "-");
     return morgan(
-      ":method :url :status :res[content-length] - :response-time ms",
+      ":request-id :method :url :status :res[content-length] - :response-time ms",
       {
         stream: {
           write: (message: string) => {

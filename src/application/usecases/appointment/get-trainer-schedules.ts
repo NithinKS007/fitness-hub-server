@@ -9,7 +9,7 @@ import {
 } from "@shared/constants/index.constants";
 import { IAppointmentRepository } from "@domain/interfaces/IAppointmentRepository";
 import { GetTrainerSchedulesDTO } from "@application/dtos/query-dtos";
-import { AppointmentsTRUILayer } from "@infrastructure/mappers/appointment.mapper";
+import { AppointmentsTRUILayer } from "@application/dtos/read-models";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IGetTrainerSchedulesUC } from "@application/interfaces/usecases/IAppointmentUC";

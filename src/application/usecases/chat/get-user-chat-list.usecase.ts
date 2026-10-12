@@ -8,7 +8,7 @@ import { GetUserChatListDTO } from "@application/dtos/query-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IGetUserChatListUC } from "@application/interfaces/usecases/IChatUC";
-import { URChatListUILayer } from "@infrastructure/mappers/chat.mapper";
+import { URChatListUILayer } from "@application/dtos/read-models";
 
 @injectable()
 export class GetUserChatListUseCase implements IGetUserChatListUC {

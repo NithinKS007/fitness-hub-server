@@ -14,7 +14,7 @@ import {
 } from "@application/dtos/subscription-dtos";
 import { Subscription } from "@domain/entities/subscription.entity";
 import { UserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
-import { UserMyTRListUILayer } from "@infrastructure/mappers/chat.mapper";
+import { UserMyTRListUILayer } from "@application/dtos/read-models";
 
 export interface ICancelSubscriptionUC
   extends IBaseUseCase<
