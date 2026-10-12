@@ -5,13 +5,13 @@ interface BaseTRPeriodWiseCount {
   value: number;
 }
 
-export type TRSubPeriodWiseCountDB = BaseTRPeriodWiseCount & {
+export interface TRSubPeriodWiseCountDB extends BaseTRPeriodWiseCount {
   _id: string;
-};
+}
 
-export type TRSubPeriodWiseCountUI = BaseTRPeriodWiseCount & {
+export interface TRSubPeriodWiseCountUI extends BaseTRPeriodWiseCount {
   id: string;
-};
+}
 
 export interface BaseTRSubStatusWiseCount {
   total: number;
@@ -19,13 +19,13 @@ export interface BaseTRSubStatusWiseCount {
   canceled: number;
 }
 
-export type TRSubStatusWiseCountDB = BaseTRSubStatusWiseCount & {
+export interface TRSubStatusWiseCountDB extends BaseTRSubStatusWiseCount {
   _id: Date;
-};
+}
 
-export type TRSubStatusWiseCountUI = BaseTRSubStatusWiseCount & {
+export interface TRSubStatusWiseCountUI extends BaseTRSubStatusWiseCount {
   id: string;
-};
+}
 
 export interface BaseEarningsOverView {
   serviceFee: number;
@@ -33,8 +33,12 @@ export interface BaseEarningsOverView {
   totalProfit: number;
 }
 
-export type EarningsOverViewDB = BaseEarningsOverView & { _id: Date };
-export type EarningsOverViewUI = BaseEarningsOverView & { id: string };
+export interface EarningsOverViewDB extends BaseEarningsOverView {
+  _id: Date;
+}
+export interface EarningsOverViewUI extends BaseEarningsOverView {
+  id: string;
+}
 
 export class TRSubPeriodWiseCountMapper extends BaseMapper<
   TRSubPeriodWiseCountDB,

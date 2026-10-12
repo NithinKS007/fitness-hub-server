@@ -26,7 +26,10 @@ export class WorkoutRepository
     private weightLiftedByDateMapper: WeightLiftedByDateMapper = new WeightLiftedByDateMapper(),
     private utility: MongoHelper = new MongoHelper()
   ) {
-    super(model);
+    super(
+      model,
+      "_id userId date bodyPart exerciseName kg reps time isCompleted createdAt updatedAt"
+    );
   }
 
   private async aggregateWorkoutStats({
@@ -84,6 +87,9 @@ export class WorkoutRepository
     const [workoutList, totalCount] = await Promise.all([
       this.model
         .find(matchQuery)
+        .select(
+          "_id userId date bodyPart exerciseName kg reps time isCompleted createdAt updatedAt"
+        )
         .sort({ date: 1 })
         .skip(skip)
         .limit(limitNumber)

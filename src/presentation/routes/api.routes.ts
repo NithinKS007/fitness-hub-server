@@ -11,6 +11,8 @@ import chatRoutes from "./chat.routes"
 import subscriptionRoutes from "./subscription.routes"
 import userRoutes from "./user.routes"
 import authRoutes from "./auth.routes"
+import dashboardRoutes from "./dashboard.routes"
+import revenueRoutes from "./revenue.routes"
 const router = express.Router();
 
 router.use("/v1",workoutRoutes)
@@ -25,5 +27,7 @@ router.use("/v1",chatRoutes)
 router.use("/v1",subscriptionRoutes)
 router.use("/v1",userRoutes)
 router.use("/v1",authRoutes)
+router.use("/v1",dashboardRoutes)
+router.use("/v1",revenueRoutes)
 
 export default router

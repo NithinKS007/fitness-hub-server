@@ -14,3 +14,5 @@ router.use(authenticate);
 router.get("/admins/dashboard",(authorizeRole(["admin"])),asyncHandler(adminDashboardController.handle.bind(adminDashboardController)));
 router.get("/trainers/dashboard",authorizeRole(["trainer"]),asyncHandler(trainerDashboardController.handle.bind(trainerDashboardController)));
 router.get("/users/dashBoard",authorizeRole(["user"]),asyncHandler(userDashboardController.handle.bind(userDashboardController)));
+
+export default router;

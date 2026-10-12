@@ -12,10 +12,12 @@ export class VideoPlayListRepository
   implements IVideoPlayListRepository
 {
   constructor(model: Model<IVideoPlaylist> = VideoPlayListModel) {
-    super(model);
+    super(model, "_id videoId playListId createdAt updatedAt");
   }
 
   async deleteMany(deletePlayLists: DeleteVideoPlaylistDTO[]): Promise<void> {
-    await this.model.deleteMany({ videoId: { $in: deletePlayLists } });
+    await this.model.deleteMany({
+      videoId: { $in: deletePlayLists.map((playlist) => playlist.videoId) },
+    });
   }
 }

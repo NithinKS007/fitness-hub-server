@@ -45,23 +45,10 @@ export class UserSubscriptionPlanRepository
     model: Model<IUserSubscriptionPlan> = UserSubscriptionPlanModel,
     private utility: MongoHelper = new MongoHelper()
   ) {
-    super(model);
-  }
-
-  private projSubPlan() {
-    return {
-      _id: 1,
-      durationInWeeks: 1,
-      price: 1,
-      sessionsPerWeek: 1,
-      providerPriceId: 1,
-      providerSubId: 1,
-      providerSubStatus: 1,
-      subPeriod: 1,
-      totalSessions: 1,
-      trainerId: 1,
-      userId: 1,
-    };
+    super(
+      model,
+      "_id userId trainerId subPeriod price durationInWeeks sessionsPerWeek totalSessions providerPriceId providerSubId providerSubStatus createdAt updatedAt"
+    );
   }
 
   private async countSubscribersByStatus(
@@ -113,8 +100,18 @@ export class UserSubscriptionPlanRepository
       { $match: matchQuery },
     ];
 
-    const projFields = {
-      ...this.projSubPlan(),
+    const userSubscriptionsProjection = {
+      _id: 1,
+      durationInWeeks: 1,
+      price: 1,
+      sessionsPerWeek: 1,
+      providerPriceId: 1,
+      providerSubId: 1,
+      providerSubStatus: 1,
+      subPeriod: 1,
+      totalSessions: 1,
+      trainerId: 1,
+      userId: 1,
       ...this.utility.trainerProj(),
     };
 
@@ -126,7 +123,7 @@ export class UserSubscriptionPlanRepository
         .aggregate([
           ...commonPipeline,
           {
-            $project: projFields,
+            $project: userSubscriptionsProjection,
           },
         ])
         .sort({ createdAt: -1 })
@@ -181,8 +178,18 @@ export class UserSubscriptionPlanRepository
       { $match: matchQuery },
     ];
 
-    const projFields = {
-      ...this.projSubPlan(),
+    const trainerSubscriptionsProjection = {
+      _id: 1,
+      durationInWeeks: 1,
+      price: 1,
+      sessionsPerWeek: 1,
+      providerPriceId: 1,
+      providerSubId: 1,
+      providerSubStatus: 1,
+      subPeriod: 1,
+      totalSessions: 1,
+      trainerId: 1,
+      userId: 1,
       ...this.utility.userProj(),
     };
     const [totalCount, trainerSubscribers] = await Promise.all([
@@ -194,7 +201,7 @@ export class UserSubscriptionPlanRepository
         .aggregate([
           ...commonPipeline,
           {
-            $project: projFields,
+            $project: trainerSubscriptionsProjection,
           },
         ])
         .sort({ createdAt: -1 })
@@ -227,6 +234,9 @@ export class UserSubscriptionPlanRepository
         userId: this.parseId(userId),
         trainerId: this.parseId(trainerId),
       })
+      .select(
+        "_id userId trainerId subPeriod price durationInWeeks sessionsPerWeek totalSessions providerPriceId providerSubId providerSubStatus createdAt updatedAt"
+      )
       .sort({ updatedAt: -1 });
 
     return result ? this.toDomain(result) : null;

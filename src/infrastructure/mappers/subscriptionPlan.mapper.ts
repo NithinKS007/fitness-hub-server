@@ -1,6 +1,5 @@
 import { ObjectId } from "mongoose";
 import { BaseMapper } from "./BaseMapper";
-import { SubPeriod } from "@domain/entities/subscription.entity";
 
 interface BaseTop5Trainers {
   totalActiveSubscriptions: number;
@@ -10,13 +9,13 @@ interface BaseTop5Trainers {
   lname: string;
   email: string;
 }
-export type Top5TrainesDBayer = BaseTop5Trainers & {
+export interface Top5TrainesDBayer extends BaseTop5Trainers {
   _id: ObjectId;
-};
+}
 
-export type Top5TrainesUILayer = BaseTop5Trainers & {
+export interface Top5TrainesUILayer extends BaseTop5Trainers {
   id: string;
-};
+}
 
 export class Top5TrainersMapper extends BaseMapper<
   Top5TrainesDBayer,
@@ -39,7 +38,7 @@ export class Top5TrainersMapper extends BaseMapper<
 }
 
 interface BaseSubscriptionPlan {
-  subPeriod: SubPeriod;
+  subPeriod: string;
   price: number;
   durationInWeeks: number;
   sessionsPerWeek: number;
@@ -57,30 +56,30 @@ interface BaseUser {
   isBlocked: boolean;
 }
 
-type BaseUserDB = BaseUser & {
+interface BaseUserDB extends BaseUser {
   _id: ObjectId;
-};
-export type BaseUserUI = BaseUser & {
+}
+export interface BaseUserUI extends BaseUser {
   id: string;
-};
+}
 
-type SubscriptionDB = BaseSubscriptionPlan & {
+interface SubscriptionDB extends BaseSubscriptionPlan {
   userId: ObjectId;
   trainerId: ObjectId;
-};
+}
 
-export type SubscriptionUI = BaseSubscriptionPlan & {
+export interface SubscriptionUI extends BaseSubscriptionPlan {
   userId: string;
   trainerId: string;
-};
+}
 
-export type UserSubsDBLayer = SubscriptionDB & {
+export interface UserSubsDBLayer extends SubscriptionDB {
   trainerData: BaseUserDB;
-};
+}
 
-export type UserSubUILayer = SubscriptionUI & {
+export interface UserSubUILayer extends SubscriptionUI {
   trainerData: BaseUserUI;
-};
+}
 
 export class UserSubMapper extends BaseMapper<UserSubsDBLayer, UserSubUILayer> {
   mapToDomain(data: UserSubsDBLayer): UserSubUILayer {
@@ -110,13 +109,13 @@ export class UserSubMapper extends BaseMapper<UserSubsDBLayer, UserSubUILayer> {
   }
 }
 
-export type TrainerSubsDBLayer = SubscriptionDB & {
+export interface TrainerSubsDBLayer extends SubscriptionDB {
   userData: BaseUserDB;
-};
+}
 
-export type TrainerSubUILayer = SubscriptionUI & {
+export interface TrainerSubUILayer extends SubscriptionUI {
   userData: BaseUserUI;
-};
+}
 
 export class TrainerSubMapper extends BaseMapper<
   TrainerSubsDBLayer,

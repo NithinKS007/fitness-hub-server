@@ -1,1 +1,6 @@
-export type LogLevel = "info" | "error" | "debug" | "warn";
+export enum LogLevel {
+  Info = "info",
+  Error = "error",
+  Debug = "debug",
+  Warn = "warn",
+}

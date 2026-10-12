@@ -10,9 +10,9 @@ export class OtpRepository
   implements IOtpRepository
 {
   constructor(model: Model<IOtp> = OtpModel) {
-    super(model);
+    super(model, "_id email otp createdAt updatedAt");
   }
-  async create({ email, otp }: OtpDTO): Promise<Otp> {
+  public create = async ({ email, otp }: OtpDTO): Promise<Otp> => {
     const otpData = await this.model.findOneAndUpdate(
       { email },
       { otp },
@@ -20,7 +20,7 @@ export class OtpRepository
         new: true,
         upsert: true,
       }
-    );
-    return this.toDomain(otpData)
-  }
+    ).select("_id email otp createdAt updatedAt");
+    return this.toDomain(otpData);
+  };
 }

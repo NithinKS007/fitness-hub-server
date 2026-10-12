@@ -16,7 +16,10 @@ import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
 import { IWebHookHandlerUC } from "@application/interfaces/usecases/ISubscriptionUC";
 import { Subscription } from "@domain/entities/subscription.entity";
-import { PaymentWebhookEvent } from "@application/dtos/service/payment.service";
+import {
+  PaymentWebhookData,
+  PaymentWebhookEventType,
+} from "@application/dtos/service/payment.service";
 
 @injectable()
 export class WebHookHandlerUseCase implements IWebHookHandlerUC {
@@ -94,9 +97,9 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
   }
 
   private async handleCheckoutSessionCompleted(
-    event: Extract<PaymentWebhookEvent, { type: "checkout.session.completed" }>
+    event: PaymentWebhookData
   ): Promise<void> {
-    const session = event.data;
+    const session = event;
 
     if (!session.clientReferenceId || !session.metadata) {
       throw new validationError(SubscriptionStatus.NotFound);
@@ -202,9 +205,9 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
   }
 
   private async handleInvoicePaymentFailed(
-    event: Extract<PaymentWebhookEvent, { type: "invoice.payment_failed" }>
+    event: PaymentWebhookData
   ): Promise<void> {
-    const providerSubId = event.data.subscriptionId;
+    const providerSubId = event.subscriptionId;
 
     if (!providerSubId || typeof providerSubId !== "string") {
       throw new NotFoundError("Not found");
@@ -244,10 +247,13 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
   }
 
   private async handleSubscriptionDeleted(
-    event: Extract<PaymentWebhookEvent, { type: "customer.subscription.deleted" }>
+    event: PaymentWebhookData
   ): Promise<void> {
+    if (!event.subscriptionId) {
+      throw new NotFoundError("sub not found");
+    }
     const userSubPlan = await this.userSubscriptionPlanRepository.findOne({
-      providerSubId: event.data.subscriptionId,
+      providerSubId: event.subscriptionId,
     });
 
     if (!userSubPlan) {
@@ -271,13 +277,13 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
     });
 
     await this.userSubscriptionPlanRepository.update(id, {
-      providerSubId: event.data.subscriptionId,
+      providerSubId: event.subscriptionId,
       providerSubStatus: "canceled",
     });
 
     await this.SendSubscriptionCancelledEmail(userId, trainerId);
     console.log(
-      `Subscription ${event.data.subscriptionId} cancelled due to customer cancellation`
+      `Subscription ${event.subscriptionId} cancelled due to customer cancellation`
     );
   }
 
@@ -297,14 +303,14 @@ export class WebHookHandlerUseCase implements IWebHookHandlerUC {
       webhookSecret
     );
     switch (event.type) {
-      case "checkout.session.completed":
-        await this.handleCheckoutSessionCompleted(event);
+      case PaymentWebhookEventType.CheckoutSessionCompleted:
+        await this.handleCheckoutSessionCompleted(event.data);
         break;
-      case "invoice.payment_failed":
-        await this.handleInvoicePaymentFailed(event);
+      case PaymentWebhookEventType.InvoicePaymentFailed:
+        await this.handleInvoicePaymentFailed(event.data);
         break;
-      case "customer.subscription.deleted":
-        await this.handleSubscriptionDeleted(event);
+      case PaymentWebhookEventType.CustomerSubscriptionDeleted:
+        await this.handleSubscriptionDeleted(event.data);
         break;
       default:
         console.log(`Unhandled event type: ${event.type}`);

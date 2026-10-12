@@ -40,7 +40,7 @@ const playListSchema: Schema = new Schema(
       default: 0,
       required: true,
       validate: {
-        validator: function (value: number) {
+        validator: (value: number) => {
           return Number.isInteger(value) && value >= 0;
         },
         message: "Video count must be a non-negative integer",

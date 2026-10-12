@@ -4,16 +4,19 @@ import { socketService } from "@infrastructure/services/socket/socket.service";
 import { createServer } from "http";
 import "reflect-metadata";
 import { socketConfig } from "@infrastructure/config/socket.config";
-import types from "../types/express";
 import { connectDB } from "@di/container-resolver";
 import { ReqLogService } from "@di/container-resolver";
-
+import {
+  connectRedis,
+  disconnectRedis,
+} from "@infrastructure/config/redis.config";
 dotenv.config();
 
 export const startServer = async () => {
   let shuttingDown = false;
   try {
 
+    await connectRedis();
     await connectDB.connectMongo();
     const httpServer = createServer(app);
     const io = await socketConfig(httpServer);
@@ -27,6 +30,7 @@ export const startServer = async () => {
       io.close();
       await new Promise<void>((resolve) => httpServer.close(() => resolve()));
       await connectDB.disconnectMongo();
+      await disconnectRedis();
       process.exit(0);
     };
 

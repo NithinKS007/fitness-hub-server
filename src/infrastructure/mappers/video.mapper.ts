@@ -16,26 +16,26 @@ interface BasePlayList {
   privacy: boolean;
 }
 
-type PlayListDBLayer = BasePlayList & {
+interface PlayListDBLayer extends BasePlayList {
   _id: ObjectId;
   trainerId: ObjectId;
-};
-type PlayListUILayer = BasePlayList & {
+}
+interface PlayListUILayer extends BasePlayList {
   id: string;
   trainerId: string;
-};
+}
 
-type VideoDBLayer = BaseVideo & {
+interface VideoDBLayer extends BaseVideo {
   _id: ObjectId;
   trainerId: ObjectId;
   playLists: PlayListDBLayer[];
-};
+}
 
-export type VideoUILayer = BaseVideo & {
+export interface VideoUILayer extends BaseVideo {
   id: string;
   trainerId: string;
   playLists: PlayListUILayer[];
-};
+}
 
 export class VideoMapper extends BaseMapper<VideoDBLayer, VideoUILayer> {
   mapToDomain(data: VideoDBLayer): VideoUILayer {

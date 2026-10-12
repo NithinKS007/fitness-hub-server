@@ -11,7 +11,7 @@ export class ConnectDB implements IConnectDB {
     this.uri = uri;
   }
 
-  async connectMongo(): Promise<void> {
+  public connectMongo = async (): Promise<void> => {
     if (!this.uri) {
       throw new DatabaseError(
         "Database URI is not defined in environment variables"
@@ -28,9 +28,9 @@ export class ConnectDB implements IConnectDB {
       console.error("Error connecting to MongoDB:", error);
       throw new DatabaseError("Unable to connect to MongoDB");
     }
-  }
+  };
 
-  async disconnectMongo(): Promise<void> {
+  public disconnectMongo = async (): Promise<void> => {
     await mongoose.disconnect();
-  }
+  };
 }

@@ -7,7 +7,7 @@ export interface CreatePrice {
   productId: string;
   amount: number;
   currency: string;
-  interval: "year" | "month";
+  interval: string;
   intervalCount: number;
 }
 
@@ -39,21 +39,26 @@ export interface PaymentSubscription {
   currentPeriodEnd?: number;
 }
 
-export type PaymentWebhookEvent =
-  | {
-      type: "checkout.session.completed";
-      data: {
-        clientReferenceId?: string;
-        subscriptionId?: string;
-        metadata?: { subscriptionId?: string; trainerId?: string };
-      };
-    }
-  | {
-      type: "invoice.payment_failed";
-      data: { subscriptionId?: string };
-    }
-  | {
-      type: "customer.subscription.deleted";
-      data: { subscriptionId: string };
-    }
-  | { type: "unhandled"; data: unknown };
+export enum PaymentWebhookEventType {
+  CheckoutSessionCompleted = "checkout.session.completed",
+  InvoicePaymentFailed = "invoice.payment_failed",
+  CustomerSubscriptionDeleted = "customer.subscription.deleted",
+  Unhandled = "unhandled",
+}
+
+export interface PaymentWebhookMetadata {
+  subscriptionId?: string;
+  trainerId?: string;
+}
+
+export interface PaymentWebhookData {
+  clientReferenceId?: string;
+  subscriptionId?: string;
+  metadata?: PaymentWebhookMetadata;
+}
+
+/** Provider-neutral webhook event passed from an adapter to the application. */
+export interface PaymentWebhookEvent {
+  type: PaymentWebhookEventType;
+  data: PaymentWebhookData;
+}

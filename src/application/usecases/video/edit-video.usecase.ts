@@ -90,7 +90,9 @@ export class EditVideoUseCase implements IEditVideoUC {
       const videoIdsToDelete = videoPlayListDocs.map((list) => list.videoId);
 
       this.videoPlayListRepository.insertMany(videoPlayListDocs as any),
-        await this.videoPlayListRepository.deleteMany(videoIdsToDelete);
+        await this.videoPlayListRepository.deleteMany(
+          videoIdsToDelete.map((videoId) => ({ videoId }))
+        );
 
       const videoCountWithPlayList =
         await this.playListRepository.getPlaylistCounts(playLists);

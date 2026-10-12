@@ -8,7 +8,7 @@ import rateLimiter from "@presentation/middlewares/ratelimit.middleware";
 import { notFoundMiddleware } from "@presentation/middlewares/notfound.middleware";
 import { ReqLogService, webhookController } from "@di/container-resolver";
 import { errorMiddleware } from "@presentation/middlewares/error.middleware";
-import apiRoutes from "@presentation/routes/test/api.routes";
+import apiRoutes from "@presentation/routes/api.routes";
 import { asyncHandler } from "@shared/utils/async-handler";
 import { requestIdMiddleware } from "@presentation/middlewares/request-id.middleware";
 

@@ -10,28 +10,28 @@ interface UserData {
   profilePic: string;
   isBlocked: boolean;
 }
-type UserDataDB = UserData & {
+interface UserDataDB extends UserData {
   _id: ObjectId;
-};
+}
 
-type UserDataUI = UserData & {
+interface UserDataUI extends UserData {
   id: string;
-};
+}
 
-export type URChatListDBLayer = BaseChatListDBLayer & {
+export interface URChatListDBLayer extends BaseChatListDBLayer {
   trainerData: UserDataDB
-};
-export type URChatListUILayer = BaseChatListUILayer & {
+}
+export interface URChatListUILayer extends BaseChatListUILayer {
   trainerData: UserDataUI
-};
+}
 
-export type TRChatListDBLayer = BaseChatListDBLayer & {
+export interface TRChatListDBLayer extends BaseChatListDBLayer {
   userData: UserDataDB
-};
+}
 
-export type TRChatListUILayer = BaseChatListUILayer & {
+export interface TRChatListUILayer extends BaseChatListUILayer {
   userData: UserDataUI
-};
+}
 
 interface BaseChatList {
   unreadCount: number;
@@ -40,19 +40,19 @@ interface BaseChatList {
   updatedAt: Date;
 }
 
-type BaseChatListUILayer = BaseChatList & {
+interface BaseChatListUILayer extends BaseChatList {
   id: string;
   userId: string;
   trainerId: string;
   lastMessage: Message | null;
-};
+}
 
-type BaseChatListDBLayer = BaseChatList & {
+interface BaseChatListDBLayer extends BaseChatList {
   _id: ObjectId;
   userId: ObjectId;
   trainerId: ObjectId;
   lastMessage: IMessage | null;
-};
+}
 
 interface BaseUserMyTRListDB {
   providerSubStatus: string;
@@ -63,17 +63,17 @@ interface BaseUserMyTRListUI {
   trainerData: UserDataUI
 }
 
-export type UserMyTRListDBLayer = BaseUserMyTRListDB & {
+export interface UserMyTRListDBLayer extends BaseUserMyTRListDB {
   _id: ObjectId;
   trainerId: ObjectId;
   userId: ObjectId;
-};
+}
 
-export type UserMyTRListUILayer = BaseUserMyTRListUI & {
+export interface UserMyTRListUILayer extends BaseUserMyTRListUI {
   id: string;
   trainerId: string;
   userId: string;
-};
+}
 
 export class UserMyTRListMapper extends BaseMapper<
   UserMyTRListDBLayer,

@@ -9,7 +9,6 @@ import {
 import { ISubscriptionRepository } from "@domain/interfaces/ISubscriptionRepository";
 import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import {
-  PeriodType,
   SubPeriod,
   SubscriptionInterval,
 } from "@application/dtos/subscription-dtos";
@@ -32,18 +31,18 @@ export class CreateSubscriptionUseCase implements ICreateSubscriptionUC {
   ) {}
 
   private getInterval(subPeriod: SubPeriod): SubscriptionInterval {
-    return subPeriod === PeriodType.Yearly
+    return subPeriod === SubPeriod.Yearly
       ? SubscriptionInterval.Year
       : SubscriptionInterval.Month;
   }
 
   private getIntervalCount(subPeriod: SubPeriod): number {
     switch (subPeriod) {
-      case PeriodType.Quarterly:
+      case SubPeriod.Quarterly:
         return 3;
-      case PeriodType.HalfYearly:
+      case SubPeriod.HalfYearly:
         return 6;
-      case PeriodType.Yearly:
+      case SubPeriod.Yearly:
         return 1;
       default:
         return 1;

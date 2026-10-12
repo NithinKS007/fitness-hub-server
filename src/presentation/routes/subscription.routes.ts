@@ -26,6 +26,7 @@ router.use(authenticate)
 //TRAINER SUBSCRIPTION ROUTES
 router.post("/trainers/subscriptions",subscriptionSchema,validate,authorizeRole(["trainer"]),asyncHandler(createSubPlanController.handle.bind(createSubPlanController)));
 router.get("/trainers/subscriptions",authorizeRole(["trainer"]),asyncHandler(getTrainerSubscriptionController.handle.bind(getTrainerSubscriptionController)));
+router.get("/trainers/:id/subscriptions",authorizeRole(["admin"]),asyncHandler(getTrainerSubscriptionController.handle.bind(getTrainerSubscriptionController)));
 router.patch("/trainers/subscriptions/:id",authorizeRole(["trainer"]),asyncHandler(blockSubPlanController.handle.bind(blockSubPlanController)));
 router.put("/trainers/subscriptions/:id",subscriptionSchema,validate,authorizeRole(["trainer"]),asyncHandler(editSubPlanController.handle.bind(editSubPlanController)));
 router.delete("/trainers/subscriptions/:id",authorizeRole(["trainer"]),asyncHandler(deleteSubPlanController.handle.bind(deleteSubPlanController)));

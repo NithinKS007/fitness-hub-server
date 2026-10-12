@@ -8,7 +8,9 @@ export interface CreateVideoPlayList {
   playListId: string;
 }
 
-export type DeleteVideoPlaylistDTO = string;
+export interface DeleteVideoPlaylistDTO {
+  videoId: string;
+}
 
 export interface UpdatePlayListPrivacyDTO {
   playListId: string;

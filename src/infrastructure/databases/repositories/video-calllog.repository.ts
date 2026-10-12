@@ -29,7 +29,10 @@ export class VideoCallLogRepository
     private trainerCallLogMapper: TRCallLogMapper = new TRCallLogMapper(),
     private utility: MongoHelper = new MongoHelper()
   ) {
-    super(model);
+    super(
+      model,
+      "_id appointmentId callerId receiverId callDuration callRoomId callStatus callStartTime callEndTime createdAt updatedAt"
+    );
   }
 
   async getTrainerVideoCallLogs(
@@ -80,7 +83,34 @@ export class VideoCallLogRepository
         .aggregate([...commonPipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
       this.model
-        .aggregate([...commonPipeline])
+        .aggregate([
+          ...commonPipeline,
+          {
+            $project: {
+              _id: 1,
+              appointmentId: 1,
+              callerId: 1,
+              receiverId: 1,
+              callDuration: 1,
+              callRoomId: 1,
+              callStatus: 1,
+              callStartTime: 1,
+              callEndTime: 1,
+              "appointmentData._id": 1,
+              "appointmentData.userId": 1,
+              "appointmentData.bookingSlotId": 1,
+              "appointmentData.trainerId": 1,
+              "appointmentData.appointmentDate": 1,
+              "appointmentData.appointmentTime": 1,
+              "appointmentData.status": 1,
+              "userData._id": 1,
+              "userData.fname": 1,
+              "userData.lname": 1,
+              "userData.email": 1,
+              "userData.profilePic": 1,
+            },
+          },
+        ])
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNumber)
@@ -149,7 +179,34 @@ export class VideoCallLogRepository
         .aggregate([...commonPipeline, { $count: "totalCount" }])
         .then((result) => (result.length > 0 ? result[0].totalCount : 0)),
       this.model
-        .aggregate([...commonPipeline])
+        .aggregate([
+          ...commonPipeline,
+          {
+            $project: {
+              _id: 1,
+              appointmentId: 1,
+              callerId: 1,
+              receiverId: 1,
+              callDuration: 1,
+              callRoomId: 1,
+              callStatus: 1,
+              callStartTime: 1,
+              callEndTime: 1,
+              "appointmentData._id": 1,
+              "appointmentData.userId": 1,
+              "appointmentData.bookingSlotId": 1,
+              "appointmentData.trainerId": 1,
+              "appointmentData.appointmentDate": 1,
+              "appointmentData.appointmentTime": 1,
+              "appointmentData.status": 1,
+              "trainerData._id": 1,
+              "trainerData.fname": 1,
+              "trainerData.lname": 1,
+              "trainerData.email": 1,
+              "trainerData.profilePic": 1,
+            },
+          },
+        ])
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNumber)

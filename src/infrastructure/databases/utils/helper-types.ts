@@ -23,4 +23,7 @@ export interface UnwindStage {
   };
 }
 
-export type Lookup = [LookupStage, UnwindStage];
+export interface Lookup extends Array<LookupStage | UnwindStage> {
+  0: LookupStage;
+  1: UnwindStage;
+}

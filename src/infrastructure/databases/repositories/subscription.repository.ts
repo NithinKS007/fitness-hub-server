@@ -11,13 +11,19 @@ export class SubscriptionRepository
   implements ISubscriptionRepository
 {
   constructor(model: Model<ISubscription> = SubscriptionModel) {
-    super(model);
+    super(
+      model,
+      "_id trainerId subPeriod price durationInWeeks sessionsPerWeek totalSessions isBlocked providerPriceId createdAt updatedAt"
+    );
   }
-  async findAll(query: Partial<Subscription>): Promise<Subscription[]> {
+  public findAll = async (query: Partial<Subscription>): Promise<Subscription[]> => {
     const result = await this.model
       .find({ trainerId: query.trainerId })
+      .select(
+        "_id trainerId subPeriod price durationInWeeks sessionsPerWeek totalSessions isBlocked providerPriceId createdAt updatedAt"
+      )
       .sort({ createdAt: -1 });
 
     return result.map((s) => this.toDomain(s));
-  }
+  };
 }

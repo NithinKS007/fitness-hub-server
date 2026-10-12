@@ -20,7 +20,10 @@ export class UserRepository
     private trainerMapper: TrainerMapper = new TrainerMapper(),
     private utility: MongoHelper = new MongoHelper()
   ) {
-    super(model);
+    super(
+      model,
+      "_id fname lname email isBlocked role password otpVerified googleVerified phone dateOfBirth profilePic age height weight gender bloodGroup medicalConditions otherConcerns createdAt updatedAt"
+    );
   }
 
   async getUsers(dtos: GetUsersDTO): Promise<PagedResponse<User>> {
@@ -53,7 +56,9 @@ export class UserRepository
     });
     const usersList = await this.model
       .find({ role: "user", ...matchQuery })
-      .select("-password")
+      .select(
+        "_id fname lname email isBlocked role otpVerified googleVerified phone dateOfBirth profilePic age height weight gender bloodGroup medicalConditions otherConcerns createdAt updatedAt"
+      )
       .skip(skip)
       .limit(limitNumber)
       .sort({ createdAt: -1 });
@@ -182,6 +187,35 @@ export class UserRepository
         },
       },
       { $match: matchQuery },
+      {
+        $project: {
+          _id: 1,
+          fname: 1,
+          lname: 1,
+          email: 1,
+          isBlocked: 1,
+          role: 1,
+          otpVerified: 1,
+          googleVerified: 1,
+          phone: 1,
+          dateOfBirth: 1,
+          profilePic: 1,
+          age: 1,
+          height: 1,
+          weight: 1,
+          gender: 1,
+          bloodGroup: 1,
+          medicalConditions: 1,
+          otherConcerns: 1,
+          "trainerDetails._id": 1,
+          "trainerDetails.userId": 1,
+          "trainerDetails.yearsOfExperience": 1,
+          "trainerDetails.specializations": 1,
+          "trainerDetails.certifications": 1,
+          "trainerDetails.isApproved": 1,
+          "trainerDetails.aboutMe": 1,
+        },
+      },
     ];
 
     const [totalCount, trainersList] = await Promise.all([

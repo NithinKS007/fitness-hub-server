@@ -1,5 +1,4 @@
 import { Message } from "@domain/entities/message.entity";
-import { SubPeriod } from "@domain/entities/subscription.entity";
 
 export interface WeightLiftedByDateUILayer {
   date: string;
@@ -41,12 +40,12 @@ interface ContactReadModel {
   profilePic: string;
   isBlocked: boolean;
 }
-export type AppointmentsURUILayer = AppointmentReadModel & {
+export interface AppointmentsURUILayer extends AppointmentReadModel {
   trainerData: ContactReadModel;
-};
-export type AppointmentsTRUILayer = AppointmentReadModel & {
+}
+export interface AppointmentsTRUILayer extends AppointmentReadModel {
   userData: ContactReadModel;
-};
+}
 
 interface CallLogReadModel {
   id: string;
@@ -75,8 +74,12 @@ interface CallUserReadModel {
   email: string;
   profilePic: string;
 }
-export type TRCallLogUILayer = CallLogReadModel & { userData: CallUserReadModel };
-export type URCallLogUILayer = CallLogReadModel & { trainerData: CallUserReadModel };
+export interface TRCallLogUILayer extends CallLogReadModel {
+  userData: CallUserReadModel;
+}
+export interface URCallLogUILayer extends CallLogReadModel {
+  trainerData: CallUserReadModel;
+}
 
 interface ChatReadModel {
   id: string;
@@ -96,15 +99,19 @@ interface ChatUserReadModel {
   profilePic: string;
   isBlocked: boolean;
 }
-export type URChatListUILayer = ChatReadModel & { trainerData: ChatUserReadModel };
-export type TRChatListUILayer = ChatReadModel & { userData: ChatUserReadModel };
-export type UserMyTRListUILayer = {
+export interface URChatListUILayer extends ChatReadModel {
+  trainerData: ChatUserReadModel;
+}
+export interface TRChatListUILayer extends ChatReadModel {
+  userData: ChatUserReadModel;
+}
+export interface UserMyTRListUILayer {
   id: string;
   trainerId: string;
   userId: string;
   providerSubStatus: string;
   trainerData: ChatUserReadModel;
-};
+}
 
 export interface TRSubStatusWiseCountUI {
   id: string;
@@ -133,7 +140,7 @@ export interface Top5TrainesUILayer {
   email: string;
 }
 export interface UserSubUILayer {
-  subPeriod: SubPeriod;
+  subPeriod: string;
   price: number;
   durationInWeeks: number;
   sessionsPerWeek: number;

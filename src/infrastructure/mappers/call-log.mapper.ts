@@ -22,19 +22,19 @@ interface BaseAppointment {
   status: string;
 }
 
-type AppointmentDBLayer = BaseAppointment & {
+interface AppointmentDBLayer extends BaseAppointment {
   _id: ObjectId;
   userId: ObjectId;
   bookingSlotId: ObjectId;
   trainerId: ObjectId;
-};
+}
 
-type AppointmentUILayer = BaseAppointment & {
+interface AppointmentUILayer extends BaseAppointment {
   id: string;
   userId: string;
   bookingSlotId: string;
   trainerId: string;
-};
+}
 
 interface BaseLog {
   callDuration: number;
@@ -44,39 +44,39 @@ interface BaseLog {
   callEndTime: Date;
 }
 
-type CallLogDBLayer = BaseLog & {
+interface CallLogDBLayer extends BaseLog {
   _id: ObjectId;
   appointmentId: ObjectId;
   callerId: ObjectId;
   receiverId: ObjectId;
-};
+}
 
-type CallLogUILayer = BaseLog & {
+interface CallLogUILayer extends BaseLog {
   id: string;
   appointmentId: string;
   callerId: string;
   receiverId: string;
-};
+}
 
-type TRCallLogDBLayer = CallLogDBLayer & {
+interface TRCallLogDBLayer extends CallLogDBLayer {
   appointmentData: AppointmentDBLayer;
   userData: UserDataDBLayer;
-};
+}
 
-export type TRCallLogUILayer = CallLogUILayer & {
+export interface TRCallLogUILayer extends CallLogUILayer {
   appointmentData: AppointmentUILayer;
   userData: UserDataUILayer;
-};
+}
 
-type URCallLogDBLayer = CallLogDBLayer & {
+interface URCallLogDBLayer extends CallLogDBLayer {
   appointmentData: AppointmentDBLayer;
   trainerData: UserDataDBLayer;
-};
+}
 
-export type URCallLogUILayer = CallLogUILayer & {
+export interface URCallLogUILayer extends CallLogUILayer {
   appointmentData: AppointmentUILayer;
   trainerData: UserDataUILayer;
-};
+}
 
 class UserMapper extends BaseMapper<UserDataDBLayer, UserDataUILayer> {
   mapToDomain(data: UserDataDBLayer): UserDataUILayer {

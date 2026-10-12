@@ -15,6 +15,7 @@ import {
   PaymentSession,
   PaymentSubscription,
   PaymentWebhookEvent,
+  PaymentWebhookEventType,
 } from "@application/dtos/service/payment.service";
 import { IPaymentService } from "@application/interfaces/services/payments/IPayment.service";
 import { injectable } from "inversify";
@@ -42,7 +43,10 @@ export class StripePaymentService implements IPaymentService {
         product: productId,
         unit_amount: amount,
         currency,
-        recurring: { interval, interval_count: intervalCount },
+        recurring: {
+          interval: interval as "day" | "week" | "month" | "year",
+          interval_count: intervalCount,
+        },
       });
       return price.id;
     } catch (error) {
@@ -156,7 +160,7 @@ export class StripePaymentService implements IPaymentService {
       case "checkout.session.completed": {
         const session = event.data.object;
         return {
-          type: event.type,
+          type: PaymentWebhookEventType.CheckoutSessionCompleted,
           data: {
             clientReferenceId: session.client_reference_id ?? undefined,
             subscriptionId:
@@ -169,7 +173,7 @@ export class StripePaymentService implements IPaymentService {
       }
       case "invoice.payment_failed":
         return {
-          type: event.type,
+          type: PaymentWebhookEventType.InvoicePaymentFailed,
           data: {
             subscriptionId:
               typeof event.data.object.subscription === "string"
@@ -179,11 +183,11 @@ export class StripePaymentService implements IPaymentService {
         };
       case "customer.subscription.deleted":
         return {
-          type: event.type,
+          type: PaymentWebhookEventType.CustomerSubscriptionDeleted,
           data: { subscriptionId: event.data.object.id },
         };
       default:
-        return { type: "unhandled", data: {} };
+        return { type: PaymentWebhookEventType.Unhandled, data: {} };
     }
   }
 }
