@@ -22,7 +22,10 @@ export class FinancialLogRepository
     private earningsOverViewMapper = new EarningsOverViewMapper(),
     private utility: MongoHelper = new MongoHelper()
   ) {
-    super(model);
+    super(
+      model,
+      "_id subscriptionId userSubscriptionPlanId trainerId userId amountPaid serviceFee trainerProfit commission createdAt updatedAt"
+    );
   }
 
   async getTotalServiceFee(): Promise<number> {

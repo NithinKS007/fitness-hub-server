@@ -1,5 +1,4 @@
 import { Message } from "@domain/entities/message.entity";
-import { ObjectId } from "mongoose";
 
 export interface CreateChatDTO {
   senderId: string;
@@ -16,9 +15,9 @@ export interface FindMessageDTO {
 }
 
 export interface ChatLastMsg {
-  id: ObjectId;
-  userId: ObjectId;
-  trainerId: ObjectId;
+  id: string;
+  userId: string;
+  trainerId: string;
   lastMessage: Message | null;
   unreadCount: number;
   providerSubStatus: string;

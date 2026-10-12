@@ -4,13 +4,13 @@ import { ITrainerRepository } from "@domain/interfaces/ITrainerRepository";
 import { IFinancialLogRepository } from "@domain/interfaces/IFinancialLogRepository";
 import { IDateService } from "@application/interfaces/services/date/IDate.service";
 import { RoleType } from "@application/dtos/auth-dtos";
-import { EarningsOverViewUI } from "@infrastructure/mappers/chart.mappers";
+import { EarningsOverViewUI } from "@application/dtos/read-models";
 import { AdminDashBoardStats } from "@application/dtos/trainer-dtos";
 import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { TYPES_SERVICES } from "@di/types-services";
 import { IAdminDashBoardUC } from "@application/interfaces/usecases/IDashBoardUC";
-import { Top5TrainesUILayer } from "@infrastructure/mappers/subscriptionPlan.mapper";
+import { Top5TrainesUILayer } from "@application/dtos/read-models";
 
 @injectable()
 export class AdminDashBoardUseCase implements IAdminDashBoardUC {

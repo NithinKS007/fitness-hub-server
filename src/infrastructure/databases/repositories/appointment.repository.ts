@@ -30,25 +30,10 @@ export class AppointmentRepository
     private appointmentTRMapper: AppointmentTRmapper = new AppointmentTRmapper(),
     private utility: MongoHelper = new MongoHelper()
   ) {
-    super(model);
-  }
-
-  private appointmentProj() {
-    return {
-      _id: 1,
-      appointmentDate: 1,
-      appointmentTime: 1,
-      trainerId: 1,
-      status: 1,
-      createdAt: 1,
-    };
-  }
-
-  private slotProj() {
-    return {
-      "bookingSlotData.createdAt": 1,
-      "bookingSlotData._id": 1,
-    };
+    super(
+      model,
+      "_id bookingSlotId userId trainerId appointmentDate appointmentTime status createdAt updatedAt"
+    );
   }
 
   async getBookingRequests(
@@ -93,10 +78,16 @@ export class AppointmentRepository
       { $match: matchQuery },
     ];
 
-    const projFields = {
-      ...this.appointmentProj(),
+    const bookingRequestsProjection = {
+      _id: 1,
+      appointmentDate: 1,
+      appointmentTime: 1,
+      trainerId: 1,
+      status: 1,
+      createdAt: 1,
       ...this.utility.userProj(),
-      ...this.slotProj(),
+      "bookingSlotData.createdAt": 1,
+      "bookingSlotData._id": 1,
     };
 
     const [totalCount, bookingRequestsList] = await Promise.all([
@@ -107,7 +98,7 @@ export class AppointmentRepository
         .aggregate([
           ...commonPipeline,
           {
-            $project: projFields,
+            $project: bookingRequestsProjection,
           },
         ])
         .sort({ createdAt: -1 })
@@ -174,10 +165,16 @@ export class AppointmentRepository
       { $match: matchQuery },
     ];
 
-    const projFields = {
-      ...this.appointmentProj(),
+    const trainerSchedulesProjection = {
+      _id: 1,
+      appointmentDate: 1,
+      appointmentTime: 1,
+      trainerId: 1,
+      status: 1,
+      createdAt: 1,
       ...this.utility.userProj(),
-      ...this.slotProj(),
+      "bookingSlotData.createdAt": 1,
+      "bookingSlotData._id": 1,
     };
 
     const [totalCount, trainerBookingSchedulesList] = await Promise.all([
@@ -188,7 +185,7 @@ export class AppointmentRepository
         .aggregate([
           ...commonPipeline,
           {
-            $project: projFields,
+            $project: trainerSchedulesProjection,
           },
         ])
         .sort({ createdAt: -1 })
@@ -254,10 +251,16 @@ export class AppointmentRepository
       { $match: matchQuery },
     ];
 
-    const projFields = {
-      ...this.appointmentProj(),
+    const userSchedulesProjection = {
+      _id: 1,
+      appointmentDate: 1,
+      appointmentTime: 1,
+      trainerId: 1,
+      status: 1,
+      createdAt: 1,
       ...this.utility.trainerProj(),
-      ...this.slotProj(),
+      "bookingSlotData.createdAt": 1,
+      "bookingSlotData._id": 1,
     };
 
     const [totalCount, appointmentList] = await Promise.all([
@@ -268,7 +271,7 @@ export class AppointmentRepository
         .aggregate([
           ...commonPipeline,
           {
-            $project: projFields,
+            $project: userSchedulesProjection,
           },
         ])
         .sort({ createdAt: -1 })

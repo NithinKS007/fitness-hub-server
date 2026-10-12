@@ -17,10 +17,10 @@ export class PlayListRepository
     model: Model<IPlayList> = PlayListModel,
     private utility: MongoHelper = new MongoHelper()
   ) {
-    super(model);
+    super(model, "_id trainerId title videoCount privacy createdAt updatedAt");
   }
 
-  async findOne(query: Partial<PlayList>): Promise<PlayList | null> {
+  public findOne = async (query: Partial<PlayList>): Promise<PlayList | null> => {
     const { title, id } = query;
 
     const queryObject: any = {};
@@ -33,9 +33,12 @@ export class PlayListRepository
       queryObject._id = { $ne: this.parseId(id) };
     }
 
-    const result = await this.model.findOne(queryObject);
+    const result = await this.model
+      .findOne(queryObject)
+      .select("_id trainerId title videoCount privacy createdAt updatedAt")
+      .exec();
     return result ? this.toDomain(result) : null;
-  }
+  };
 
   async getPlaylists(dtos: GetPlayListsDTO): Promise<{
     playList: PlayList[];
@@ -77,6 +80,7 @@ export class PlayListRepository
           trainerId: this.parseId(trainerId),
           ...matchQuery,
         })
+        .select("_id trainerId title videoCount privacy createdAt updatedAt")
         .skip(skip)
         .limit(limitNumber)
         .sort({ createdAt: -1 }),
@@ -138,7 +142,10 @@ export class PlayListRepository
       trainerId,
       ...(privacy !== undefined ? { privacy: privacy } : {}),
     };
-    const result = await this.model.find(query);
+    const result = await this.model
+      .find(query)
+      .select("_id trainerId title videoCount privacy createdAt updatedAt")
+      .exec();
     return result.map((result) => this.toDomain(result));
   }
 }

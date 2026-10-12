@@ -1,12 +1,11 @@
 import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
-type SubPeriod = "monthly" | "yearly" | "quarterly" | "halfYearly";
 
 export interface IUserSubscriptionPlan extends Document {
   _id: ObjectId;
   userId: ObjectId;
   trainerId: ObjectId;
-  subPeriod: SubPeriod;
+  subPeriod: string;
   price: number;
   durationInWeeks: number;
   sessionsPerWeek: number;

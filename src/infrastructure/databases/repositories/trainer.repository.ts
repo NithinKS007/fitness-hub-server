@@ -9,7 +9,10 @@ export class TrainerRepository
   implements ITrainerRepository
 {
   constructor(model: Model<ITrainer> = TrainerModel) {
-    super(model);
+    super(
+      model,
+      "_id userId yearsOfExperience specializations certifications isApproved aboutMe createdAt updatedAt"
+    );
   }
   async countPendingTrainerApprovals(): Promise<number> {
     return await this.model.countDocuments({ isApproved: false });

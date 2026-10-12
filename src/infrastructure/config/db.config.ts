@@ -11,18 +11,26 @@ export class ConnectDB implements IConnectDB {
     this.uri = uri;
   }
 
-  async connectMongo(): Promise<void> {
+  public connectMongo = async (): Promise<void> => {
     if (!this.uri) {
       throw new DatabaseError(
         "Database URI is not defined in environment variables"
       );
     }
     try {
-      await mongoose.connect(this.uri);
-      console.log("Database connected successfully");
+      await mongoose.connect(this.uri, {
+        maxPoolSize: Number(process.env.MONGO_MAX_POOL_SIZE ?? 20),
+        minPoolSize: Number(process.env.MONGO_MIN_POOL_SIZE ?? 5),
+        serverSelectionTimeoutMS: 10_000,
+        socketTimeoutMS: 45_000,
+      });
     } catch (error) {
       console.error("Error connecting to MongoDB:", error);
-      process.exit(1);
+      throw new DatabaseError("Unable to connect to MongoDB");
     }
-  }
+  };
+
+  public disconnectMongo = async (): Promise<void> => {
+    await mongoose.disconnect();
+  };
 }

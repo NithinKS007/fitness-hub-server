@@ -9,7 +9,10 @@ export interface UpdateUnReadMessageCount {
   count: number;
 }
 
-export type IncrementUnReadMessageCount = Omit<UpdateUnReadMessageCount, "count">;
+export interface IncrementUnReadMessageCount {
+  userId: string;
+  otherUserId: string;
+}
 
 export interface UpdateLastMessage {
   userId: string;

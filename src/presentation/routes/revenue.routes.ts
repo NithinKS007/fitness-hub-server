@@ -10,3 +10,5 @@ const router = express.Router();
 router.use(authenticate)
 
 router.get("/revenue",authorizeRole(["admin"]),asyncHandler(getPlatformEarningsController.handle.bind(getPlatformEarningsController)));
+
+export default router;

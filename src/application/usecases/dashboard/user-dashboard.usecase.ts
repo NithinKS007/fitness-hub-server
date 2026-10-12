@@ -8,7 +8,7 @@ import { injectable, inject } from "inversify";
 import { TYPES_SERVICES } from "@di/types-services";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { IUserDashBoardUC } from "@application/interfaces/usecases/IDashBoardUC";
-import { WeightLiftedByDateUILayer } from "@infrastructure/mappers/workout.mapper";
+import { WeightLiftedByDateUILayer } from "@application/dtos/read-models";
 
 @injectable()
 export class UserDashBoardUseCase implements IUserDashBoardUC {

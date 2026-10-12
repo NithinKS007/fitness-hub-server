@@ -7,7 +7,7 @@ import { injectable, inject } from "inversify";
 import { TYPES_REPOSITORIES } from "@di/types-repositories";
 import { VideoCallStatus } from "@shared/constants/videocallStatus/videocall.status";
 import { IGetUserVideoCallLogUC } from "@application/interfaces/usecases/IVideoCallLogUC";
-import { URCallLogUILayer } from "@infrastructure/mappers/call-log.mapper";
+import { URCallLogUILayer } from "@application/dtos/read-models";
 
 /**
  * Purpose: Fetch video call logs for a user with pagination, filters, and date range.

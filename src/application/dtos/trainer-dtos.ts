@@ -1,5 +1,4 @@
-import { EarningsOverViewUI } from "@infrastructure/mappers/chart.mappers";
-import { Top5TrainesUILayer } from "@infrastructure/mappers/subscriptionPlan.mapper";
+import { EarningsOverViewUI, Top5TrainesUILayer } from "@application/dtos/read-models";
 
 export interface CreateTrainerDTO {
   fname: string;

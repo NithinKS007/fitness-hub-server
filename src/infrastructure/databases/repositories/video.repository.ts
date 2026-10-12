@@ -18,10 +18,13 @@ export class VideoRepository
     private videoMapper: VideoMapper = new VideoMapper(),
     private utility: MongoHelper = new MongoHelper()
   ) {
-    super(model);
+    super(
+      model,
+      "_id trainerId title description duration thumbnail video privacy createdAt updatedAt"
+    );
   }
 
-  async findOne(query: Partial<Video>): Promise<Video | null> {
+  public findOne = async (query: Partial<Video>): Promise<Video | null> => {
     const { title, id } = query;
 
     const queryObject: FilterQuery<Video> = {};
@@ -34,9 +37,14 @@ export class VideoRepository
       queryObject._id = { $ne: this.parseId(id) };
     }
 
-    const result = await this.model.findOne(queryObject);
+    const result = await this.model
+      .findOne(queryObject)
+      .select(
+        "_id trainerId title description duration thumbnail video privacy createdAt updatedAt"
+      )
+      .exec();
     return result ? this.toDomain(result) : null;
-  }
+  };
 
   async getVideos(dtos: GetVideosDTO): Promise<PagedResponse<VideoUILayer>> {
     const { trainerId, page, limit, fromDate, toDate, search, filters } = dtos;

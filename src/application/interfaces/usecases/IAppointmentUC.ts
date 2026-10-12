@@ -13,7 +13,7 @@ import { PaginationDTO } from "@application/dtos/utility-dtos";
 import {
   AppointmentsTRUILayer,
   AppointmentsURUILayer,
-} from "@infrastructure/mappers/appointment.mapper";
+} from "@application/dtos/read-models";
 
 export interface IBookAppointmentUC
   extends IBaseUseCase<BookAppointmentDTO, Appointment> {}

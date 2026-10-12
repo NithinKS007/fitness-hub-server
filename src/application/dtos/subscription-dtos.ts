@@ -1,7 +1,7 @@
 import {
   TrainerSubUILayer,
   UserSubUILayer,
-} from "@infrastructure/mappers/subscriptionPlan.mapper";
+} from "@application/dtos/read-models";
 
 interface SubscriptionDetails {
   subPeriod: SubPeriod;
@@ -19,14 +19,12 @@ export enum CancelSubAction {
   atEndOfCycle = "cancelAtEndOfCycle",
 }
 
-export enum PeriodType {
+export enum SubPeriod {
   Quarterly = "quarterly",
   HalfYearly = "halfYearly",
   Yearly = "yearly",
   Monthly = "monthly",
 }
-
-export type SubPeriod = PeriodType;
 
 export enum SubscriptionInterval {
   Month = "month",

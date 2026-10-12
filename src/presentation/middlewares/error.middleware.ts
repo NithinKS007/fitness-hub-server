@@ -57,13 +57,14 @@ export class InternalServerError extends AppError {
 }
 
 export const errorMiddleware = (
-  err: AppError,
+  err: AppError | Error,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  ReqLogService.error(err.message, err);
-  const statusCode = err.statusCode || StatusCodes.InternalServerError;
-  const message = err.message || ApplicationStatus.InternalServerError;
+  const isAppError = err instanceof AppError;
+  const statusCode = isAppError ? err.statusCode : StatusCodes.InternalServerError;
+  const message = isAppError ? err.message : ApplicationStatus.InternalServerError;
+  ReqLogService.error(`${req.requestId} ${err.message}`, err);
   sendResponse(res, statusCode, null, message);
 };

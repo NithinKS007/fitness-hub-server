@@ -8,7 +8,7 @@ import { IBaseUseCase } from "./IBase.UC";
 import { Video } from "@domain/entities/video.entity";
 import { GetVideosDTO } from "@application/dtos/query-dtos";
 import { PaginationDTO } from "@application/dtos/utility-dtos";
-import { VideoUILayer } from "@infrastructure/mappers/video.mapper";
+import { VideoUILayer } from "@application/dtos/read-models";
 
 export interface ICreateVideoUC extends IBaseUseCase<CreateVideo, Video> {}
 export interface IEditVideoUC extends IBaseUseCase<EditVideoDTO, Video> {}

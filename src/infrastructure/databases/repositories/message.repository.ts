@@ -12,7 +12,10 @@ export class MessageRepository
   implements IMessageRepository
 {
   constructor(model: Model<IMessage> = MessageModel) {
-    super(model);
+    super(
+      model,
+      "_id senderId receiverId message isRead createdAt updatedAt"
+    );
   }
 
   async getChatHistory({
@@ -36,6 +39,7 @@ export class MessageRepository
           },
         ],
       })
+      .select("_id senderId receiverId message isRead createdAt updatedAt")
       .sort({ createdAt: 1 });
 
     if (limit && page) {

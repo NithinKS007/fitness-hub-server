@@ -38,32 +38,12 @@ export class ChatRepository
     private userMyTRListMapper = new UserMyTRListMapper(),
     private utility: MongoHelper = new MongoHelper()
   ) {
-    super(model);
+    super(
+      model,
+      "_id userId trainerId lastMessage unreadCount providerSubStatus createdAt updatedAt"
+    );
   }
 
-  private projMessage() {
-    return {
-      "lastMessage._id": 1,
-      "lastMessage.senderId": 1,
-      "lastMessage.receiverId": 1,
-      "lastMessage.message": 1,
-      "lastMessage.isRead": 1,
-      "lastMessage.createdAt": 1,
-      "lastMessage.updatedAt": 1,
-    };
-  }
-
-  private projChat() {
-    return {
-      _id: 1,
-      userId: 1,
-      trainerId: 1,
-      unreadCount: 1,
-      providerSubStatus: 1,
-      createdAt: 1,
-      updatedAt: 1,
-    };
-  }
   async findChat({
     userId,
     trainerId,
@@ -85,6 +65,7 @@ export class ChatRepository
       ...chatLookup,
       {
         $project: {
+          _id: 1,
           userId: 1,
           trainerId: 1,
           lastMessage: 1,
@@ -120,6 +101,9 @@ export class ChatRepository
         { lastMessage: this.parseId(lastMessageId) },
         { new: true }
       )
+      .select(
+        "_id userId trainerId lastMessage unreadCount providerSubStatus createdAt updatedAt"
+      )
       .lean()
       .exec();
     return result ? this.toDomain(result) : null;
@@ -137,6 +121,24 @@ export class ChatRepository
         },
       },
       { $unwind: { path: "$lastMessage", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 1,
+          userId: 1,
+          trainerId: 1,
+          unreadCount: 1,
+          providerSubStatus: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          "lastMessage._id": 1,
+          "lastMessage.senderId": 1,
+          "lastMessage.receiverId": 1,
+          "lastMessage.message": 1,
+          "lastMessage.isRead": 1,
+          "lastMessage.createdAt": 1,
+          "lastMessage.updatedAt": 1,
+        },
+      },
     ]);
     return result[0];
   }
@@ -176,6 +178,17 @@ export class ChatRepository
           "lastMessage.receiverId": this.parseId(userId),
         },
       },
+      {
+        $project: {
+          _id: 1,
+          userId: 1,
+          trainerId: 1,
+          unreadCount: 1,
+          providerSubStatus: 1,
+          "lastMessage._id": 1,
+          "lastMessage.receiverId": 1,
+        },
+      },
     ]);
     return result.length > 0 ? result[0] : null;
   }
@@ -202,6 +215,9 @@ export class ChatRepository
           $inc: { unreadCount: 1 },
         },
         { new: true }
+      )
+      .select(
+        "_id userId trainerId lastMessage unreadCount providerSubStatus createdAt updatedAt"
       )
       .lean()
       .exec();
@@ -234,9 +250,21 @@ export class ChatRepository
       as: "lastMessage",
     });
 
-    const projFields = {
-      ...this.projChat(),
-      ...this.projMessage,
+    const userChatListProjection = {
+      _id: 1,
+      userId: 1,
+      trainerId: 1,
+      unreadCount: 1,
+      providerSubStatus: 1,
+      createdAt: 1,
+      updatedAt: 1,
+      "lastMessage._id": 1,
+      "lastMessage.senderId": 1,
+      "lastMessage.receiverId": 1,
+      "lastMessage.message": 1,
+      "lastMessage.isRead": 1,
+      "lastMessage.createdAt": 1,
+      "lastMessage.updatedAt": 1,
       ...this.utility.trainerProj(),
     };
 
@@ -247,7 +275,7 @@ export class ChatRepository
       { $match: matchQuery },
       ...lastmessageLookup,
       {
-        $project: projFields,
+        $project: userChatListProjection,
       },
     ]);
     return result.map((chat) => this.userChatListMapper.map(chat));
@@ -280,9 +308,21 @@ export class ChatRepository
       as: "lastMessage",
     });
 
-    const projFields = {
-      ...this.projChat(),
-      ...this.projMessage,
+    const trainerChatListProjection = {
+      _id: 1,
+      userId: 1,
+      trainerId: 1,
+      unreadCount: 1,
+      providerSubStatus: 1,
+      createdAt: 1,
+      updatedAt: 1,
+      "lastMessage._id": 1,
+      "lastMessage.senderId": 1,
+      "lastMessage.receiverId": 1,
+      "lastMessage.message": 1,
+      "lastMessage.isRead": 1,
+      "lastMessage.createdAt": 1,
+      "lastMessage.updatedAt": 1,
       ...this.utility.userProj(),
     };
 
@@ -293,7 +333,7 @@ export class ChatRepository
       { $match: matchQuery },
       ...lastmessageLookup,
       {
-        $project: projFields,
+        $project: trainerChatListProjection,
       },
     ]);
     return result.map((chat) => this.trainerChatListMapper.map(chat));

@@ -13,7 +13,7 @@ import { VideoCallLog } from "@domain/entities/video-calllog.entity";
 import {
   TRCallLogUILayer,
   URCallLogUILayer,
-} from "@infrastructure/mappers/call-log.mapper";
+} from "@application/dtos/read-models";
 
 export interface IGetTrainerVideoCallLogUC
   extends IBaseUseCase<

@@ -21,37 +21,37 @@ interface AppointmentBase {
   bookingSlotData: BookingSlotBase;
 }
 
-export type AppointmentsURdbLayer = AppointmentBase & {
+export interface AppointmentsURdbLayer extends AppointmentBase {
   _id: ObjectId;
   appointmentDate: Date;
   bookingSlotData: BookingSlotBase & { _id: ObjectId };
   trainerId: ObjectId;
   trainerData: UserBase & { _id: ObjectId };
-};
+}
 
-export type AppointmentsURUILayer = AppointmentBase & {
+export interface AppointmentsURUILayer extends AppointmentBase {
   id: string;
   appointmentDate: Date;
   bookingSlotData: BookingSlotBase & { id: string };
   trainerId: string;
   trainerData: UserBase & { id: string };
-};
+}
 
-export type AppointmentsTRdbLayer = AppointmentBase & {
+export interface AppointmentsTRdbLayer extends AppointmentBase {
   _id: ObjectId;
   appointmentDate: Date;
   bookingSlotData: BookingSlotBase & { _id: ObjectId };
   trainerId: ObjectId;
   userData: UserBase & { _id: ObjectId };
-};
+}
 
-export type AppointmentsTRUILayer = AppointmentBase & {
+export interface AppointmentsTRUILayer extends AppointmentBase {
   id: string;
   appointmentDate: Date;
   bookingSlotData: BookingSlotBase & { id: string };
   trainerId: string;
   userData: UserBase & { id: string };
-};
+}
 
 export class AppointmentURmapper extends BaseMapper<
   AppointmentsURdbLayer,

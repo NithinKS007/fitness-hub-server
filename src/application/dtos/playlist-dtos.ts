@@ -1,4 +1,3 @@
-import { ObjectId } from "mongoose";
 
 export interface CreatePlayListDTO {
   trainerId: string;
@@ -9,7 +8,9 @@ export interface CreateVideoPlayList {
   playListId: string;
 }
 
-export type DeleteVideoPlaylistDTO = string;
+export interface DeleteVideoPlaylistDTO {
+  videoId: string;
+}
 
 export interface UpdatePlayListPrivacyDTO {
   playListId: string;
@@ -21,6 +22,6 @@ export interface EditPlayListDTO {
 }
 
 export interface VideoPerPlayList {
-  playListId: ObjectId;
+  playListId: string;
   videoCount: number;
 }

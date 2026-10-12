@@ -16,7 +16,7 @@ export class BookingSlotRepository
     model: Model<IBookingSlot> = BookingSlotModel,
     private utility: MongoHelper = new MongoHelper()
   ) {
-    super(model);
+    super(model, "_id trainerId status time date createdAt updatedAt");
   }
 
   async getSlots(dtos: GetSlotsDTO): Promise<PagedResponse<BookingSlot>> {
@@ -49,6 +49,7 @@ export class BookingSlotRepository
       this.model.countDocuments(matchQuery),
       this.model
         .find(matchQuery)
+        .select("_id trainerId status time date createdAt updatedAt")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNumber)

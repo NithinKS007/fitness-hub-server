@@ -15,12 +15,15 @@ export class PasswordResetRepository
   implements IPasswordResetRepository
 {
   constructor(model: Model<IPasswordResetToken> = PasswordResetTokenModel) {
-    super(model);
+    super(
+      model,
+      "_id email resetToken resetTokenCreatedAt createdAt updatedAt"
+    );
   }
-  async create({
+  public create = async ({
     email,
     resetToken,
-  }: CreatePassResetTokenDTO): Promise<PasswordResetToken> {
+  }: CreatePassResetTokenDTO): Promise<PasswordResetToken> => {
     const PasswordResetTokenData =
       await PasswordResetTokenModel.findOneAndUpdate(
         { email },
@@ -32,17 +35,19 @@ export class PasswordResetRepository
           new: true,
           upsert: true,
         }
-      );
+      ).select("_id email resetToken resetTokenCreatedAt createdAt updatedAt");
     return this.toDomain(PasswordResetTokenData);
-  }
+  };
 
-  async deleteToken({
+  public deleteToken = async ({
     resetToken,
-  }: DeletePasswordResetTokenDTO): Promise<PasswordResetToken | null> {
+  }: DeletePasswordResetTokenDTO): Promise<PasswordResetToken | null> => {
     const result = await PasswordResetTokenModel.findOneAndDelete({
       resetToken,
-    }).exec()
+    })
+      .select("_id email resetToken resetTokenCreatedAt createdAt updatedAt")
+      .exec();
 
     return result ? this.toDomain(result) : null;
-  }
+  };
 }

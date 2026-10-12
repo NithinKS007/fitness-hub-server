@@ -7,19 +7,18 @@ import { CheckSubscriptionStatusDTO } from "@application/dtos/subscription-dtos"
 import { PagedResponse } from "@application/dtos/utility-dtos";
 import { UserSubscriptionPlan } from "@domain/entities/subscription-plan.entity";
 import { IBaseRepository } from "@domain/interfaces/IBaseRepository";
-import { IUserSubscriptionPlan } from "@infrastructure/databases/models/user-subscription-plan";
 import {
   TRSubPeriodWiseCountUI,
   TRSubStatusWiseCountUI,
-} from "@infrastructure/mappers/chart.mappers";
+} from "@application/dtos/read-models";
 import {
   Top5TrainesUILayer,
   TrainerSubUILayer,
   UserSubUILayer,
-} from "@infrastructure/mappers/subscriptionPlan.mapper";
+} from "@application/dtos/read-models";
 
 export interface IUserSubscriptionPlanRepository
-  extends IBaseRepository<IUserSubscriptionPlan, UserSubscriptionPlan> {
+  extends IBaseRepository<UserSubscriptionPlan> {
   getUserSubscriptions(dtos: GetUserSubDTO): Promise<PagedResponse<UserSubUILayer>>;
   getTrainerSubscriptions(
     dtos: GetTrainerSubsDTO
